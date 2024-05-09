@@ -43,8 +43,6 @@ A Crake is a bird with a distinctive, slighly alarming cry. We changed the spell
 
 
 
-# References
-
 
 # Components: 
 ESP32
@@ -88,3 +86,5 @@ DFplayer ft. speaker
 SPK1 -- +ve of the speaker 
 SPK2 -- -ve of the speaker
 
+
+# References
