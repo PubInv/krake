@@ -2,8 +2,8 @@
 #include <HTTPClient.h>
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
-// #include "SoftwareSerial.h"
-// #include "DFRobotDFPlayerMini.h"
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 
 
 WiFiServer server(80);
@@ -38,12 +38,30 @@ const long interval = 100; // Adjust the interval based on your needs
 // Create the Player object
 DFRobotDFPlayerMini player;
 
+// set the LCD number of columns and rows
+int lcdColumns = 20;
+int lcdRows = 4;
+
+// set LCD address, number of columns and rows
+// if you don't know your display address, run an I2C scanner sketch
+LiquidCrystal_I2C lcd(0x3F, lcdColumns, lcdRows);  
+
+
 void setup() {
 
  //Serial communication with the module
   mySoftwareSerial.begin(9600);
   // Initialize Arduino serial
   Serial.begin(115200);
+
+ Serial.println("\nI2C Scanner");
+  Wire.begin();
+  // initialize LCD
+  lcd.init();
+  Serial.print("LCD init success");
+  // turn on LCD backlight                      
+  // lcd.backlight();
+  Serial.print("Did you fail yet?");
 
  // initialize the pushbutton pin as an pull-up input
   pinMode(BUTTON_PIN, INPUT_PULLUP);
