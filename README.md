@@ -86,7 +86,7 @@ DFplayer ft. speaker
 SPK1 -- +ve of the speaker 
 SPK2 -- -ve of the speaker
 
-![IMG_2441 width="85"andheight="75"](https://github.com/PubInv/krake/assets/133608369/39036a1a-d32f-441c-ad68-157c7b0dcb62)
+<img width="584" alt="Screenshot 2024-05-04 142512" src=https://github.com/PubInv/krake/assets/133608369/39036a1a-d32f-441c-ad68-157c7b0dcb62>
 
 
   > KRAKE 20240511
