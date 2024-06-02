@@ -91,5 +91,23 @@ SPK2 -- -ve of the speaker
 
   > KRAKE 20240511
 
+<img width="626" alt="Screenshot 2024-06-02 093318" src="https://github.com/PubInv/krake/assets/133608369/825dbfa6-d195-47b9-9c5f-870838daa358">  
+
+>3D Frontview of the KRAKE PCBA 
+
+<img width="628" alt="image" src="https://github.com/PubInv/krake/assets/133608369/96d52ea8-1e95-4f58-8d42-c5fcf8986b38">  
+
+>3D backview of the KRAKE PCBA 
+
+# Enhancements
+
+1. The Krake is an HTTP Server and receives alarm level requests by an HTTP Client Put or Get message.    
+2. The Krake is an HTTP Server and returns to a client browser a web page with the system alarm state.     
+3. The Krake has 5 bright white LEDs which indicate alarm states. State can be indicated by steady or blinking LEDs.    
+4. Plays five different audio levels corresponding to triggered emergency levels" To "The Krake can play WAV files which are stored at program time (manufacturing time) The size , ie duration, and number of messages is only limited by the size of an SDI card.   
+5. The Krake Liquid Crystal can display four rows of up to 20 character to further explain an alarm state.         
+6. Includes a mute button.     
+7. The Krake in nromal use connects as a Station to a WiFi Access Point. For set up, a user interface is provided to set (Manage) WiFi credentials by the user of a smart device and the Krake provides a WiFi Access Point WiFi.      
+
 
 # References
