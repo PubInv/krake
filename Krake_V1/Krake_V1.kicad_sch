@@ -3237,6 +3237,10 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid cd63d7da-f085-401b-9b64-e85338107d7c)
   )
+  (text "ON /OFF Button" (at 12.446 59.69 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid ee25ac31-3ac6-4927-a397-45d549be7784)
+  )
 
   (label "Vcc_LCD" (at 274.32 40.64 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
