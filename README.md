@@ -99,6 +99,10 @@ SPK2 -- -ve of the speaker
 
 >3D backview of the KRAKE PCBA 
 
+### Kicanvas live view of current schematic:
+
+[Schematic Link](https://kicanvas.org/?github=%22C%3A%5CUsers%5CLaptop+Pro%5COneDrive%5CDesktop%5CPPF%5CPbF%5C4pi%5Ckrake%5CKrake_V1%5CKrake_V1.kicad_sch%22)
+
 # Enhancements
 
 1. The Krake is an HTTP Server and receives alarm level requests by an HTTP Client Put or Get message.    
