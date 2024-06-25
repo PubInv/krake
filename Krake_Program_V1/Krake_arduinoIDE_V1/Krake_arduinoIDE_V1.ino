@@ -6,8 +6,8 @@
 #include <Wire.h>
 
 WiFiServer server(80);
-const char *ssid = "*****";
-const char *password = "******";
+const char *ssid = "ADT";
+const char *password = "adt@12345";
 const char *server_address = "192.168.1.3";
 const int serverPort = 5500;
 const int analogPin = 34;
@@ -32,6 +32,11 @@ int lastState = LOW; // the previous state (is low) from the input pin
 int currentState;     // the current reading from the input pin
 bool deviceOn = true; // Variable to keep track of the device state (on/off)
 
+byte WiFix15[] = { B00000, B11111, B00000, B11111, B00000, B01110, B00000, B00100 };
+
+byte noWiFix15[] = { B00100, B11111, B00100, B11111, B00100, B01110, B00000, B00100 };
+
+  
 void setup() {
   Serial.begin(115200);
   myHardwareSerial.begin(9600, SERIAL_8N1, 16, 17);  // DFPlayer serial communication
@@ -72,18 +77,30 @@ void setup() {
   myDFPlayer.volume(25);        // Volume 5
   myDFPlayer.EQ(0);            // Normal equalization
   menuOptions();  // Display menu options on serial monitor
+
+
+// wifi connected char 
+  lcd.createChar(0, WiFix15);
+  lcd.setCursor(15, 4);
+  lcd.write(0);
+
+// wifi not connected char
+  lcd.createChar(0, noWiFix15);
+  lcd.setCursor(15, 4);
+  lcd.write(0);
+
 }
 
 void loop() {
-  checkOnOffButton(); // Check the on/off button state
+  // checkOnOffButton(); // Check the on/off button state
 
-  if (deviceOn) {
+  // if (deviceOn) {
     checkWiFiConnection(); // Monitor WiFi connection
     fetchEmergencyLevelOverWiFi();
     handleWiFiClientRequests();
     handlePinData();
     muteButton();
-
+    
     // Pause or resume
     // read the state of the switch/button:
     currentState = digitalRead(BUTTON_PIN);
@@ -115,34 +132,46 @@ void loop() {
     // Save the last state
     lastState = currentState;
   }
-}
 
 
-void checkOnOffButton() {
-  int buttonState = digitalRead(ON_OFF_PIN);
+// void checkOnOffButton() {
+//   int buttonState = digitalRead(ON_OFF_PIN);
 
-  if (buttonState == LOW) { // Assuming LOW means button is pressed
-    deviceOn = !deviceOn; // Toggle device state
-    delay(500); // Debounce delay
-    if (deviceOn) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Device ON");
-      Serial.println("Device ON");
-    } else {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Device OFF");
-      Serial.println("Device OFF");
-    }
-  }
-}
+//   if (buttonState == LOW) { // Assuming LOW means button is pressed
+//     deviceOn = !deviceOn; // Toggle device state
+//     delay(500); // Debounce delay
+//     if (deviceOn) {
+//       lcd.clear();
+//       lcd.setCursor(0, 0);
+//       lcd.print("Device ON");
+//       Serial.println("Device ON");
+//     } else {
+//       lcd.clear();
+//       lcd.setCursor(0, 0);
+//       lcd.print("Device OFF");
+//       Serial.println("Device OFF");
+//     }
+//   }
+// }
 
 void checkWiFiConnection() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi connection lost. Reconnecting...");
+    lcd.createChar(0, WiFix15);
     connectToWiFi();
   }
+}
+
+void connectToWiFi() {
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(700);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.createChar(0, noWiFix15);
 }
 
 void muteButton() {
@@ -254,17 +283,6 @@ void sendSensorValueOverWiFi(int value) {
   }
 }
 
-void connectToWiFi() {
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(700);
-    Serial.println("Connecting to WiFi...");
-  }
-  Serial.println("Connected to WiFi");
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("WiFi Connected");
-}
 
 void startDFPlayer() {
   if (!myDFPlayer.begin(myHardwareSerial)) {
