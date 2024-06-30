@@ -4,11 +4,10 @@
 #include <DFRobotDFPlayerMini.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
-#include <WiFiManager.h>  // Include WiFiManager library
 
 WiFiServer server(80);
-//const char *ssid = "ADT";
-//const char *password = "adt@12345";
+const char *ssid = "ADT";
+const char *password = "adt@12345";
 const char *server_address = "192.168.1.3";
 const int serverPort = 5500;
 const int analogPin = 34;
@@ -18,6 +17,7 @@ const int lamp2Pin = 4;
 const int lamp3Pin = 5;
 const int lamp4Pin = 18;
 const int lamp5Pin = 19;
+
 SoftwareSerial mySoftwareSerial(16, 17);  // RX, TX for DFPlayer
 DFRobotDFPlayerMini myDFPlayer;
 bool trackPlaying = false;
@@ -42,21 +42,8 @@ void setup() {
   pinMode(5, OUTPUT);
   pinMode(18, OUTPUT);
   pinMode(19, OUTPUT);
-
-  // Initialize WiFiManager
-  WiFiManager wm;
-  if(!wm.autoConnect("ESP32_AP")) {
-    Serial.println("Failed to connect");
-    ESP.restart();
-  }
-
-  // Connected to WiFi
-  Serial.println("Connected to WiFi");
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("WiFi Connected");
-
-  // Start DF player
+  //connet to wifi and start DF player
+  connectToWiFi();
   startDFPlayer();
   // Start server
   server.begin();
@@ -68,25 +55,27 @@ void setup() {
     Serial.println(F("Not initialized:"));
     Serial.println(F("1. Check the DFPlayer Mini connections"));
     Serial.println(F("2. Insert an SD card"));
-    while (true);
+    while (true)
+      ;
   }
   Serial.println();
   Serial.println(F("DFPlayer Mini module initialized!"));
   // Initial settings
   myDFPlayer.setTimeOut(500);  // Serial timeout 500ms
-  myDFPlayer.volume(25);        // Volume 25
+  myDFPlayer.volume(25);        // Volume 5
   myDFPlayer.EQ(0);            // Normal equalization
   menuOptions();  // Display menu options on serial monitor
 }
 
 void loop() {
-  checkWiFiConnection();
   fetchEmergencyLevelOverWiFi();
   handleWiFiClientRequests();
   handlePinData();
   muteButton();
   // Pause or resume
-  currentState = digitalRead(BUTTON_PIN);
+   // read the state of the switch/button:
+    currentState = digitalRead(BUTTON_PIN);
+   // Check if the button state changed from LOW to HIGH (button released)
   if (lastState == LOW && currentState == HIGH) {
     Serial.println("Button released");
     lcd.clear();
@@ -95,9 +84,9 @@ void loop() {
     if (trackPlaying) {
         myDFPlayer.pause();
         trackPlaying = false;
-        // Alarm paused for 10 minutes
+        // Allarm paused for 10 minutes
         delay(600000); // 10 minutes delay
-        Serial.println("Alarm Paused.");
+        Serial.println("ALLARM Paused.");
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Alarm Paused");
@@ -118,6 +107,7 @@ void loop() {
         lcd.print("Alarm Resumed");
     delay (700);
   }
+   // save the last state
   lastState = currentState;
 }
 
@@ -132,9 +122,9 @@ void muteButton () {
     if (trackPlaying) {
         myDFPlayer.pause();
         trackPlaying = false;
-        // Alarm paused for 10 minutes
+        // Allarm paused for 10 minutes
         delay(600000); // 10 minutes delay
-        Serial.println("Alarm Paused.");
+        Serial.println("ALLARM Paused.");
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Alarm Paused");
@@ -194,59 +184,52 @@ void handlePinData() {
 }
 
 void sendSensorValueToHTTPServer(int sensorValue) {
-  if(WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    String url = "/update";
-    String postData = "value=" + String(sensorValue);
-    http.begin(server_address, serverPort, url);
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    int httpCode = http.POST(postData);
-    if (httpCode == 200) {
-      Serial.println("HTTP POST request successful");
-      Serial.println(http.getString());
-    } else {
-      Serial.println("HTTP POST request failed");
-      Serial.println("HTTP Code: " + String(httpCode));
-    }
-    http.end();
-    delay(1000);
+  HTTPClient http;
+  String url = "/update";
+  String postData = "value=" + String(sensorValue);
+  http.begin(server_address, serverPort, url);
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  int httpCode = http.POST(postData);
+  if (httpCode == 200) {
+    Serial.println("HTTP POST request successful");
+    Serial.println(http.getString());
   } else {
-    Serial.println("WiFi not connected");
+    Serial.println("HTTP POST request failed");
+    Serial.println("HTTP Code: " + String(httpCode));
   }
+  http.end();
+  delay(1000);
 }
 
 void sendSensorValueOverWiFi(int value) {
-  if(WiFi.status() == WL_CONNECTED) {
-    WiFiClient client;
-    String url = "/update?value=" + String(value);
-    if (client.connect(server_address, serverPort)) {
-      client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                   "Host: " + server_address + "\r\n" +
-                   "Connection: close\r\n\r\n");
-      delay(700);
-      while (client.connected()) {
-        String line = client.readStringUntil('\n');
-        Serial.println(line);
-      }
-      client.stop();
-      Serial.println("Server disconnected");
-    } else {
-      Serial.println("Connection to server failed");
+  WiFiClient client;
+  String url = "/update?value=" + String(value);
+  if (client.connect(server_address, serverPort)) {
+    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+                 "Host: " + server_address + "\r\n" +
+                 "Connection: close\r\n\r\n");
+    delay(700);
+    while (client.connected()) {
+      String line = client.readStringUntil('\n');
+      Serial.println(line);
     }
+    client.stop();
+    Serial.println("Server disconnected");
   } else {
-    Serial.println("WiFi not connected");
+    Serial.println("Connection to server failed");
   }
 }
 
-void checkWiFiConnection() {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi lost, reconnecting...");
-    WiFiManager wm;
-    if(!wm.autoConnect("ESP32_AP")) {
-      Serial.println("Failed to connect");
-      ESP.restart();
-    }
+void connectToWiFi() {
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(700);
+    Serial.println("Connecting to WiFi...");
   }
+  Serial.println("Connected to WiFi");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("WiFi Connected");
 }
 
 void startDFPlayer() {
