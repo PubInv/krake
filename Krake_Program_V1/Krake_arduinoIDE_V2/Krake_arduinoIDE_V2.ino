@@ -11,8 +11,9 @@
 const char* server_address = "192.168.1.3";
 const int serverPort = 5500;
 const int analogPin = 34;
-const int BUTTON_PIN = 36;
-const int lamp1Pin = 2;
+const int MUTE_BUTTON_PIN = 36; // GPIO 36 for the mute button
+const int ON_OFF_BUTTON_PIN = 39; // GPIO 39 for the ON/OFF button
+const int lamp1Pin = 15;
 const int lamp2Pin = 4;
 const int lamp3Pin = 5;
 const int lamp4Pin = 18;
@@ -20,6 +21,15 @@ const int lamp5Pin = 19;
 const char* ssidAP = "ESP32-Access-Point";
 const char* passwordAP = "123456789";
 const byte DNS_PORT = 53;
+
+#define LED_PIN 2 // GPIO 2 for the blue LED
+
+bool ledState = false; // Initial state of the LED
+unsigned long lastDebounceTime = 0; 
+unsigned long debounceDelay = 50; // Debounce time in milliseconds
+bool lastButtonState = HIGH;
+bool currentButtonState;
+bool buttonPressed = false;
 
 SoftwareSerial mySoftwareSerial(16, 17);  // RX, TX for DFPlayer
 DFRobotDFPlayerMini myDFPlayer;
@@ -50,6 +60,17 @@ Password:<br>
 
 void setup() {
     Serial.begin(115200);
+    pinMode(MUTE_BUTTON_PIN, INPUT_PULLUP); // Set mute button pin as input with pull-up
+    pinMode(ON_OFF_BUTTON_PIN, INPUT_PULLUP); // Set ON/OFF button pin as input with pull-up
+    pinMode(LED_PIN, OUTPUT);          // Set LED pin as output
+    digitalWrite(LED_PIN, LOW);        // Initialize LED to off
+
+    // Initialize lamp pins
+    pinMode(lamp1Pin, OUTPUT);
+    pinMode(lamp2Pin, OUTPUT);
+    pinMode(lamp3Pin, OUTPUT);
+    pinMode(lamp4Pin, OUTPUT);
+    pinMode(lamp5Pin, OUTPUT);
 
     // Set up as Access Point
     WiFi.softAP(ssidAP, passwordAP);
@@ -69,14 +90,6 @@ void setup() {
     Wire.begin();
     lcd.init();
     lcd.backlight();
-    pinMode(BUTTON_PIN, INPUT_PULLUP);
-
-    // Initialize lamp pins
-    pinMode(lamp1Pin, OUTPUT);
-    pinMode(lamp2Pin, OUTPUT);
-    pinMode(lamp3Pin, OUTPUT);
-    pinMode(lamp4Pin, OUTPUT);
-    pinMode(lamp5Pin, OUTPUT);
 
     // Initialize WiFiManager
     WiFiManager wm;
@@ -104,32 +117,40 @@ void loop() {
     // handleWiFiClientRequests();
     handlePinData();
     muteButton();
+    handleONOFFButton();
 
-    // Pause or resume
-    int currentState = digitalRead(BUTTON_PIN);
-    if (lastState == LOW && currentState == HIGH) {
-        Serial.println("Button released");
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Alarm Paused");
-        if (trackPlaying) {
-            myDFPlayer.pause();
-            trackPlaying = false;
-            delay(600000);  // Alarm paused for 10 minutes
-            lcd.clear();
-            lcd.setCursor(0, 0);
-            lcd.print("Alarm Paused");
-        } else {
-            myDFPlayer.start();
-            trackPlaying = true;
-            lcd.clear();
-            lcd.setCursor(0, 0);
-            lcd.print("Alarm Resumed");
-        }
-        delay(700);
     }
-    lastState = currentState;
+
+void handleONOFFButton() {
+
+    bool reading = digitalRead(ON_OFF_BUTTON_PIN);
+    
+    if (reading != lastButtonState) {
+        lastDebounceTime = millis();
+    }
+
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+        if (reading != buttonPressed) {
+            buttonPressed = reading;
+            if (buttonPressed == LOW) { // Button pressed (active low)
+                ledState = !ledState; // Toggle LED state
+                digitalWrite(LED_PIN, ledState ? HIGH : LOW);
+                Serial.println(ledState ? "KRAKE ON" : "KRAKE OFF");
+                
+                // Turn off all GPIO pins when the ON/OFF button is pressed
+                if (ledState == LOW) {
+                    for (int pin = 0; pin <= 39; ++pin) {
+                        if (pin != MUTE_BUTTON_PIN && pin != ON_OFF_BUTTON_PIN && pin != LED_PIN) {
+                            digitalWrite(pin, LOW);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    lastButtonState = reading;
 }
+
 
 void handleRoot() {
     server.send(200, "text/html", htmlPage);
@@ -163,9 +184,9 @@ void handleConnect() {
 }
 
 void muteButton() {
-    int currentState = digitalRead(BUTTON_PIN);
+    int currentState = digitalRead(MUTE_BUTTON_PIN);
     if (lastState == LOW && currentState == HIGH) {
-        Serial.println("Button released");
+        Serial.println("Mute Button released");
         if (trackPlaying) {
             myDFPlayer.pause();
             trackPlaying = false;
@@ -185,20 +206,6 @@ void muteButton() {
     lastState = currentState;
 }
 
-// void handleWiFiClientRequests() {
-//     WiFiClient client = server.available();
-//     if (client) {
-//         while (client.connected()) {
-//             if (client.available()) {
-//                 String line = client.readStringUntil('\r');
-//                 Serial.print("Received from client: ");
-//                 Serial.println(line);
-//             }
-//         }
-//         client.stop();
-//         Serial.println("WiFi client disconnected");
-//     }
-// }
 
 void handlePinData() {
     int sensorValue = analogRead(analogPin);
