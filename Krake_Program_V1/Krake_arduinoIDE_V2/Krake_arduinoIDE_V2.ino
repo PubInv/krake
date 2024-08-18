@@ -2,12 +2,14 @@
 #include <WebServer.h>
 #include <DNSServer.h>
 #include <HTTPClient.h>
-#include <SoftwareSerial.h>
+// #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <WiFiManager.h>
 
+
+// Global initialization 
 const char* server_address = "192.168.1.3";
 const int serverPort = 5500;
 const int analogPin = 34;
@@ -20,7 +22,7 @@ const int lamp2Pin = 4; //lamp emergency L2
 const int lamp3Pin = 5; //lamp emergency L3
 const int lamp4Pin = 18;//lamp emergency L4
 const int lamp5Pin = 19;//lamp emergency L5
-const int lamp5Pin = 23; // MUTE LED 
+const int lamp6Pin = 23; // MUTE LED 
 
 const char* ssidAP = "ESP32-Access-Point";
 const char* passwordAP = "123456789";
@@ -33,7 +35,9 @@ bool lastButtonState = HIGH;
 bool currentButtonState;
 bool buttonPressed = false;
 
-SoftwareSerial mySoftwareSerial(16, 17);  // RX, TX for DFPlayer
+
+// Hardware serial for DFPlayer
+HardwareSerial mySerial1(2); // Use UART2, (16, 17 are RX2, TX2)
 DFRobotDFPlayerMini myDFPlayer;
 LiquidCrystal_I2C lcd(0x3F, 20, 4);  // Address 0x3F, 20 columns, 4 rows
 WebServer server(80);
@@ -62,6 +66,9 @@ Password:<br>
 
 void setup() {
     Serial.begin(115200);
+    mySerial1.begin(9600, SERIAL_8N1, 16, 17); // Set baud rate and UART pin numbers
+
+
     pinMode(MUTE_BUTTON_PIN, INPUT_PULLUP); // Set mute button pin as input with pull-up
     pinMode(ON_OFF_BUTTON_PIN, INPUT_PULLUP); // Set ON/OFF button pin as input with pull-up
     pinMode(LED_PIN, OUTPUT);          // Set LED pin as output
@@ -73,6 +80,8 @@ void setup() {
     pinMode(lamp3Pin, OUTPUT);
     pinMode(lamp4Pin, OUTPUT);
     pinMode(lamp5Pin, OUTPUT);
+
+
 
     // Set up as Access Point
     WiFi.softAP(ssidAP, passwordAP);
@@ -88,7 +97,7 @@ void setup() {
     Serial.println("Web Server started");
 
     // Initialize peripherals
-    mySoftwareSerial.begin(9600);
+    // mySoftwareSerial.begin(9600);
     Wire.begin();
     lcd.init();
     lcd.backlight();
@@ -121,7 +130,7 @@ void loop() {
     muteButton();
     handleONOFFButton();
 
-    }
+}
 
 void handleONOFFButton() {
 
@@ -131,9 +140,8 @@ void handleONOFFButton() {
         lastDebounceTime = millis();
     }
 
-    if ((millis() - lastDebounceTime) > debounceDelay) {
-        if (reading != buttonPressed) {
-            buttonPressed = reading;
+    if (millis() - lastDebounceTime > debounceDelay && currentButtonState != lastButtonState) {
+        lastButtonState = currentButtonState; // Update last state
             if (buttonPressed == LOW) { // Button pressed (active low)
                 ledState = !ledState; // Toggle LED state
                 digitalWrite(LED_PIN, ledState ? HIGH : LOW);
@@ -149,9 +157,9 @@ void handleONOFFButton() {
                 }
             }
         }
-    }
-    lastButtonState = reading;
-}
+    
+        lastButtonState = reading;
+      }
 
 
 void handleRoot() {
@@ -159,6 +167,9 @@ void handleRoot() {
 }
 
 void handleConnect() {
+    unsigned long startTime = millis();
+    int timeout = 30000;  // 30000 seconds timeo
+    
     ssid = server.arg("ssid");
     password = server.arg("password");
 
@@ -166,12 +177,10 @@ void handleConnect() {
 
     WiFi.softAPdisconnect(true);
     WiFi.begin(ssid.c_str(), password.c_str());
-
-    int timeout = 30;  // 30 seconds timeout
-    while (WiFi.status() != WL_CONNECTED && timeout > 0) {
-        delay(1000);
+    while (WiFi.status() != WL_CONNECTED && millis() - startTime < timeout ) {
         Serial.println("Connecting to WiFi...");
         timeout--;
+         delay(100); // Small delay to prevent WDT reset, should ideally handle with other means
     }
 
     if (WiFi.status() == WL_CONNECTED) {
@@ -185,29 +194,41 @@ void handleConnect() {
     }
 }
 
-void muteButton() {
-    int currentState = digitalRead(MUTE_BUTTON_PIN);
-    if (lastState == LOW && currentState == HIGH) {
-        Serial.println("Mute Button released");
-        if (trackPlaying) {
+void muteButton() {  
+    static unsigned long lastDebounceTime = 0;
+    static bool lastButtonState = HIGH;
+    bool currentButtonState = digitalRead(MUTE_BUTTON_PIN);
+
+    if (currentButtonState != lastButtonState) {
+        lastDebounceTime = millis();
+    }
+
+    if (millis() - lastDebounceTime > debounceDelay && currentButtonState != lastButtonState) {
+        lastButtonState = currentButtonState;
+        if (currentButtonState == LOW) {
+          Serial.println("Mute Button released");
+           if (trackPlaying) {
             myDFPlayer.pause();
             trackPlaying = false;
             delay(600000);  // Alarm paused for 10 minutes
             lcd.clear();
             lcd.setCursor(0, 0);
             lcd.print("Alarm Paused");
-        } else {
+            pinMode(lamp6Pin, high);
+
+            } else {
             myDFPlayer.start();
             trackPlaying = true;
             lcd.clear();
             lcd.setCursor(0, 0);
             lcd.print("Alarm Resumed");
-        }
-        delay(700);
+            }
+        
+         }
+    
     }
-    lastState = currentState;
-}
 
+}
 
 void handlePinData() {
     int sensorValue = analogRead(analogPin);
@@ -221,7 +242,7 @@ void handlePinData() {
     sendSensorValueOverWiFi(sensorValue);
     int emergencyLevel = fetchEmergencyLevelOverWiFi();
     Serial.println("Received Emergency Level: " + String(emergencyLevel));
-    delay(700);
+     ;
     handleEmergencyLamps(emergencyLevel);
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -246,7 +267,7 @@ void sendSensorValueToHTTPServer(int sensorValue) {
             Serial.println("HTTP Code: " + String(httpCode));
         }
         http.end();
-        delay(1000);
+        
     } else {
         Serial.println("WiFi not connected");
     }
@@ -260,7 +281,7 @@ void sendSensorValueOverWiFi(int value) {
             client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                          "Host: " + server_address + "\r\n" +
                          "Connection: close\r\n\r\n");
-            delay(700);
+             
             while (client.connected()) {
                 String line = client.readStringUntil('\n');
                 Serial.println(line);
@@ -287,14 +308,18 @@ void checkWiFiConnection() {
 }
 
 void startDFPlayer() {
-  if (!myDFPlayer.begin(mySoftwareSerial)) {
-    Serial.println("Unable to begin DFPlayer");
-    while (true);
-  }
-  myDFPlayer.setTimeOut(500);
-  myDFPlayer.volume(25);  // Set initial volume
-  myDFPlayer.EQ(0);  // Normal equalization
-  Serial.println("DFPlayer initialized");
+
+  // Start DFPlayer using hardware serial
+    if (!myDFPlayer.begin(mySerial1)) {  // Use mySerial1 instead of mySoftwareSerial
+        Serial.println("Unable to begin:");
+        Serial.println("1. Please recheck the connection!");
+        Serial.println("2. Please insert the SD card!");
+        while (true);
+    }
+    myDFPlayer.setTimeOut(500); // Set serial communictaion time out 500ms
+    myDFPlayer.volume(25);  // Set initial volume
+    myDFPlayer.EQ(0);  // Normal equalization
+    Serial.println("DFPlayer initialized");
 }
 
 int fetchEmergencyLevelOverWiFi() {
@@ -304,7 +329,7 @@ int fetchEmergencyLevelOverWiFi() {
     client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                  "Host: " + server_address + "\r\n" +
                  "Connection: close\r\n\r\n");
-    delay(700);
+    
     while (client.available()) {
       String line = client.readStringUntil('\n');
       Serial.print("read this: ");
@@ -324,11 +349,13 @@ int fetchEmergencyLevelOverWiFi() {
   return 0; // Return an appropriate default value if the fetch fails
 }
 
-void blinkLamp(int lampPin, int blinkDelay) {
-  digitalWrite(lampPin, HIGH);
-  delay(blinkDelay / 2); // On for half of the blink delay
-  digitalWrite(lampPin, LOW);
-  delay(blinkDelay / 2); // Off for the other half of the blink delay
+void blinkLamp(int lampPin, unsigned long blinkInterval) {
+    static unsigned long lastBlinkTime = 0;
+    if (millis() - lastBlinkTime >= blinkInterval) {
+        int state = digitalRead(lampPin); // Get current state of the lamp
+        digitalWrite(lampPin, !state); // Toggle lamp state
+        lastBlinkTime = millis();
+    }
 }
 
 void handleEmergencyLamps(int emergencyLevel) {
