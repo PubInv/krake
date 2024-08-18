@@ -1188,8 +1188,8 @@
         )
       )
     )
-    (symbol "New_Library.ESP32KIT:ESP32_-_V2" (in_bom yes) (on_board yes)
-      (property "Reference" "ESP1" (at 0.889 0 0)
+    (symbol "PubInv_KiCad_SCH_LIB:ESP32_DEVKITV1" (in_bom yes) (on_board yes)
+      (property "Reference" "ESP32_DEVKITV1" (at 0 2.54 0)
         (effects (font (size 1.27 1.27)))
       )
       (property "Value" "~" (at -1.524 1.524 0)
@@ -1201,7 +1201,7 @@
       (property "Datasheet" "" (at -1.524 1.524 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (symbol "ESP32_-_V2_0_1"
+      (symbol "ESP32_DEVKITV1_0_1"
         (circle (center 3.81 -46.99) (radius 1.524)
           (stroke (width 0) (type default))
           (fill (type none))
@@ -1211,7 +1211,7 @@
           (fill (type none))
         )
       )
-      (symbol "ESP32_-_V2_1_1"
+      (symbol "ESP32_DEVKITV1_1_1"
         (rectangle (start 0 0) (end 24.13 -50.292)
           (stroke (width 0) (type default))
           (fill (type background))
@@ -5366,10 +5366,10 @@
     )
   )
 
-  (symbol (lib_id "New_Library.ESP32KIT:ESP32_-_V2") (at 55.245 42.545 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+  (symbol (lib_id "PubInv_KiCad_SCH_LIB:ESP32_DEVKITV1") (at 55.245 42.545 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 77f5dc0d-f00a-406f-85e6-c6ba30157767)
-    (property "Reference" "ESP1" (at 56.134 42.545 0)
+    (property "Reference" "ESP1" (at 60.96 40.64 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "~" (at 53.721 41.021 0)
@@ -5419,7 +5419,7 @@
       )
       (project "Krake_V1"
         (path "/9a884c24-0748-4d52-be51-5770a2630932"
-          (reference "ESP1") (unit 1)
+          (reference "ESP32_DEVKITV1") (unit 1)
         )
       )
     )

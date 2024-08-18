@@ -13,16 +13,18 @@ const int serverPort = 5500;
 const int analogPin = 34;
 const int MUTE_BUTTON_PIN = 36; // GPIO 36 for the mute button
 const int ON_OFF_BUTTON_PIN = 39; // GPIO 39 for the ON/OFF button
-const int lamp1Pin = 15;
-const int lamp2Pin = 4;
-const int lamp3Pin = 5;
-const int lamp4Pin = 18;
-const int lamp5Pin = 19;
+
+#define LED_PIN 2 // GPIO 2 for the blue LED // ON OFF LED
+const int lamp1Pin = 15; // lamp emergency L1
+const int lamp2Pin = 4; //lamp emergency L2
+const int lamp3Pin = 5; //lamp emergency L3
+const int lamp4Pin = 18;//lamp emergency L4
+const int lamp5Pin = 19;//lamp emergency L5
+const int lamp5Pin = 23; // MUTE LED 
+
 const char* ssidAP = "ESP32-Access-Point";
 const char* passwordAP = "123456789";
 const byte DNS_PORT = 53;
-
-#define LED_PIN 2 // GPIO 2 for the blue LED
 
 bool ledState = false; // Initial state of the LED
 unsigned long lastDebounceTime = 0; 

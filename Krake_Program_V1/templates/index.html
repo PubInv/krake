@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emergency Control Panel</title>
     <style>
-        /* Your CSS styles here */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #686464;
+            background: linear-gradient(135deg, #b3ffe1, #05823e);
             margin: 0;
             padding: 0;
             display: flex;
@@ -16,64 +15,91 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            color: #2e2e2e; /* Darker text color for better contrast */
+        }
+
+        h1, h2, p {
+            text-align: left;
         }
 
         h1 {
-            color: #f4f1f1;
-            text-align: center;
+            margin-bottom: 5px;
         }
 
         h2 {
-            color: #f4f1f1;
-            font-size:1.5em ;
-            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 15px;
         }
 
-        p{
-            color: #f4f1f1;
-            font-size:1em ;
-            text-align: center;
+        p {
+            margin: 5px 0;
         }
-        
-        #Value {
+
+        #Value, #level {
             font-size: 1.2em;
-            color: #fcffff;
-            text-align: center;
         }
 
         button {
             font-size: 1em;
             padding: 10px 20px;
-            margin-top: 20px;
+            margin: 10px;
             border: none;
             cursor: pointer;
+            background-color: grey;
+            color: white;
+            border-radius: 5px;
         }
 
         button:hover {
             opacity: 0.8;
         }
 
-        .emergency-level-1 { background-color: #00FF00; color: #fff; } /* Green */
-        .emergency-level-2 { background-color: #FFFF00; color: #fff; } /* Orange-Red */
-        .emergency-level-3 { background-color: #ffb920; color: #fff; } /* Orange */
-        .emergency-level-4 { background-color: #fc7420; color: #fff; } /* Yellow */
-        .emergency-level-5 { background-color: #ff0000; color: #fff; } /* Red */
-        .fetch-sensor-value { background-color: #a819a8; color: #fff; } /* Purple */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
+        .emergency-buttons, .fetch-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center ;
+            flex-wrap: wrap;
+        }
+
+        .fetch-button {
+            margin-top: 20px;
+        }
+
+        .medical-logo {
+            position: absolute;
+            top: 10px;
+            left : 10px;
+            width: 100px;
+            height: 100px;
+        }
     </style>
 </head>
 <body>
-    <h1>Fetch Data & Send Emergency</h1>
-    <h2>W/ ESP32</h2>
+    <img src="C:\Users\Laptop Pro\OneDrive\Pictures\Screenshots\Screenshot 2024-07-09 104940.png" alt="Medical Logo" class="medical-logo">
+    <h1>Krake's support</h1>
+    <h2>Display the data you're concerned about and send an alert when necessary.</h2>
     <p id="Value">Sensor Value: -</p>
     <p id="level">Emergency Level: -</p>
 
-    <button class="emergency-level-1" onclick="sendEmergency(1)">Emergency Level 1</button>
-    <button class="emergency-level-2" onclick="sendEmergency(2)">Emergency Level 2</button>
-    <button class="emergency-level-3" onclick="sendEmergency(3)">Emergency Level 3</button>
-    <button class="emergency-level-4" onclick="sendEmergency(4)">Emergency Level 4</button>
-    <button class="emergency-level-5" onclick="sendEmergency(5)">Emergency Level 5</button>
-    <button class="fetch-sensor-value" onclick="fetchData()">Fetch Sensor Value</button>
+    <div class="button-container">
+        <div class="emergency-buttons">
+            <button onclick="sendEmergency(1)">Emergency Level 1</button>
+            <button onclick="sendEmergency(2)">Emergency Level 2</button>
+            <button onclick="sendEmergency(3)">Emergency Level 3</button>
+            <button onclick="sendEmergency(4)">Emergency Level 4</button>
+            <button onclick="sendEmergency(5)">Emergency Level 5</button>
+        </div>
+        <div class="fetch-button">
+            <button onclick="fetchData()">Display Sensor Value</button>
+        </div>
+    </div>
 
     <script>
         function updateSensorValue(value) {
@@ -126,8 +152,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-        
