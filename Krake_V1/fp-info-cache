@@ -1,4 +1,4 @@
-21790162562070436
+21786743981312994
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -51456,13 +51456,6 @@ SMD SMT ceramic resonator filter filter hand-soldering
 0
 3
 3
-DF_PLAYER1
-DF PLAYER
-
-
-0
-16
-16
 Diode_SMD
 D_0201_0603Metric
 Diode SMD 0201 (0603 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: https://www.vishay.com/docs/20052/crcw0201e3.pdf), generated with kicad-footprint-generator
@@ -59870,13 +59863,6 @@ solder jumper open
 0
 5
 3
-LCD 20x4Library
-LCD_2004A
-LCD LM16255 16x2 character http://www.datasheetlib.com/datasheet/259542/lm16255_sharp-electronics.html
-LCD 12x2
-0
-20
-20
 LED_SMD
 LED-APA102-2020
 http://www.led-color.com/upload/201604/APA102-2020%20SMD%20LED.pdf
@@ -90523,10 +90509,10 @@ esp32_V4
 0
 30
 30
-speaker
-Speaker
+esp32 15 pin Library
+esp32_v5
 
 
 0
-2
-2
+30
+30
