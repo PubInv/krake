@@ -45,15 +45,15 @@ A Crake is a bird with a distinctive, slighly alarming cry. We changed the spell
 # MockingKrake (Krake's Prototype)
 
 ## Components: 
-- ESP32
-- DFplayer 
+- ESP32 DevKit V1.  For schematics of DevKit V1 and other information See: https://embedded-systems-design.github.io/overview-of-the-esp32-devkit-doit-v1/
+- DFplayer module.  The DFPlayer Mini MP3 Player For Arduino is a small and low cost MP3 module.  For example wiring diagrams of of DFPlayer module for stand alone and to Arduino UNO and other information See:  https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299 
 - SD card 16 GB 
 - speaker 8 ohm 
 - 5 lamps (emergency level ind)
 - 8 resistors 
 - breadboard (solderless )
 - connecting wires
-- USB cable
+- USB cable.  Type A (for connection to PC) to type B micro (to connection on ESP32 Devkit V1)
 
 :fast_forward:  `Newly added: 
   -  3 lamps:
