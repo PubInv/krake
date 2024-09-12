@@ -42,20 +42,27 @@ A Crake is a bird with a distinctive, slighly alarming cry. We changed the spell
 9. Begin testing the device.
 
 
+# MockingKrake (Krake's Prototype)
 
+## Components: 
+- ESP32
+- DFplayer 
+- SD card 16 GB 
+- speaker 8 ohm 
+- 5 lamps (emergency level ind)
+- 8 resistors 
+- breadboard (solderless )
+- connecting wires
+- USB cable
 
-# Components: 
-ESP32
-DFplayer 
-SD card 16 GB 
-speaker 8 ohm 
-5 lamps 
-8 resistors 
-breadboard (solderless )
-connecting wires
-USB cable
+:fast_forward:  `Newly added: 
+  -  3 lamps:
+     -  mute ind
+     -  PWR ind
+     -  ON - OFF ind
+   - rotary encoder 
 
-# connections ft. ESP32
+## connections ft. ESP32
 
 lamps
 +ve --- lamp 1 -- resistor 330 ohm -- pin #2  
@@ -89,7 +96,7 @@ SPK2 -- -ve of the speaker
 <img width="584" alt="Screenshot 2024-05-04 142512" src=https://github.com/PubInv/krake/assets/133608369/39036a1a-d32f-441c-ad68-157c7b0dcb62>
 
 
-  > KRAKE 20240511
+  <!-- > KRAKE 20240511
 
 <img width="626" alt="Screenshot 2024-06-02 093318" src="https://github.com/PubInv/krake/assets/133608369/825dbfa6-d195-47b9-9c5f-870838daa358">  
 
@@ -105,7 +112,7 @@ SPK2 -- -ve of the speaker
 
 ### Kicanvas live view of current PCBA:
 
-[PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro)
+[PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro) " -->
 
 # Enhancements
 
