@@ -1,24 +1,18 @@
 #include <WiFi.h>
-#include <WebServer.h>
-#include <DNSServer.h>
+#include <WebServer.h> // new in V2
+#include <DNSServer.h> // new in V2
 #include <HTTPClient.h>
 #include <DFRobotDFPlayerMini.h>
 #include <LiquidCrystal_I2C.h>
-#include <Wire.h>
 #include <WiFiManager.h>
 
 // Configuration and Pin Definitions
-const char* server_address = "192.168.1.3";
-const int serverPort = 5500;
 const int analogPin = 34;
 const int MUTE_BUTTON_PIN = 36;
 const int ON_OFF_BUTTON_PIN = 39;
-const int LED_PIN = 2;
-const int lampPins[] = {15, 4, 5, 18, 19, 23}; // Emergency lamp pins including MUTE LED
-
-const char* ssidAP = "ESP32-Access-Point";
-const char* passwordAP = "123456789";
-const byte DNS_PORT = 53;
+const int LED_PIN = 2; // on off LED
+const int LED_PIN_M[] = {23}; // Mute LED
+const int lampPins[] = {15, 4, 5, 18, 19}; // Emergency lamp pins including MUTE LED
 
 // Global Variables
 bool ledState = false;
@@ -28,9 +22,16 @@ bool lastButtonState = HIGH;
 bool currentButtonState;
 bool buttonPressed = false;
 
+// LCD 
 HardwareSerial mySerial1(2); // Use UART2
 DFRobotDFPlayerMini myDFPlayer;
 LiquidCrystal_I2C lcd(0x3F, 20, 4);
+
+const char* server_address = "192.168.1.3";
+const int serverPort = 5500;
+const char* ssidAP = "ESP32-Access-Point";
+const char* passwordAP = "123456789";
+const byte DNS_PORT = 53;
 WebServer server(80);
 DNSServer dnsServer;
 
@@ -55,6 +56,10 @@ Password:<br><input type="password" name="password"><br><br>
 void setup() {
     Serial.begin(115200);
     mySerial1.begin(9600, SERIAL_8N1, 16, 17);
+    Wire.begin();
+    lcd.init();
+    lcd.backlight();
+
 
     pinMode(MUTE_BUTTON_PIN, INPUT_PULLUP);
     pinMode(ON_OFF_BUTTON_PIN, INPUT_PULLUP);
@@ -74,17 +79,13 @@ void setup() {
     server.begin();
     Serial.println("Web Server started");
 
-    Wire.begin();
-    lcd.init();
-    lcd.backlight();
-
     WiFiManager wm;
     if (!wm.autoConnect("ESP32_AP")) {
         Serial.println("Failed to connect");
         ESP.restart();
     }
 
-    Serial.println("Connected to WiFi");
+    Serial.println("WiFi Connected");
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("WiFi Connected");
@@ -101,16 +102,12 @@ void loop() {
     handlePinData();
     muteButton();
     handleONOFFButton();
-
-
-
 }
 
 
 void handleONOFFButton() {
 
     bool reading = digitalRead(ON_OFF_BUTTON_PIN);
-    
     if (reading != lastButtonState) {
         lastDebounceTime = millis();
     }
@@ -201,6 +198,7 @@ void muteButton() {
             lcd.clear();
             lcd.setCursor(0, 0);
             lcd.print("Alarm Resumed");
+            digitalWrite(LED_PIN_M[23], HIGH);
             }
         delay(700);
          }
