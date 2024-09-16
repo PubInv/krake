@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Control Panel</title>
+    <style>
+        /* Your CSS styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #686464;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #f4f1f1;
+            text-align: center;
+        }
+
+        h2 {
+            color: #f4f1f1;
+            font-size:1.5em ;
+            text-align: center;
+        }
+
+        p{
+            color: #f4f1f1;
+            font-size:1em ;
+            text-align: center;
+        }
+        
+        #Value {
+            font-size: 1.2em;
+            color: #fcffff;
+            text-align: center;
+        }
+
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .emergency-level-1 { background-color: #00FF00; color: #fff; } /* Green */
+        .emergency-level-2 { background-color: #FFFF00; color: #fff; } /* Orange-Red */
+        .emergency-level-3 { background-color: #ffb920; color: #fff; } /* Orange */
+        .emergency-level-4 { background-color: #fc7420; color: #fff; } /* Yellow */
+        .emergency-level-5 { background-color: #ff0000; color: #fff; } /* Red */
+        .fetch-sensor-value { background-color: #a819a8; color: #fff; } /* Purple */
+
+    </style>
+</head>
+<body>
+    <h1>Fetch Data & Send Emergency</h1>
+    <h2>W/ ESP32</h2>
+    <p id="Value">Sensor Value: -</p>
+    <p id="level">Emergency Level: -</p>
+
+    <button class="emergency-level-1" onclick="sendEmergency(1)">Emergency Level 1</button>
+    <button class="emergency-level-2" onclick="sendEmergency(2)">Emergency Level 2</button>
+    <button class="emergency-level-3" onclick="sendEmergency(3)">Emergency Level 3</button>
+    <button class="emergency-level-4" onclick="sendEmergency(4)">Emergency Level 4</button>
+    <button class="emergency-level-5" onclick="sendEmergency(5)">Emergency Level 5</button>
+    <button class="fetch-sensor-value" onclick="fetchData()">Fetch Sensor Value</button>
+
+    <script>
+        function updateSensorValue(value) {
+            document.getElementById('Value').innerText = 'Sensor Value: ' + value;
+        }
+
+        function updateLevel(level) {
+            document.getElementById('level').innerText = 'Emergency Level: ' + level;
+        }
+
+        function fetchData() {
+            const serverAddress = 'http://192.168.1.3:5500/update?value';
+            
+            fetch(serverAddress)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.value !== undefined) {
+                        updateSensorValue(data.value);
+                    } else {
+                        console.error('Invalid data format:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function sendEmergency(level) {
+            const emergencyEndpoint = 'http://192.168.1.3:5500/emergency';
+
+            fetch(emergencyEndpoint, {
+                method: 'POST',
+                body: JSON.stringify({ level: level }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.level !== undefined) {
+                    updateLevel(data.level);
+                } else {
+                    console.error('Invalid data format:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending emergency request:', error);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+        
