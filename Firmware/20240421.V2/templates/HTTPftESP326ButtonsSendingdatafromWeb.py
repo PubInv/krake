@@ -1,9 +1,12 @@
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
-import time
+import os
+from flask import Flask, jsonify, request
+# , render_template
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Use environment variables to get the server's IP/hostname
+SERVER_ADDRESS = os.getenv('SERVER_ADDRESS', '0.0.0.0')
+SERVER_PORT = os.getenv('SERVER_PORT', '5500')
 
 emergency_level = None
 sensorValue = None  # Initialize sensorValue
@@ -35,10 +38,9 @@ def emergency():
         print("GETTING Emergency level", emergency_level)
         return jsonify({'level': emergency_level})
 
-
-@app.route('/')
-def index():
-    return render_template('index.html', sensorValue=sensorValue, emergency_level=emergency_level)
+# @app.route('/')
+# def index():
+#     return render_template('index.html', sensorValue=sensorValue, emergency_level=emergency_level)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5500)
+    app.run(host=SERVER_ADDRESS, port=SERVER_PORT)

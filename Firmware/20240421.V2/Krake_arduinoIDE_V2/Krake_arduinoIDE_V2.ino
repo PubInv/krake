@@ -27,7 +27,7 @@ HardwareSerial mySerial1(2); // Use UART2
 DFRobotDFPlayerMini myDFPlayer;
 LiquidCrystal_I2C lcd(0x3F, 20, 4);
 
-const char* server_address = "192.168.1.3";
+const char* server_address = "192.168.1.4";
 const int serverPort = 5500;
 const char* ssidAP = "ESP32-Access-Point";
 const char* passwordAP = "123456789";
