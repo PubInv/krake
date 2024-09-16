@@ -3,7 +3,7 @@ from flask_cors import CORS
 import time
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 emergency_level = None
 sensorValue = None  # Initialize sensorValue
@@ -28,7 +28,8 @@ def emergency():
     if request.method == 'POST':
         data = request.json
         emergency_level = data.get('level')
-        print("POSTING A NOTIFICATION Emergency level", emergency_level)
+        if emergency_level is not None:
+            print("POSTING A NOTIFICATION Emergency level", emergency_level)
         return jsonify({'status': 'success', 'level': emergency_level}), 200
     elif request.method == 'GET':
         print("GETTING Emergency level", emergency_level)
@@ -40,4 +41,4 @@ def index():
     return render_template('index.html', sensorValue=sensorValue, emergency_level=emergency_level)
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.3', port=5500)
+    app.run(host='0.0.0.0', port=5500)

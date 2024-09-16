@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cfbe7fde-46fd-4fe4-bd9c-e35198ff70a5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Krake_Program_V1/Krake_arduinoIDE_V1/Krake_arduinoIDE_V1.ino" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Krake_Program_V1/Krake_arduinoIDE_V2/Krake_arduinoIDE_V2.ino" beforeDir="false" afterPath="$PROJECT_DIR$/Krake_Program_V1/Krake_arduinoIDE_V2/Krake_arduinoIDE_V2.ino" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Krake_Program_V1/templates/.vscode/launch.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Krake_Program_V1/templates/HTTPftESP326ButtonsSendingdatafromWeb.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Krake_Program_V1/templates/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmware/20240421.V1/templates/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/Firmware/20240421.V1/templates/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmware/20240421.V2/templates/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/Firmware/20240421.V2/templates/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmware/20240421.V2/templates/HTTPftESP326ButtonsSendingdatafromWeb.py" beforeDir="false" afterPath="$PROJECT_DIR$/Firmware/20240421.V2/templates/HTTPftESP326ButtonsSendingdatafromWeb.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,22 +14,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2ljnQCWH5wBnGNFV8mFp71cQKZj" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "V2__Rotary",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;V2__Rotary&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -49,6 +47,9 @@
       <option name="presentableId" value="Default" />
       <updated>1725702337160</updated>
       <workItem from="1725702339012" duration="24000" />
+      <workItem from="1726349719134" duration="8000" />
+      <workItem from="1726394362884" duration="2000" />
+      <workItem from="1726396682165" duration="5000" />
     </task>
     <servers />
   </component>
