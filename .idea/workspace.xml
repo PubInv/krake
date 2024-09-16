@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="cfbe7fde-46fd-4fe4-bd9c-e35198ff70a5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Firmware/20240421.V1/templates/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/Firmware/20240421.V1/templates/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmware/20240421.V2/templates/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/Firmware/20240421.V2/templates/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmware/20240421.V2/templates/HTTPftESP326ButtonsSendingdatafromWeb.py" beforeDir="false" afterPath="$PROJECT_DIR$/Firmware/20240421.V2/templates/HTTPftESP326ButtonsSendingdatafromWeb.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2ljnQCWH5wBnGNFV8mFp71cQKZj" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;V2__Rotary&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-PY-242.20224.428" />
+        <option value="bundled-python-sdk-80e8e15d2b92-39cff9de6eef-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.20224.428" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cfbe7fde-46fd-4fe4-bd9c-e35198ff70a5" name="Changes" comment="" />
+      <created>1725702337160</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1725702337160</updated>
+      <workItem from="1725702339012" duration="24000" />
+      <workItem from="1726349719134" duration="8000" />
+      <workItem from="1726394362884" duration="2000" />
+      <workItem from="1726396682165" duration="5000" />
+    </task>
+    <servers />
+  </component>
+</project>

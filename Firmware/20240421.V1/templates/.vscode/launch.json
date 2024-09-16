@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Open index.html",
-            "file": "C:\Users\Laptop Pro\OneDrive\Desktop\New folder\index.html"
+            "file": "file:///C:/Users/Laptop%20Pro/OneDrive/Desktop/PPF/PbF/4pi/Esp32BasedProjects/krake/Firmware/20240421.V1/templates/index.html"
         }
     ]
 }
