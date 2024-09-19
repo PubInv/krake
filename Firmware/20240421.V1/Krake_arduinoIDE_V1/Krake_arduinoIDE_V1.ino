@@ -238,7 +238,8 @@ void connectToWiFi() {
 void startDFPlayer() {
   if (!myDFPlayer.begin(mySoftwareSerial)) {
     Serial.println(F("Not initialized:"));
-    Serial.println(F("1. Check the DFPlayer Mini connections"));     Serial.println(F("2. Insert an SD card"));
+    Serial.println(F("1. Check the DFPlayer Mini connections"));     
+    Serial.println(F("2. Insert an SD card"));
     while (true);
   }
   Serial.println();
