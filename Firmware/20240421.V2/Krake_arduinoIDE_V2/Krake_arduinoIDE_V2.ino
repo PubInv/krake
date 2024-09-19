@@ -338,6 +338,14 @@ void blinkLamp(int lampPin, unsigned long blinkInterval) {
 void handleEmergencyLamps(int emergencyLevel) {
   unsigned long currentMillis = millis();
   switch (emergencyLevel) {
+      case 0:
+                // Turn off all lamps if emergency level is not recognized
+      digitalWrite(lampPins[2], LOW);
+      digitalWrite(lampPins[5], LOW);
+      digitalWrite(lampPins[15], LOW);
+      digitalWrite(lampPins[18], LOW);
+      digitalWrite(lampPins[19], LOW);
+      break;
     case 1:
       // Blink lamp1 continuously
       if (currentMillis - previousMillis >= interval) {
@@ -384,12 +392,7 @@ void handleEmergencyLamps(int emergencyLevel) {
       }
       break;
      default:
-      // Turn off all lamps if emergency level is not recognized
-      digitalWrite(lampPins[2], LOW);
-      digitalWrite(lampPins[5], LOW);
-      digitalWrite(lampPins[15], LOW);
-      digitalWrite(lampPins[18], LOW);
-      digitalWrite(lampPins[19], LOW);
+      Serial.println("INTERNAL PROGRAMMING ERROR: EMERGENCY LEVEL TOO HIGH!");
       break;
   }
 }
