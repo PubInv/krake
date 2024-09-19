@@ -54,13 +54,8 @@ void setup() {
 
   menuOptions();  // Display menu options on serial monitor
 }
-
-void loop() {
-  fetchEmergencyLevelOverWiFi();
-  handleWiFiClientRequests();
-  handlePinData();
-  muteButton();
-  // Pause or resume
+void pauseOrResumeBasedOnButton() {
+   // Pause or resume
    // read the state of the switch/button:
     currentState = digitalRead(BUTTON_PIN);
    // Check if the button state changed from LOW to HIGH (button released)
@@ -99,38 +94,14 @@ void loop() {
   lastState = currentState;
 }
 
-void muteButton () {
-   int lastState = LOW; 
-   int currentState;
-  // read the state of the switch/button:
-    currentState = digitalRead(BUTTON_PIN);
-   // Check if the button state changed from LOW to HIGH (button released)
-  // TODO: This code is similar to the code above, which suggests it should be 
-  // moved into a subroutine, at least.
-  if (lastState == LOW && currentState == HIGH) {
-    Serial.println("Button released");
-    if (trackPlaying) {
-        myDFPlayer.pause();
-        trackPlaying = false;
-        // Allarm paused for 10 minutes
-        delay(600000); // 10 minutes delay
-        Serial.println("ALLARM Paused.");
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Alarm Paused");
-    } else {
-        myDFPlayer.start();
-        trackPlaying = true;
-        Serial.println("Resumed.");
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Alarm Resumed");
-      }
-    delay (700);
-  }
-   // save the last state
-  lastState = currentState;
+void loop() {
+  fetchEmergencyLevelOverWiFi();
+  handleWiFiClientRequests();
+  handlePinData();
+  pauseOrResumeBasedOnButton();
 }
+
+
 
 void handleWiFiClientRequests() {
   WiFiClient client = server.available();
