@@ -52,19 +52,6 @@ void setup() {
   Serial.println(F("DFRobot DFPlayer Mini"));
   Serial.println(F("Initializing DFPlayer module ... Wait!"));
 
-//   if (!myDFPlayer.begin(mySoftwareSerial)) {
-//     Serial.println(F("Not initialized:"));
-//     Serial.println(F("1. Check the DFPlayer Mini connections"));
-//     Serial.println(F("2. Insert an SD card"));
-//     while (true)
-//       ;
-//   }
-//   Serial.println();
-//   Serial.println(F("DFPlayer Mini module initialized!"));
-//   // Initial settings
-//   myDFPlayer.setTimeOut(500);  // Serial timeout 500ms
-//   myDFPlayer.volume(25);        // Volume 5
-//   myDFPlayer.EQ(0);            // Normal equalization
   menuOptions();  // Display menu options on serial monitor
 }
 
