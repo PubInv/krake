@@ -237,6 +237,7 @@ void connectToWiFi() {
 void startDFPlayer() {
   if (!myDFPlayer.begin(mySoftwareSerial)) {
     Serial.println("Unable to begin DFPlayer");
+    // TODO: We should probably do something better than go into an infinite loop
     while (true);
   }
   myDFPlayer.setTimeOut(500);
