@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 # Use environment variables to get the server's IP/hostname
-SERVER_ADDRESS = os.getenv('SERVER_ADDRESS', '0.0.0.0')
+SERVER_ADDRESS = os.getenv('SERVER_ADDRESS', '192.168.1.4')
 SERVER_PORT = os.getenv('SERVER_PORT', '5500')
 
 emergency_level = None

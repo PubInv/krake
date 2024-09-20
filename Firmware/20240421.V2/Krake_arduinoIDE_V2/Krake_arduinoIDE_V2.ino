@@ -25,7 +25,7 @@ bool buttonPressed = false;
 // LCD 
 HardwareSerial mySerial1(2); // Use UART2
 DFRobotDFPlayerMini myDFPlayer;
-LiquidCrystal_I2C lcd(0x3F, 20, 4);
+LiquidCrystal_I2C lcd(0x3F, 20, 4); // use the i2c scanner to get the LCD address
 
 const char* server_address = "192.168.1.4";
 const int serverPort = 5500;

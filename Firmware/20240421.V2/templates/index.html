@@ -91,6 +91,7 @@
 
     <div class="button-container">
         <div class="emergency-buttons">
+            <button onclick="sendEmergency(0)">Emergency Level 0</button>
             <button onclick="sendEmergency(1)">Emergency Level 1</button>
             <button onclick="sendEmergency(2)">Emergency Level 2</button>
             <button onclick="sendEmergency(3)">Emergency Level 3</button>
@@ -121,7 +122,7 @@
                 });
         }
 
-        const emergencyEndpoint = 'http://192.168.1.4:5500/update?value';
+        const emergencyEndpoint = 'http://192.168.1.4:5500/emergency';
 
         function sendEmergency(level) {
             fetch(emergencyEndpoint, {
