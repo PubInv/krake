@@ -8,5 +8,6 @@
             "file": "${workspaceFolder}/index.html"
             // "file": "${workspaceFolder}/index2.html"
         }
+        
     ]
 }

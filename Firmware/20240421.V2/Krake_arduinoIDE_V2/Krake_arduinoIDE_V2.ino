@@ -217,7 +217,7 @@ void handlePinData() {
     Serial.println("Sensor Value: " + String(sensorValue));
     sendSensorValueToHTTPServer(sensorValue);
     sendSensorValueOverWiFi(sensorValue);
-    int emergencyLevel = fetchEmergencyLevelOverWiFi();
+    int emergency Level = fetchEmergencyLevelOverWiFi();
     Serial.println("Received Emergency Level: " + String(emergencyLevel));
      ;
     handleEmergencyLamps(emergencyLevel);
