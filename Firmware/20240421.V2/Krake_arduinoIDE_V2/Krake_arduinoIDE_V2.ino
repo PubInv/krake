@@ -60,6 +60,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
+
   pinMode(MUTE_BUTTON_PIN, INPUT_PULLUP);
   pinMode(ON_OFF_BUTTON_PIN, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
@@ -285,8 +286,7 @@ void startDFPlayer() {
     Serial.println("Unable to begin:");
     Serial.println("1. Please recheck the connection!");
     Serial.println("2. Please insert the SD card!");
-    while (true)
-      ;
+    // while (true);  // this holds the other code lines from executing until this command execute
   }
   myDFPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
   myDFPlayer.volume(25);       // Set initial volume
@@ -333,7 +333,7 @@ void handleEmergencyLamps(int emergencyLevel) {
   switch (emergencyLevel) {
     case 0:
       // Turn off all lamps if emergency level is not recognized
-      digitalWrite(lampPins[2], LOW);
+      digitalWrite(lampPins[4], LOW);
       digitalWrite(lampPins[5], LOW);
       digitalWrite(lampPins[15], LOW);
       digitalWrite(lampPins[18], LOW);
@@ -343,7 +343,7 @@ void handleEmergencyLamps(int emergencyLevel) {
       // Blink lamp1 continuously
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
-        blinkLamp(lampPins[2], 750);  // Blink every 750 milliseconds
+        blinkLamp(lampPins[4], 750);  // Blink every 750 milliseconds
         myDFPlayer.play(emergencyLevel);
         myDFPlayer.enableLoop();
       }

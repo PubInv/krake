@@ -104,10 +104,17 @@
     </div>
 
     <script>
-       const serverAddress = 'http://192.168.1.4:5500/update?value';
+        function updateSensorValue(value) {
+            document.getElementById('Value').innerText = 'Sensor Value: ' + value;
+        }
 
+        function updateLevel(level) {
+            document.getElementById('level').innerText = 'Emergency Level: ' + level;
+        }
 
         function fetchData() {
+            const serverAddress = 'http://192.168.1.9:5500/update?value';
+            
             fetch(serverAddress)
                 .then(response => response.json())
                 .then(data => {
@@ -122,9 +129,9 @@
                 });
         }
 
-        const emergencyEndpoint = 'http://192.168.1.4:5500/emergency';
-
         function sendEmergency(level) {
+            const emergencyEndpoint = 'http://192.168.1.9:5500/emergency';
+
             fetch(emergencyEndpoint, {
                 method: 'POST',
                 body: JSON.stringify({ level: level }),
