@@ -4,7 +4,8 @@
 #include <HTTPClient.h>
 #include <DFRobotDFPlayerMini.h>
 #include <LiquidCrystal_I2C.h>
-#include <WiFiManager.h>
+#include <WiFiManager.h> // new in v2
+#include <ArduinoJson.h> // new in v2
 
 // Configuration and Pin Definitions
 const int analogPin = 34;
@@ -297,28 +298,62 @@ void startDFPlayer() {
 int fetchEmergencyLevelOverWiFi() {
   WiFiClient client;
   String url = "/emergency";
+  const size_t capacity = JSON_OBJECT_SIZE(1) + 20;  // Adjust capacity if needed
+  DynamicJsonDocument doc(capacity);
+
   if (client.connect(server_address, serverPort)) {
+    // Send GET request
     client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + server_address + "\r\n" + "Connection: close\r\n\r\n");
 
+    delay(1000);  // Allow time for response
+
+    String payload;
+    bool isJsonStarted = false;
+    
     while (client.available()) {
       String line = client.readStringUntil('\n');
-      Serial.print("read this: ");
+      Serial.print("Received line: ");
       Serial.println(line);
-      if (line.startsWith("{\"level\":")) {
-        int emergencyLevel = line.substring(9).toInt();  // Adjust the substring index
-        Serial.println("we are turning emergency level");
-        Serial.write(emergencyLevel);
-        return emergencyLevel;
+
+      // Check for the start of JSON (open curly brace) and mark that JSON has started
+      if (line.startsWith("{")) {
+        isJsonStarted = true;
+      }
+
+      // If JSON has started, concatenate the line to the payload
+      if (isJsonStarted) {
+        payload += line;
+      }
+
+      // Stop when JSON ends (close curly brace)
+      if (line.startsWith("}")) {
+        break;
       }
     }
-    client.stop();
-    Serial.println("Server disconnected");
-  } else {
-    Serial.println("Connection to server failed");
-  }
-  return 0;  // Return an appropriate default value if the fetch fails
-}
 
+    Serial.print("Full payload: ");
+    Serial.println(payload);
+
+    // Parse the JSON from the payload
+    DeserializationError error = deserializeJson(doc, payload);
+
+    if (error) {
+      Serial.print(F("Failed to parse JSON: "));
+      Serial.println(error.c_str());
+      return -1;  // Return an error code
+    }
+
+    // Extract the emergency level
+    int emergencyLevel = doc["level"];
+    Serial.print("Emergency level: ");
+    Serial.println(emergencyLevel);
+
+    return emergencyLevel;
+  } else {
+    Serial.println("Connection to server failed.");
+    return -1;  // Return an error code
+  }
+}
 void blinkLamp(int lampPin, unsigned long blinkInterval) {
   static unsigned long lastBlinkTime = 0;
   if (millis() - lastBlinkTime >= blinkInterval) {
@@ -331,14 +366,14 @@ void blinkLamp(int lampPin, unsigned long blinkInterval) {
 void handleEmergencyLamps(int emergencyLevel) {
   unsigned long currentMillis = millis();
   switch (emergencyLevel) {
-    case 0:
-      // Turn off all lamps if emergency level is not recognized
-      digitalWrite(lampPins[4], LOW);
-      digitalWrite(lampPins[5], LOW);
-      digitalWrite(lampPins[15], LOW);
-      digitalWrite(lampPins[18], LOW);
-      digitalWrite(lampPins[19], LOW);
-      break;
+    // case 0:
+    //   // Turn off all lamps if emergency level is not recognized
+    //   digitalWrite(lampPins[4], LOW);
+    //   digitalWrite(lampPins[5], LOW);
+    //   digitalWrite(lampPins[15], LOW);
+    //   digitalWrite(lampPins[18], LOW);
+    //   digitalWrite(lampPins[19], LOW);
+    //   break;
     case 1:
       // Blink lamp1 continuously
       if (currentMillis - previousMillis >= interval) {
@@ -346,6 +381,7 @@ void handleEmergencyLamps(int emergencyLevel) {
         blinkLamp(lampPins[4], 750);  // Blink every 750 milliseconds
         myDFPlayer.play(emergencyLevel);
         myDFPlayer.enableLoop();
+        lcd.print(emergencyLevel);
       }
       break;
     case 2:
@@ -355,6 +391,7 @@ void handleEmergencyLamps(int emergencyLevel) {
         blinkLamp(lampPins[5], 600);  // Blink every 600 milliseconds
         myDFPlayer.play(emergencyLevel);
         myDFPlayer.enableLoop();
+        lcd.print(emergencyLevel);
       }
       break;
     case 3:
@@ -364,6 +401,7 @@ void handleEmergencyLamps(int emergencyLevel) {
         blinkLamp(lampPins[15], 450);  // Blink every 450 milliseconds
         myDFPlayer.play(emergencyLevel);
         myDFPlayer.enableLoop();
+        lcd.print(emergencyLevel);
       }
       break;
     case 4:
@@ -373,6 +411,7 @@ void handleEmergencyLamps(int emergencyLevel) {
         blinkLamp(lampPins[18], 300);  // Blink every 300 milliseconds
         myDFPlayer.play(emergencyLevel);
         myDFPlayer.enableLoop();
+        lcd.print(emergencyLevel);
       }
       break;
     case 5:
@@ -382,6 +421,7 @@ void handleEmergencyLamps(int emergencyLevel) {
         blinkLamp(lampPins[19], 150);  // Blink every 150 milliseconds
         myDFPlayer.play(emergencyLevel);
         myDFPlayer.enableLoop();
+        lcd.print(emergencyLevel);
       }
       break;
     default:
