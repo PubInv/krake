@@ -9,8 +9,9 @@
 WiFiServer server(80);
 const char *ssid = "ADT";
 const char *password = "adt@12345";
-const char *server_address = "192.168.1.9"; // Based on the ping response, update the IP address that successfully responds to the request
+const char *server_address = "192.168.1.9";
 const int serverPort = 5500;
+
 // Configuration and Pin Definitions
 const int analogPin = 34;
 const int MUTE_BUTTON_PIN = 36;
@@ -18,6 +19,7 @@ const int ON_OFF_BUTTON_PIN = 39;
 const int LED_PIN = 2;                        // on off LED
 const int LED_PIN_M[] = { 23 };               // Mute LED
 const int lampPins[] = { 15, 4, 5, 18, 19 };  // Emergency lamp pins including MUTE LED
+
 
 // Initialize software serial on pins 16 and 17
 SoftwareSerial mySoftwareSerial(16, 17);  // RX, TX
@@ -28,20 +30,20 @@ bool trackPlaying = false;
 
 
 unsigned long previousMillis = 0;
-const long interval = 100; // Adjust the interval based on your needs
+const long interval = 100;  // Adjust the interval based on your needs
 
 // Create the Player object
 DFRobotDFPlayerMini player;
 
 void setup() {
 
- // Serial communication with the module
+  // Serial communication with the module
   mySoftwareSerial.begin(9600);
 
   Serial.begin(115200);
 
 
- 
+
   pinMode(MUTE_BUTTON_PIN, INPUT_PULLUP);
   pinMode(ON_OFF_BUTTON_PIN, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
@@ -77,13 +79,10 @@ void setup() {
   Serial.println(F("DFPlayer Mini module initialized!"));
   // Initial settings
   myDFPlayer.setTimeOut(500);  // Serial timeout 500ms
-  myDFPlayer.volume(25);        // Volume 5
+  myDFPlayer.volume(25);       // Volume 5
   myDFPlayer.EQ(0);            // Normal equalization
 
   menu_options();
-
-
-
 }
 
 void loop() {
@@ -104,7 +103,7 @@ void loop() {
       Serial.println(command);
       command = command - '0';
       myDFPlayer.play(command);
-       myDFPlayer.enableLoop();
+      myDFPlayer.enableLoop();
       trackPlaying = true;
       menu_options();
     }
@@ -165,15 +164,13 @@ void loop() {
   if (trackPlaying && !myDFPlayer.available()) {
     myDFPlayer.play();
   }
-
- 
 }
 
 void blinkLamp(int lampPin, int blinkDelay) {
   digitalWrite(lampPin, HIGH);
-  delay(blinkDelay / 2); // On for half of the blink delay
+  delay(blinkDelay / 2);  // On for half of the blink delay
   digitalWrite(lampPin, LOW);
-  delay(blinkDelay / 2); // Off for the other half of the blink delay
+  delay(blinkDelay / 2);  // Off for the other half of the blink delay
 }
 
 void connectToWiFi() {
@@ -186,7 +183,8 @@ void connectToWiFi() {
 }
 
 void handleWiFiClientRequests() {
-  WiFiClient client = server.available();
+  WiFiClient client =
+    server.available();
   if (client) {
     Serial.println("New WiFi client");
 
@@ -213,14 +211,13 @@ void handlePinData() {
   // Send the sensor value over WiFi
   sendSensorValueOverWiFi(sensorValue);
 
- // Fetch emergency level over WiFi
+  // Fetch emergency level over WiFi
   int emergencyLevel = fetchEmergencyLevelOverWiFi();
   Serial.println("Received Emergency Level: " + String(emergencyLevel));
   delay(1000);
 
- // Handle emergency lamps based on the received level
+  // Handle emergency lamps based on the received level
   handleEmergencyLamps(emergencyLevel);
-
 }
 
 void sendSensorValueToHTTPServer(int sensorValue) {
@@ -241,7 +238,7 @@ void sendSensorValueToHTTPServer(int sensorValue) {
     Serial.println("HTTP Code: " + String(httpCode));
   }
 
-  
+
   http.end();
   delay(1000);
 }
@@ -251,9 +248,7 @@ void sendSensorValueOverWiFi(int value) {
   String url = "/update?value=" + String(value);
 
   if (client.connect(server_address, serverPort)) {
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                 "Host: " + server_address + "\r\n" +
-                 "Connection: close\r\n\r\n");
+    client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + server_address + "\r\n" + "Connection: close\r\n\r\n");
 
     delay(1000);
 
@@ -275,19 +270,21 @@ int fetchEmergencyLevelOverWiFi() {
   String url = "/emergency";
 
   if (client.connect(server_address, serverPort)) {
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                 "Host: " + server_address + "\r\n" +
-                 "Connection: close\r\n\r\n");
+    client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + server_address + "\r\n" + "Connection: close\r\n\r\n");
 
     delay(1000);
 
     while (client.available()) {
       String line = client.readStringUntil('\n');
+      Serial.print("testing line 289 :");
       Serial.print("read this: ");
       Serial.println(line);
-      if (line.startsWith("{\"level\":")) {
-        int emergencyLevel = line.substring(9).toInt(); // Adjust the substring index
-        Serial.println("we are turning emergency level");
+      // if (line.startsWith("{\"level\":"))
+      {
+        int emergencyLevel = line.substring(160).toInt();  // Adjust the substring index
+        Serial.print("testing line 291 :");
+        Serial.println(line.substring(160).toInt());
+        //   Serial.println("we are turning emergency level");
         Serial.write(emergencyLevel);
         return emergencyLevel;
       }
@@ -299,16 +296,15 @@ int fetchEmergencyLevelOverWiFi() {
     Serial.println("Connection to server failed");
   }
 
-  return 0; // Return an appropriate default value if the fetch fails
+  return 0;  // Return an appropriate default value if the fetch fails
 }
-
 
 void handleEmergencyLamps(int emergencyLevel) {
   unsigned long currentMillis = millis();
   switch (emergencyLevel) {
     case 0:
       // Turn off all lamps if emergency level is not recognized
-      digitalWrite(lampPins[4], LOW);
+      blinkLamp(lampPins[23], 750);
       digitalWrite(lampPins[5], LOW);
       digitalWrite(lampPins[15], LOW);
       digitalWrite(lampPins[18], LOW);
