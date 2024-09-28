@@ -54,6 +54,20 @@ Password:<br><input type="password" name="password"><br><br>
 </body>
 </html>)rawliteral";
 
+// Define separate variables for previousMillis for each lamp
+unsigned long previousMillisLamp1 = 0;
+unsigned long previousMillisLamp2 = 0;
+unsigned long previousMillisLamp3 = 0;
+unsigned long previousMillisLamp4 = 0;
+unsigned long previousMillisLamp5 = 0;
+
+// Define individual intervals for each lamp
+unsigned long intervalLamp1 = 750;
+unsigned long intervalLamp2 = 600;
+unsigned long intervalLamp3 = 450;
+unsigned long intervalLamp4 = 300;
+unsigned long intervalLamp5 = 150;
+
 void setup() {
   Serial.begin(115200);
   mySerial1.begin(9600, SERIAL_8N1, 16, 17);
@@ -363,9 +377,9 @@ void blinkLamp(int lampPin, unsigned long blinkInterval) {
   }
 }
 
-void handleEmergencyLamps(int emergencyLevel) {
-  unsigned long currentMillis = millis();
-  switch (emergencyLevel) {
+// void handleEmergencyLamps(int emergencyLevel) {
+//   unsigned long currentMillis = millis();
+//   switch (emergencyLevel) {
     // case 0:
     //   // Turn off all lamps if emergency level is not recognized
     //   digitalWrite(lampPins[4], LOW);
@@ -374,62 +388,124 @@ void handleEmergencyLamps(int emergencyLevel) {
     //   digitalWrite(lampPins[18], LOW);
     //   digitalWrite(lampPins[19], LOW);
     //   break;
+//     case 1:
+//       // Blink lamp1 continuously
+//       if (currentMillis - previousMillis >= interval) {
+//         previousMillis = currentMillis;
+//         blinkLamp(lampPins[4], 750);  // Blink every 750 milliseconds
+//         myDFPlayer.play(emergencyLevel);
+//         myDFPlayer.enableLoop();
+//         lcd.print(emergencyLevel);
+//       }
+//       break;
+//     case 2:
+//       // Blink lamp2 continuously with faster speed
+//       if (currentMillis - previousMillis >= interval / 2) {
+//         previousMillis = currentMillis;
+//         blinkLamp(lampPins[5], 600);  // Blink every 600 milliseconds
+//         myDFPlayer.play(emergencyLevel);
+//         myDFPlayer.enableLoop();
+//         lcd.print(emergencyLevel);
+//       }
+//       break;
+//     case 3:
+//       // Blink lamp3 continuously with even faster speed
+//       if (currentMillis - previousMillis >= interval / 4) {
+//         previousMillis = currentMillis;
+//         blinkLamp(lampPins[15], 450);  // Blink every 450 milliseconds
+//         myDFPlayer.play(emergencyLevel);
+//         myDFPlayer.enableLoop();
+//         lcd.print(emergencyLevel);
+//       }
+//       break;
+//     case 4:
+//       // Blink lamp4 continuously with even faster speed
+//       if (currentMillis - previousMillis >= interval / 8) {
+//         previousMillis = currentMillis;
+//         blinkLamp(lampPins[18], 300);  // Blink every 300 milliseconds
+//         myDFPlayer.play(emergencyLevel);
+//         myDFPlayer.enableLoop();
+//         lcd.print(emergencyLevel);
+//       }
+//       break;
+//     case 5:
+//       // Blink lamp5 continuously with even faster speed
+//       if (currentMillis - previousMillis >= interval / 16) {
+//         previousMillis = currentMillis;
+//         blinkLamp(lampPins[19], 150);  // Blink every 150 milliseconds
+//         myDFPlayer.play(emergencyLevel);
+//         myDFPlayer.enableLoop();
+//         lcd.print(emergencyLevel);
+//       }
+//       break;
+//     default:
+//       Serial.println("INTERNAL PROGRAMMING ERROR: EMERGENCY LEVEL TOO HIGH!");
+//       break;
+//   }
+// }
+
+
+
+// Handle emergency levels and control the lamps accordingly
+void handleEmergencyLamps(int emergencyLevel) {
+  unsigned long currentMillis = millis();  // Get the current time
+
+  switch (emergencyLevel) {
     case 1:
       // Blink lamp1 continuously
-      if (currentMillis - previousMillis >= interval) {
-        previousMillis = currentMillis;
-        blinkLamp(lampPins[4], 750);  // Blink every 750 milliseconds
-        myDFPlayer.play(emergencyLevel);
-        myDFPlayer.enableLoop();
-        lcd.print(emergencyLevel);
+      if (currentMillis - previousMillisLamp1 >= intervalLamp1) {
+        previousMillisLamp1 = currentMillis;
+        blinkLamp(lampPins[0]);  // Blink the lamp at pin 4 (index 1)
       }
       break;
     case 2:
       // Blink lamp2 continuously with faster speed
-      if (currentMillis - previousMillis >= interval / 2) {
-        previousMillis = currentMillis;
-        blinkLamp(lampPins[5], 600);  // Blink every 600 milliseconds
-        myDFPlayer.play(emergencyLevel);
-        myDFPlayer.enableLoop();
-        lcd.print(emergencyLevel);
+      if (currentMillis - previousMillisLamp2 >= intervalLamp2) {
+        previousMillisLamp2 = currentMillis;
+        blinkLamp(lampPins[1]);  // Blink the lamp at pin 5 (index 2)
       }
       break;
     case 3:
       // Blink lamp3 continuously with even faster speed
-      if (currentMillis - previousMillis >= interval / 4) {
-        previousMillis = currentMillis;
-        blinkLamp(lampPins[15], 450);  // Blink every 450 milliseconds
-        myDFPlayer.play(emergencyLevel);
-        myDFPlayer.enableLoop();
-        lcd.print(emergencyLevel);
+      if (currentMillis - previousMillisLamp3 >= intervalLamp3) {
+        previousMillisLamp3 = currentMillis;
+        blinkLamp(lampPins[2]);  // Blink the lamp at pin 15 (index 0)
       }
       break;
     case 4:
       // Blink lamp4 continuously with even faster speed
-      if (currentMillis - previousMillis >= interval / 8) {
-        previousMillis = currentMillis;
-        blinkLamp(lampPins[18], 300);  // Blink every 300 milliseconds
-        myDFPlayer.play(emergencyLevel);
-        myDFPlayer.enableLoop();
-        lcd.print(emergencyLevel);
+      if (currentMillis - previousMillisLamp4 >= intervalLamp4) {
+        previousMillisLamp4 = currentMillis;
+        blinkLamp(lampPins[3]);  // Blink the lamp at pin 18 (index 3)
       }
       break;
     case 5:
       // Blink lamp5 continuously with even faster speed
-      if (currentMillis - previousMillis >= interval / 16) {
-        previousMillis = currentMillis;
-        blinkLamp(lampPins[19], 150);  // Blink every 150 milliseconds
-        myDFPlayer.play(emergencyLevel);
-        myDFPlayer.enableLoop();
-        lcd.print(emergencyLevel);
+      if (currentMillis - previousMillisLamp5 >= intervalLamp5) {
+        previousMillisLamp5 = currentMillis;
+        blinkLamp(lampPins[4]);  // Blink the lamp at pin 19 (index 4)
       }
       break;
     default:
+      // Optionally handle an error case for unexpected levels
       Serial.println("INTERNAL PROGRAMMING ERROR: EMERGENCY LEVEL TOO HIGH!");
       break;
   }
+
+  // Handle audio and LCD outside the time check to avoid glitches
+  myDFPlayer.play(emergencyLevel);
+  myDFPlayer.enableLoop();
+  lcd.clear();
+  lcd.print("Emergency Level: ");
+  lcd.print(emergencyLevel);
 }
 
+// Example implementation of blinkLamp
+void blinkLamp(int lampPin) {
+  // Toggle the state of the lamp
+  int state = digitalRead(lampPin);  // Get current state
+  digitalWrite(lampPin, !state);     // Invert the state (turn on if off, and vice versa)
+}
 
 void menuOptions() {
   Serial.println();
