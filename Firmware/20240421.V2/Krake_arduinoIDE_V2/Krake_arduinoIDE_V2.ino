@@ -1,3 +1,21 @@
+/*
+   Need the copy write and license statements here.
+
+*/
+
+#define COMPANY_NAME "pubinv.org "
+#define PROG_NAME "PMDtoKRake_KrakeV2 "
+#define VERSION "V0.2 "
+#define DEVICE_UNDER_TEST "PMD: foo"  //A PMD model number
+#define LICENSE "GNU Affero General Public License, version 3 "
+#define ORIGIN "LB"
+
+#define BAUDRATE 115200
+#define BAUD_DFPLAYER 9600
+
+
+
+// Libraries
 #include <WiFi.h>
 #include <WebServer.h>  // new in V2
 #include <DNSServer.h>  // new in V2
@@ -68,6 +86,31 @@ unsigned long intervalLamp3 = 450;
 unsigned long intervalLamp4 = 300;
 unsigned long intervalLamp5 = 150;
 
+//Functions
+
+void setupLCDandSplash(void){
+  Wire.begin();
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print(DEVICE_UNDER_TEST);
+  lcd.setCursor(0, 1);
+  lcd.print(PROG_NAME);
+  lcd.setCursor(0, 2);
+  lcd.print(VERSION);
+  lcd.setCursor(0, 1);
+  lcd.print(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
+}
+
+void lcdReportWiFiConnected(void){
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("WiFi Connected"); 
+}
+
+
+
+// Setup Function
 void setup() {
   Serial.begin(115200);
   mySerial1.begin(9600, SERIAL_8N1, 16, 17);
