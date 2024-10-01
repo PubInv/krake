@@ -8,7 +8,8 @@
 #define VERSION "V0.2 "
 #define DEVICE_UNDER_TEST "PMD: foo"  //A PMD model number
 #define LICENSE "GNU Affero General Public License, version 3 "
-#define ORIGIN "LB"
+#define ORIGIN "LB" // country of manufacture 
+#define WIFI_COUNTRYCODE "01" // esp_wifi_set_country_code(WIFI_COUNTRYCODE, true);
 
 #define BAUDRATE 115200
 #define BAUD_DFPLAYER 9600
@@ -26,7 +27,7 @@
 #include <ArduinoJson.h> // new in v2
 
 // Configuration and Pin Definitions
-const int analogPin = 34;
+const int analogPin = 34; // input pin connected to a sensor
 const int MUTE_BUTTON_PIN = 36;
 const int ON_OFF_BUTTON_PIN = 39;
 const int LED_PIN = 2;                        // on off LED
@@ -89,6 +90,8 @@ unsigned long intervalLamp5 = 150;
 //Functions
 
 void setupLCDandSplash(void){
+
+
   Wire.begin();
   lcd.init();
   lcd.backlight();
@@ -98,6 +101,8 @@ void setupLCDandSplash(void){
   lcd.print(PROG_NAME);
   lcd.setCursor(0, 2);
   lcd.print(VERSION);
+  delay(1000);
+  lcd.clear();
   lcd.setCursor(0, 1);
   lcd.print(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
 }
@@ -112,8 +117,21 @@ void lcdReportWiFiConnected(void){
 
 // Setup Function
 void setup() {
-  Serial.begin(115200);
-  mySerial1.begin(9600, SERIAL_8N1, 16, 17);
+  Serial.begin(BAUDRATE);
+    while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB
+  }
+  delay(500);
+  Serial.println("===================================");
+  Serial.println(DEVICE_UNDER_TEST);
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
+  Serial.print("Compiled at: ");
+  Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
+  Serial.println("===================================");
+  Serial.println();
+  
+  mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, 16, 17);
   Wire.begin();
   lcd.init();
   lcd.backlight();
