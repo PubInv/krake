@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Describe the Failure / Bug**
-_A clear and concise description of what the failure / bug is._
+_A clear and concise description of what the failure / bug is. Describe the problem NOT the fix._
 Short Summary of the expected behavior:
 Short Summary of the buggy behavior:
  
@@ -33,15 +33,19 @@ Steps to reproduce the behavior:
 4. See error
  
  
-**Expected behavior**
+**Detailed Expected behavior**
 _A clear and concise description of what you expected to happen._
+ 
+ 
+**Detailed Actual, "Buggy" behavior**
+_A clear and concise description of the buggy behavior._
  
  
 **Screenshots**
 _If applicable, add screenshots to help explain your problem._
  
  
-**Hardware description
+**Hardware description**
 Model:
 Serial Number:
 Other:
@@ -50,6 +54,7 @@ Other:
 **Test Equipment**
 Model:
 Serial Number:
-
+ 
+ 
 **Additional context**
 _Add any other context about the problem here._
