@@ -47,7 +47,8 @@ HardwareSerial mySerial1(2);  // Use UART2
 DFRobotDFPlayerMini myDFPlayer;
 LiquidCrystal_I2C lcd(0x27, 15, 2);  // use the i2c scanner to get the LCD address
 
-const char* server_address = "192.168.1.9";
+//const char* server_address = "192.168.1.9";
+const char* server_address = "192.168.1.137";
 const int serverPort = 5500;
 const char* ssidAP = "ESP32-Access-Point";
 const char* passwordAP = "123456789";
@@ -379,6 +380,7 @@ int fetchEmergencyLevelOverWiFi() {
   if (client.connect(server_address, serverPort)) {
     // Send GET request
     client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + server_address + "\r\n" + "Connection: close\r\n\r\n");
+    Serial.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + server_address + "\r\n" + "Connection: close\r\n\r\n");
 
     delay(1000);  // Allow time for response
 

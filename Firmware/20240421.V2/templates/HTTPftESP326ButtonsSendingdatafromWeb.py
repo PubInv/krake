@@ -44,4 +44,5 @@ def emergency():
         return jsonify({'level': emergency_level})
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.9', port=5500, debug=True)  # Bind to all interfaces, debug mode enabled
+    # app.run(host='192.168.1.9', port=5500, debug=True)  # Bind to all interfaces, debug mode enabled
+    app.run(host='192.168.1.137', port=5500, debug=True)  # Bind to all interfaces, debug mode enabled

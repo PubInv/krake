@@ -113,7 +113,8 @@
         }
 
         function fetchData() {
-            const serverAddress = 'http://192.168.1.9:5500/update?value';
+            // const serverAddress = 'http://192.168.1.9:5500/update?value';
+            const serverAddress = 'http://192.168.1.137:5500/update?value';
             
             fetch(serverAddress)
                 .then(response => response.json())
@@ -130,7 +131,8 @@
         }
 
         function sendEmergency(level) {
-            const emergencyEndpoint = 'http://192.168.1.9:5500/emergency';
+            //const emergencyEndpoint = 'http://192.168.1.9:5500/emergency';
+            const emergencyEndpoint = 'http://192.168.1.137:5500/emergency';
 
             fetch(emergencyEndpoint, {
                 method: 'POST',
