@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -43,6 +43,18 @@ def emergency():
         print("GETTING Emergency level", emergency_level)
         return jsonify({'level': emergency_level})
 
+
+@app.route("/foo") 
+@app.route("/index") 
+@app.route("/") 
+def hello(): 
+    message = "Hello, World"
+    return render_template('index.html', message=message) 
+    # return render_template(message=message) 
+
+
+
 if __name__ == '__main__':
     # app.run(host='192.168.1.9', port=5500, debug=True)  # Bind to all interfaces, debug mode enabled
     app.run(host='192.168.1.137', port=5500, debug=True)  # Bind to all interfaces, debug mode enabled
+
