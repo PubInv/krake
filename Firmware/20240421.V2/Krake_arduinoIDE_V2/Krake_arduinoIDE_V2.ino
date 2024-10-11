@@ -5,7 +5,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "PMDtoKRake_KrakeV2 "
-#define VERSION "V0.2 "
+#define VERSION "V0.3 "
 #define DEVICE_UNDER_TEST "PMD: foo"  //A PMD model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB" // country of manufacture 
@@ -132,6 +132,8 @@ void setup() {
   Serial.println("===================================");
   Serial.println();
   
+  setupLCDandSplash();
+
   mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, 16, 17);
   Wire.begin();
   lcd.init();
@@ -262,15 +264,15 @@ void muteButton() {
     if (currentButtonState == LOW) {
       Serial.println("Mute Button released");
       if (trackPlaying) {
-        myDFPlayer.pause();
+ //       myDFPlayer.pause();
         trackPlaying = false;
-        delay(600000);  // Alarm paused for 10 minutes
+//        delay(600000);  // Alarm paused for 10 minutes
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Alarm Paused");
 
       } else {
-        myDFPlayer.start();
+//       myDFPlayer.start();
         trackPlaying = true;
         lcd.clear();
         lcd.setCursor(0, 0);
@@ -365,9 +367,10 @@ void startDFPlayer() {
     Serial.println("2. Please insert the SD card!");
     // while (true);  // this holds the other code lines from executing until this command execute
   }
-  myDFPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
+  delay(3000);
+  // myDFPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
   myDFPlayer.volume(25);       // Set initial volume
-  myDFPlayer.EQ(0);            // Normal equalization
+  // myDFPlayer.EQ(0);            // Normal equalization
   Serial.println("DFPlayer initialized");
 }
 
@@ -556,14 +559,16 @@ void handleEmergencyLamps(int emergencyLevel) {
   }
 
   // Handle audio and LCD outside the time check to avoid glitches
+
+
   myDFPlayer.play(emergencyLevel);
-  myDFPlayer.enableLoop();
+  // myDFPlayer.enableLoop();    //FLE removed DFPlayer loop for debugging
   lcd.clear();
   lcd.print("Emergency Level: ");
   lcd.print(emergencyLevel);
 }
 
-// Example implementation of blinkLamp
+// Example implementation of blinkLamp 
 void blinkLamp(int lampPin) {
   // Toggle the state of the lamp
   int state = digitalRead(lampPin);  // Get current state
