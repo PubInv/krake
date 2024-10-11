@@ -1,2 +1,0 @@
-python HTTPftESP326ButtonsSendingdatafromWeb.py
-pause
