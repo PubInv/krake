@@ -14,8 +14,8 @@ const char* password = "adt@12345";
 
 // MQTT Broker
 const char* mqtt_server = "public.cloud.shiftr.io";
-const char* mqtt_user = "your_mqtt_username";
-const char* mqtt_password = "your_mqtt_password";
+const char* mqtt_user = "public";
+const char* mqtt_password = "public";
 
 // MQTT Topics
 const char* temperature_topic = "esp32/temperature";

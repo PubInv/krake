@@ -12,13 +12,13 @@
 #include <PubSubClient.h>
 
 // WiFi credentials
-const char* ssid = "your_SSID";
-const char* password = "your_PASSWORD";
+const char* ssid = "ADT";
+const char* password = "adt@12345";
 
 // MQTT Broker
 const char* mqtt_server = "public.cloud.shiftr.io";
-const char* mqtt_user = "your_mqtt_username";
-const char* mqtt_password = "your_mqtt_password";
+const char* mqtt_user = "public";
+const char* mqtt_password = "public";
 
 // MQTT Topics
 const char* temperature_topic = "esp32/temperature";
@@ -116,9 +116,10 @@ void reconnect() {
 
 void sendTemperature() {
   float temp = temperatureRead();
-  char tempString[8];
-  dtostrf(temp, 1, 2, tempString);  // Convert float to string
-
+  // char tempString[8];
+  // dtostrf(temp, 1, 2, tempString);  // Convert float to string
+ //const char = 25 
+ #define tempString "the temp in LEB os 20c" 
   // Publish temperature to MQTT
   client.publish(temperature_topic, tempString);
   Serial.print("Temperature sent: ");
