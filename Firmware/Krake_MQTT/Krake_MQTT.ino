@@ -1,3 +1,17 @@
+// File name: Krake_MQTT
+// Author: Nagham Kheir
+// Date: 20241014
+// LICENSE "GNU Affero General Public License, version 3 "
+// Hardware ESP32 kit
+
+// Customized this by changing these defines
+#define PROG_NAME "Krake_MQTT "
+#define VERSION "V0.0.x "
+#define MODEL_NAME "Model: Krake_MQTT"
+#define DEVICE_UNDER_TEST "SN: xxxxx"  //A Serial Number
+#define LICENSE "GNU Affero General Public License, version 3 "
+#define ORIGIN "LB"
+
 // Receiver ESP32 Code (Handling Emergency Level 6)
 
 // Description:
@@ -22,12 +36,12 @@ const char* temperature_topic = "esp32/temperature";
 const char* emergency_topic = "esp32/emergency";  // Topic for emergency messages
 
 // LED Pins
-const int LED_D9 = 23;    // Mute1 LED on PMD
-const int LAMP1 = 15;     // D5 cold food
-const int LAMP2 = 4;      // D3 baby crying
-const int LAMP3 = 5;      // D8 high BP1
-const int LAMP4 = 18;     // D7 shield failure
-const int LAMP5 = 19;     // D6 lost sock
+const int LED_D9 = 23;  // Mute1 LED on PMD
+const int LAMP1 = 15;   // D5 cold food
+const int LAMP2 = 4;    // D3 baby crying
+const int LAMP3 = 5;    // D8 high BP1
+const int LAMP4 = 18;   // D7 shield failure
+const int LAMP5 = 19;   // D6 lost sock
 
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
@@ -38,6 +52,23 @@ void setup() {
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
+
+  Serial.begin(115200);
+  while (!Serial) {
+    ;  // wait for serial port to connect. Needed for native USB
+  }
+  delay(500);
+  //Serial splash
+  Serial.println(F("==================================="));
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
+  Serial.println(MODEL_NAME);
+  Serial.println(DEVICE_UNDER_TEST);
+  Serial.print(F("Compiled at: "));
+  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+  Serial.println(LICENSE);
+  Serial.println(F("==================================="));
+  Serial.println();
 
   // Set LED pins as outputs
   pinMode(LED_D9, OUTPUT);
@@ -102,7 +133,7 @@ void reconnect() {
     if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
       Serial.println("connected");
       client.subscribe(temperature_topic);  // Subscribe to temperature topic
-      client.subscribe(emergency_topic);  // Subscribe to emergency topic
+      client.subscribe(emergency_topic);    // Subscribe to emergency topic
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
