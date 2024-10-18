@@ -1,9 +1,16 @@
 # Krake
-A wireless alarm device which makes loud noises and flashes lights to alert a human
+Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
 
-# WiFi enablement
+Krake is an **annunciator** meant to alert a human to something needing attention.
 
-# Arbirtrary Sonic Alarms
+# Wi-Fi enablement
+It will connect as a station to a Wi-Fi local area network.
+The Krake receives alarm messages from another device, the Controller.
+The Controller may be on the same local area network or the wider internet.
+
+# Arbitrary Sonic Alarms
+These sounds are stored on an SD card and can be voice and can be multilingual.
+The SD card is removable so that the Krake alarms can be customized (localized) for language.
 
 
 # About the Name
