@@ -106,16 +106,16 @@
 
     <div class="button-container">
         <div class="emergency-buttons">
-            <button onclick="sendEmergency(0)">Emergency Level 0</button>
-            <button onclick="sendEmergency(1)">Emergency Level 1</button>
-            <button onclick="sendEmergency(2)">Emergency Level 2</button>
-            <button onclick="sendEmergency(3)">Emergency Level 3</button>
-            <button onclick="sendEmergency(4)">Emergency Level 4</button>
-            <button onclick="sendEmergency(5)">Emergency Level 5</button>
-            <button onclick="sendEmergency(6)">Emergency Level 6</button>
+            <button onclick="publishEmergency(0)">Emergency Level 0</button>
+            <button onclick="publishEmergency(1)">Emergency Level 1</button>
+            <button onclick="publishEmergency(2)">Emergency Level 2</button>
+            <button onclick="publishEmergency(3)">Emergency Level 3</button>
+            <button onclick="publishEmergency(4)">Emergency Level 4</button>
+            <button onclick="publishEmergency(5)">Emergency Level 5</button>
+            <button onclick="publishEmergency(6)">Emergency Level 6</button>
         </div>
         <div class="fetch-button">
-            <button onclick="fetchData()">Display Sensor Value</button>
+            <button onclick="foo_fetchData()">Display Sensor Value</button>
         </div>
     </div>
 
@@ -132,12 +132,55 @@
 		<label for="brokerPassword">Broker Password:</label>
 		<input type="password" value="public" id="namePassword" name="namePassword" required minlength="4" maxlength="100" size="50" />
 		<br>		
+		<label for="Web_PMD_topic">Web PMD Topic:</label>
+		<input type="text" value="Sigma_Draconis_VII" id="nameTopic" name="nameTopic" required minlength="4" maxlength="100" size="50" />
+		<br>		
+		<b>Other PMDs: </b>
+		<UL>
+		<li>WEB_PMD_AUSTIN
+		<li>WEB_PMD_LEBANON
+		<li>WEB_PMD_MARYVILLE
+		</UL>
 		<div class="fetch-button">
-			<button onclick="setBrokerURL()">Set Broker Values</button>
+			<button onclick="setBroker()">Set Broker Values</button>
 		</div>
 	</form>
 	
     <script>
+		let brokerURL = 'public.cloud.shiftr.io';
+		let brokerUser = 'public';
+		let brokerPassword = 'public';
+		let topic2 = "20240421_USA4"
+
+		function publishEmergency(level) {
+
+		//	let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
+			let client = mqtt.connect('wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL);
+
+			let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
+			let metric = 'MessageFromProcessing_PMD: '
+			metric = metric + level
+
+			client.subscribe(topic);
+			client.subscribe("20240421_USA4");
+
+			client.publish(topic, metric);
+				console.log("Published to: " + topic);
+				console.log("the  message: " + metric);
+
+			client.on('message', function (topic2, message2) { // message is Buffer
+				console.log("Got a subscription message topic 20240421_USA4: ");
+				console.log(message2.toString());		
+				});
+			client.end();	
+		}//end publishEmergency
+
+	    function setBroker() {
+			event.preventDefault(); //Do not reload page
+			console.log("setBroker URL, User, PW, Topic");			
+        }//end setBroker()
+
+		
         function updateSensorValue(value) {
             document.getElementById('Value').innerText = 'Sensor Value: ' + value;
         }
@@ -187,38 +230,8 @@
             });
 			
 		
-		let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
-		let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
-		let metric = 'MessageFromProcessing_PMD: '
-		metric = metric + level
-
-		let topic2 = "20240421_USA4"
-
-		client.subscribe(topic);
-		client.subscribe("20240421_USA4");
-
-		client.publish(topic, metric);
-			console.log("Web page Shifter_client_MQTT publised message: ");
-			console.log(metric);
-
-		client.on('message', function (topic2, message2) { // message is Buffer
-			console.log("Got a subscription message topic 20240421_USA4: ");
-			console.log(message2.toString());		
-			});
-		client.end();		
+			
         }//end emergency level
-		
-        function setBrokerURL() {
-			event.preventDefault(); //Do not reload page
-			console.log("setBrokerURL()");			
-        }
-
-        function setBrokerUser() {
-			console.log("setBrokerUser()");			
-        }
-        function setBrokerPW() {
-			console.log("setBrokerPW()");			
-        }
 		
     </script>
 	
