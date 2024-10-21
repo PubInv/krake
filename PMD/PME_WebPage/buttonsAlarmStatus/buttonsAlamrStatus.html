@@ -106,16 +106,16 @@
 
     <div class="button-container">
         <div class="emergency-buttons">
-            <button onclick="publishEmergency(0)">Emergency Level 0</button>
-            <button onclick="publishEmergency(1)">Emergency Level 1</button>
-            <button onclick="publishEmergency(2)">Emergency Level 2</button>
-            <button onclick="publishEmergency(3)">Emergency Level 3</button>
-            <button onclick="publishEmergency(4)">Emergency Level 4</button>
-            <button onclick="publishEmergency(5)">Emergency Level 5</button>
-            <button onclick="publishEmergency(6)">Emergency Level 6</button>
+            <button onclick="publishEmergency(0)">No alarm, Level 0</button>
+            <button onclick="publishEmergency(1)">Informational, Level 1</button>
+            <button onclick="publishEmergency(2)">Problem, Level 2</button>
+            <button onclick="publishEmergency(3)">Warning, Level 3</button>
+            <button onclick="publishEmergency(4)">Critical, Level 4</button>
+            <button onclick="publishEmergency(5)">Panic, Level 5</button>
+            <button onclick="publishEmergency(6)">All Emergencies Level 6</button>
         </div>
         <div class="fetch-button">
-            <button onclick="foo_fetchData()">Display Sensor Value</button>
+            <button onclick="fetchMuteStatus()">Display Mute Status</button>
         </div>
     </div>
 
@@ -189,21 +189,9 @@
             document.getElementById('level').innerText = 'Emergency Level: ' + level;
         }
 
-        function fetchData() {
-            const serverAddress = 'http://192.168.1.3:5500/update?value';
-            
-            fetch(serverAddress)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.value !== undefined) {
-                        updateSensorValue(data.value);
-                    } else {
-                        console.error('Invalid data format:', data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
+        function fetchMuteStatus() {
+			console.log("fetchMuteStatus called");
+			//to do write the code 
         }
 
         function sendEmergency(level) {
@@ -227,10 +215,7 @@
             })
             .catch(error => {
                 console.error('Error sending emergency request:', error);
-            });
-			
-		
-			
+            });			
         }//end emergency level
 		
     </script>
