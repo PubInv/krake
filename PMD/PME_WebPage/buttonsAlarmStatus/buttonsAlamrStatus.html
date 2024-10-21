@@ -81,12 +81,16 @@
             height: 100px;
         }
     </style>
+	<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
     <img src="snakeOil.png" alt="PEM Medical Logo" class="medical-logo" >
     <h1>PMD buttonsAlarmStatus</h1>
 	<hr>
-	A Pseudo Medical Device with whitch to control a Krake
+	A Pseudo Medical Device with whitch to control a Krake by MQTT.
+	<br>
+	The MQTT client is: <b>mqtt://public:public@public.cloud.shiftr.io</b>
+
 	<br>
 	<h2>Buttons for Alarms  at Emergency Level 0-5 and Status of ?TBD? </h2>
     Press a button to issue an Alarm, or to Display status of TBD.
@@ -133,7 +137,7 @@
         }
 
         function sendEmergency(level) {
-		<! -- Make a Post to a web page at a fixed URL -->
+
             const emergencyEndpoint = 'http://192.168.1.3:5500/emergency';
 
             fetch(emergencyEndpoint, {
@@ -155,7 +159,28 @@
                 console.error('Error sending emergency request:', error);
             });
 			
-		<! -- Send an MQTT message to a broker at a fixed URL -->
+		
+		let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
+		let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
+		let metric_old = 'MessageFromProcessing_PMD: 4'
+		let metric = 'MessageFromProcessing_PMD: '
+		metric = metric + level
+
+		let topic2 = "20240421_USA4"
+
+		client.subscribe(topic);
+		client.subscribe("20240421_USA4");
+
+		client.publish(topic, metric);
+			console.log("Web page Shifter_client_MQTT publised message: ");
+			console.log(metric);
+
+		client.on('message', function (topic2, message2) { // message is Buffer
+			console.log("Got a subscription message topic 20240421_USA4: ");
+			console.log(message2.toString());
+});
+
+client.end();
 		
         }
     </script>
