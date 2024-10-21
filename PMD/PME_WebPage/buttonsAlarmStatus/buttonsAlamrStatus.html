@@ -69,6 +69,13 @@
             flex-wrap: wrap;
         }
 
+        .setup-buttons, .fetch-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center ;
+            flex-wrap: wrap;
+        }
+
         .fetch-button {
             margin-top: 20px;
         }
@@ -92,24 +99,44 @@
 	The MQTT client is: <b>mqtt://public:public@public.cloud.shiftr.io</b>
 
 	<br>
-	<h2>Buttons for Alarms  at Emergency Level 0-5 and Status of ?TBD? </h2>
+	<h2>Buttons for Alarms  at Emergency Level 0-6 and Status of ?TBD? </h2>
     Press a button to issue an Alarm, or to Display status of TBD.
     <p id="Value">Sensor Value: -</p>
     <p id="level">Emergency Level: -</p>
 
     <div class="button-container">
         <div class="emergency-buttons">
+            <button onclick="sendEmergency(0)">Emergency Level 0</button>
             <button onclick="sendEmergency(1)">Emergency Level 1</button>
             <button onclick="sendEmergency(2)">Emergency Level 2</button>
             <button onclick="sendEmergency(3)">Emergency Level 3</button>
             <button onclick="sendEmergency(4)">Emergency Level 4</button>
             <button onclick="sendEmergency(5)">Emergency Level 5</button>
+            <button onclick="sendEmergency(6)">Emergency Level 6</button>
         </div>
         <div class="fetch-button">
             <button onclick="fetchData()">Display Sensor Value</button>
         </div>
     </div>
 
+
+	
+	<h1>Setup MQTT Broker</h1>
+	<form>
+		<label for="brokerURL">Broker URL :</label>
+		<input type="text" value="public.cloud.shiftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="brokerUser">Broker User :</label>
+		<input type="text" value="public" id="nameUser" name="nameUser" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="brokerPassword">Broker Password:</label>
+		<input type="password" value="public" id="namePassword" name="namePassword" required minlength="4" maxlength="100" size="50" />
+		<br>		
+		<div class="fetch-button">
+			<button onclick="setBrokerURL()">Set Broker Values</button>
+		</div>
+	</form>
+	
     <script>
         function updateSensorValue(value) {
             document.getElementById('Value').innerText = 'Sensor Value: ' + value;
@@ -162,7 +189,6 @@
 		
 		let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
 		let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
-		let metric_old = 'MessageFromProcessing_PMD: 4'
 		let metric = 'MessageFromProcessing_PMD: '
 		metric = metric + level
 
@@ -177,12 +203,24 @@
 
 		client.on('message', function (topic2, message2) { // message is Buffer
 			console.log("Got a subscription message topic 20240421_USA4: ");
-			console.log(message2.toString());
-});
-
-client.end();
+			console.log(message2.toString());		
+			});
+		client.end();		
+        }//end emergency level
 		
+        function setBrokerURL() {
+			event.preventDefault(); //Do not reload page
+			console.log("setBrokerURL()");			
         }
+
+        function setBrokerUser() {
+			console.log("setBrokerUser()");			
+        }
+        function setBrokerPW() {
+			console.log("setBrokerPW()");			
+        }
+		
     </script>
+	
 </body>
 </html>
