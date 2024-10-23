@@ -1,6 +1,6 @@
 // Define the GPIO pins for CLK, DT, and SW
-const int CLK = 14;   // Connected to the CLK pin of the encoder
-const int DT = 26;    // Connected to the DT pin of the encoder
+const int CLK = 26;   // Connected to the CLK pin of the encoder
+const int DT = 14;    // Connected to the DT pin of the encoder
 const int SW = 25;    // Connected to the SW (Switch) pin of the encoder
 
 int currentStateCLK;
@@ -13,8 +13,8 @@ void setup() {
   Serial.begin(115200);
 
   // Set CLK and DT as inputs
-  pinMode(CLK, INPUT);
-  pinMode(DT, INPUT);
+  pinMode(CLK, INPUT );
+  pinMode(DT, INPUT );
   
   // Set SW (Switch) as input with internal pull-up resistor
   pinMode(SW, INPUT_PULLUP);
