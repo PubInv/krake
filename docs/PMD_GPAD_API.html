@@ -1,0 +1,287 @@
+<!--
+File name: PMD_GPAD_API.html
+This document Approximates the GPAD API messages to a KRAKE   
+Public Invention   
+LICENSE "GNU Affero General Public License, version 3 "   
+Author: Forrest Lee Erickson
+Date: 20241023
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMD_GPAD_API</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+			fooground: linear-gradient(135deg, #b3ffe1, #05823e);
+            background: linear-gradient(135deg, #ffb3e1, #82053e);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #2e2e2e; /* Darker text color for better contrast */
+        }
+
+        h1, h2, p {
+            text-align: left;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        p {
+            margin: 5px 0;			
+        }
+
+        #Value, #level {
+            font-size: 1.2em;
+        }
+
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            background-color: grey;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .emergency-buttons, .fetch-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center ;
+            flex-wrap: wrap;
+        }
+
+        .setup-buttons, .fetch-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center ;
+            flex-wrap: wrap;
+        }
+
+        .fetch-button {
+            margin-top: 20px;
+        }
+
+        .medical-logo {
+            position: absolute;
+            top: 10px;
+            left : 10px;
+            width: 80px;
+            height: 100px;
+			float: left;
+			overflow: hidden;
+        }		
+	
+    </style>
+	
+	<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+
+
+
+	<BR CLEAR="left"> <!--Stops text wrap on immaes -->
+	<figure style="float:left; margin-right:20px; margin-bottom:10px">
+		<img src="snakeOil.png" 
+			width="100px" height="100px" class="medical-logo" 
+		/>
+		
+	</figure>
+
+    <h1>PMD_GPAD_API</h1>
+	<hr>
+	This web page is a PMD (Pseudo Medical Device) with which to control a Krake anunciator device by the protocol MQTT. 
+	<br>
+	The PMD publishes to a "topic" which is made up of the model name, KRAKE, and serial number of the KRAKE.  It is contatinated by an underscored.
+	<hr>
+	<h1>Set MQTT Broker</h1>
+	The default example MQTT broker is: mqtt://public:public@public.cloud.shiftr.io
+	<BR>
+	Set up another broker with this form. 
+	
+
+	<h2>Setup MQTT Broker</h2>
+	<form>
+		<label for="brokerURL">Broker URL :</label>
+		<input type="text" value="public.cloud.shiftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="username">Broker User :</label>
+		<input type="text" value="public" id="username" name="username" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="password">Broker Password:</label>
+		<input type="password" value="public" id="password" name="namePassword" required minlength="4" maxlength="100" size="50" />
+		<br>		
+		<div class="fetch-button">
+			<button onclick="setBroker()">Set Broker Values</button>
+		</div>
+	</form>
+	
+	
+	<h1>Set Krake Target</h1>
+	The Krake subscribes to data publised to a topic a MODEL_SERIALNUMBER.
+	<br>	
+	So we set this web page to publish to the target Krake's MODEL_SERIALNUMBER.
+	<br>
+	Where MODEL is KRAKE, and where SERIALNUMBER is of the form AAANNN an alpha and numeric unique serial identifier of a specific KRAKE. <b>Example: KRAKE_LB2</b>
+	<form>	
+		<label for="nameTopic">Device Model_SerialNumber (for device "Topics"):</label>
+		<input type="text" value="KRAKE_SigmaDraconisVII" id="nameTopic" name="nameTopic" required size="50" />		
+		<br>		
+		<div class="fetch-button">
+			<button onclick="setTopic(this)">Set KRAKE Topic</button>
+		</div>
+	<b>Some KRAKEs: </b>
+		<UL>
+		<li>KRAKE_MOCKING
+		<li>KRAKE_LB1
+		<li>KRAKE_LB2
+		<li>KRAKE_LB3
+		<li>KRAKE_LB4
+		<li>KRAKE_LB5
+		<li>KRAKE_USA1
+		<li>KRAKE_USA2
+		<li>KRAKE_USA3
+		<li>KRAKE_USA4
+		<li>KRAKE_USA5
+		</UL>
+	</form>
+	
+	
+	<br>
+	<h1>Issue an Alarm, Check Status</h1>
+	<h2>Emergency Level 0-6 and Status of ?TBD? </h2>
+    Press a button to issue an Alarm, or to Display status of TBD.
+    <div class="button-container">
+        <div class="emergency-buttons">
+            <button onclick="publishEmergency(0)">Level 0, OK</button>
+            <button onclick="publishEmergency(1)">Level 1,INFO. </button>
+            <button onclick="publishEmergency(2)">Level 2, PROB.</button>
+            <button onclick="publishEmergency(3)">Level 3, WARN</button>
+            <button onclick="publishEmergency(4)">Level 4, CRIT.</button>
+            <button onclick="publishEmergency(5)">Level 5, PANIC</button>
+            <button onclick="publishEmergency(6)">All Emergencies Level 6</button>
+        </div>
+		
+        <div class="fetch-button">
+            <button onclick="fetchMuteStatus()">Get Mute Status</button>
+        </div>
+		<p id="muteValue">Mute Value: -</p>
+    </div>
+
+	<h6> 	Public Invention,  LICENSE "GNU Affero General Public License, version 3 " </h6>
+	
+    <script>
+	
+	    function setBroker() {
+			event.preventDefault(); //Do not reload page
+			console.log("setBroker URL, User, PW");			
+        }//end setBroker()
+
+
+	    function setTopic(val) {
+			event.preventDefault(); //Do not reload page
+			console.log("setTopic val: " + val);						
+			console.log("setTopic val.id: " + val.id);						
+			console.log("setTopic val.name: " + val.name);						
+        }//end setTopic()
+
+
+		let brokerURL = 'public.cloud.shiftr.io';
+		let brokerUser = 'public';
+		let brokerPassword = 'public';
+		let topic2 = "20240421_USA4"
+
+		function publishEmergency(level) {
+
+		//	let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
+			let client = mqtt.connect('wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL);
+
+			let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
+			let metric = 'MessageFromProcessing_PMD: '
+			metric = metric + level
+
+			client.subscribe(topic);
+			client.subscribe("20240421_USA4");
+
+			client.publish(topic, metric);
+				console.log("Published to: " + topic);
+				console.log("the  message: " + metric);
+
+			client.on('message', function (topic2, message2) { // message is Buffer
+				console.log("Got a subscription message topic 20240421_USA4: ");
+				console.log(message2.toString());		
+				});
+			client.end();	
+		}//end publishEmergency
+
+		
+        function updateSensorValue(value) {
+            document.getElementById('Value').innerText = 'Sensor Value: ' + value;
+        }
+
+        function updateLevel(level) {
+            document.getElementById('level').innerText = 'Emergency Level: ' + level;
+        }
+
+        function fetchMuteStatus(muteStatus) {
+			console.log("fetchMuteStatus called");
+			//to do write the code 
+			document.getElementById('muteValue').innerText = 'Mute Status: ' + muteStatus;
+        }
+
+        function sendEmergency(level) {
+
+            const emergencyEndpoint = 'http://192.168.1.3:5500/emergency';
+
+            fetch(emergencyEndpoint, {
+                method: 'POST',
+                body: JSON.stringify({ level: level }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.level !== undefined) {
+                    updateLevel(data.level);
+                } else {
+                    console.error('Invalid data format:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending emergency request:', error);
+            });			
+        }//end emergency level
+		
+    </script>
+	
+</body>
+</html>
+
