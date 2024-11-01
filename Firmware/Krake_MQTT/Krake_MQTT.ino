@@ -13,12 +13,9 @@
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
 
-// Receiver ESP32 Code (Handling Emergency Level 6)
-
 // Description:
-// The Receiver ESP32 connects to the MQTT broker and listens for emergency messages from the Sender ESP32.
-// When an emergency level 6 message is received, it turns on LEDs connected to GPIO pins (defined for various alerts).
-// The code also subscribes to the temperature topic but focuses on responding to emergency level messages.
+// The Krake (an ESP32) subscribes and publishes to an MQTT broker with topics
+// defined in user manual "Topic is “KRAKE_” plus a serial number plus a suffix"
 
 #include <WiFi.h>
 #include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
@@ -40,9 +37,7 @@ const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
 // MQTT Topics
-//const char* temperature_topic = "esp32/temperature";
-//const char* emergency_topic = "esp32/emergency";  // Topic for emergency messages
-
+// User must modify the device serial number. In this case change the part "USA4" as approprate.
 const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA4_ALM";
 const char* publish_Ack_Topic = "KRAKE_20240421_USA4_ACK";
 
@@ -72,11 +67,6 @@ void proccessPayloadOnLamps(String &payload) {
 
   if (payload < "1") {
     //Turn off all LAMPS
-    //    digitalWrite(LAMP1, LOW);
-    //    digitalWrite(LAMP2, LOW);
-    //    digitalWrite(LAMP3, LOW);
-    //    digitalWrite(LAMP4, LOW);
-    //    digitalWrite(LAMP5, LOW);
   } else if (payload == "a1MessageFromProcessing_PMD:1") {
     //Turn on only LAMP 1
     digitalWrite(LAMP1, HIGH);
@@ -114,11 +104,7 @@ void proccessPayloadOnLamps(String &payload) {
     digitalWrite(LAMP5, HIGH);
   } else if (payload == "a6MessageFromProcessing_PMD:6") {
     //Turn on all lamps
-    digitalWrite(LAMP1, HIGH);
-    digitalWrite(LAMP2, HIGH);
-    digitalWrite(LAMP3, HIGH);
-    digitalWrite(LAMP4, HIGH);
-    digitalWrite(LAMP5, HIGH);
+    turnOnAllLamps();
   }// end parsing message
 }// end proccessPayloadOnLamps
 
@@ -135,8 +121,60 @@ void publishOnLineMsg(void) {
   }
 }
 
+void setup_wifi() {
+  delay(10);
+  Serial.println();
+  Serial.print("Connecting to WiFi: ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+}
 
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
+      Serial.println("success!");
+      client.subscribe(subscribe_Alarm_Topic);    // Subscribe to GPAD API alarms
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      delay(5000);
+    }
+  }
+}
+
+// Function to turn on all lamps
+void turnOnAllLamps() {
+  digitalWrite(LED_D9, HIGH);  // Turn on Mute1 LED
+}
 //end Functions
+
+// Handeler for MQTT subscrived messages
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  String message = "";
+  for (int i = 0; i < length; i++) {
+    message += (char)payload[i];
+  }
+  Serial.println(message);
+
+  if (String(topic) ==  subscribe_Alarm_Topic) {
+    Serial.println("Got MessageFromProcessing_PMD");
+    proccessPayloadOnLamps(message);  // Change LAMPS baised on the payload
+  }
+}//end call back
+
+//Call backs
+
+//end Call backs
 
 void setup() {
   const int LED_BUILTIN = 2;    // ESP32 Kit
@@ -189,68 +227,3 @@ void loop() {
   publishOnLineMsg();
   wink();
 }//end loop();
-
-// Handeler for MQTT subscrived messages
-void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  String message = "";
-  for (int i = 0; i < length; i++) {
-    message += (char)payload[i];
-  }
-  Serial.println(message);
-
-  if (String(topic) ==  subscribe_Alarm_Topic) {
-    Serial.println("Got MessageFromProcessing_PMD");
-    proccessPayloadOnLamps(message);  // Change LAMPS baised on the payload
-  }
-
-
-  // Handle emergency messages
-  //  if (String(topic) == emergency_topic) {
-  //    int emergencyLevel = message.toInt();
-  //    if (emergencyLevel == 6) {
-  //      Serial.println("Emergency Level 6 received! Turning on all LEDs.");
-  //      turnOnAllLamps();  // Turn on all the lamps
-  //    }
-  //  }
-}
-
-void setup_wifi() {
-  delay(10);
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-}
-
-void reconnect() {
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
-      Serial.println("connected");
-      //      client.subscribe(temperature_topic);  // Subscribe to temperature topic
-      //      client.subscribe(emergency_topic);    // Subscribe to emergency topic
-      client.subscribe(subscribe_Alarm_Topic);    // Subscribe to GPAD API alarms
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      delay(5000);
-    }
-  }
-}
-
-// Function to turn on all lamps
-void turnOnAllLamps() {
-  digitalWrite(LED_D9, HIGH);  // Turn on Mute1 LED
-}
