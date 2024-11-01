@@ -56,56 +56,80 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 //Functions
+// Proccess sort of like the GPAD API payload
 void proccessPayloadOnLamps(String &payload) {
-  //void proccessPayloadOnLamps(char* &payload) {
-  // Proccess payload on LAMPs
-  digitalWrite(LAMP1, LOW);
-  digitalWrite(LAMP2, LOW);
-  digitalWrite(LAMP3, LOW);
-  digitalWrite(LAMP4, LOW);
-  digitalWrite(LAMP5, LOW);
 
-  if (payload < "1") {
-    //Turn off all LAMPS
-  } else if (payload == "a1MessageFromProcessing_PMD:1") {
-    //Turn on only LAMP 1
-    digitalWrite(LAMP1, HIGH);
-    digitalWrite(LAMP2, LOW);
-    digitalWrite(LAMP3, LOW);
-    digitalWrite(LAMP4, LOW);
-    digitalWrite(LAMP5, LOW);
-  } else if (payload == "a2MessageFromProcessing_PMD:2") {
-    //Turn on only LAMP 2
-    digitalWrite(LAMP1, LOW);
-    digitalWrite(LAMP2, HIGH);
-    digitalWrite(LAMP3, LOW);
-    digitalWrite(LAMP4, LOW);
-    digitalWrite(LAMP5, LOW);
-  } else if (payload == "a3MessageFromProcessing_PMD:3") {
-    //Turn on only LAMP 3
-    digitalWrite(LAMP1, LOW);
-    digitalWrite(LAMP2, LOW);
-    digitalWrite(LAMP3, HIGH);
-    digitalWrite(LAMP4, LOW);
-    digitalWrite(LAMP5, LOW);
-  } else if (payload == "a4MessageFromProcessing_PMD:4") {
-    //Turn on only LAMP 4
-    digitalWrite(LAMP1, LOW);
-    digitalWrite(LAMP2, LOW);
-    digitalWrite(LAMP3, LOW);
-    digitalWrite(LAMP4, HIGH);
-    digitalWrite(LAMP5, LOW);
-  } else if (payload == "a5MessageFromProcessing_PMD:5") {
-    //Turn on only LAMP 5
-    digitalWrite(LAMP1, LOW);
-    digitalWrite(LAMP2, LOW);
-    digitalWrite(LAMP3, LOW);
-    digitalWrite(LAMP4, LOW);
-    digitalWrite(LAMP5, HIGH);
-  } else if (payload == "a6MessageFromProcessing_PMD:6") {
-    //Turn on all lamps
-    turnOnAllLamps();
-  }// end parsing message
+  if (payload.charAt(0) == 'h') {
+    Serial.println("Got request for help");
+    client.publish(publish_Ack_Topic, "Got request for help");
+  } else if (payload.charAt(0) == 's') {
+    Serial.println("Got set mute");
+    client.publish(publish_Ack_Topic, "Got set mute");
+  } else if (payload.charAt(0) == 'u') {
+    Serial.println("Got set Unmute");
+    client.publish(publish_Ack_Topic, "Got set Unmute");
+  } else if (payload.charAt(0) == 'a') {
+    //Parse on second character
+    if ((payload.charAt(1) == '0')) {
+//      client.publish(publish_Ack_Topic, "Alarm " + payload.charAt(1));
+      client.publish(publish_Ack_Topic, "Alarm 0" );
+      //Turn none on
+      digitalWrite(LAMP1, LOW);
+      digitalWrite(LAMP2, LOW);
+      digitalWrite(LAMP3, LOW);
+      digitalWrite(LAMP4, LOW);
+      digitalWrite(LAMP5, LOW);
+    } else if ((payload.charAt(1) == '1')) {
+       client.publish(publish_Ack_Topic, "Alarm 1");
+      //Turn on only LAMP 1
+      digitalWrite(LAMP1, HIGH);
+      digitalWrite(LAMP2, LOW);
+      digitalWrite(LAMP3, LOW);
+      digitalWrite(LAMP4, LOW);
+      digitalWrite(LAMP5, LOW);
+    } else if ((payload.charAt(1) == '2')) {
+      client.publish(publish_Ack_Topic, "Alarm 2");
+      //Turn on only LAMP 2
+      digitalWrite(LAMP1, LOW);
+      digitalWrite(LAMP2, HIGH);
+      digitalWrite(LAMP3, LOW);
+      digitalWrite(LAMP4, LOW);
+      digitalWrite(LAMP5, LOW);
+    } else if ((payload.charAt(1) == '3')) {
+      client.publish(publish_Ack_Topic, "Alarm 3");
+      //Turn on only LAMP 3
+      digitalWrite(LAMP1, LOW);
+      digitalWrite(LAMP2, LOW);
+      digitalWrite(LAMP3, HIGH);
+      digitalWrite(LAMP4, LOW);
+      digitalWrite(LAMP5, LOW);
+    } else if ((payload.charAt(1) == '4')) {
+      client.publish(publish_Ack_Topic, "Alarm 4");
+      //Turn on only LAMP 4
+      digitalWrite(LAMP1, LOW);
+      digitalWrite(LAMP2, LOW);
+      digitalWrite(LAMP3, LOW);
+      digitalWrite(LAMP4, HIGH);
+      digitalWrite(LAMP5, LOW);
+    } else if ((payload.charAt(1) == '5')) {
+      client.publish(publish_Ack_Topic, "Alarm 5");
+      //Turn on only LAMP 5
+      digitalWrite(LAMP1, LOW);
+      digitalWrite(LAMP2, LOW);
+      digitalWrite(LAMP3, LOW);
+      digitalWrite(LAMP4, LOW);
+      digitalWrite(LAMP5, HIGH);
+    } else if ((payload.charAt(1) == '6')) {
+      client.publish(publish_Ack_Topic, "Alarm 6");
+      //Turn on all lamps
+      turnOnAllLamps();
+    } else {// other than 0-6
+      client.publish(publish_Ack_Topic, "Unrecognized alarm");
+    }// end parsing message
+  } else {
+    Serial.println("Unrecognized command: " + payload.charAt(0));
+    client.publish(publish_Ack_Topic, "Unrecognized command: ");
+  }
 }// end proccessPayloadOnLamps
 
 
@@ -151,7 +175,11 @@ void reconnect() {
 
 // Function to turn on all lamps
 void turnOnAllLamps() {
-  digitalWrite(LED_D9, HIGH);  // Turn on Mute1 LED
+  digitalWrite(LAMP1, HIGH);
+  digitalWrite(LAMP2, HIGH);
+  digitalWrite(LAMP3, HIGH);
+  digitalWrite(LAMP4, HIGH);
+  digitalWrite(LAMP5, HIGH);
 }
 //end Functions
 
