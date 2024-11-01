@@ -60,7 +60,75 @@ const int LAMP5 = 19;   // D6 lost sock
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+//Functions
+void proccessPayloadOnLamps(String &payload) {
+  //void proccessPayloadOnLamps(char* &payload) {
+  // Proccess payload on LAMPs
+  digitalWrite(LAMP1, LOW);
+  digitalWrite(LAMP2, LOW);
+  digitalWrite(LAMP3, LOW);
+  digitalWrite(LAMP4, LOW);
+  digitalWrite(LAMP5, LOW);
+
+  if (payload < "1") {
+    //Turn off all LAMPS
+    //    digitalWrite(LAMP1, LOW);
+    //    digitalWrite(LAMP2, LOW);
+    //    digitalWrite(LAMP3, LOW);
+    //    digitalWrite(LAMP4, LOW);
+    //    digitalWrite(LAMP5, LOW);
+  } else if (payload == "a1MessageFromProcessing_PMD:1") {
+    //Turn on only LAMP 1
+    digitalWrite(LAMP1, HIGH);
+    digitalWrite(LAMP2, LOW);
+    digitalWrite(LAMP3, LOW);
+    digitalWrite(LAMP4, LOW);
+    digitalWrite(LAMP5, LOW);
+  } else if (payload == "a2MessageFromProcessing_PMD:2") {
+    //Turn on only LAMP 2
+    digitalWrite(LAMP1, LOW);
+    digitalWrite(LAMP2, HIGH);
+    digitalWrite(LAMP3, LOW);
+    digitalWrite(LAMP4, LOW);
+    digitalWrite(LAMP5, LOW);
+  } else if (payload == "a3MessageFromProcessing_PMD:3") {
+    //Turn on only LAMP 3
+    digitalWrite(LAMP1, LOW);
+    digitalWrite(LAMP2, LOW);
+    digitalWrite(LAMP3, HIGH);
+    digitalWrite(LAMP4, LOW);
+    digitalWrite(LAMP5, LOW);
+  } else if (payload == "a4MessageFromProcessing_PMD:4") {
+    //Turn on only LAMP 4
+    digitalWrite(LAMP1, LOW);
+    digitalWrite(LAMP2, LOW);
+    digitalWrite(LAMP3, LOW);
+    digitalWrite(LAMP4, HIGH);
+    digitalWrite(LAMP5, LOW);
+  } else if (payload == "a5MessageFromProcessing_PMD:5") {
+    //Turn on only LAMP 5
+    digitalWrite(LAMP1, LOW);
+    digitalWrite(LAMP2, LOW);
+    digitalWrite(LAMP3, LOW);
+    digitalWrite(LAMP4, LOW);
+    digitalWrite(LAMP5, HIGH);
+  } else if (payload == "a6MessageFromProcessing_PMD:6") {
+    //Turn on all lamps
+    digitalWrite(LAMP1, HIGH);
+    digitalWrite(LAMP2, HIGH);
+    digitalWrite(LAMP3, HIGH);
+    digitalWrite(LAMP4, HIGH);
+    digitalWrite(LAMP5, HIGH);
+  }// end parsing message
+}// end proccessPayloadOnLamps
+
+//end Functions
+
 void setup() {
+  const int LED_BUILTIN = 2;    // ESP32 Kit
+  pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
+  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+
   Serial.begin(BAUDRATE);
   delay(500);
   //Serial splash
@@ -96,7 +164,8 @@ void setup() {
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-}
+  digitalWrite(LED_BUILTIN, LOW);
+}// end setup()
 
 void loop() {
   if (!client.connected()) {
@@ -110,12 +179,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-
   String message = "";
   for (int i = 0; i < length; i++) {
     message += (char)payload[i];
   }
   Serial.println(message);
+
+  if (String(topic) ==  subscribe_Alarm_Topic) {
+    Serial.println("Got MessageFromProcessing_PMD");
+    proccessPayloadOnLamps(message);  // Change LAMPS baised on the payload
+  }
+
 
   // Handle emergency messages
   //  if (String(topic) == emergency_topic) {
