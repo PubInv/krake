@@ -1,14 +1,15 @@
 // File name: Krake_MQTT
-// Author: Nagham Kheir
+// Author: Nagham Kheir, Forrest Lee Erickson
 // Date: 20241014
 // LICENSE "GNU Affero General Public License, version 3 "
 // Hardware ESP32 kit
+// 20241101 Update for GPAD API and topics "_ALM" and "_ACK"
 
 // Customized this by changing these defines
 #define PROG_NAME "Krake_MQTT "
-#define VERSION "V0.0.x "
-#define MODEL_NAME "Model: Krake_MQTT"
-#define DEVICE_UNDER_TEST "SN: xxxxx"  //A Serial Number
+#define VERSION "V0.0.1 "
+#define MODEL_NAME "KRAKE_"
+#define DEVICE_UNDER_TEST "20240421_USA4"  //A Serial Number  
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
 
@@ -20,11 +21,18 @@
 // The code also subscribes to the temperature topic but focuses on responding to emergency level messages.
 
 #include <WiFi.h>
-#include <PubSubClient.h>
+#include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
+
+#define BAUDRATE 115200
 
 // WiFi credentials
-const char* ssid = "ADT";
-const char* password = "adt@12345";
+//const char* ssid = "ADT";
+//const char* password = "adt@12345";
+
+//Maryville network
+const char* ssid = "VRX";
+const char* password = "textinsert";
+
 
 // MQTT Broker
 const char* mqtt_server = "public.cloud.shiftr.io";
@@ -32,10 +40,15 @@ const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
 // MQTT Topics
-const char* temperature_topic = "esp32/temperature";
-const char* emergency_topic = "esp32/emergency";  // Topic for emergency messages
+//const char* temperature_topic = "esp32/temperature";
+//const char* emergency_topic = "esp32/emergency";  // Topic for emergency messages
+
+const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA4_ALM";
+const char* publish_Ack_Topic = "KRAKE_20240421_USA4_ACK";
 
 // LED Pins
+// To Do Define ESP32 pins for actual Krake LEDs
+// Homework2 Assembly, akd PMD LAMPS aka Other LEDs
 const int LED_D9 = 23;  // Mute1 LED on PMD
 const int LAMP1 = 15;   // D5 cold food
 const int LAMP2 = 4;    // D3 baby crying
@@ -48,15 +61,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 void setup() {
-  Serial.begin(115200);
-  setup_wifi();
-  client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
-
-  Serial.begin(115200);
-  while (!Serial) {
-    ;  // wait for serial port to connect. Needed for native USB
-  }
+  Serial.begin(BAUDRATE);
   delay(500);
   //Serial splash
   Serial.println(F("==================================="));
@@ -64,6 +69,8 @@ void setup() {
   Serial.println(VERSION);
   Serial.println(MODEL_NAME);
   Serial.println(DEVICE_UNDER_TEST);
+  Serial.print("Alarm Topic: ");
+  Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
@@ -80,6 +87,15 @@ void setup() {
 
   // Turn off all LEDs initially
   turnOnAllLamps();
+
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
+  Serial.begin(115200);
+  while (!Serial) {
+    ;  // wait for serial port to connect. Needed for native USB
+  }
 }
 
 void loop() {
@@ -89,6 +105,7 @@ void loop() {
   client.loop();
 }
 
+// Handeler for MQTT subscrived messages
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -101,13 +118,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println(message);
 
   // Handle emergency messages
-  if (String(topic) == emergency_topic) {
-    int emergencyLevel = message.toInt();
-    if (emergencyLevel == 6) {
-      Serial.println("Emergency Level 6 received! Turning on all LEDs.");
-      turnOnAllLamps();  // Turn on all the lamps
-    }
-  }
+  //  if (String(topic) == emergency_topic) {
+  //    int emergencyLevel = message.toInt();
+  //    if (emergencyLevel == 6) {
+  //      Serial.println("Emergency Level 6 received! Turning on all LEDs.");
+  //      turnOnAllLamps();  // Turn on all the lamps
+  //    }
+  //  }
 }
 
 void setup_wifi() {
@@ -132,8 +149,9 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
       Serial.println("connected");
-      client.subscribe(temperature_topic);  // Subscribe to temperature topic
-      client.subscribe(emergency_topic);    // Subscribe to emergency topic
+      //      client.subscribe(temperature_topic);  // Subscribe to temperature topic
+      //      client.subscribe(emergency_topic);    // Subscribe to emergency topic
+      client.subscribe(subscribe_Alarm_Topic);    // Subscribe to GPAD API alarms
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
