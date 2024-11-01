@@ -122,6 +122,20 @@ void proccessPayloadOnLamps(String &payload) {
   }// end parsing message
 }// end proccessPayloadOnLamps
 
+
+// A periodic message identifying the subscriber (Krake) is on line.
+
+void publishOnLineMsg(void) {
+  static unsigned long lastMillis = 0;  // Sets timing for periodic MQTT publish message
+  // publish a message roughly every second.
+  if (millis() - lastMillis > 10000) {
+    lastMillis = millis();
+    client.publish(publish_Ack_Topic, " is online");
+    digitalWrite(LED_D9, !digitalRead(LED_D9));   // Toggle
+  }
+}
+
+
 //end Functions
 
 void setup() {
@@ -172,6 +186,7 @@ void loop() {
     reconnect();
   }
   client.loop();
+  publishOnLineMsg();
   wink();
 }//end loop();
 
