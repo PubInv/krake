@@ -172,7 +172,8 @@ void loop() {
     reconnect();
   }
   client.loop();
-}
+  wink();
+}//end loop();
 
 // Handeler for MQTT subscrived messages
 void callback(char* topic, byte* payload, unsigned int length) {
