@@ -5,7 +5,7 @@
 // Date: 20241017 Set title on window.
 // Date: 20241024 Publish to a Krake model and serial number. Works with "FT_PMD_MQTT ""V0.7 "
 // Date: 20241031 Begin publishing and subscriving messages in the GPAD API format of 20241031. Need a KRAKE which can parse GPAD API for this.
-// Date: 20241101 Saved and renamed from FT_processingPMD_MQTT 
+// Date: 20241101 Saved and renamed from FT_processingPMD_MQTT.  Fixed error on KRAKE_DTA_TOPIC[] from KRAKE_20240421_LEB1_ALM to KRAKE_20240421_LEB1_ALM
 
 // Pseude Medical Device in Processing. 
 // This example sketch connects to the public shiftr.io instance and sends a message on every keystroke.
@@ -24,7 +24,7 @@
  */
 
 String PROG_NAME = "FT_processingPMD_MQTT";
-String VERSION = "V0.6 ";
+String VERSION = "V0.7 ";
 // Set the topic for the Pseude Medical Device in Processing.
 String PMD_DTA_TOPIC = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
 
@@ -33,7 +33,7 @@ String PMD_DTA_TOPIC = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
 //where ALM is from PMD to KRAKE and ACK is from KRAKE to PMD
 
 String KRAKE_DTA_TOPIC[] = {"KRAKE_20240421_USA1_ALM", "KRAKE_20240421_USA2_ALM", "KRAKE_20240421_USA3_ALM", "KRAKE_20240421_USA4_ALM", "KRAKE_20240421_USA5_ALM", 
-  "KRAKE_20240421_LEB1", "KRAKE_20240421_LEB2", "KRAKE_20240421_LEB3", "KRAKE_20240421_LEB4", "KRAKE_20240421_LEB5" }; //Publish to a Krake data topic for ALARMs.
+  "KRAKE_20240421_LEB1_ALM", "KRAKE_20240421_LEB2_ALM", "KRAKE_20240421_LEB_ALM3", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
 
 String KRAKE_ACK_TOPIC[] = {"KRAKE_20240421_USA1_ACK", "KRAKE_20240421_USA2_ACK", "KRAKE_20240421_USA3_ACK", "KRAKE_20240421_USA4_ACK", "KRAKE_20240421_USA5_ACK", 
   "KRAKE_20240421_LEB1_ACK", "KRAKE_20240421_LEB2_ACK", "KRAKE_20240421_LEB3_ACK", "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
