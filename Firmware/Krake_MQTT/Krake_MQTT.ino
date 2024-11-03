@@ -6,8 +6,7 @@
 // 20241101 Update for GPAD API and topics "_ALM" and "_ACK"
 
 // Customized this by changing these defines
-#define PROG_NAME "Krake_MQTT "
-#define VERSION "V0.0.1 "
+#define COMPANY_NAME "Public Invention "
 #define MODEL_NAME "KRAKE_"
 #define DEVICE_UNDER_TEST "20240421_USA5"  //A Serial Number  
 #define LICENSE "GNU Affero General Public License, version 3 "
@@ -60,6 +59,31 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 //Functions
+
+void serialSplash(void) {
+  //Serial splash
+  Serial.println(F("==================================="));
+  Serial.println(COMPANY_NAME);
+  Serial.print("MODEL_NAME: ");
+  Serial.println(MODEL_NAME);
+  Serial.print("PROG_NAME&VERSION: ");
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
+  Serial.print("DEVICE_UNDER_TEST: ");
+  Serial.println(DEVICE_UNDER_TEST);
+  String mac = WiFi.macAddress();                                       // Get the MAC address and convert it to a string
+  mac.replace(":", "");
+  Serial.print(F("MAC: "));
+  Serial.println(mac);
+  Serial.println("My mDNS address: http://" + mac + ".local");
+  Serial.print("Alarm Topic: ");
+  Serial.println(subscribe_Alarm_Topic);
+  Serial.print(F("Compiled at: "));
+  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+  Serial.println(LICENSE);
+  Serial.println(F("==================================="));
+}// end serialSplash
+
 // Proccess sort of like the GPAD API payload
 void proccessPayloadOnLamps(String &payload) {
 
@@ -75,7 +99,7 @@ void proccessPayloadOnLamps(String &payload) {
   } else if (payload.charAt(0) == 'a') {
     //Parse on second character
     if ((payload.charAt(1) == '0')) {
-//      client.publish(publish_Ack_Topic, "Alarm " + payload.charAt(1));
+      //      client.publish(publish_Ack_Topic, "Alarm " + payload.charAt(1));
       client.publish(publish_Ack_Topic, "Alarm 0" );
       //Turn none on
       digitalWrite(LAMP1, LOW);
@@ -84,7 +108,7 @@ void proccessPayloadOnLamps(String &payload) {
       digitalWrite(LAMP4, LOW);
       digitalWrite(LAMP5, LOW);
     } else if ((payload.charAt(1) == '1')) {
-       client.publish(publish_Ack_Topic, "Alarm 1");
+      client.publish(publish_Ack_Topic, "Alarm 1");
       //Turn on only LAMP 1
       digitalWrite(LAMP1, HIGH);
       digitalWrite(LAMP2, LOW);
@@ -214,20 +238,11 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
 
   Serial.begin(BAUDRATE);
+  while (!Serial) {
+    ;  // wait for serial port to connect. Needed for native USB
+  }
   delay(500);
-  //Serial splash
-  Serial.println(F("==================================="));
-  Serial.print(PROG_NAME);
-  Serial.println(VERSION);
-  Serial.println(MODEL_NAME);
-  Serial.println(DEVICE_UNDER_TEST);
-  Serial.print("Alarm Topic: ");
-  Serial.println(subscribe_Alarm_Topic);
-  Serial.print(F("Compiled at: "));
-  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
-  Serial.println(LICENSE);
-  Serial.println(F("==================================="));
-  Serial.println();
+  serialSplash();
 
   // Set LED pins as outputs
   pinMode(LED_D9, OUTPUT);
@@ -244,10 +259,6 @@ void setup() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  Serial.begin(115200);
-  while (!Serial) {
-    ;  // wait for serial port to connect. Needed for native USB
-  }
   digitalWrite(LED_BUILTIN, LOW);
 }// end setup()
 
