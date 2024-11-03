@@ -152,6 +152,7 @@ void proccessPayloadOnLamps(String &payload) {
       //Turn on all lamps
       turnOnAllLamps();
     } else {// other than 0-6
+      Serial.println("Unrecognized alarm");
       client.publish(publish_Ack_Topic, "Unrecognized alarm");
     }// end parsing message
   } else {
@@ -162,7 +163,7 @@ void proccessPayloadOnLamps(String &payload) {
 
 
 // A periodic message identifying the subscriber (Krake) is on line.
-
+// Toggles and LED.
 void publishOnLineMsg(void) {
   static unsigned long lastMillis = 0;  // Sets timing for periodic MQTT publish message
   // publish a message roughly every second.
@@ -185,6 +186,9 @@ void setup_wifi() {
   }
   Serial.println("");
   Serial.println("WiFi connected");
+  int rssi = WiFi.RSSI();
+  Serial.print("Signal Strength (RSSI): ");
+  Serial.println(rssi);
 }
 
 void reconnect() {
