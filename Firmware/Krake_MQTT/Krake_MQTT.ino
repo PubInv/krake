@@ -9,7 +9,7 @@
 #define PROG_NAME "Krake_MQTT "
 #define VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
-#define DEVICE_UNDER_TEST "20240421_USA4"  //A Serial Number  
+#define DEVICE_UNDER_TEST "20240421_LEB1"  //A Serial Number  
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
 
@@ -23,23 +23,23 @@
 #define BAUDRATE 115200
 
 // WiFi credentials
-//const char* ssid = "ADT";
-//const char* password = "adt@12345";
+const char* ssid = "Home";
+const char* password = "adt@1963#";
 
 //Maryville network
-const char* ssid = "VRX";
-const char* password = "textinsert";
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
 
 
 // MQTT Broker
-const char* mqtt_server = "public.cloud.shiftr.io";
+const char* mqtt_server = "krake.cloud.shiftr.io";
 const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
 // MQTT Topics
 // User must modify the device serial number. In this case change the part "USA4" as approprate.
-const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA4_ALM";
-const char* publish_Ack_Topic = "KRAKE_20240421_USA4_ACK";
+const char* subscribe_Alarm_Topic = "KRAKE_20240421_LEB1_ALM";
+const char* publish_Ack_Topic = "KRAKE_20240421_LEB1_ACK";
 
 // LED Pins
 // To Do Define ESP32 pins for actual Krake LEDs
