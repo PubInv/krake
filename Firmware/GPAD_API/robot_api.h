@@ -34,6 +34,9 @@
 #define LIGHT2 5
 #define LIGHT3 18
 #define LIGHT4 19
+// The Krake uses a dev kit LED 
+// #define LED_BUILTIN 23
+#define LED_BUILTIN 2
 #else
 #define LIGHT0 3
 #define LIGHT1 5
@@ -42,9 +45,7 @@
 #define LIGHT4 7
 #endif
 
-// The Krake uses a dev kit LED 
-// #define LED_BUILTIN 23
-#define LED_BUILTIN 23
+
 
 void unchanged_anunicateAlarmLevel(Stream *serialport);
 void annunciateAlarmLevel(Stream *serialport);

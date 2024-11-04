@@ -7,6 +7,7 @@
 
 // Customized this by changing these defines
 #define COMPANY_NAME "Public Invention "
+#define PROG_NAME "Krake_MQTT "
 #define MODEL_NAME "KRAKE_"
 #define DEVICE_UNDER_TEST "20240421_USA5"  //A Serial Number  
 #define LICENSE "GNU Affero General Public License, version 3 "
@@ -68,7 +69,7 @@ void serialSplash(void) {
   Serial.println(MODEL_NAME);
   Serial.print("PROG_NAME&VERSION: ");
   Serial.print(PROG_NAME);
-  Serial.println(VERSION);
+//  Serial.println(VERSION);
   Serial.print("DEVICE_UNDER_TEST: ");
   Serial.println(DEVICE_UNDER_TEST);
   String mac = WiFi.macAddress();                                       // Get the MAC address and convert it to a string

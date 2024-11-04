@@ -324,13 +324,21 @@ void reconnect() {
 }
 // Function to turn on all lamps
 void turnOnAllLamps() {
+  digitalWrite(LED_D9, HIGH);
   digitalWrite(LIGHT0, HIGH);
   digitalWrite(LIGHT1, HIGH);
   digitalWrite(LIGHT2, HIGH);
   digitalWrite(LIGHT3, HIGH);
   digitalWrite(LIGHT4, HIGH);
 }
-
+void turnOffAllLamps() {
+   digitalWrite(LED_D9, LOW);
+  digitalWrite(LIGHT0, LOW);
+  digitalWrite(LIGHT1, LOW);
+  digitalWrite(LIGHT2, LOW);
+  digitalWrite(LIGHT3, LOW);
+  digitalWrite(LIGHT4, LOW); 
+}
 // Proccess sort of like the GPAD API payload
 void proccessPayloadOnLamps(String &payload) {
 
@@ -434,38 +442,54 @@ void setup() {
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   Serial.println(FIRMWARE_VERSION);
 
-  serialSplash();
+ // serialSplash();
    //Lets make the LED high near the start of setup for visual clue
   pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
-
-// Set LED pins as outputs
+  // Set LED pins as outputs
+  pinMode(LED_D9, OUTPUT);
   pinMode(LIGHT0, OUTPUT);
   pinMode(LIGHT1, OUTPUT);
   pinMode(LIGHT2, OUTPUT);
   pinMode(LIGHT3, OUTPUT);
   pinMode(LIGHT4, OUTPUT);
 
+  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level) 
+
+  // Turn off all LEDs initially
+  turnOnAllLamps();
+
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
   robot_api_setup(&Serial);
 
-  setup_spi();
+ // setup_spi();
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
   Serial.println(F("Done With Setup!"));
 }// end of setup()
 
 unsigned long last_ms = 0;
-
+void toggle(int pin) {
+    digitalWrite(pin, digitalRead(pin) ? LOW : HIGH); 
+}
 void loop() {
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+  publishOnLineMsg();
   wink(); //The builtin LED
-
+// TODO: These need to be changed to use the "HMWK2" kind
 // because we are now using "songs", we need to call this periodically
-  unchanged_anunicateAlarmLevel(&Serial);
-  delay(20);
-  robot_api_loop();
+  // unchanged_anunicateAlarmLevel(&Serial);
+  // delay(20);
+  // robot_api_loop();
 
-  processSerial(&Serial);
+  // processSerial(&Serial);
 
-  // Now try to read from the SPI Port!
-  updateFromSPI();
+  // // Now try to read from the SPI Port!
+  // updateFromSPI();
 
   if (DEBUG > 1) {
     unsigned long ms = millis();
