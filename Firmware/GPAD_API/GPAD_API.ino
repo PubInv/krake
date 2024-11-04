@@ -107,7 +107,7 @@
 
 
 #define DEBUG_SPI 0
-#define DEBUG 2
+#define DEBUG 0
 
 #include<SPI.h>
 
@@ -425,7 +425,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   for (int i = 0; i < length; i++) {
     message += (char)payload[i];
   }
-  Serial.println(message);
+  Serial.print("|");
+  Serial.print(message);
+  Serial.println("|");
 
   if (String(topic) ==  subscribe_Alarm_Topic) {
     Serial.println("Got MessageFromProcessing_PMD");

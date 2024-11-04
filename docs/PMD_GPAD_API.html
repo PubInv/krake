@@ -157,7 +157,8 @@ Date: 20241023
 	Where MODEL is KRAKE, and where SERIALNUMBER is of the form AAANNN an alpha and numeric unique serial identifier of a specific KRAKE. <b>Example: KRAKE_LB2</b>
 	<form>
 		<label for="nameTopic">Device Model_SerialNumber (for device "Topics"):</label>
-		<input type="text" value="KRAKE_SigmaDraconisVII" id="nameTopic" name="nameTopic" required size="50" />
+		<input type="text" value="KRAKE_SigmaDraconisVII" id="nameTopic" name="nameTopic" required size="50">PLACEHOLDER TOPIC
+        </input>
 		<br>
 		<div class="fetch-button">
 			<button onclick="setTopic(this)">Set KRAKE Topic</button>
@@ -203,7 +204,7 @@ Date: 20241023
 	<h6> 	Public Invention,  LICENSE "GNU Affero General Public License, version 3 " </h6>
 
     <script>
-        let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
+        let topic = "PLACEHOLDER TOPIC";
 	    function setBroker() {
 			event.preventDefault(); //Do not reload page
 			console.log("setBroker URL, User, PW");
@@ -231,7 +232,7 @@ Date: 20241023
 
             let metric = 'MessageFromProcessing_PMD: ';
             // Note, Rob added "a" here...
-            metric = metric + "a" + level;
+            metric =  "a" + level + metric + "a" + level;
 
 			client.subscribe(topic);
 			client.subscribe("20240421_USA4");
