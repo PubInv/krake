@@ -1,8 +1,8 @@
 <!--
 File name: PMD_GPAD_API.html
-This document Approximates the GPAD API messages to a KRAKE   
-Public Invention   
-LICENSE "GNU Affero General Public License, version 3 "   
+This document Approximates the GPAD API messages to a KRAKE
+Public Invention
+LICENSE "GNU Affero General Public License, version 3 "
 Author: Forrest Lee Erickson
 Date: 20241023
 -->
@@ -43,7 +43,7 @@ Date: 20241023
         }
 
         p {
-            margin: 5px 0;			
+            margin: 5px 0;
         }
 
         #Value, #level {
@@ -97,10 +97,15 @@ Date: 20241023
             height: 100px;
 			float: left;
 			overflow: hidden;
-        }		
-	
-    </style>
-	
+        }
+
+</style>
+
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"></script>
+
 	<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
@@ -109,23 +114,23 @@ Date: 20241023
 
 	<BR CLEAR="left"> <!--Stops text wrap on immaes -->
 	<figure style="float:left; margin-right:20px; margin-bottom:10px">
-		<img src="snakeOil.png" 
-			width="100px" height="100px" class="medical-logo" 
+		<img src="snakeOil.png"
+			width="100px" height="100px" class="medical-logo"
 		/>
-		
+
 	</figure>
 
     <h1>PMD_GPAD_API</h1>
 	<hr>
-	This web page is a PMD (Pseudo Medical Device) with which to control a Krake anunciator device by the protocol MQTT. 
+	This web page is a PMD (Pseudo Medical Device) with which to control a Krake anunciator device by the protocol MQTT.
 	<br>
 	The PMD publishes to a "topic" which is made up of the model name, KRAKE, and serial number of the KRAKE.  It is contatinated by an underscored.
 	<hr>
 	<h1>Set MQTT Broker</h1>
 	The default example MQTT broker is: mqtt://public:public@public.cloud.shiftr.io
 	<BR>
-	Set up another broker with this form. 
-	
+	Set up another broker with this form.
+
 
 	<h2>Setup MQTT Broker</h2>
 	<form>
@@ -137,23 +142,23 @@ Date: 20241023
 		<br>
 		<label for="password">Broker Password:</label>
 		<input type="password" value="public" id="password" name="namePassword" required minlength="4" maxlength="100" size="50" />
-		<br>		
+		<br>
 		<div class="fetch-button">
 			<button onclick="setBroker()">Set Broker Values</button>
 		</div>
 	</form>
-	
-	
+
+
 	<h1>Set Krake Target</h1>
 	The Krake subscribes to data publised to a topic a MODEL_SERIALNUMBER.
-	<br>	
+	<br>
 	So we set this web page to publish to the target Krake's MODEL_SERIALNUMBER.
 	<br>
 	Where MODEL is KRAKE, and where SERIALNUMBER is of the form AAANNN an alpha and numeric unique serial identifier of a specific KRAKE. <b>Example: KRAKE_LB2</b>
-	<form>	
+	<form>
 		<label for="nameTopic">Device Model_SerialNumber (for device "Topics"):</label>
-		<input type="text" value="KRAKE_SigmaDraconisVII" id="nameTopic" name="nameTopic" required size="50" />		
-		<br>		
+		<input type="text" value="KRAKE_SigmaDraconisVII" id="nameTopic" name="nameTopic" required size="50" />
+		<br>
 		<div class="fetch-button">
 			<button onclick="setTopic(this)">Set KRAKE Topic</button>
 		</div>
@@ -169,11 +174,11 @@ Date: 20241023
 		<li>KRAKE_USA2
 		<li>KRAKE_USA3
 		<li>KRAKE_USA4
-		<li>KRAKE_USA5
+		<li>KRAKE_20240421_USA5_ALM
 		</UL>
 	</form>
-	
-	
+
+
 	<br>
 	<h1>Issue an Alarm, Check Status</h1>
 	<h2>Emergency Level 0-6 and Status of ?TBD? </h2>
@@ -188,7 +193,7 @@ Date: 20241023
             <button onclick="publishEmergency(5)">Level 5, PANIC</button>
             <button onclick="publishEmergency(6)">All Emergencies Level 6</button>
         </div>
-		
+
         <div class="fetch-button">
             <button onclick="fetchMuteStatus()">Get Mute Status</button>
         </div>
@@ -196,20 +201,20 @@ Date: 20241023
     </div>
 
 	<h6> 	Public Invention,  LICENSE "GNU Affero General Public License, version 3 " </h6>
-	
+
     <script>
-	
+        let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
 	    function setBroker() {
 			event.preventDefault(); //Do not reload page
-			console.log("setBroker URL, User, PW");			
+			console.log("setBroker URL, User, PW");
         }//end setBroker()
 
 
 	    function setTopic(val) {
 			event.preventDefault(); //Do not reload page
-			console.log("setTopic val: " + val);						
-			console.log("setTopic val.id: " + val.id);						
-			console.log("setTopic val.name: " + val.name);						
+            let new_topic = $("#nameTopic").val();
+			console.log("setTopic val: " + new_topic);
+            topic = new_topic;
         }//end setTopic()
 
 
@@ -223,9 +228,10 @@ Date: 20241023
 		//	let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
 			let client = mqtt.connect('wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL);
 
-			let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
-			let metric = 'MessageFromProcessing_PMD: '
-			metric = metric + level
+
+            let metric = 'MessageFromProcessing_PMD: ';
+            // Note, Rob added "a" here...
+            metric = metric + "a" + level;
 
 			client.subscribe(topic);
 			client.subscribe("20240421_USA4");
@@ -236,12 +242,12 @@ Date: 20241023
 
 			client.on('message', function (topic2, message2) { // message is Buffer
 				console.log("Got a subscription message topic 20240421_USA4: ");
-				console.log(message2.toString());		
+				console.log(message2.toString());
 				});
-			client.end();	
+			client.end();
 		}//end publishEmergency
 
-		
+
         function updateSensorValue(value) {
             document.getElementById('Value').innerText = 'Sensor Value: ' + value;
         }
@@ -252,7 +258,7 @@ Date: 20241023
 
         function fetchMuteStatus(muteStatus) {
 			console.log("fetchMuteStatus called");
-			//to do write the code 
+			//to do write the code
 			document.getElementById('muteValue').innerText = 'Mute Status: ' + muteStatus;
         }
 
@@ -277,11 +283,10 @@ Date: 20241023
             })
             .catch(error => {
                 console.error('Error sending emergency request:', error);
-            });			
+            });
         }//end emergency level
-		
+
     </script>
-	
+
 </body>
 </html>
-

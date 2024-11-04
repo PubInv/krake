@@ -7,10 +7,9 @@
 
 // Customized this by changing these defines
 #define COMPANY_NAME "Public Invention "
-#define MODEL_NAME "KRAKE_"
 #define PROG_NAME "Krake_MQTT "
-#define VERSION "V0.0.2 "
-#define DEVICE_UNDER_TEST "20240421_USA4"  //A Serial Number  
+#define MODEL_NAME "KRAKE_"
+#define DEVICE_UNDER_TEST "20240421_USA5"  //A Serial Number  
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
 
@@ -28,8 +27,12 @@
 //const char* password = "adt@12345";
 
 //Maryville network
-const char* ssid = "VRX";
-const char* password = "textinsert";
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
+
+// Austin network
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -39,8 +42,8 @@ const char* mqtt_password = "public";
 
 // MQTT Topics
 // User must modify the device serial number. In this case change the part "USA4" as approprate.
-const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA4_ALM";
-const char* publish_Ack_Topic = "KRAKE_20240421_USA4_ACK";
+const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
+const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
 
 // LED Pins
 // To Do Define ESP32 pins for actual Krake LEDs
@@ -66,7 +69,7 @@ void serialSplash(void) {
   Serial.println(MODEL_NAME);
   Serial.print("PROG_NAME&VERSION: ");
   Serial.print(PROG_NAME);
-  Serial.println(VERSION);
+//  Serial.println(VERSION);
   Serial.print("DEVICE_UNDER_TEST: ");
   Serial.println(DEVICE_UNDER_TEST);
   String mac = WiFi.macAddress();                                       // Get the MAC address and convert it to a string
