@@ -203,7 +203,7 @@ Date: 20241023
 	<h6> 	Public Invention,  LICENSE "GNU Affero General Public License, version 3 " </h6>
 
     <script>
-
+        let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
 	    function setBroker() {
 			event.preventDefault(); //Do not reload page
 			console.log("setBroker URL, User, PW");
@@ -212,10 +212,9 @@ Date: 20241023
 
 	    function setTopic(val) {
 			event.preventDefault(); //Do not reload page
-            console.log($("#nameTopic").val);
+            let val = $("#nameTopic").val();
 			console.log("setTopic val: " + val);
-			console.log("setTopic val.id: " + val.id);
-			console.log("setTopic val.name: " + val.name);
+            topic = val;
         }//end setTopic()
 
 
@@ -229,7 +228,7 @@ Date: 20241023
 		//	let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
 			let client = mqtt.connect('wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL);
 
-			let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
+
 			let metric = 'MessageFromProcessing_PMD: '
 			metric = metric + level
 
