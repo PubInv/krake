@@ -22,6 +22,7 @@
 #include "gpad_utility.h"
 #include "alarm_api.h"
 #include "robot_api.h"
+#include <Arduino.h>
 
 extern bool currentlyMuted;
 
@@ -95,6 +96,7 @@ void interpretBuffer(char *buf,int rlen,Stream *serialport) {
   serialport->println(F("currentlyMuted : "));
   serialport->println(currentlyMuted);
   serialport->println(F("interpret Done"));
+  delay(3000);
 }
 
 void processSerial(Stream *serialport) {
@@ -117,7 +119,11 @@ void processSerial(Stream *serialport) {
       serialport->println();
       interpretBuffer(buf,rlen,serialport);
       // Now "light and scream"appropriately...
+      // This does not work on HMWK2 device
+      serialport->println("XXX");
       annunciateAlarmLevel(serialport);
+      serialport->println("YYY");
+      delay(3000);
       printAlarmState(serialport);
      }
 }

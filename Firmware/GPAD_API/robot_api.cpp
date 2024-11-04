@@ -226,6 +226,7 @@ void unchanged_anunicateAlarmLevel(Stream* serialport) {
   }
   unsigned char light_lvl = LIGHT_LEVEL[currentLevel][note];
   set_light_level(light_lvl);
+#if !defined(ESP32)
   if (!currentlyMuted) {
     unsigned char note_lvl = SONGS[currentLevel][note];
    
@@ -236,9 +237,12 @@ void unchanged_anunicateAlarmLevel(Stream* serialport) {
   } else {
     noTone(TONE_PIN);
   }
+#endif
 }
 void annunciateAlarmLevel(Stream* serialport) {
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
+#if !defined(ESP32)
   showStatusLCD(currentLevel,currentlyMuted,AlarmMessageBuffer);
+#endif
 }

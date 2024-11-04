@@ -55,6 +55,7 @@
 #include "gpad_utility.h"
 #include "gpad_serial.h"
 #include "wink.h"
+#include <Math.h>
 
 #include <WiFi.h>
 #include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
@@ -415,23 +416,27 @@ void proccessPayloadOnLamps(String &payload) {
   }
 }// end proccessPayloadOnLamps
 
+char mbuff[121];
 
 // Handeler for MQTT subscrived messages
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-  String message = "";
-  for (int i = 0; i < length; i++) {
-    message += (char)payload[i];
-  }
-  Serial.print("|");
-  Serial.print(message);
-  Serial.println("|");
 
+  int m = min((unsigned int) length,(unsigned int) 120);
+  for (int i = 0; i < m; i++) {
+    mbuff[i] = (char)payload[i];
+  }
+  mbuff[m] = '\0';
+  Serial.print("|");
+  Serial.print(mbuff);
+  Serial.println("|");
+// todo, remove use of String here....
   if (String(topic) ==  subscribe_Alarm_Topic) {
     Serial.println("Got MessageFromProcessing_PMD");
-    proccessPayloadOnLamps(message);  // Change LAMPS baised on the payload
+ //   proccessPayloadOnLamps(message);  // Change LAMPS baised on the payload
+    interpretBuffer(mbuff,m,&Serial);
   }
 }//end call back
 
@@ -484,11 +489,11 @@ void loop() {
   wink(); //The builtin LED
 // TODO: These need to be changed to use the "HMWK2" kind
 // because we are now using "songs", we need to call this periodically
-  // unchanged_anunicateAlarmLevel(&Serial);
-  // delay(20);
-  // robot_api_loop();
+  unchanged_anunicateAlarmLevel(&Serial);
+ // delay(20);
+ // robot_api_loop();
 
-  // processSerial(&Serial);
+  processSerial(&Serial);
 
   // // Now try to read from the SPI Port!
   // updateFromSPI();
