@@ -22,6 +22,7 @@
 #include "robot_api.h"
 #include "alarm_api.h"
 #include "gpad_utility.h"
+#include<SPI.h>
 
 #include <DailyStruggleButton.h>
 DailyStruggleButton muteButton;
@@ -80,6 +81,113 @@ int LIGHT[] = {LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4};
 int NUM_LIGHTS = sizeof(LIGHT)/sizeof(LIGHT[0]);
 
 Stream* local_ptr_to_serial;
+
+
+volatile boolean isReceived_SPI;
+volatile byte peripheralReceived ;
+
+volatile bool procNewPacket = false;
+volatile byte indx = 0;
+volatile boolean process;
+
+byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
+
+#define DEBUG 0
+
+
+void setup_spi()
+{
+  Serial.println(F("Starting SPI Peripheral."));
+  Serial.print(F("Pin for SS: "));
+  Serial.println(SS);
+
+  pinMode(BUTTON_PIN, INPUT);              // Setting pin 2 as INPUT
+  pinMode(LED_PIN, OUTPUT);                // Setting pin 7 as OUTPUT
+
+  //  SPI.begin();    // IMPORTANT. Do not set SPI.begin for a peripherial device.
+  pinMode(SS, INPUT_PULLUP); //Sets SS as input for peripherial
+  // Why is this not input?
+  pinMode(MOSI, INPUT);    //This works for Peripheral
+  pinMode(MISO, OUTPUT);    //try this.
+  pinMode(SCK, INPUT);                  //Sets clock as input
+  #if defined(GPAD)
+  SPCR |= _BV(SPE);                       //Turn on SPI in Peripheral Mode
+  // turn on interrupts
+  SPCR |= _BV(SPIE);
+
+  isReceived_SPI = false;
+  SPI.attachInterrupt();                  //Interuupt ON is set for SPI commnucation
+  #else
+  #endif
+}//end setup()
+
+//ISRs
+// This is the original...
+// I plan to add an index to this to handle the full message that we intend to receive.
+// However, I think this also needs a timeout to handle the problem of getting out of synch.
+const int SPI_BYTE_TIMEOUT_MS = 200; // we don't get the next byte this fast, we reset.
+volatile unsigned long last_byte_ms = 0;
+
+#if defined(HMWK)
+// void IRAM_ATTR ISR() {
+//    receive_byte(SPDR);
+// }
+#elif defined(GPAD) // compile for an UNO, for example...
+ISR (SPI_STC_vect)                        //Inerrrput routine function
+{
+   receive_byte(SPDR);
+}//end ISR
+#endif
+
+
+
+void receive_byte(byte c)
+{
+  last_byte_ms = millis();
+  // byte c = SPDR; // read byte from SPI Data Register
+  if (indx < sizeof received_signal_raw_bytes) {
+    received_signal_raw_bytes[indx] = c; // save data in the next index in the array received_signal_raw_bytes
+    indx = indx + 1;
+  }
+  if (indx >= sizeof received_signal_raw_bytes) {
+    process = true;
+  }
+}
+
+
+void updateFromSPI()
+{
+   if (DEBUG > 0) {
+    if (process) {
+      Serial.println("process true!");
+    }
+  }
+  if(process)
+  {
+   
+    AlarmEvent event;
+    event.lvl = (AlarmLevel) received_signal_raw_bytes[0];
+    for(int i = 0; i < MAX_MSG_LEN; i++) {
+      event.msg[i] = (char) received_signal_raw_bytes[1+i];
+    }
+
+    if (DEBUG > 1) {
+      Serial.print(F("LVL: "));
+      Serial.println(event.lvl);
+      Serial.println(event.msg);
+    }
+    int prevLevel = alarm((AlarmLevel) event.lvl, event.msg,&Serial);
+    if (prevLevel != event.lvl) {
+      annunciateAlarmLevel(&Serial);
+    } else {
+      unchanged_anunicateAlarmLevel(&Serial);
+    }
+  
+    indx = 0;
+    process = false;
+
+  }
+}
 
 // Have to get a serialport here
 void myCallback(byte buttonEvent){
@@ -230,7 +338,8 @@ void unchanged_anunicateAlarmLevel(Stream* serialport) {
   }
   unsigned char light_lvl = LIGHT_LEVEL[currentLevel][note];
   set_light_level(light_lvl);
-#if !defined(ESP32)
+  // TODO: Change this to our device types
+#if !defined(HMWK)
   if (!currentlyMuted) {
     unsigned char note_lvl = SONGS[currentLevel][note];
    
@@ -246,7 +355,7 @@ void unchanged_anunicateAlarmLevel(Stream* serialport) {
 void annunciateAlarmLevel(Stream* serialport) {
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
-#if !defined(ESP32)
+#if !defined(HMWK)
   showStatusLCD(currentLevel,currentlyMuted,AlarmMessageBuffer);
 #endif
 }

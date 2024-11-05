@@ -89,39 +89,12 @@
 
 #define GPAD_VERSION1
 
-#ifdef GPAD_VERSION1 //The Version 1 PCB.
-//#define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
 
-#if defined(ESP32)
-// const int LED_D9 = 23;  // Mute1 LED on PMD
-#define LED_PIN 23                         // for GPAD LIGHT0
-#define BUTTON_PIN 2                      //GPAD Button to GND,  10K Resistor to +5V.
-#else // compile for an UNO, for example...
-#define LED_PIN PD3                         // for GPAD LIGHT0
-#define BUTTON_PIN PD2                      //GPAD Button to GND,  10K Resistor to +5V.
-#endif
-
-#else //The proof of concept wiring.
-#define LED_PIN 7
-#define BUTTON_PIN 2                          //Button to GND, 10K Resistor to +5V.
-#endif
 
 
 #define DEBUG_SPI 0
 #define DEBUG 0
 
-#include<SPI.h>
-
-
-
-volatile boolean isReceived_SPI;
-volatile byte peripheralReceived ;
-
-volatile bool procNewPacket = false;
-volatile byte indx = 0;
-volatile boolean process;
-
-byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 
 unsigned long last_command_ms;
 
@@ -155,99 +128,6 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 
-void setup_spi()
-{
-  Serial.println(F("Starting SPI Peripheral."));
-  Serial.print(F("Pin for SS: "));
-  Serial.println(SS);
-
-  pinMode(BUTTON_PIN, INPUT);              // Setting pin 2 as INPUT
-  pinMode(LED_PIN, OUTPUT);                // Setting pin 7 as OUTPUT
-
-  //  SPI.begin();    // IMPORTANT. Do not set SPI.begin for a peripherial device.
-  pinMode(SS, INPUT_PULLUP); //Sets SS as input for peripherial
-  // Why is this not input?
-  pinMode(MOSI, INPUT);    //This works for Peripheral
-  pinMode(MISO, OUTPUT);    //try this.
-  pinMode(SCK, INPUT);                  //Sets clock as input
-  #if !defined(ESP32)
-  SPCR |= _BV(SPE);                       //Turn on SPI in Peripheral Mode
-  // turn on interrupts
-  SPCR |= _BV(SPIE);
-
-  isReceived_SPI = false;
-  SPI.attachInterrupt();                  //Interuupt ON is set for SPI commnucation
-  #else
-  #endif
-}//end setup()
-
-//ISRs
-// This is the original...
-// I plan to add an index to this to handle the full message that we intend to receive.
-// However, I think this also needs a timeout to handle the problem of getting out of synch.
-const int SPI_BYTE_TIMEOUT_MS = 200; // we don't get the next byte this fast, we reset.
-volatile unsigned long last_byte_ms = 0;
-
-#if defined(ESP32)
-// void IRAM_ATTR ISR() {
-//    receive_byte(SPDR);
-// }
-#elif defined(ARDUINO) // compile for an UNO, for example...
-ISR (SPI_STC_vect)                        //Inerrrput routine function
-{
-   receive_byte(SPDR);
-}//end ISR
-#endif
-
-
-
-void receive_byte(byte c)
-{
-  last_byte_ms = millis();
-  // byte c = SPDR; // read byte from SPI Data Register
-  if (indx < sizeof received_signal_raw_bytes) {
-    received_signal_raw_bytes[indx] = c; // save data in the next index in the array received_signal_raw_bytes
-    indx = indx + 1;
-  }
-  if (indx >= sizeof received_signal_raw_bytes) {
-    process = true;
-  }
-}
-
-
-void updateFromSPI()
-{
-   if (DEBUG > 0) {
-    if (process) {
-      Serial.println("process true!");
-    }
-  }
-  if(process)
-  {
-   
-    AlarmEvent event;
-    event.lvl = (AlarmLevel) received_signal_raw_bytes[0];
-    for(int i = 0; i < MAX_MSG_LEN; i++) {
-      event.msg[i] = (char) received_signal_raw_bytes[1+i];
-    }
-
-    if (DEBUG > 1) {
-      Serial.print(F("LVL: "));
-      Serial.println(event.lvl);
-      Serial.println(event.msg);
-    }
-    int prevLevel = alarm((AlarmLevel) event.lvl, event.msg,&Serial);
-    if (prevLevel != event.lvl) {
-      annunciateAlarmLevel(&Serial);
-    } else {
-      unchanged_anunicateAlarmLevel(&Serial);
-    }
-  
-    indx = 0;
-    process = false;
-
-  }
-}
 
 // #define VERSION 0.02             //Version of this software
 #define BAUDRATE 115200
@@ -346,81 +226,6 @@ void turnOffAllLamps() {
   digitalWrite(LIGHT3, LOW);
   digitalWrite(LIGHT4, LOW); 
 }
-// Proccess sort of like the GPAD API payload
-void proccessPayloadOnLamps(String &payload) {
-
-  if (payload.charAt(0) == 'h') {
-    Serial.println("Got request for help");
-    client.publish(publish_Ack_Topic, "Got request for help");
-  } else if (payload.charAt(0) == 's') {
-    Serial.println("Got set mute");
-    client.publish(publish_Ack_Topic, "Got set mute");
-  } else if (payload.charAt(0) == 'u') {
-    Serial.println("Got set Unmute");
-    client.publish(publish_Ack_Topic, "Got set Unmute");
-  } else if (payload.charAt(0) == 'a') {
-    //Parse on second character
-    if ((payload.charAt(1) == '0')) {
-//      client.publish(publish_Ack_Topic, "Alarm " + payload.charAt(1));
-      client.publish(publish_Ack_Topic, "Alarm 0" );
-      //Turn none on
-      digitalWrite(LIGHT0, LOW);
-      digitalWrite(LIGHT1, LOW);
-      digitalWrite(LIGHT2, LOW);
-      digitalWrite(LIGHT3, LOW);
-      digitalWrite(LIGHT4, LOW);
-    } else if ((payload.charAt(1) == '1')) {
-       client.publish(publish_Ack_Topic, "Alarm 1");
-      //Turn on only LAMP 1
-      digitalWrite(LIGHT0, HIGH);
-      digitalWrite(LIGHT1, LOW);
-      digitalWrite(LIGHT2, LOW);
-      digitalWrite(LIGHT3, LOW);
-      digitalWrite(LIGHT4, LOW);
-    } else if ((payload.charAt(1) == '2')) {
-      client.publish(publish_Ack_Topic, "Alarm 2");
-      //Turn on only LAMP 2
-      digitalWrite(LIGHT0, LOW);
-      digitalWrite(LIGHT1, HIGH);
-      digitalWrite(LIGHT2, LOW);
-      digitalWrite(LIGHT3, LOW);
-      digitalWrite(LIGHT4, LOW);
-    } else if ((payload.charAt(1) == '3')) {
-      client.publish(publish_Ack_Topic, "Alarm 3");
-      //Turn on only LAMP 3
-      digitalWrite(LIGHT0, LOW);
-      digitalWrite(LIGHT1, LOW);
-      digitalWrite(LIGHT2, HIGH);
-      digitalWrite(LIGHT3, LOW);
-      digitalWrite(LIGHT4, LOW);
-    } else if ((payload.charAt(1) == '4')) {
-      client.publish(publish_Ack_Topic, "Alarm 4");
-      //Turn on only LAMP 4
-      digitalWrite(LIGHT0, LOW);
-      digitalWrite(LIGHT1, LOW);
-      digitalWrite(LIGHT2, LOW);
-      digitalWrite(LIGHT3, HIGH);
-      digitalWrite(LIGHT4, LOW);
-    } else if ((payload.charAt(1) == '5')) {
-      client.publish(publish_Ack_Topic, "Alarm 5");
-      //Turn on only LAMP 5
-      digitalWrite(LIGHT0, LOW);
-      digitalWrite(LIGHT1, LOW);
-      digitalWrite(LIGHT2, LOW);
-      digitalWrite(LIGHT3, LOW);
-      digitalWrite(LIGHT4, HIGH);
-    } else if ((payload.charAt(1) == '6')) {
-      client.publish(publish_Ack_Topic, "Alarm 6");
-      //Turn on all lamps
-      turnOnAllLamps();
-    } else {// other than 0-6
-      client.publish(publish_Ack_Topic, "Unrecognized alarm");
-    }// end parsing message
-  } else {
-    Serial.println("Unrecognized command: " + payload.charAt(0));
-    client.publish(publish_Ack_Topic, "Unrecognized command: ");
-  }
-}// end proccessPayloadOnLamps
 
 char mbuff[121];
 
@@ -441,7 +246,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
 // todo, remove use of String here....
   if (String(topic) ==  subscribe_Alarm_Topic) {
     Serial.println("Got MessageFromProcessing_PMD");
- //   proccessPayloadOnLamps(message);  // Change LAMPS baised on the payload
     interpretBuffer(mbuff,m,&Serial);
   }
 }//end call back
@@ -502,7 +306,9 @@ void loop() {
   unchanged_anunicateAlarmLevel(&Serial);
  // delay(20);
  // This causes this the HMWK device to rail..
- // robot_api_loop();
+ #if defined(GPAD)
+  robot_api_loop();
+ #endif
 
   processSerial(&Serial);
 
@@ -516,8 +322,6 @@ void loop() {
     if ((ms - last_ms) > 3000) {
       Serial.print(" LED : ");
       Serial.println(LED_BUILTIN);
-      Serial.println("INDX :");
-      Serial.println(indx);
       last_ms = ms;
     }
   }

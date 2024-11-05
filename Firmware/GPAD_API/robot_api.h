@@ -21,6 +21,7 @@
 #ifndef ROBOT_API
 #define ROBOT_API 1
 #include <stream.h>
+#include <Arduino.h>
 
 // On Nov. 5th, 2024, we image 3 different hardware platforms.
 // The GPAD exists, and is working: https://www.hardware-x.com/article/S2468-0672(24)00084-1/fulltext
@@ -51,7 +52,6 @@
 
 // This should be done with an "#elif", but I can't get it to work
 #if defined(HMWK)
-// This is an internal error!
 
 #define LED_D9 23
 #define LIGHT0 15
@@ -59,7 +59,7 @@
 #define LIGHT2 5
 #define LIGHT3 18
 #define LIGHT4 19
-// The Krake uses a dev kit LED 
+// The HMWK and Krake use a dev kit LED 
 #define LED_BUILTIN 2
 
 #endif 
@@ -68,6 +68,28 @@
 
 
 #endif
+
+#ifdef GPAD_VERSION1 //The Version 1 PCB.
+//#define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
+
+#if defined(HMWK)
+// const int LED_D9 = 23;  // Mute1 LED on PMD
+#define LED_PIN 23                         // for GPAD LIGHT0
+#define BUTTON_PIN 2                      //GPAD Button to GND,  10K Resistor to +5V.
+#else // compile for an UNO, for example...
+#define LED_PIN PD3                         // for GPAD LIGHT0
+#define BUTTON_PIN PD2                      //GPAD Button to GND,  10K Resistor to +5V.
+#endif
+
+#else //The proof of concept wiring.
+#define LED_PIN 7
+#define BUTTON_PIN 2                          //Button to GND, 10K Resistor to +5V.
+#endif
+
+// SPI Functions....
+void setup_spi();
+void receive_byte(byte c);
+void updateFromSPI();
 
 void unchanged_anunicateAlarmLevel(Stream *serialport);
 void annunciateAlarmLevel(Stream *serialport);

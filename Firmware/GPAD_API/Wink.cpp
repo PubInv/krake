@@ -12,6 +12,7 @@
 
 //Wink the LED
 void wink(void) {
+  // TODO
   const int LED_BUILTIN = 2;    // ESP32 Kit//const int LED_BUILTIN = 13;    //Not really needed for Arduino UNO it is defined in library
   pinMode(LED_BUILTIN, OUTPUT); 
   // const int HIGH_TIME_LED = 900;
