@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "GeneralPurposeAlarmDevicePCB")(type "KiCad")(uri "${KIPRJMOD}/PCBa_KRAKE.pretty")(options "")(descr ""))
+  (lib (name "KiCad")(type "KiCad")(uri "${BUZZER}/LIB_QMB-09B-03/QMB-09B-03/KiCad.pretty")(options "")(descr ""))
+)

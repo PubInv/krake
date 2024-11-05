@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NCP1117ST50T3G
+D IC REG LINEAR 5V 1A SOT223
+K NCP1117ST50T3GOSCT-ND
+F https://www.onsemi.com/pub/Collateral/NCP1117-D.PDF
+$ENDCMP
+#
+#End Doc Library

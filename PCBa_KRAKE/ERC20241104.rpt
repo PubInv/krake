@@ -1,0 +1,252 @@
+ERC report (11/4/2024 1:02:14 PM, Encoding UTF8)
+
+***** Sheet /
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(1.3000 in, 1.6500 in): Symbol #PWR0101 [GND]
+[lib_symbol_issues]: Symbol 'PWR_FLAG' has been modified in library 'power'
+    ; Severity: warning
+    @(1.4000 in, 0.9500 in): Symbol #FLG0101 [PWR_FLAG]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.0500 in, 1.5500 in): Symbol #PWR0102 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(5.0500 in, 0.8500 in): Symbol #PWR0113 [+5V]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.7500 in, 2.9000 in): Symbol #PWR0114 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.0000 in, 4.0500 in): Symbol #PWR0116 [GND]
+[lib_symbol_issues]: Symbol 'PI_ATMEGA328P-AU-InOrder' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(3.7500 in, 4.1000 in): Symbol U102 [PI_ATMEGA328P-AU-InOrder]
+[lib_symbol_issues]: Symbol 'SWITCH_TACTILE_SPST-NO_0.05A_24V' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(5.5000 in, 2.7000 in): Symbol S101 [SWITCH_TACTILE_SPST-NO_0.05A_24V]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.3500 in, 1.4000 in): Symbol #PWR0110 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.9000 in, 1.3500 in): Symbol #PWR0112 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.9500 in, 1.4500 in): Symbol #PWR0107 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.6000 in, 1.5500 in): Symbol #PWR0106 [GND]
+[lib_symbol_issues]: Symbol 'PWR_FLAG' has been modified in library 'power'
+    ; Severity: warning
+    @(2.4000 in, 0.7500 in): Symbol #FLG0102 [PWR_FLAG]
+[lib_symbol_issues]: Symbol 'PWR_FLAG' has been modified in library 'power'
+    ; Severity: warning
+    @(2.1000 in, 3.6500 in): Symbol #FLG0103 [PWR_FLAG]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(1.5000 in, 4.3000 in): Symbol #PWR0104 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.7000 in, 4.2000 in): Symbol #PWR0111 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(1.3500 in, 3.7000 in): Symbol #PWR0103 [+5V]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.0500 in, 4.2500 in): Symbol #PWR0108 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(7.7500 in, 4.0500 in): Symbol #PWR0125 [+5V]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(6.7500 in, 1.7000 in): Symbol #PWR0128 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.7000 in, 6.6000 in): Symbol #PWR0115 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.7500 in, 2.7500 in): Symbol #PWR0121 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(9.0000 in, 3.1500 in): Symbol #PWR0122 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(9.4500 in, 3.1500 in): Symbol #PWR0123 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(8.7500 in, 2.1500 in): Symbol #PWR0120 [+5V]
+[lib_symbol_issues]: Symbol 'S04B-XASK-1(LF)(SN)Rev2' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(9.7500 in, 2.3500 in): Symbol J105 [S04B-XASK-1(LF)(SN)Rev2]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.0000 in, 4.7500 in): Symbol #PWR0117 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.7500 in, 5.7500 in): Symbol #PWR0127 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(7.3500 in, 6.4500 in): Symbol #PWR0124 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(1.6000 in, 5.4000 in): Symbol #PWR0105 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.4500 in, 5.4000 in): Symbol #PWR0109 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.8500 in, 7.7000 in): Symbol #PWR0119 [GND]
+
+***** Sheet /USB_UART/
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(6.1000 in, 4.7500 in): Symbol #PWR0507 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.4000 in, 3.4500 in): Symbol #PWR0506 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(3.5500 in, 4.4500 in): Symbol #PWR0501 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(3.7000 in, 4.4500 in): Symbol #PWR0502 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.7500 in, 3.4500 in): Symbol #PWR0505 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.5000 in, 4.3000 in): Symbol #PWR0504 [GND]
+[lib_symbol_issues]: Symbol 'USB_B_Micro_Local' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(3.6500 in, 3.7500 in): Symbol J501 [USB_B_Micro_Local]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.2000 in, 3.4500 in): Symbol #PWR0503 [GND]
+
+***** Sheet /SPI Peripherial/
+[lib_symbol_issues]: Symbol 'RJ12_6P6C_HORZ' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(4.1000 in, 4.2500 in): Symbol J401 [RJ12_6P6C_HORZ]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.8500 in, 4.2500 in): Symbol #PWR0401 [GND]
+
+***** Sheet /LCD And I2C Interface/
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(7.8500 in, 3.0000 in): Symbol #PWR0126 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(7.1000 in, 1.6000 in): Symbol #PWR0303 [+5V]
+[lib_symbol_issues]: Symbol 'PWR_FLAG' has been modified in library 'power'
+    ; Severity: warning
+    @(6.6000 in, 1.9500 in): Symbol #FLG0301 [PWR_FLAG]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.1000 in, 4.1000 in): Symbol #PWR0301 [GND]
+[lib_symbol_issues]: Symbol 'Screw_4-40_0.375_Phillips' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(4.9000 in, 4.8500 in): Symbol MF410 [Screw_4-40_0.375_Phillips]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(6.1500 in, 4.1500 in): Symbol #PWR0302 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.2500 in, 2.9500 in): Symbol #PWR0306 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.9000 in, 3.0500 in): Symbol #PWR0309 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(7.3000 in, 3.9500 in): Symbol #PWR0304 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.7000 in, 4.4000 in): Symbol #PWR0308 [GND]
+[lib_symbol_issues]: Symbol 'POT 0.375 10K' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(8.2500 in, 2.7000 in): Symbol RV301 [POT 0.375 10K]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.0000 in, 1.9500 in): Symbol #PWR0305 [GND]
+[lib_symbol_issues]: Symbol 'PWR_FLAG' has been modified in library 'power'
+    ; Severity: warning
+    @(7.8000 in, 2.3500 in): Symbol #FLG0302 [PWR_FLAG]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.5000 in, 1.9500 in): Symbol #PWR0307 [GND]
+[lib_symbol_issues]: Symbol 'Spacer_0.0182x0.125 inch' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(0.7500 in, 5.4500 in): Symbol MF402 [Spacer_0.0182x0.125 inch]
+[lib_symbol_issues]: Symbol 'Screw_4-40_0.375_Phillips' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(0.7500 in, 4.8500 in): Symbol MF401 [Screw_4-40_0.375_Phillips]
+[lib_symbol_issues]: Symbol 'Spacer_0.0182x0.125 inch' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(4.9500 in, 5.4500 in): Symbol MF411 [Spacer_0.0182x0.125 inch]
+[lib_symbol_issues]: Symbol 'Spacer_0.0182x0.125 inch' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(3.5500 in, 5.5000 in): Symbol MF408 [Spacer_0.0182x0.125 inch]
+[lib_symbol_issues]: Symbol 'Screw_4-40_0.375_Phillips' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(3.5500 in, 4.8500 in): Symbol MF407 [Screw_4-40_0.375_Phillips]
+[lib_symbol_issues]: Symbol 'Spacer_0.0182x0.125 inch' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(2.2000 in, 5.4500 in): Symbol MF405 [Spacer_0.0182x0.125 inch]
+[lib_symbol_issues]: Symbol 'Screw_4-40_0.375_Phillips' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(2.2000 in, 4.8500 in): Symbol MF404 [Screw_4-40_0.375_Phillips]
+
+***** Sheet /AlarmAudio/
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.2000 in, 3.9000 in): Symbol #PWR0508 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(6.6000 in, 3.3500 in): Symbol #PWR0509 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.4000 in, 3.4000 in): Symbol #PWR0603 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.8500 in, 2.3000 in): Symbol #PWR0602 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(1.4000 in, 1.8000 in): Symbol #PWR0601 [+5V]
+[lib_symbol_issues]: Symbol 'SWITCH_TACTILE_12mmx12mm_SPST-NO_0.05A_24V' not found in symbol library 'GPAD_SCH_LIB'
+    ; Severity: warning
+    @(3.5000 in, 4.7500 in): Symbol S601 [SWITCH_TACTILE_12mmx12mm_SPST-NO_0...]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(3.7500 in, 5.0500 in): Symbol #PWR0606 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(1.6000 in, 4.5000 in): Symbol #PWR0605 [+5V]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.4500 in, 5.4000 in): Symbol #PWR0607 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(2.9500 in, 5.6000 in): Symbol #PWR0118 [GND]
+
+***** Sheet /AlarmLights5/
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(8.3000 in, 4.2000 in): Symbol #PWR0206 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(7.1000 in, 4.2000 in): Symbol #PWR0205 [GND]
+[lib_symbol_issues]: Symbol '+5V' has been modified in library 'power'
+    ; Severity: warning
+    @(3.5000 in, 2.3500 in): Symbol #PWR0201 [+5V]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(4.7000 in, 4.2000 in): Symbol #PWR0203 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(3.5000 in, 4.2000 in): Symbol #PWR0202 [GND]
+[lib_symbol_issues]: Symbol 'GND' has been modified in library 'power'
+    ; Severity: warning
+    @(5.9000 in, 4.2000 in): Symbol #PWR0204 [GND]
+
+ ** ERC messages: 79  Errors 0  Warnings 79
