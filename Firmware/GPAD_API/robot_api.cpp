@@ -99,6 +99,7 @@ void myCallback(byte buttonEvent){
 void robot_api_setup(Stream *serialport) {
 
   local_ptr_to_serial = serialport;
+#if defined(GPAD)
   Wire.begin();
   lcd.init();
   serialport->println(F("Clear LCD"));
@@ -109,13 +110,16 @@ void robot_api_setup(Stream *serialport) {
   serialport->println(F("EndLCD splash"));
 
   serialport->println(F("Set up GPIO pins"));
+
   pinMode(SWITCH_MUTE, INPUT_PULLUP);
+#endif
   for (int i = 0; i < NUM_LIGHTS; i++) {
     serialport->println(LIGHT[i]);
     pinMode(LIGHT[i], OUTPUT);
   }
-
+#if defined(GPAD)
   muteButton.set(SWITCH_MUTE, myCallback);
+#endif
   serialport->println(F("end set up GPIO pins"));
 
   printInstructions(serialport);
@@ -124,11 +128,11 @@ void robot_api_setup(Stream *serialport) {
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
 }
 
-
-
 // This has to be called periodically, at a minimum to handle the mute_button
 void robot_api_loop() {
+#if defined(GPAD)
     muteButton.poll();
+#endif
 }
 
 /* Assumes LCD has been initilized

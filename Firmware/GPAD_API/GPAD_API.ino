@@ -292,7 +292,9 @@ void publishOnLineMsg(void) {
   if (millis() - lastMillis > 10000) {
     lastMillis = millis();
     client.publish(publish_Ack_Topic, " is online");
+#if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));   // Toggle
+#endif
   }
 }
 
@@ -325,7 +327,9 @@ void reconnect() {
 }
 // Function to turn on all lamps
 void turnOnAllLamps() {
+#if defined(HMWK)
   digitalWrite(LED_D9, HIGH);
+#endif
   digitalWrite(LIGHT0, HIGH);
   digitalWrite(LIGHT1, HIGH);
   digitalWrite(LIGHT2, HIGH);
@@ -333,7 +337,9 @@ void turnOnAllLamps() {
   digitalWrite(LIGHT4, HIGH);
 }
 void turnOffAllLamps() {
+#if defined(HMWK)
    digitalWrite(LED_D9, LOW);
+#endif
   digitalWrite(LIGHT0, LOW);
   digitalWrite(LIGHT1, LOW);
   digitalWrite(LIGHT2, LOW);
@@ -453,7 +459,9 @@ void setup() {
    //Lets make the LED high near the start of setup for visual clue
   pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
   // Set LED pins as outputs
+  #if defined(LED_D9)
   pinMode(LED_D9, OUTPUT);
+  #endif
   pinMode(LIGHT0, OUTPUT);
   pinMode(LIGHT1, OUTPUT);
   pinMode(LIGHT2, OUTPUT);
@@ -481,22 +489,27 @@ void toggle(int pin) {
     digitalWrite(pin, digitalRead(pin) ? LOW : HIGH); 
 }
 void loop() {
+
+#if defined(HMWK)
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
   publishOnLineMsg();
   wink(); //The builtin LED
-// TODO: These need to be changed to use the "HMWK2" kind
-// because we are now using "songs", we need to call this periodically
+#endif
+
   unchanged_anunicateAlarmLevel(&Serial);
  // delay(20);
+ // This causes this the HMWK device to rail..
  // robot_api_loop();
 
   processSerial(&Serial);
 
   // // Now try to read from the SPI Port!
-  // updateFromSPI();
+#if defined(GPAD)
+  updateFromSPI();
+#endif
 
   if (DEBUG > 1) {
     unsigned long ms = millis();

@@ -106,9 +106,7 @@ void processSerial(Stream *serialport) {
     // timeouts added!
     if (serialport->available() > 0) {
       // read the incoming bytes:
-      serialport->print(F("Read A"));
       int rlen = serialport->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
-         serialport->print(F("Read B"));
       // readBytesUntil does not terminate the string!
       buf[rlen] = '\0';
       // prints the received data
@@ -120,9 +118,7 @@ void processSerial(Stream *serialport) {
       interpretBuffer(buf,rlen,serialport);
       // Now "light and scream"appropriately...
       // This does not work on HMWK2 device
-      serialport->println("XXX");
       annunciateAlarmLevel(serialport);
-      serialport->println("YYY");
       delay(3000);
       printAlarmState(serialport);
      }
