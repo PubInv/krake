@@ -166,6 +166,8 @@ void serialSplash() {
   Serial.println(WiFi.macAddress());
   Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
+  Serial.print(F("Broker: "));
+  Serial.println(mqtt_server);
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
