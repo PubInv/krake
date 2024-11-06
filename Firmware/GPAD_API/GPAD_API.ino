@@ -284,11 +284,13 @@ void setup() {
   // Turn off all LEDs initially
   turnOnAllLamps();
 
+  //Setup and present LCD splash screen
+  robot_api_setup(&Serial);
+
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  robot_api_setup(&Serial);
 
  // setup_spi();
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
