@@ -25,10 +25,12 @@
 
 
 #define PROG_NAME "GPAD_API "
-#define FIRMWARE_VERSION "0.08 "
+#define FIRMWARE_VERSION "0.09 "
 #define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
-#define DEVICE_UNDER_TEST "20240421_USA5"  //A Serial Number  
+//#define DEVICE_UNDER_TEST "20240421_LEB1"  //A Serial Number  
+#define DEVICE_UNDER_TEST "20240421_USA4"  //A Serial Number  
+//#define DEVICE_UNDER_TEST "20240421_USA5"  //A Serial Number  
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "US"
 

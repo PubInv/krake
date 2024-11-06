@@ -105,12 +105,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 
 
 //Maryville network
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
+ const char* ssid = "VRX";
+ const char* password = "textinsert";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+//const char* ssid = "readfamilynetwork";
+//const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -119,9 +119,16 @@ const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
 // MQTT Topics
-// User must modify the device serial number. In this case change the part "USA4" as approprate.
-const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
-const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
+// User must modify the device serial number. 
+//In this case change the part "USA4" as approprate by commenting out conflicting lines.
+//const char* subscribe_Alarm_Topic = "KRAKE_20240421_LEB1_ALM";
+//const char* publish_Ack_Topic = "KRAKE_20240421_LEB1_ACK";
+
+const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA4_ALM";
+const char* publish_Ack_Topic = "KRAKE_20240421_USA4_ACK";
+
+//const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
+//const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
 
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;

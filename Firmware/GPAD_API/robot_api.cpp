@@ -34,8 +34,11 @@ extern char AlarmMessageBuffer[81];
 
 //For LCD
 #include <LiquidCrystal_I2C.h>
+#ifdef HMWK
+LiquidCrystal_I2C lcd(0x27, 20, 4); // set for default LCD address of 0x27 for a 20 chars and 4 line as in HW
+#elif
 LiquidCrystal_I2C lcd(0x38, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display in Wokwi, and 0x38 for the physical GPAD board
-
+#endif
 
 //Setup for buzzer.
 //const int BUZZER_TEST_FREQ = 130; // One below middle C3. About 67 db, 3" x 4.875" 8 Ohm speakers no cabinet at 1 Meter.
@@ -207,7 +210,7 @@ void myCallback(byte buttonEvent){
 void robot_api_setup(Stream *serialport) {
 
   local_ptr_to_serial = serialport;
-#if defined(GPAD)
+//#if defined(GPAD)
   Wire.begin();
   lcd.init();
   serialport->println(F("Clear LCD"));
@@ -219,8 +222,8 @@ void robot_api_setup(Stream *serialport) {
 
   serialport->println(F("Set up GPIO pins"));
 
-  pinMode(SWITCH_MUTE, INPUT_PULLUP);
-#endif
+//  pinMode(SWITCH_MUTE, INPUT_PULLUP);
+//#endif
   for (int i = 0; i < NUM_LIGHTS; i++) {
     serialport->println(LIGHT[i]);
     pinMode(LIGHT[i], OUTPUT);
