@@ -46,33 +46,35 @@ LiquidCrystal_I2C lcd(0x38, 20, 4); // set the LCD address to 0x27 for a 20 char
 //const int BUZZER_TEST_FREQ = 1000; //About 76 db, 3" x 4.875" 8 Ohm speakers no cabinet at 1 Meter.
 const int BUZZER_TEST_FREQ = 4000; // Buzzers, 3 V 4kHz 60dB @ 3V, 10 cm.  The specified frequencey for the Version 1 buzzer.
 
-const int BUZZER_LVL_FREQ_HZ[]= {0,128,256,512,1024,2048};
+const int BUZZER_LVL_FREQ_HZ[] = {0, 128, 256, 512, 1024, 2048};
 
 // This as an attempt to program recognizable "songs" for each alarm level that accomplish
-// both informativeness and urgency mapping. The is is to use an index into the buzzer 
+// both informativeness and urgency mapping. The is is to use an index into the buzzer
 // level frequencies above, so we can use an unsigned char. We can break the whole
 // sequence into 100ms chunks. A 0 will make a "rest" or a silence.a length of 60 will
 // give us a 6-second repeat.
 
 const unsigned int NUM_NOTES = 20;
-const int SONGS[][NUM_NOTES] = { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
- { 1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0},
- { 2,2,0,2,2,0,0,0,0,0,2,2,2,0,2,2,0,0,0,0},
- { 3,3,3,0,3,3,3,3,0,3,3,3,0,3,3,3,0,0,0,0},
- { 4,0,4,0,4,0,4,0,0,0,4,0,4,0,4,0,4,0,0,0},
- { 4,4,2,0,4,4,2,0,4,4,2,0,4,4,2,0,4,4,2,0}};
+const int SONGS[][NUM_NOTES] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+  { 2, 2, 0, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 0, 2, 2, 0, 0, 0, 0},
+  { 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 0, 0, 0},
+  { 4, 0, 4, 0, 4, 0, 4, 0, 0, 0, 4, 0, 4, 0, 4, 0, 4, 0, 0, 0},
+  { 4, 4, 2, 0, 4, 4, 2, 0, 4, 4, 2, 0, 4, 4, 2, 0, 4, 4, 2, 0}
+};
 
- const int LIGHT_LEVEL[][NUM_NOTES] = { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
- { 1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0},
- { 2,2,0,2,2,0,0,0,0,0,2,2,2,0,2,2,0,0,0,0},
- { 3,3,3,0,3,3,3,3,0,3,3,3,0,3,3,3,0,0,0,0},
- { 4,4,4,0,4,4,4,0,0,0,4,4,4,0,4,4,4,0,0,0},
- { 0,5,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0,5,0,5}};
+const int LIGHT_LEVEL[][NUM_NOTES] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  { 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+  { 2, 2, 0, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 0, 2, 2, 0, 0, 0, 0},
+  { 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 0, 3, 3, 3, 0, 0, 0, 0},
+  { 4, 4, 4, 0, 4, 4, 4, 0, 0, 0, 4, 4, 4, 0, 4, 4, 4, 0, 0, 0},
+  { 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5}
+};
 
 const unsigned LEN_OF_NOTE_MS = 500;
 
 unsigned long start_of_song = 0;
- 
+
 
 
 // in general, we want tones to last forever, although
@@ -81,7 +83,7 @@ const unsigned long INF_DURATION = 4294967295;
 
 //Allow indexing to LIGHT[] by symbolic name. So LIGHT0 is first and so on.
 int LIGHT[] = {LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4};
-int NUM_LIGHTS = sizeof(LIGHT)/sizeof(LIGHT[0]);
+int NUM_LIGHTS = sizeof(LIGHT) / sizeof(LIGHT[0]);
 
 Stream* local_ptr_to_serial;
 
@@ -113,15 +115,15 @@ void setup_spi()
   pinMode(MOSI, INPUT);    //This works for Peripheral
   pinMode(MISO, OUTPUT);    //try this.
   pinMode(SCK, INPUT);                  //Sets clock as input
-  #if defined(GPAD)
+#if defined(GPAD)
   SPCR |= _BV(SPE);                       //Turn on SPI in Peripheral Mode
   // turn on interrupts
   SPCR |= _BV(SPIE);
 
   isReceived_SPI = false;
   SPI.attachInterrupt();                  //Interuupt ON is set for SPI commnucation
-  #else
-  #endif
+#else
+#endif
 }//end setup()
 
 //ISRs
@@ -138,7 +140,7 @@ volatile unsigned long last_byte_ms = 0;
 #elif defined(GPAD) // compile for an UNO, for example...
 ISR (SPI_STC_vect)                        //Inerrrput routine function
 {
-   receive_byte(SPDR);
+  receive_byte(SPDR);
 }//end ISR
 #endif
 
@@ -160,18 +162,18 @@ void receive_byte(byte c)
 
 void updateFromSPI()
 {
-   if (DEBUG > 0) {
+  if (DEBUG > 0) {
     if (process) {
       Serial.println("process true!");
     }
   }
-  if(process)
+  if (process)
   {
-   
+
     AlarmEvent event;
     event.lvl = (AlarmLevel) received_signal_raw_bytes[0];
-    for(int i = 0; i < MAX_MSG_LEN; i++) {
-      event.msg[i] = (char) received_signal_raw_bytes[1+i];
+    for (int i = 0; i < MAX_MSG_LEN; i++) {
+      event.msg[i] = (char) received_signal_raw_bytes[1 + i];
     }
 
     if (DEBUG > 1) {
@@ -179,13 +181,13 @@ void updateFromSPI()
       Serial.println(event.lvl);
       Serial.println(event.msg);
     }
-    int prevLevel = alarm((AlarmLevel) event.lvl, event.msg,&Serial);
+    int prevLevel = alarm((AlarmLevel) event.lvl, event.msg, &Serial);
     if (prevLevel != event.lvl) {
       annunciateAlarmLevel(&Serial);
     } else {
       unchanged_anunicateAlarmLevel(&Serial);
     }
-  
+
     indx = 0;
     process = false;
 
@@ -193,8 +195,8 @@ void updateFromSPI()
 }
 
 // Have to get a serialport here
-void myCallback(byte buttonEvent){
-  switch (buttonEvent){
+void myCallback(byte buttonEvent) {
+  switch (buttonEvent) {
     case onPress:
       // Do something...
       local_ptr_to_serial->println(F("onPress"));
@@ -208,9 +210,7 @@ void myCallback(byte buttonEvent){
 
 
 void robot_api_setup(Stream *serialport) {
-
   local_ptr_to_serial = serialport;
-//#if defined(GPAD)
   Wire.begin();
   lcd.init();
   serialport->println(F("Clear LCD"));
@@ -219,15 +219,14 @@ void robot_api_setup(Stream *serialport) {
   serialport->println(F("Start LCD splash"));
   splashLCD();
   serialport->println(F("EndLCD splash"));
-
-  serialport->println(F("Set up GPIO pins"));
-
-//  pinMode(SWITCH_MUTE, INPUT_PULLUP);
-//#endif
+  serialport->print(F("Set up GPIO pins: "));
+  //  pinMode(SWITCH_MUTE, INPUT_PULLUP); //The SWITCH_MUTE is different on Atmega vs ESP32
   for (int i = 0; i < NUM_LIGHTS; i++) {
-    serialport->println(LIGHT[i]);
+    serialport->print(LIGHT[i]);
+    serialport->print(", ");
     pinMode(LIGHT[i], OUTPUT);
   }
+  serialport->println("");
 #if defined(GPAD)
   muteButton.set(SWITCH_MUTE, myCallback);
 #endif
@@ -242,15 +241,15 @@ void robot_api_setup(Stream *serialport) {
 // This has to be called periodically, at a minimum to handle the mute_button
 void robot_api_loop() {
 #if defined(GPAD)
-    muteButton.poll();
+  muteButton.poll();
 #endif
 }
 
 /* Assumes LCD has been initilized
- * Turns off Back Light
- * Clears display
- * Turns on back light.
- */
+   Turns off Back Light
+   Clears display
+   Turns on back light.
+*/
 void clearLCD(void) {
   lcd.noBacklight();
   lcd.clear();
@@ -262,18 +261,24 @@ void splashLCD(void) {
   // Print a message to the LCD.
   lcd.backlight();
   lcd.setCursor(0, 0);
-  lcd.print(PROG_NAME);
+  //Line 1
+  lcd.print(MODEL_NAME);
   lcd.setCursor(3, 1);
-  lcd.print("GPAD Starting");
+  lcd.print(DEVICE_UNDER_TEST);
+  //Line 2
   lcd.setCursor(0, 2);
-  lcd.print("by PubInv & SPEC");
-  lcd.setCursor(0, 3);
-  lcd.print("Version: ");
+   lcd.print(PROG_NAME);
+  lcd.print(" ");
   lcd.print(FIRMWARE_VERSION);
+  //Line 3
+  lcd.setCursor(0, 3);
+  lcd.print("MAC: ");
+  //  lcd.print(myMAC);
+
 }
 // TODO: We need to break the message up into strings to render properly
 // on the display
-void showStatusLCD(AlarmLevel level,bool muted,char *msg) {
+void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
   lcd.init();
   lcd.clear();
   // Possibly we don't need the backlight if the level is zero!
@@ -289,7 +294,7 @@ void showStatusLCD(AlarmLevel level,bool muted,char *msg) {
   lcd.print(AlarmNames[level]);
 
   int msgLineStart = 1;
-  lcd.setCursor(0,msgLineStart);
+  lcd.setCursor(0, msgLineStart);
   int len = strlen(AlarmMessageBuffer);
   if (len < 9) {
     if (muted) {
@@ -299,42 +304,42 @@ void showStatusLCD(AlarmLevel level,bool muted,char *msg) {
     }
     msgLineStart = 2;
   }
-    if (strlen(AlarmMessageBuffer) == 0) {
-      lcd.print("None.");
-    } else {
+  if (strlen(AlarmMessageBuffer) == 0) {
+    lcd.print("None.");
+  } else {
 
     char buffer[21] = {0}; // note space for terminator
 
     size_t len = strlen(msg);      // doesn't count terminator
-    size_t blen = sizeof(buffer)-1; // doesn't count terminator
+    size_t blen = sizeof(buffer) - 1; // doesn't count terminator
     size_t i = 0;
     // the actual loop that enumerates your buffer
-    for (i=0; i<(len/blen + 1) && i + msgLineStart < 4; ++i)
+    for (i = 0; i < (len / blen + 1) && i + msgLineStart < 4; ++i)
     {
-      memcpy(buffer, msg + (i*blen), blen);
+      memcpy(buffer, msg + (i * blen), blen);
       local_ptr_to_serial->println(buffer);
-      lcd.setCursor(0,i+msgLineStart);
+      lcd.setCursor(0, i + msgLineStart);
       lcd.print(buffer);
     }
-   }
+  }
 }
 
 
 // This operation is idempotent if there is no change in the abstract state.
 void set_light_level(int lvl) {
-  for(int i = 0; i < lvl; i++) {
-    digitalWrite(LIGHT[i],HIGH);
+  for (int i = 0; i < lvl; i++) {
+    digitalWrite(LIGHT[i], HIGH);
   }
-  for(int i = lvl; i < NUM_LIGHTS; i++) {
-    digitalWrite(LIGHT[i],LOW);
+  for (int i = lvl; i < NUM_LIGHTS; i++) {
+    digitalWrite(LIGHT[i], LOW);
   }
 }
 void unchanged_anunicateAlarmLevel(Stream* serialport) {
   unsigned long m = millis();
   unsigned long time_in_song = m - start_of_song;
   unsigned char note = time_in_song / (unsigned long) LEN_OF_NOTE_MS;
- //   serialport->print("note: ");
- //   serialport->println(note);
+  //   serialport->print("note: ");
+  //   serialport->println(note);
   if (note >= NUM_NOTES) {
     note = 0;
     start_of_song = m;
@@ -345,11 +350,11 @@ void unchanged_anunicateAlarmLevel(Stream* serialport) {
 #if !defined(HMWK)
   if (!currentlyMuted) {
     unsigned char note_lvl = SONGS[currentLevel][note];
-   
- //   serialport->print("note lvl");
- //   serialport->println(note_lvl);
 
-    tone(TONE_PIN, BUZZER_LVL_FREQ_HZ[note_lvl],INF_DURATION);
+    //   serialport->print("note lvl");
+    //   serialport->println(note_lvl);
+
+    tone(TONE_PIN, BUZZER_LVL_FREQ_HZ[note_lvl], INF_DURATION);
   } else {
     noTone(TONE_PIN);
   }
@@ -359,6 +364,6 @@ void annunciateAlarmLevel(Stream* serialport) {
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
 #if !defined(HMWK)
-  showStatusLCD(currentLevel,currentlyMuted,AlarmMessageBuffer);
+  showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
 #endif
 }

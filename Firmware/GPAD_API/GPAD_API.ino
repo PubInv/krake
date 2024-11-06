@@ -157,12 +157,14 @@ unsigned long nextLEDchangee_ms = 5000; //time in ms.
 void serialSplash() {
   //Serial splash
   Serial.println(F("==================================="));
-  Serial.print(PROG_NAME);
-  Serial.println(FIRMWARE_VERSION);
-  Serial.println(HARDWARE_VERSION);
   Serial.println(MODEL_NAME);
   Serial.println(DEVICE_UNDER_TEST);
-  Serial.print("Alarm Topic: ");
+  Serial.print(PROG_NAME);
+  Serial.println(FIRMWARE_VERSION);
+//  Serial.println(HARDWARE_VERSION);
+  Serial.print("Builtin ESP32 MAC Address: ");
+  Serial.println(WiFi.macAddress());
+  Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
@@ -259,28 +261,27 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
+  digitalWrite(LED_BUILTIN, HIGH);
   //Serial setup
   delay(100);
   Serial.begin(BAUDRATE);
-  delay(100);                         //Wait before sending the first data to terminal
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB
+  }
+  delay(500);                         //Wait before sending the first data to terminal
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
-  Serial.println(FIRMWARE_VERSION);
+  serialSplash();
 
- // serialSplash();
-   //Lets make the LED high near the start of setup for visual clue
-  pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
   // Set LED pins as outputs
-  #if defined(LED_D9)
+#if defined(LED_D9)
   pinMode(LED_D9, OUTPUT);
-  #endif
+#endif
   pinMode(LIGHT0, OUTPUT);
   pinMode(LIGHT1, OUTPUT);
   pinMode(LIGHT2, OUTPUT);
   pinMode(LIGHT3, OUTPUT);
   pinMode(LIGHT4, OUTPUT);
-
-  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level) 
-
   // Turn off all LEDs initially
   turnOnAllLamps();
 
@@ -288,11 +289,13 @@ void setup() {
   robot_api_setup(&Serial);
 
   setup_wifi();
+//  client.setServer(mqtt_server, 1883 MQTT_DEFAULT_PORT);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
+  // setup_spi();
 
- // setup_spi();
+// Need this to work here:   printInstructions(serialport);
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
   Serial.println(F("Done With Setup!"));
 }// end of setup()
