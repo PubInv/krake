@@ -163,7 +163,7 @@ void serialSplash() {
   Serial.println(FIRMWARE_VERSION);
 //  Serial.println(HARDWARE_VERSION);
   Serial.print("Builtin ESP32 MAC Address: ");
-  Serial.println(WiFi.macAddress());
+  Serial.println(myMAC); 
   Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Broker: "));
@@ -272,6 +272,8 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB
   }
   delay(500);                         //Wait before sending the first data to terminal
+  myMAC = String(WiFi.macAddress()); 
+  myMAC.replace(":", "");   
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   serialSplash();
 

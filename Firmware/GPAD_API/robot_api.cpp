@@ -32,6 +32,8 @@ extern AlarmLevel currentLevel;
 extern bool currentlyMuted;
 extern char AlarmMessageBuffer[81];
 
+extern String myMAC;
+
 //For LCD
 #include <LiquidCrystal_I2C.h>
 #ifdef HMWK
@@ -280,7 +282,7 @@ void splashLCD(void) {
   //Line 3
   lcd.setCursor(0, 3);
   lcd.print("MAC: ");
-  //  lcd.print(myMAC);
+  lcd.print(myMAC);
 
 }
 // TODO: We need to break the message up into strings to render properly
