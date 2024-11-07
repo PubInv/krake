@@ -124,8 +124,8 @@ const char* mqtt_password = "public";
 //const char* subscribe_Alarm_Topic = "KRAKE_20240421_LEB1_ALM";
 //const char* publish_Ack_Topic = "KRAKE_20240421_LEB1_ACK";
 
-const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA4_ALM";
-const char* publish_Ack_Topic = "KRAKE_20240421_USA4_ACK";
+const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA1_ALM";
+const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
 
 //const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
 //const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
@@ -257,7 +257,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 // todo, remove use of String here....
   if (String(topic) ==  subscribe_Alarm_Topic) {
     Serial.println("Got MessageFromProcessing_PMD");
-    interpretBuffer(mbuff,m,&Serial);
+    interpretBuffer(mbuff,m,&Serial);  //Process the MQTT message
   }
 }//end call back
 

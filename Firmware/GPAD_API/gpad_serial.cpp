@@ -86,18 +86,23 @@ void interpretBuffer(char *buf,int rlen,Stream *serialport) {
       // This copy loooks uncessary, but is not...we want "alarm"
       // to be a completely independent and abstract function.
       // it should copy the msg buffer
-      alarm((AlarmLevel) N,msg,serialport);
+      Serial.print("The MQTT Alarm Message: ");
+      Serial.println(msg);      
+      alarm((AlarmLevel) N,msg,serialport); //Makes Lamps indicate alarm.
+//FLE      annunciateAlarmLevel(msg);
+//FLE      showStatusLCD(AlarmLevel level, bool muted, char *msg)
+//FLE      showStatusLCD((AlarmLevel) N, currentlyMuted, msg)
       break;
     }
     default:
       serialport->println(F("Unknown Command"));
       break;
   }
-  serialport->println(F("currentlyMuted : "));
+  serialport->print(F("currentlyMuted : "));
   serialport->println(currentlyMuted);
   serialport->println(F("interpret Done"));
   delay(3000);
-}
+}//end interpretBuffer()
 
 void processSerial(Stream *serialport) {
    // Now see if we have a serial command
