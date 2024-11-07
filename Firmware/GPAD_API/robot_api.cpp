@@ -260,16 +260,23 @@ void splashLCD(void) {
   lcd.init();                      // initialize the lcd
   // Print a message to the LCD.
   lcd.backlight();
+
+  //Line 0
   lcd.setCursor(0, 0);
-  //Line 1
   lcd.print(MODEL_NAME);
-  lcd.setCursor(3, 1);
   lcd.print(DEVICE_UNDER_TEST);
-  //Line 2
-  lcd.setCursor(0, 2);
+//  lcd.setCursor(3, 1);
+
+  //Line 1
+  lcd.setCursor(0, 1);
    lcd.print(PROG_NAME);
   lcd.print(" ");
   lcd.print(FIRMWARE_VERSION);
+
+  //Line 2
+  lcd.setCursor(0, 2);
+  lcd.print(F(__DATE__ " " __TIME__));
+
   //Line 3
   lcd.setCursor(0, 3);
   lcd.print("MAC: ");

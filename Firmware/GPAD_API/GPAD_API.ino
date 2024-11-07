@@ -105,12 +105,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 
 
 //Maryville network
-//  const char* ssid = "VRX";
-//  const char* password = "textinsert";
+  const char* ssid = "VRX";
+  const char* password = "textinsert";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+//const char* ssid = "readfamilynetwork";
+//const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -134,7 +134,7 @@ const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-
+String myMAC = "";
 
 // #define VERSION 0.02             //Version of this software
 #define BAUDRATE 115200
