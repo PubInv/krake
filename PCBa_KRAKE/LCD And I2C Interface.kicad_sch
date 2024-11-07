@@ -1962,7 +1962,7 @@
     )
     (pin "1" (uuid 6e5023e0-b791-4750-8211-3347c9e82284))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0304") (unit 1)
         )
@@ -2009,7 +2009,7 @@
     (pin "1" (uuid 9f8f7b71-ebcf-4205-b44c-823fdf00b97e))
     (pin "2" (uuid c71693c2-b2a0-4a2c-9bd9-e036033f60db))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R303") (unit 1)
         )
@@ -2056,7 +2056,7 @@
     (pin "1" (uuid 2b2c29f9-ef8c-4dce-a50c-c7569ea17da5))
     (pin "2" (uuid 32a8b45c-e390-442c-b82f-d7023f067071))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R304") (unit 1)
         )
@@ -2103,7 +2103,7 @@
     (pin "1" (uuid aa2c7260-a440-42ff-91b8-da8569909fdb))
     (pin "2" (uuid 0cb1406f-f370-4c02-adcd-ca14a76ac437))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R302") (unit 1)
         )
@@ -2150,7 +2150,7 @@
     (pin "1" (uuid 4e78eb5e-994d-4f36-8114-efa1ae85c68d))
     (pin "2" (uuid b8bd9648-446c-4bba-bd2d-01ffe3479f78))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R301") (unit 1)
         )
@@ -2175,7 +2175,7 @@
     )
     (pin "1" (uuid b2387f32-059b-4cb7-b244-bb3747370630))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0302") (unit 1)
         )
@@ -2200,7 +2200,7 @@
     )
     (pin "1" (uuid 06ded73f-d16a-4465-ad76-ac29ccc612ac))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0307") (unit 1)
         )
@@ -2247,7 +2247,7 @@
     (pin "1" (uuid d188d922-97e4-4772-8df5-e04e977be4a0))
     (pin "2" (uuid 731ebf25-5c13-4d0e-8b5a-42bfbfa1a2b5))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R310") (unit 1)
         )
@@ -2291,7 +2291,7 @@
     (pin "1" (uuid 12e87523-fc64-4049-9652-f19a58c092a2))
     (pin "2" (uuid d7e38dcc-7afc-4a03-9ebc-1aa73346e6aa))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "C302") (unit 1)
         )
@@ -2338,7 +2338,7 @@
     (pin "1" (uuid 074ddeb4-7627-4a26-9557-41ebcc4b3a59))
     (pin "2" (uuid 1c25735d-4b92-4a26-9d9c-a71841d6e5c1))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "C301") (unit 1)
         )
@@ -2363,7 +2363,7 @@
     )
     (pin "1" (uuid b6ac915e-3075-467d-ab40-1ee0da8ab4c1))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0305") (unit 1)
         )
@@ -2388,7 +2388,7 @@
     )
     (pin "1" (uuid bae0fa4a-82dc-4a63-8088-2b1cac36f503))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0308") (unit 1)
         )
@@ -2435,7 +2435,7 @@
     (pin "1" (uuid 5db2664d-1e97-4661-8889-9263421c45ce))
     (pin "2" (uuid 13db8969-0422-40a9-820e-04c69d3af072))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R311") (unit 1)
         )
@@ -2483,7 +2483,7 @@
     (pin "2" (uuid 4f03337f-91b3-4a7b-bb70-ea4121a81499))
     (pin "3" (uuid f28d6179-a331-4f99-af7a-9856f3f57547))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "Q301") (unit 1)
         )
@@ -2508,7 +2508,7 @@
     )
     (pin "1" (uuid c2e7b32f-bc2e-4fdc-9cc9-1dee3208b76a))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0303") (unit 1)
         )
@@ -2533,7 +2533,7 @@
     )
     (pin "1" (uuid 0dc35654-fbde-430e-95e6-5667b4d1fb65))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0306") (unit 1)
         )
@@ -2558,7 +2558,7 @@
     )
     (pin "1" (uuid bdc7c84e-a807-400a-85ac-1cfa1c91d7f9))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0301") (unit 1)
         )
@@ -2605,7 +2605,7 @@
     (pin "1" (uuid d15438b9-71c2-4acf-a888-824ab3852a3c))
     (pin "2" (uuid 7bf3cb00-52de-468a-8135-6efeb5dbb995))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R305") (unit 1)
         )
@@ -2652,7 +2652,7 @@
     (pin "1" (uuid c0e9bd4f-874f-4eda-856a-82be08b0390f))
     (pin "2" (uuid 07deba09-28f8-4f98-9c39-67aa5b14abf5))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R307") (unit 1)
         )
@@ -2699,7 +2699,7 @@
     (pin "1" (uuid 0e80cac9-e074-4a65-9131-dfd815a65382))
     (pin "2" (uuid 3576d98a-2c39-4073-961b-8f19a0c3aad1))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R309") (unit 1)
         )
@@ -2727,7 +2727,7 @@
     )
     (pin "1" (uuid 52d77a59-bfe7-4e3c-8317-9cdc7e23af45))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "TP402") (unit 1)
         )
@@ -2752,7 +2752,7 @@
     )
     (pin "1" (uuid 6dd09c2e-4b3c-4053-a841-9974b6c9e687))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#FLG0301") (unit 1)
         )
@@ -2799,7 +2799,7 @@
     (pin "1" (uuid aa36e479-500e-4667-ae5a-d2d0d81e00ee))
     (pin "2" (uuid 4b0df132-ca57-4b0d-808c-066ab8515bb6))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R306") (unit 1)
         )
@@ -2824,7 +2824,7 @@
     )
     (pin "1" (uuid 82ba98f2-8f2f-4beb-8370-c8d2ed1ba921))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0309") (unit 1)
         )
@@ -2849,7 +2849,7 @@
     )
     (pin "1" (uuid 9892b605-fc2c-4fd8-9dfc-27397c7118f6))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#FLG0302") (unit 1)
         )
@@ -2896,7 +2896,7 @@
     (pin "1" (uuid 104d3287-f0fc-4ef7-bfe8-71fed1f92f93))
     (pin "2" (uuid 8fbe4dd2-f730-4cba-8805-f1885961f533))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R308") (unit 1)
         )
@@ -2929,7 +2929,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF403") (unit 1)
         )
@@ -2968,7 +2968,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF408") (unit 1)
         )
@@ -3048,7 +3048,7 @@
     (pin "8" (uuid 8e142212-0248-4492-a7c9-dd7ee4e91866))
     (pin "9" (uuid d7043694-6382-4d0f-9412-1db45d62c6ea))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "U302") (unit 1)
         )
@@ -3095,7 +3095,7 @@
     (pin "1" (uuid c6db9374-9aac-4d79-8bc8-771ba1457cfb))
     (pin "2" (uuid e9650a5e-4f0b-4211-b7ba-8bee82d8122f))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R312") (unit 1)
         )
@@ -3128,7 +3128,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF412") (unit 1)
         )
@@ -3161,7 +3161,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF409") (unit 1)
         )
@@ -3200,7 +3200,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF404") (unit 1)
         )
@@ -3257,7 +3257,7 @@
     (pin "2" (uuid dfb42f85-4e05-4dbb-85d4-7fcde6b1eb76))
     (pin "3" (uuid 6aaf4359-066e-4c03-8923-b2462e7c5ee7))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "RV301") (unit 1)
         )
@@ -3296,7 +3296,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF402") (unit 1)
         )
@@ -3335,7 +3335,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF407") (unit 1)
         )
@@ -3374,7 +3374,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF410") (unit 1)
         )
@@ -3413,7 +3413,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF405") (unit 1)
         )
@@ -3446,7 +3446,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF406") (unit 1)
         )
@@ -3471,7 +3471,7 @@
     )
     (pin "1" (uuid cf2db20a-573e-48ec-855a-b71083a7b5eb))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "#PWR0126") (unit 1)
         )
@@ -3499,7 +3499,7 @@
     )
     (pin "1" (uuid 564e4771-2f61-4d96-9fda-12af74589ee0))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "TP401") (unit 1)
         )
@@ -3554,7 +3554,7 @@
     (pin "8" (uuid f170cdb8-c79e-45e2-a350-5c44bff86f5d))
     (pin "9" (uuid 9ba23251-6d8d-45d3-ade7-19fd1a218a92))
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "U301") (unit 1)
         )
@@ -3593,7 +3593,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF411") (unit 1)
         )
@@ -3632,7 +3632,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "GeneralPurposeAlarmDevicePCB"
+      (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "MF401") (unit 1)
         )
