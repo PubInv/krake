@@ -363,7 +363,5 @@ void unchanged_anunicateAlarmLevel(Stream* serialport) {
 void annunciateAlarmLevel(Stream* serialport) {
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
-#if !defined(HMWK)
   showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
-#endif
 }

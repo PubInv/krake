@@ -105,12 +105,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 
 
 //Maryville network
- const char* ssid = "VRX";
- const char* password = "textinsert";
+//  const char* ssid = "VRX";
+//  const char* password = "textinsert";
 
 // Austin network
-//const char* ssid = "readfamilynetwork";
-//const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -319,10 +319,11 @@ void loop() {
 
   unchanged_anunicateAlarmLevel(&Serial);
  // delay(20);
- // This causes this the HMWK device to rail..
- #if defined(GPAD)
+ // This causes this the HMWK device to fail.
+ // TODO: put this back in.
+ // #if defined(GPAD)
   robot_api_loop();
- #endif
+ // #endif
 
   processSerial(&Serial);
 
