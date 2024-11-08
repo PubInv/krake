@@ -26,6 +26,13 @@
 
 #include <DailyStruggleButton.h>
 DailyStruggleButton muteButton;
+// Time in ms you need to hold down the button to be considered a long press
+unsigned int longPressTime = 1000;
+// How many times you need to hit the button to be considered a multi-hit
+byte multiHitTarget = 2; 
+// How fast you need to hit all buttons to be considered a multi-hit
+unsigned int multiHitTime = 400; 
+
 
 extern const char *AlarmNames[];
 extern AlarmLevel currentLevel;
@@ -197,15 +204,36 @@ void updateFromSPI()
 }
 
 // Have to get a serialport here
-void myCallback(byte buttonEvent) {
+//void myCallback(byte buttonEvent) {
+void muteButtonCallback(byte buttonEvent) {
   switch (buttonEvent) {
     case onPress:
       // Do something...
-      local_ptr_to_serial->println(F("onPress"));
+      local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
       currentlyMuted = !currentlyMuted;
       start_of_song = millis();
       annunciateAlarmLevel(local_ptr_to_serial);
       printAlarmState(local_ptr_to_serial);
+      break;
+          // onLongPress is indidcated when you hold onto the button 
+    // more than longPressTime in milliseconds
+    case onLongPress:
+      Serial.print("Buttong Long Pressed For ");
+      Serial.print(longPressTime);
+      Serial.println("ms");
+      break;
+
+    // onMultiHit is indicated when you hit the button
+    // multiHitTarget times within multihitTime in milliseconds
+    case onMultiHit:
+      Serial.print("Button Pressed ");
+      Serial.print(multiHitTarget);
+      Serial.print(" times in ");
+      Serial.print(multiHitTime);
+      Serial.println("ms");
+      break;
+   default:
+      Serial.println("buttonEvent but not reckognized case");
       break;
   }
 }
@@ -222,15 +250,17 @@ void robot_api_setup(Stream *serialport) {
   splashLCD();
   serialport->println(F("EndLCD splash"));
   serialport->print(F("Set up GPIO pins: "));
-  //  pinMode(SWITCH_MUTE, INPUT_PULLUP); //The SWITCH_MUTE is different on Atmega vs ESP32
+  pinMode(SWITCH_MUTE, INPUT_PULLUP); //The SWITCH_MUTE is different on Atmega vs ESP32
   for (int i = 0; i < NUM_LIGHTS; i++) {
     serialport->print(LIGHT[i]);
     serialport->print(", ");
     pinMode(LIGHT[i], OUTPUT);
   }
   serialport->println("");
-#if defined(GPAD)
-  muteButton.set(SWITCH_MUTE, myCallback);
+//#if defined(GPAD)
+#if (1)
+//  muteButton.set(SWITCH_MUTE, myCallback);
+  muteButton.set(SWITCH_MUTE, muteButtonCallback);
 #endif
   serialport->println(F("end set up GPIO pins"));
 
@@ -242,6 +272,7 @@ void robot_api_setup(Stream *serialport) {
 
 // This has to be called periodically, at a minimum to handle the mute_button
 void robot_api_loop() {
+  muteButton.poll();
 #if defined(GPAD)
   muteButton.poll();
 #endif

@@ -102,7 +102,9 @@ unsigned long last_command_ms;
 // So we will not process a new alarm condition until we have completed one song.
 const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 
-
+//Aley network
+//const char* ssid = "ADT";
+//const char* password = "adt@12345";
 
 //Maryville network
   const char* ssid = "VRX";
