@@ -123,6 +123,15 @@ SPK2 -- -ve of the speaker
 
 [PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro) " -->
 
+
+# Buidling PCBa of Krake 
+
+## ESP32-WROOM-32D
+
+[esp32-WROOM-32D Datasheet](https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Espressif-Systems-ESP32-WROOM-32D-N4_C473012.pdf)
+
+<img width="417" alt="Screenshot 2024-11-09 031202" src="https://github.com/user-attachments/assets/a9bcc9fe-2d47-4a4f-9dd2-0b00217822fb">
+
 # Enhancements
 
 1. The Krake is an HTTP Server and receives alarm level requests by an HTTP Client Put or Get message.
