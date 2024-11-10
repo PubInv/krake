@@ -101,7 +101,7 @@ void interpretBuffer(char *buf,int rlen,Stream *serialport) {
   serialport->print(F("currentlyMuted : "));
   serialport->println(currentlyMuted);
   serialport->println(F("interpret Done"));
-  delay(3000);
+//FLE  delay(3000);
 }//end interpretBuffer()
 
 void processSerial(Stream *serialport) {

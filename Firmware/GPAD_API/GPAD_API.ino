@@ -102,15 +102,17 @@ unsigned long last_command_ms;
 // So we will not process a new alarm condition until we have completed one song.
 const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 
-
+//Aley network
+//const char* ssid = "ADT";
+//const char* password = "adt@12345";
 
 //Maryville network
-//  const char* ssid = "VRX";
-//  const char* password = "textinsert";
+  const char* ssid = "VRX";
+  const char* password = "textinsert";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+//const char* ssid = "readfamilynetwork";
+//const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -134,7 +136,7 @@ const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-
+String myMAC = "";
 
 // #define VERSION 0.02             //Version of this software
 #define BAUDRATE 115200
@@ -163,7 +165,7 @@ void serialSplash() {
   Serial.println(FIRMWARE_VERSION);
 //  Serial.println(HARDWARE_VERSION);
   Serial.print("Builtin ESP32 MAC Address: ");
-  Serial.println(WiFi.macAddress());
+  Serial.println(myMAC); 
   Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Broker: "));
@@ -272,6 +274,8 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB
   }
   delay(500);                         //Wait before sending the first data to terminal
+  myMAC = String(WiFi.macAddress()); 
+  myMAC.replace(":", "");   
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   serialSplash();
 
