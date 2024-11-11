@@ -107,13 +107,13 @@ to make future enhancement easy. At present these are:
 > gpad_serial.h
 > gpad_utility.cpp
 > gpad_utility.h
-> robot_api.cpp
-> robot_api.h
+> GPAD_HAL.cpp
+> GPAD_HAL.h
 
 The "alarm_api" module is main application programmers interface; it is a very
 high-level abstract alarm module.
 The "gpad_serial" module handles serial communication of the alarm commands.
 The "gpad_utility" contains mostly debugging routines needed by all other modules.
-The "robot_api" is a low-level api concerning the specific API. It is means to
+The "GPAD_HAL" is a low-level api concerning the specific API. It is means to
 change more rapidly as the hardware evolves than the "alarm_api".
 At the time of this writing I will shortly add an "spi" module

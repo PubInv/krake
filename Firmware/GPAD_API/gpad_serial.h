@@ -23,6 +23,6 @@
 #include <Stream.h>
 
 void processSerial(Stream *serialport);
-void interpretBuffer(char *buf,int rlen,Stream *serialport);
+
 
 #endif

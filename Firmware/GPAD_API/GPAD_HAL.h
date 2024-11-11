@@ -1,5 +1,5 @@
-/* robot_api.h
-  header for the "robot" (low-level hardware) api
+/* GPAD_HAL.cpp
+   The Hardware Abstraction Layer (HAL) (low-level hardware) api
 
   Copyright (C) 2022 Robert Read
 
@@ -18,8 +18,8 @@
 
 */
 
-#ifndef ROBOT_API
-#define ROBOT_API 1
+#ifndef GPAD_HAL
+#define GPAD_HAL 1
 #include <stream.h>
 #include <Arduino.h>
 
@@ -98,7 +98,9 @@ void annunciateAlarmLevel(Stream *serialport);
 void clearLCD(void);
 void splashLCD(void);
 
+void interpretBuffer(char *buf,int rlen,Stream *serialport);
+
 // This module has to be initialized and called each time through the superloop
-void robot_api_setup(Stream *serialport);
-void robot_api_loop();
+void GPAD_HAL_setup(Stream *serialport);
+void GPAD_HAL_loop();
 #endif

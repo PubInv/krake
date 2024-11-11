@@ -51,7 +51,7 @@
  */
 
 #include "alarm_api.h"
-#include "robot_api.h"
+#include "GPAD_HAL.h"
 #include "gpad_utility.h"
 #include "gpad_serial.h"
 #include "wink.h"
@@ -209,8 +209,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
-  //    Serial.println("success!");
-  // TODO -- we seem to doing this a lot!
+      Serial.println("success!");
       client.subscribe(subscribe_Alarm_Topic);    // Subscribe to GPAD API alarms
     } else {
       Serial.print("failed, rc=");
@@ -242,29 +241,35 @@ void turnOffAllLamps() {
   digitalWrite(LIGHT4, LOW); 
 }
 
-char mbuff[121];
+
 
 // Handeler for MQTT subscrived messages
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
 
-  int m = min((unsigned int) length,(unsigned int) 120);
-  for (int i = 0; i < m; i++) {
-    mbuff[i] = (char)payload[i];
-  }
-  mbuff[m] = '\0';
-  Serial.print("|");
-  Serial.print(mbuff);
-  Serial.println("|");
+
 // todo, remove use of String here....
-  if (String(topic) ==  subscribe_Alarm_Topic) {
+// Note: We will check for topic or topics in the future...
+  if (strcmp(topic,subscribe_Alarm_Topic) == 0) {
+    char mbuff[121];
+    Serial.print("Message arrived [");
+    Serial.print(topic);
+    Serial.print("] ");
+
+    int m = min((unsigned int) length,(unsigned int) 120);
+    for (int i = 0; i < m; i++) {
+      mbuff[i] = (char)payload[i];
+    }
+    mbuff[m] = '\0';
+    Serial.print("|");
+    Serial.print(mbuff);
+    Serial.println("|");
+
     Serial.println("Got MessageFromProcessing_PMD");
     interpretBuffer(mbuff,m,&Serial);  //Process the MQTT message
     annunciateAlarmLevel(&Serial);
   }
 }//end call back
+
 
 
 void setup() {
@@ -295,7 +300,7 @@ void setup() {
   turnOnAllLamps();
 
   //Setup and present LCD splash screen
-  robot_api_setup(&Serial);
+  GPAD_HAL_setup(&Serial);
 
   setup_wifi();
 //  client.setServer(mqtt_server, 1883 MQTT_DEFAULT_PORT);
@@ -326,11 +331,7 @@ void loop() {
 
   unchanged_anunicateAlarmLevel(&Serial);
  // delay(20);
- // This causes this the HMWK device to fail.
- // TODO: put this back in.
- // #if defined(GPAD)
-  robot_api_loop();
- // #endif
+  GPAD_HAL_loop();
 
   processSerial(&Serial);
 
