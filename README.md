@@ -123,6 +123,30 @@ SPK2 -- -ve of the speaker
 
 [PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro) " -->
 
+
+# Buidling PCBa of Krake 
+
+## ESP32-WROOM-32D
+
+[esp32-WROOM-32D Datasheet](https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Espressif-Systems-ESP32-WROOM-32D-N4_C473012.pdf)
+
+<img width="417" alt="Screenshot 2024-11-09 031202" src="https://github.com/user-attachments/assets/a9bcc9fe-2d47-4a4f-9dd2-0b00217822fb">
+
+### ESP32-WROOM-32D module pin functions:
+
+- GPIO 0: Controls the boot mode, so avoid using it if you’re connecting LEDs that may be powered at boot.
+- GPIO 1 (TX) and GPIO 3 (RX): Used for UART0 communication, so connecting LEDs here might interfere with serial debugging.
+- GPIO 6 to GPIO 11: Used for flash memory on ESP32 modules with external flash, so they should not be used for other purposes.
+- GPIO 15: May have restrictions based on the board design; avoid using it for LEDs if it conflicts with boot or other functions.
+- GPIO 34 to GPIO 39: These are input-only pins, so they cannot drive LEDs directly.
+
+- GPIO 2: Commonly used for the onboard LED on some ESP32 development boards.
+- GPIO 4, GPIO 5: Frequently available and safe for IO.
+- GPIO 12, GPIO 13, GPIO 14: Commonly used for IO and don’t interfere with boot functions.
+- GPIO 16, GPIO 17: Good for general-purpose outputss.
+- GPIO 18, GPIO 19, GPIO 21: These are usually free for use and work well with IO.
+
+
 # Enhancements
 
 1. The Krake is an HTTP Server and receives alarm level requests by an HTTP Client Put or Get message.
