@@ -107,12 +107,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 //const char* password = "adt@12345";
 
 //Maryville network
-  const char* ssid = "VRX";
-  const char* password = "textinsert";
+//  const char* ssid = "VRX";
+//  const char* password = "textinsert";
 
 // Austin network
-//const char* ssid = "readfamilynetwork";
-//const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -126,11 +126,11 @@ const char* mqtt_password = "public";
 //const char* subscribe_Alarm_Topic = "KRAKE_20240421_LEB1_ALM";
 //const char* publish_Ack_Topic = "KRAKE_20240421_LEB1_ACK";
 
-const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA1_ALM";
-const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
+//const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA1_ALM";
+//const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
 
-//const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
-//const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
+const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
+const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
 
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
@@ -209,7 +209,8 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
-      Serial.println("success!");
+  //    Serial.println("success!");
+  // TODO -- we seem to doing this a lot!
       client.subscribe(subscribe_Alarm_Topic);    // Subscribe to GPAD API alarms
     } else {
       Serial.print("failed, rc=");
@@ -217,6 +218,7 @@ void reconnect() {
       delay(5000);
     }
   }
+  Serial.println("connected!");
 }
 // Function to turn on all lamps
 void turnOnAllLamps() {
@@ -260,6 +262,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if (String(topic) ==  subscribe_Alarm_Topic) {
     Serial.println("Got MessageFromProcessing_PMD");
     interpretBuffer(mbuff,m,&Serial);  //Process the MQTT message
+    annunciateAlarmLevel(&Serial);
   }
 }//end call back
 

@@ -89,9 +89,6 @@ void interpretBuffer(char *buf,int rlen,Stream *serialport) {
       Serial.print("The MQTT Alarm Message: ");
       Serial.println(msg);      
       alarm((AlarmLevel) N,msg,serialport); //Makes Lamps indicate alarm.
-//FLE      annunciateAlarmLevel(msg);
-//FLE      showStatusLCD(AlarmLevel level, bool muted, char *msg)
-//FLE      showStatusLCD((AlarmLevel) N, currentlyMuted, msg)
       break;
     }
     default:
