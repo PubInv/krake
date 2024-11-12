@@ -93,7 +93,7 @@
 
 
 #define DEBUG_SPI 0
-#define DEBUG 0
+#define DEBUG 4
 
 
 unsigned long last_command_ms;
@@ -282,10 +282,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB
   }
   delay(500);                         //Wait before sending the first data to terminal
-  myMAC = String(WiFi.macAddress()); 
-  myMAC.replace(":", "");   
-  Serial.setTimeout(SERIAL_TIMEOUT_MS);
-  serialSplash();
+
 
   // Set LED pins as outputs
 #if defined(LED_D9)
@@ -303,6 +300,11 @@ void setup() {
   GPAD_HAL_setup(&Serial);
 
   setup_wifi();
+
+  myMAC = String(WiFi.macAddress()); 
+  myMAC.replace(":", "");   
+  Serial.setTimeout(SERIAL_TIMEOUT_MS);
+  serialSplash();
 //  client.setServer(mqtt_server, 1883 MQTT_DEFAULT_PORT);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
@@ -319,6 +321,11 @@ void toggle(int pin) {
     digitalWrite(pin, digitalRead(pin) ? LOW : HIGH); 
 }
 void loop() {
+
+#if (DEBUG > 3) 
+  Serial.println("MAC: ");
+  Serial.println(WiFi.macAddress()); 
+#endif
 
 #if defined(HMWK)
   if (!client.connected()) {
