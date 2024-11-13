@@ -129,8 +129,15 @@ const char* mqtt_password = "public";
 //const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA1_ALM";
 //const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
 
-const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA5_ALM";
-const char* publish_Ack_Topic = "KRAKE_20240421_USA5_ACK";
+// A MAC addresss treated as a string has 12 chars.
+// The strings "_ALM" and "_ACK" have 4 chars.
+// A null character is one other. 12 + 4 + 1 = 17
+char subscribe_Alarm_Topic[17];
+char publish_Ack_Topic[17];
+
+#define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
+#define MACSTR "%02x:%02x:%02x:%02x:%02x:%02x"
+#define MACSTR_PLN "%02X%02X%02X%02X%02X%02X"
 
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
@@ -160,7 +167,7 @@ void serialSplash() {
   //Serial splash
   Serial.println(F("==================================="));
   Serial.println(MODEL_NAME);
-  Serial.println(DEVICE_UNDER_TEST);
+//  Serial.println(DEVICE_UNDER_TEST);
   Serial.print(PROG_NAME);
   Serial.println(FIRMWARE_VERSION);
 //  Serial.println(HARDWARE_VERSION);
@@ -283,7 +290,6 @@ void setup() {
   }
   delay(500);                         //Wait before sending the first data to terminal
 
-
   // Set LED pins as outputs
 #if defined(LED_D9)
   pinMode(LED_D9, OUTPUT);
@@ -296,13 +302,14 @@ void setup() {
   // Turn off all LEDs initially
   turnOnAllLamps();
 
-  //Setup and present LCD splash screen
+    //Setup and present LCD splash screen
   GPAD_HAL_setup(&Serial);
 
-  setup_wifi();
+#if (DEBUG > 0)
+  Serial.println("MAC: ");
+  Serial.println(myMAC);
+#endif 
 
-  myMAC = String(WiFi.macAddress()); 
-  myMAC.replace(":", "");   
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   serialSplash();
 //  client.setServer(mqtt_server, 1883 MQTT_DEFAULT_PORT);
@@ -310,6 +317,37 @@ void setup() {
   client.setCallback(callback);
 
   // setup_spi();
+  setup_wifi();
+
+  byte mac[6];
+  WiFi.macAddress(mac);
+
+  printf("My mac is " MACSTR "\n", MAC2STR(mac));
+  char buff[13];
+  sprintf(buff, MACSTR_PLN, MAC2STR(mac)); 
+  Serial.print("MAC as char array: ");
+  Serial.println(buff);
+  myMAC = String(WiFi.macAddress()); 
+  myMAC.replace(":", ""); 
+  Serial.println("MAC: ");
+  Serial.println(myMAC);
+
+  strcpy(subscribe_Alarm_Topic,buff);
+  strcpy(publish_Ack_Topic,buff);
+  strcpy(subscribe_Alarm_Topic+12,"_ALM");
+  strcpy(publish_Ack_Topic+12,"_ACK");
+  subscribe_Alarm_Topic[16] = '\0';
+  publish_Ack_Topic[16] = '\0';
+  Serial.println("XXXXXXX");
+
+  Serial.println(subscribe_Alarm_Topic);
+  Serial.println(publish_Ack_Topic);
+  Serial.println("XXXXXXX");
+
+  serialSplash();
+// We call this a second time to get the MAC on the screen
+  clearLCD();
+  splashLCD();
 
 // Need this to work here:   printInstructions(serialport);
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
@@ -320,17 +358,27 @@ unsigned long last_ms = 0;
 void toggle(int pin) {
     digitalWrite(pin, digitalRead(pin) ? LOW : HIGH); 
 }
-void loop() {
 
-#if (DEBUG > 3) 
-  Serial.println("MAC: ");
-  Serial.println(WiFi.macAddress()); 
+const unsigned long LOW_FREQ_DEBUG_MS = 20000;
+unsigned long time_since_LOW_FREQ_ms = 0;
+void loop() {
+  unsigned long ms = millis();
+  if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
+    time_since_LOW_FREQ_ms = ms;
+    String curMAC = String(WiFi.macAddress()); 
+    curMAC.replace(":", "");
+    Serial.println("MAC: ");
+    Serial.println(curMAC); 
+    Serial.println(subscribe_Alarm_Topic);
+    Serial.println(publish_Ack_Topic);
+#if defined(HMWK)
+    if (!client.connected()) {
+      reconnect();
+    }
 #endif
+  }
 
 #if defined(HMWK)
-  if (!client.connected()) {
-    reconnect();
-  }
   client.loop();
   publishOnLineMsg();
   wink(); //The builtin LED
@@ -346,13 +394,4 @@ void loop() {
 #if defined(GPAD)
   updateFromSPI();
 #endif
-
-  if (DEBUG > 1) {
-    unsigned long ms = millis();
-    if ((ms - last_ms) > 3000) {
-      Serial.print(" LED : ");
-      Serial.println(LED_BUILTIN);
-      last_ms = ms;
-    }
-  }
 }

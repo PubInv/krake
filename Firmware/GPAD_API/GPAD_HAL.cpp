@@ -322,8 +322,7 @@ void interpretBuffer(char *buf,int rlen,Stream *serialport) {
       Serial.print("The MQTT Alarm Message: ");
       Serial.println(msg);      
       alarm((AlarmLevel) N,msg,serialport); //Makes Lamps indicate alarm.
-
-  
+ 
       break;
     }
     default:
@@ -364,7 +363,7 @@ void splashLCD(void) {
   //Line 0
   lcd.setCursor(0, 0);
   lcd.print(MODEL_NAME);
-  lcd.print(DEVICE_UNDER_TEST);
+ // lcd.print(DEVICE_UNDER_TEST);
 //  lcd.setCursor(3, 1);
 
   //Line 1
@@ -430,7 +429,6 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
     }
   }
 }
-
 
 // This operation is idempotent if there is no change in the abstract state.
 void set_light_level(int lvl) {
