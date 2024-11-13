@@ -25,7 +25,7 @@
 
 
 #define PROG_NAME "GPAD_API "
-#define FIRMWARE_VERSION "0.13 "
+#define FIRMWARE_VERSION "0.14 "
 //#define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
 //#define DEVICE_UNDER_TEST "20240421_LEB1"  //A Serial Number  
