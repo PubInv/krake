@@ -58,7 +58,13 @@
 #include <Math.h>
 
 #include <WiFi.h>
+#include <esp_wifi.h>
+
 #include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
+
+
+
+
 
 
 /* SPI_PERIPHERAL
@@ -134,6 +140,7 @@ const char* mqtt_password = "public";
 // A null character is one other. 12 + 4 + 1 = 17
 char subscribe_Alarm_Topic[17];
 char publish_Ack_Topic[17];
+char macAddressString[13];
 
 #define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
 #define MACSTR "%02x:%02x:%02x:%02x:%02x:%02x"
@@ -143,7 +150,7 @@ char publish_Ack_Topic[17];
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-String myMAC = "";
+// String myMAC = "";
 
 // #define VERSION 0.02             //Version of this software
 #define BAUDRATE 115200
@@ -172,7 +179,7 @@ void serialSplash() {
   Serial.println(FIRMWARE_VERSION);
 //  Serial.println(HARDWARE_VERSION);
   Serial.print("Builtin ESP32 MAC Address: ");
-  Serial.println(myMAC); 
+  Serial.println(macAddressString); 
   Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Broker: "));
@@ -198,18 +205,25 @@ void publishOnLineMsg(void) {
   }
 }
 
-void setup_wifi() {
-  delay(10);
-  Serial.println();
-  Serial.print("Connecting to WiFi: ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+bool connect_to_wifi() {
+  if (WiFi.status() != WL_CONNECTED) {
+    delay(10);
+    Serial.println();
+
+    Serial.print("Connecting to WiFi: ");
+    Serial.println(ssid);
+
+    WiFi.begin(ssid, password);
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("Failed to connect WiFi.");
+      return false;
+    } else {
+      Serial.println("");
+      Serial.println("WiFi connected");
+      return true;
+    }
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
+  return true;
 }
 
 void reconnect() {
@@ -277,9 +291,27 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }//end call back
 
+bool readMacAddress(uint8_t* baseMac){
+//  uint8_t baseMac[6];
+  esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
+  if (ret == ESP_OK) {
+    // Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
+    //               baseMac[0], baseMac[1], baseMac[2],
+    //               baseMac[3], baseMac[4], baseMac[5]);
+    return true;
+  } else {
+    // Serial.println("Failed to read MAC address");
+    return false;
+  }
+}
 
 
 void setup() {
+
+  subscribe_Alarm_Topic[0] = '\0';
+  publish_Ack_Topic[0] = '\0';
+  macAddressString[0] = '\0';
+
   pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   //Serial setup
@@ -307,31 +339,37 @@ void setup() {
 
 #if (DEBUG > 0)
   Serial.println("MAC: ");
-  Serial.println(myMAC);
+  Serial.println(macAddressString);
 #endif 
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
-  serialSplash();
+//  serialSplash();
 //  client.setServer(mqtt_server, 1883 MQTT_DEFAULT_PORT);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  // setup_spi();
-  setup_wifi();
+  WiFi.mode(WIFI_STA);
+  WiFi.STA.begin();
 
-  byte mac[6];
-  WiFi.macAddress(mac);
+  // setup_spi();
+
+  uint8_t mac[6];
+ // WiFi.macAddress(mac);
+
+  readMacAddress(mac);
 
   printf("My mac is " MACSTR "\n", MAC2STR(mac));
   char buff[13];
   sprintf(buff, MACSTR_PLN, MAC2STR(mac)); 
   Serial.print("MAC as char array: ");
   Serial.println(buff);
-  myMAC = String(WiFi.macAddress()); 
-  myMAC.replace(":", ""); 
-  Serial.println("MAC: ");
-  Serial.println(myMAC);
+  // myMAC = String(WiFi.macAddress()); 
+  // myMAC.replace(":", ""); 
+  // Serial.println("MAC: ");
+  // Serial.println(myMAC);
 
+  strcpy(macAddressString,buff);
+  macAddressString[12] = '\0';
   strcpy(subscribe_Alarm_Topic,buff);
   strcpy(publish_Ack_Topic,buff);
   strcpy(subscribe_Alarm_Topic+12,"_ALM");
@@ -365,10 +403,9 @@ void loop() {
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
     time_since_LOW_FREQ_ms = ms;
-    String curMAC = String(WiFi.macAddress()); 
-    curMAC.replace(":", "");
-    Serial.println("MAC: ");
-    Serial.println(curMAC); 
+
+    connect_to_wifi();
+
     Serial.println(subscribe_Alarm_Topic);
     Serial.println(publish_Ack_Topic);
 #if defined(HMWK)
