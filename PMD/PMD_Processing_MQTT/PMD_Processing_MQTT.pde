@@ -12,7 +12,7 @@
 // Pseude Medical Device in Processing. 
 // This program is a development tool for the Krake(TM) wirless alarm device.
 // This example sketch connects to the public shiftr.io instance and sends a message on every keystroke.
-// You can find the broker visulization here: https://www.shiftr.io/try.
+// You can find the broker visulization here: https://public.cloud.shiftr.io/.
 //
 // Note: If you're running the sketch via the Android Mode you need to set the INTERNET permission
 // in Android > Sketch Permissions.
