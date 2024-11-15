@@ -6,10 +6,13 @@
 // Date: 20241024 Publish to a Krake model and serial number. Works with "FT_PMD_MQTT ""V0.7 "
 // Date: 20241031 Begin publishing and subscriving messages in the GPAD API format of 20241031. Need a KRAKE which can parse GPAD API for this.
 // Date: 20241101 Saved and renamed from FT_processingPMD_MQTT.  Fixed error on KRAKE_DTA_TOPIC[] from KRAKE_20240421_LEB1_ALM to KRAKE_20240421_LEB1_ALM
+// Date: 20241113 topics based on MAC address for US1-US5 assemblies. Rev 7.
+// Date: 20241115 Time stamp received messages. Rev 8.
 
 // Pseude Medical Device in Processing. 
+// This program is a development tool for the Krake(TM) wirless alarm device.
 // This example sketch connects to the public shiftr.io instance and sends a message on every keystroke.
-// After starting the sketch you can find the client here: https://www.shiftr.io/try.
+// You can find the broker visulization here: https://www.shiftr.io/try.
 //
 // Note: If you're running the sketch via the Android Mode you need to set the INTERNET permission
 // in Android > Sketch Permissions.
@@ -17,14 +20,13 @@
 // by Joël Gähwiler
 // https://github.com/256dpi/processing-mqtt
 
-
 /* 
  #define LICENSE "GNU Affero General Public License, version 3 "
  #define ORIGIN "USA"
  */
 
 String PROG_NAME = "FT_processingPMD_MQTT";
-String VERSION = "V0.7 ";
+String VERSION = "V0.8 ";
 // Set the topic for the Pseude Medical Device in Processing.
 String PMD_DTA_TOPIC = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
 
@@ -69,6 +71,10 @@ class Adapter implements MQTTListener {
     client.subscribe("PMD_LB4");
     client.subscribe("PMD_LB5");
     client.subscribe("20240421_LEB1");
+    client.subscribe("20240421_LEB2");
+    client.subscribe("20240421_LEB3");
+    client.subscribe("20240421_LEB4");
+    client.subscribe("20240421_LEB5");
 
     client.subscribe("PMD_Austin1");    
 
@@ -77,20 +83,20 @@ class Adapter implements MQTTListener {
     client.subscribe("20240421_USA3");    
     client.subscribe("20240421_USA4");    
     client.subscribe("20240421_USA5");    
-
-
     //    client.subscribe("KRAKE_DTA_TOPIC");
   }
 
   void messageReceived(String topic, byte[] payload) {
-    thePayload = "Received message: " + topic + " - " + new String(payload);
-    //    println("new message: " + topic + " - " + new String(payload));
+    thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
+//    thePayload = thePayload + " " + "Recd msg: " + topic + " - " + new String(payload);
+    thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);
     println(thePayload);
     background(0); //Set background on messageReceived.
   }
 
   void connectionLost() {
     println("connection lost");
+    background(128,0,0); //Set background on
   }
 }
 
@@ -135,35 +141,28 @@ void draw() {
 }//end draw()
 
 
+/* Keyboard Event handler for single key.
+Sets digits prefixed with an "a" for alarm.
+Alpha as is.
+Suppresses all other keys
+Publishes to all devices, aka topics, KRAKE_DTA_TOPIC[i]
+*/
 void keyPressed() {
   for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
     int keyIndex = -1;
     if (key >= 'A' && key <= 'Z') {
-//      keyIndex = key - 'A';
       MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:UpperCase";
       client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
     } else if (key >= 'a' && key <= 'z') {
-//      keyIndex = key - 'a';
       MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:LowerCase";
       client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
-    } else if (key >= '0' && key <= '9') {
+    } else if (key >= '0' && key <= '9') {     //Alarms by number pressed.
       keyIndex = key - '0';                                                           //Offset the numerical ASCII down to an int.
       MessageFromProcessing_PMD = "MessageFromProcessing_PMD:" + " " + (int(key)-48);
-      client.publish(PMD_DTA_TOPIC, MessageFromProcessing_PMD);
-
-
-      //    float[] randoms = new float[100];
-      //for (int i = 0; i < randoms.length; i++) {
-      //  randoms[i] = random(100);
-      //}
-
       //Form the GPAD API compatible message for KRAKE Topic.  Need a for loop for all Krakes.
-
       MessageFromProcessing_PMD = "a" + (int(key)-48) + "MessageFromProcessing_PMD:" + (int(key)-48);
       client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
     }
   }// end of for 
-
-
-  background(0, 16, 0); //Set background on sent message.  } else {
+  background(0, 16, 0); //Set background on sent message. 
 }
