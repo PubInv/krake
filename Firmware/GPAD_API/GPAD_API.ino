@@ -186,16 +186,19 @@ void serialSplash() {
 
 // A periodic message identifying the subscriber (Krake) is on line.
 void publishOnLineMsg(void) {
+  const unsigned long MESSAGE_PERIOD = 10000;
   static unsigned long lastMillis = 0;  // Sets timing for periodic MQTT publish message
   // publish a message roughly every second.
-  if (millis() - lastMillis > 10000) {
-    lastMillis = millis();
-    client.publish(publish_Ack_Topic, " is online");
-    //Lets make a dynamic and useful message, add the RSSI.
+  if ((millis() - lastMillis > MESSAGE_PERIOD) || (millis() < lastMillis)) {  //Check for role over.
+    lastMillis = lastMillis + MESSAGE_PERIOD;
+
+    float rssi = WiFi.RSSI();
+    char rssiString[8];
     Serial.print("Publish RSSI: ");
-    Serial.println(WiFi.RSSI());
-    char onLineMsg[32] = " is online with RSSI:";
-    // strcat (onLineMsg, char*(WiFi.RSSI()) );
+    Serial.println(rssi);
+    dtostrf(rssi, 1, 2, rssiString);
+    char onLineMsg[32] = " online, RSSI:";
+    strcat(onLineMsg, rssiString);
     client.publish(publish_Ack_Topic, onLineMsg);
 
 #if defined(HMWK)
