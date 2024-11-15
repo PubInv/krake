@@ -1,4 +1,4 @@
- /* GPAD_API.ino
+/* GPAD_API.ino
   The program implements the main API of the General Purpose Alarm Device.
 
   Copyright (C) 2022 Robert Read
@@ -60,7 +60,7 @@
 #include <WiFi.h>
 #include <esp_wifi.h>
 
-#include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
+#include <PubSubClient.h>  // From library https://github.com/knolleary/pubsubclient
 
 
 
@@ -114,8 +114,8 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 //const char* password = "adt@12345";
 
 //Maryville network
- const char* ssid = "VRX";
- const char* password = "textinsert";
+const char* ssid = "VRX";
+const char* password = "textinsert";
 
 // Austin network
 // const char* ssid = "readfamilynetwork";
@@ -154,11 +154,11 @@ PubSubClient client(espClient);
 #define SERIAL_TIMEOUT_MS 1000
 
 //Set LED wink parameters
-const int HIGH_TIME_LED_MS = 800;    //time in milliseconds
+const int HIGH_TIME_LED_MS = 800;  //time in milliseconds
 const int LOW_TIME_LED_MS = 200;
 unsigned long lastLEDtime_ms = 0;
 // unsigned long nextLEDchangee_ms = 100; //time in ms.
-unsigned long nextLEDchangee_ms = 5000; //time in ms.
+unsigned long nextLEDchangee_ms = 5000;  //time in ms.
 
 // extern int LIGHT[];
 // extern int NUM_LIGHTS;
@@ -167,12 +167,12 @@ void serialSplash() {
   //Serial splash
   Serial.println(F("==================================="));
   Serial.println(MODEL_NAME);
-//  Serial.println(DEVICE_UNDER_TEST);
+  //  Serial.println(DEVICE_UNDER_TEST);
   Serial.print(PROG_NAME);
   Serial.println(FIRMWARE_VERSION);
-//  Serial.println(HARDWARE_VERSION);
+  //  Serial.println(HARDWARE_VERSION);
   Serial.print("Builtin ESP32 MAC Address: ");
-  Serial.println(macAddressString); 
+  Serial.println(macAddressString);
   Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Broker: "));
@@ -194,12 +194,12 @@ void publishOnLineMsg(void) {
     //Lets make a dynamic and useful message, add the RSSI.
     Serial.print("Publish RSSI: ");
     Serial.println(WiFi.RSSI());
-   char onLineMsg[32] = " is online with RSSI:";
-  // strcat (onLineMsg, char*(WiFi.RSSI()) );
-   client.publish(publish_Ack_Topic, onLineMsg);
+    char onLineMsg[32] = " is online with RSSI:";
+    // strcat (onLineMsg, char*(WiFi.RSSI()) );
+    client.publish(publish_Ack_Topic, onLineMsg);
 
 #if defined(HMWK)
-    digitalWrite(LED_D9, !digitalRead(LED_D9));   // Toggle
+    digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
 #endif
   }
 }
@@ -231,7 +231,7 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
       Serial.println("success!");
-      client.subscribe(subscribe_Alarm_Topic);    // Subscribe to GPAD API alarms
+      client.subscribe(subscribe_Alarm_Topic);  // Subscribe to GPAD API alarms
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -253,48 +253,48 @@ void turnOnAllLamps() {
 }
 void turnOffAllLamps() {
 #if defined(HMWK)
-   digitalWrite(LED_D9, LOW);
+  digitalWrite(LED_D9, LOW);
 #endif
   digitalWrite(LIGHT0, LOW);
   digitalWrite(LIGHT1, LOW);
   digitalWrite(LIGHT2, LOW);
   digitalWrite(LIGHT3, LOW);
-  digitalWrite(LIGHT4, LOW); 
+  digitalWrite(LIGHT4, LOW);
 }
 
 
 
 // Handeler for MQTT subscrived messages
 void callback(char* topic, byte* payload, unsigned int length) {
-// todo, remove use of String here....
-// Note: We will check for topic or topics in the future...
-  if (strcmp(topic,subscribe_Alarm_Topic) == 0) {
+  // todo, remove use of String here....
+  // Note: We will check for topic or topics in the future...
+  if (strcmp(topic, subscribe_Alarm_Topic) == 0) {
     char mbuff[121];
     Serial.print("Topic arrived [");
     Serial.print(topic);
     Serial.print("] ");
 
-//Put payload into mbuff[] a character array
-    int m = min((unsigned int) length,(unsigned int) 120);
+    //Put payload into mbuff[] a character array
+    int m = min((unsigned int)length, (unsigned int)120);
     for (int i = 0; i < m; i++) {
       mbuff[i] = (char)payload[i];
     }
     mbuff[m] = '\0';
 
-    #if (DEBUG > 0)
-      Serial.print("|");
-      Serial.print(mbuff);
-      Serial.println("|");
-    #endif
+#if (DEBUG > 0)
+    Serial.print("|");
+    Serial.print(mbuff);
+    Serial.println("|");
+#endif
 
     Serial.println("Received MQTT Msg.");
-    interpretBuffer(mbuff,m,&Serial);  //Process the MQTT message
+    interpretBuffer(mbuff, m, &Serial);  //Process the MQTT message
     annunciateAlarmLevel(&Serial);
   }
-}//end call back
+}  //end call back
 
-bool readMacAddress(uint8_t* baseMac){
-//  uint8_t baseMac[6];
+bool readMacAddress(uint8_t* baseMac) {
+  //  uint8_t baseMac[6];
   esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
   if (ret == ESP_OK) {
     // Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -313,15 +313,15 @@ void setup() {
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
 
-  pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
+  pinMode(LED_BUILTIN, OUTPUT);  // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   //Serial setup
   delay(100);
   Serial.begin(BAUDRATE);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
+    ;  // wait for serial port to connect. Needed for native USB
   }
-  delay(500);                         //Wait before sending the first data to terminal
+  delay(500);  //Wait before sending the first data to terminal
 
   // Set LED pins as outputs
 #if defined(LED_D9)
@@ -335,13 +335,13 @@ void setup() {
   // Turn off all LEDs initially
   turnOnAllLamps();
 
-    //Setup and present LCD splash screen
+  //Setup and present LCD splash screen
   GPAD_HAL_setup(&Serial);
 
 #if (DEBUG > 0)
   Serial.println("MAC: ");
   Serial.println(macAddressString);
-#endif 
+#endif
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   client.setServer(mqtt_server, 1883);  //Default MQTT port
@@ -355,7 +355,7 @@ void setup() {
   uint8_t mac[6];
   readMacAddress(mac);
   char buff[13];
-  sprintf(buff, MACSTR_PLN, MAC2STR(mac)); 
+  sprintf(buff, MACSTR_PLN, MAC2STR(mac));
 
 #if (DEBUG > 0)
   printf("My mac is " MACSTR "\n", MAC2STR(mac));
@@ -363,12 +363,12 @@ void setup() {
   Serial.println(buff);
 #endif
 
-  strcpy(macAddressString,buff);
+  strcpy(macAddressString, buff);
   macAddressString[12] = '\0';
-  strcpy(subscribe_Alarm_Topic,buff);
-  strcpy(publish_Ack_Topic,buff);
-  strcpy(subscribe_Alarm_Topic+12,"_ALM");
-  strcpy(publish_Ack_Topic+12,"_ACK");
+  strcpy(subscribe_Alarm_Topic, buff);
+  strcpy(publish_Ack_Topic, buff);
+  strcpy(subscribe_Alarm_Topic + 12, "_ALM");
+  strcpy(publish_Ack_Topic + 12, "_ACK");
   subscribe_Alarm_Topic[16] = '\0';
   publish_Ack_Topic[16] = '\0';
 
@@ -380,18 +380,18 @@ void setup() {
 #endif
 
   serialSplash();
-// We call this a second time to get the MAC on the screen
+  // We call this a second time to get the MAC on the screen
   clearLCD();
   splashLCD();
 
-// Need this to work here:   printInstructions(serialport);
+  // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
-}// end of setup()
+  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
+}  // end of setup()
 
 unsigned long last_ms = 0;
 void toggle(int pin) {
-    digitalWrite(pin, digitalRead(pin) ? LOW : HIGH); 
+  digitalWrite(pin, digitalRead(pin) ? LOW : HIGH);
 }
 
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
@@ -415,11 +415,11 @@ void loop() {
 #if defined(HMWK)
   client.loop();
   publishOnLineMsg();
-  wink(); //The builtin LED
+  wink();  //The builtin LED
 #endif
 
   unchanged_anunicateAlarmLevel(&Serial);
- // delay(20);
+  // delay(20);
   GPAD_HAL_loop();
 
   processSerial(&Serial);

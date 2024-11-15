@@ -61,31 +61,31 @@
 #define LIGHT2 5
 #define LIGHT3 18
 #define LIGHT4 19
-// The HMWK and Krake use a dev kit LED 
+// The HMWK and Krake use a dev kit LED
 #define LED_BUILTIN 2
 
-#endif 
+#endif
 
 #if defined(KRAKE)
 
 
 #endif
 
-#ifdef GPAD_VERSION1 //The Version 1 PCB.
+#ifdef GPAD_VERSION1  //The Version 1 PCB.
 //#define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
 
 #if defined(HMWK)
 // const int LED_D9 = 23;  // Mute1 LED on PMD
-#define LED_PIN 23                         // for GPAD LIGHT0
-#define BUTTON_PIN 2                      //GPAD Button to GND,  10K Resistor to +5V.
-#else // compile for an UNO, for example...
-#define LED_PIN PD3                         // for GPAD LIGHT0
-#define BUTTON_PIN PD2                      //GPAD Button to GND,  10K Resistor to +5V.
+#define LED_PIN 23      // for GPAD LIGHT0
+#define BUTTON_PIN 2    //GPAD Button to GND,  10K Resistor to +5V.
+#else                   // compile for an UNO, for example...
+#define LED_PIN PD3     // for GPAD LIGHT0
+#define BUTTON_PIN PD2  //GPAD Button to GND,  10K Resistor to +5V.
 #endif
 
-#else //The proof of concept wiring.
+#else  //The proof of concept wiring.
 #define LED_PIN 7
-#define BUTTON_PIN 2                          //Button to GND, 10K Resistor to +5V.
+#define BUTTON_PIN 2  //Button to GND, 10K Resistor to +5V.
 #endif
 
 // SPI Functions....
@@ -98,7 +98,7 @@ void annunciateAlarmLevel(Stream *serialport);
 void clearLCD(void);
 void splashLCD(void);
 
-void interpretBuffer(char *buf,int rlen,Stream *serialport);
+void interpretBuffer(char *buf, int rlen, Stream *serialport);
 
 // This module has to be initialized and called each time through the superloop
 void GPAD_HAL_setup(Stream *serialport);

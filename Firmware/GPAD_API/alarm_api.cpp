@@ -31,16 +31,16 @@
 AlarmLevel currentLevel = silent;
 bool currentlyMuted = false;
 char AlarmMessageBuffer[MAX_BUFFER_SIZE];
-const char *AlarmNames[] = { "OK   ","INFO.","PROB.","WARN ","CRIT.","PANIC" };
+const char *AlarmNames[] = { "OK   ", "INFO.", "PROB.", "WARN ", "CRIT.", "PANIC" };
 
 // This is the abstract alarm function. It CANNOT
 // assume the msg buffer will exist after this call.
 // str must be null-terminated string!
 // It returns the PREVIOUS ALARM LEVEL
-int alarm_event(AlarmEvent& event,Stream *serialport) {
-    return alarm((AlarmLevel) event.lvl,event.msg,serialport);
+int alarm_event(AlarmEvent &event, Stream *serialport) {
+  return alarm((AlarmLevel)event.lvl, event.msg, serialport);
 }
-int alarm(AlarmLevel level,char *str,Stream *serialport) {
+int alarm(AlarmLevel level, char *str, Stream *serialport) {
   if (!(level >= 0 && level < NUM_LEVELS)) {
     serialport->println(F("Bad Level!"));
     printError(serialport);
@@ -50,6 +50,6 @@ int alarm(AlarmLevel level,char *str,Stream *serialport) {
   currentLevel = level;
   // This makes sure we erase the buffer even if msg is an empty string
   AlarmMessageBuffer[0] = '\0';
-  strcpy(AlarmMessageBuffer,str);
+  strcpy(AlarmMessageBuffer, str);
   return previousLevel;
 }

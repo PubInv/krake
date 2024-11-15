@@ -42,26 +42,26 @@ where C is an character, and D is a single digit.
 */
 
 void processSerial(Stream *serialport) {
-   // Now see if we have a serial command
-    int rlen;
-    // TODO: This code can probably hang; it needs to have
-    // timeouts added!
-    if (serialport->available() > 0) {
-      // read the incoming bytes:
-      int rlen = serialport->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
-      // readBytesUntil does not terminate the string!
-      buf[rlen] = '\0';
-      // prints the received data
-      serialport->print(F("I received: "));
-      serialport->print(rlen);
-      for(int i = 0; i < rlen; i++)
-        serialport->print(buf[i]);
-      serialport->println();
-      interpretBuffer(buf,rlen,serialport);
-      // Now "light and scream"appropriately...
-      // This does not work on HMWK2 device
-      annunciateAlarmLevel(serialport);
-      delay(3000);
-      printAlarmState(serialport);
-     }
+  // Now see if we have a serial command
+  int rlen;
+  // TODO: This code can probably hang; it needs to have
+  // timeouts added!
+  if (serialport->available() > 0) {
+    // read the incoming bytes:
+    int rlen = serialport->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
+    // readBytesUntil does not terminate the string!
+    buf[rlen] = '\0';
+    // prints the received data
+    serialport->print(F("I received: "));
+    serialport->print(rlen);
+    for (int i = 0; i < rlen; i++)
+      serialport->print(buf[i]);
+    serialport->println();
+    interpretBuffer(buf, rlen, serialport);
+    // Now "light and scream"appropriately...
+    // This does not work on HMWK2 device
+    annunciateAlarmLevel(serialport);
+    delay(3000);
+    printAlarmState(serialport);
+  }
 }
