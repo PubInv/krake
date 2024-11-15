@@ -27,13 +27,6 @@
 
 String PROG_NAME = "FT_processingPMD_MQTT";
 String VERSION = "V0.8 ";
-// Set the topic for the Pseude Medical Device in Processing.
-String PMD_DTA_TOPIC = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE";
-
-//String KRAKE_DTA_TOPIC to Publish to in GPAD API form
-// 20241031 Make the topics like that form of User manual "20240421_USA4_ALM" and "20240421_USA4_ACK" 
-//where ALM is from PMD to KRAKE and ACK is from KRAKE to PMD
-
 
 //String KRAKE_DTA_TOPIC[] = {"KRAKE_20240421_USA1_ALM", "KRAKE_20240421_USA2_ALM", "KRAKE_20240421_USA3_ALM", "KRAKE_20240421_USA4_ALM", "KRAKE_20240421_USA5_ALM", 
 //  "KRAKE_20240421_LEB1_ALM", "KRAKE_20240421_LEB2_ALM", "KRAKE_20240421_LEB_ALM3", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
@@ -117,26 +110,22 @@ void setup() {
   background(64);
   frameRate(24);
 
-  client.publish(PMD_DTA_TOPIC, "FirstMessage PMD USA1");
-  MessageFromProcessing_PMD = "FirstMessage PMD USA1";
+  MessageFromProcessing_PMD = "Nothing published Yet";
 }//end setup()
 
 void draw() {
   //Need a heart beat message
-
   //Text on draw window
   fill(255);
   textSize(25);
-  text("PMD_DTA_TOPIC: ", 10, 30);
+  text("PMD_Message: ", 10, 30);
   textSize(15);
-  text(PMD_DTA_TOPIC, 225, 30);
+  fill(55, 10, 252);
+  text(MessageFromProcessing_PMD, 200, 30);
   textSize(20);
   fill(200);
-  text("Press digits 0-9", 10, 60);
+  text("Alarms, press digits 0-9, s, u, h", 10, 60);
   fill(252, 10, 55);
-  
-  text(MessageFromProcessing_PMD, 10, 80);
-  fill(55, 10, 252);
   text(thePayload, 10, 100);
 }//end draw()
 
