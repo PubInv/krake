@@ -138,7 +138,8 @@ void setup_spi()
   SPI.attachInterrupt();                  //Interuupt ON is set for SPI commnucation
 #else
 #endif
-}//end setup()
+
+}//end setup_SPI()
 
 //ISRs
 // This is the original...
@@ -248,31 +249,35 @@ void GPAD_HAL_setup(Stream *serialport) {
   local_ptr_to_serial = serialport;
   Wire.begin();
   lcd.init();
+  #if (DEBUG>0)
   serialport->println(F("Clear LCD"));
+  #endif
   clearLCD();
   delay(100);
+  #if (DEBUG>0)
   serialport->println(F("Start LCD splash"));
+  #endif
   splashLCD();
+  #if (DEBUG>0)
   serialport->println(F("EndLCD splash"));
-  serialport->print(F("Set up GPIO pins: "));
+  #endif
+
+  //Setup GPIO pins, Mute and lights
   pinMode(SWITCH_MUTE, INPUT_PULLUP); //The SWITCH_MUTE is different on Atmega vs ESP32
   for (int i = 0; i < NUM_LIGHTS; i++) {
+    #if  (DEBUG>0)
     serialport->print(LIGHT[i]);
     serialport->print(", ");
+    #endif
     pinMode(LIGHT[i], OUTPUT);
   }
   serialport->println("");
-//#if defined(GPAD)
-#if (1)
-//  muteButton.set(SWITCH_MUTE, myCallback);
   muteButton.set(SWITCH_MUTE, muteButtonCallback);
-#endif
-  serialport->println(F("end set up GPIO pins"));
 
   printInstructions(serialport);
   AlarmMessageBuffer[0] = '\0';
 
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
+ // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
 }
 
 // TODO: Move to GPAD_API

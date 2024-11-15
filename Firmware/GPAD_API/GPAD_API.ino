@@ -99,7 +99,8 @@
 
 
 #define DEBUG_SPI 0
-#define DEBUG 4
+//#define DEBUG 4
+#define DEBUG 0
 
 
 unsigned long last_command_ms;
@@ -113,12 +114,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 //const char* password = "adt@12345";
 
 //Maryville network
-//  const char* ssid = "VRX";
-//  const char* password = "textinsert";
+ const char* ssid = "VRX";
+ const char* password = "textinsert";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+// const char* ssid = "readfamilynetwork";
+// const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -126,15 +127,7 @@ const char* mqtt_server = "public.cloud.shiftr.io";
 const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
-// MQTT Topics
-// User must modify the device serial number. 
-//In this case change the part "USA4" as approprate by commenting out conflicting lines.
-//const char* subscribe_Alarm_Topic = "KRAKE_20240421_LEB1_ALM";
-//const char* publish_Ack_Topic = "KRAKE_20240421_LEB1_ACK";
-
-//const char* subscribe_Alarm_Topic = "KRAKE_20240421_USA1_ALM";
-//const char* publish_Ack_Topic = "KRAKE_20240421_USA1_ACK";
-
+// MQTT Topics, MAC plus an extention
 // A MAC addresss treated as a string has 12 chars.
 // The strings "_ALM" and "_ACK" have 4 chars.
 // A null character is one other. 12 + 4 + 1 = 17
@@ -192,13 +185,19 @@ void serialSplash() {
 }
 
 // A periodic message identifying the subscriber (Krake) is on line.
-
 void publishOnLineMsg(void) {
   static unsigned long lastMillis = 0;  // Sets timing for periodic MQTT publish message
   // publish a message roughly every second.
   if (millis() - lastMillis > 10000) {
     lastMillis = millis();
     client.publish(publish_Ack_Topic, " is online");
+    //Lets make a dynamic and useful message, add the RSSI.
+    Serial.print("Publish RSSI: ");
+    Serial.println(WiFi.RSSI());
+   char onLineMsg[32] = " is online with RSSI:";
+  // strcat (onLineMsg, char*(WiFi.RSSI()) );
+   client.publish(publish_Ack_Topic, onLineMsg);
+
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));   // Toggle
 #endif
@@ -219,7 +218,8 @@ bool connect_to_wifi() {
       return false;
     } else {
       Serial.println("");
-      Serial.println("WiFi connected");
+      Serial.print("WiFi connected with RSSI: ");
+      Serial.println(WiFi.RSSI());
       return true;
     }
   }
@@ -266,26 +266,28 @@ void turnOffAllLamps() {
 
 // Handeler for MQTT subscrived messages
 void callback(char* topic, byte* payload, unsigned int length) {
-
-
 // todo, remove use of String here....
 // Note: We will check for topic or topics in the future...
   if (strcmp(topic,subscribe_Alarm_Topic) == 0) {
     char mbuff[121];
-    Serial.print("Message arrived [");
+    Serial.print("Topic arrived [");
     Serial.print(topic);
     Serial.print("] ");
 
+//Put payload into mbuff[] a character array
     int m = min((unsigned int) length,(unsigned int) 120);
     for (int i = 0; i < m; i++) {
       mbuff[i] = (char)payload[i];
     }
     mbuff[m] = '\0';
-    Serial.print("|");
-    Serial.print(mbuff);
-    Serial.println("|");
 
-    Serial.println("Got MessageFromProcessing_PMD");
+    #if (DEBUG > 0)
+      Serial.print("|");
+      Serial.print(mbuff);
+      Serial.println("|");
+    #endif
+
+    Serial.println("Received MQTT Msg.");
     interpretBuffer(mbuff,m,&Serial);  //Process the MQTT message
     annunciateAlarmLevel(&Serial);
   }
@@ -307,7 +309,6 @@ bool readMacAddress(uint8_t* baseMac){
 
 
 void setup() {
-
   subscribe_Alarm_Topic[0] = '\0';
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
@@ -343,9 +344,7 @@ void setup() {
 #endif 
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
-//  serialSplash();
-//  client.setServer(mqtt_server, 1883 MQTT_DEFAULT_PORT);
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, 1883);  //Default MQTT port
   client.setCallback(callback);
 
   WiFi.mode(WIFI_STA);
@@ -354,19 +353,15 @@ void setup() {
   // setup_spi();
 
   uint8_t mac[6];
- // WiFi.macAddress(mac);
-
   readMacAddress(mac);
-
-  printf("My mac is " MACSTR "\n", MAC2STR(mac));
   char buff[13];
   sprintf(buff, MACSTR_PLN, MAC2STR(mac)); 
+
+#if (DEBUG > 0)
+  printf("My mac is " MACSTR "\n", MAC2STR(mac));
   Serial.print("MAC as char array: ");
   Serial.println(buff);
-  // myMAC = String(WiFi.macAddress()); 
-  // myMAC.replace(":", ""); 
-  // Serial.println("MAC: ");
-  // Serial.println(myMAC);
+#endif
 
   strcpy(macAddressString,buff);
   macAddressString[12] = '\0';
@@ -376,11 +371,13 @@ void setup() {
   strcpy(publish_Ack_Topic+12,"_ACK");
   subscribe_Alarm_Topic[16] = '\0';
   publish_Ack_Topic[16] = '\0';
-  Serial.println("XXXXXXX");
 
+#if (DEBUG > 0)
+  Serial.println("XXXXXXX");
   Serial.println(subscribe_Alarm_Topic);
   Serial.println(publish_Ack_Topic);
   Serial.println("XXXXXXX");
+#endif
 
   serialSplash();
 // We call this a second time to get the MAC on the screen
@@ -388,8 +385,8 @@ void setup() {
   splashLCD();
 
 // Need this to work here:   printInstructions(serialport);
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
   Serial.println(F("Done With Setup!"));
+  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
 }// end of setup()
 
 unsigned long last_ms = 0;
@@ -406,8 +403,8 @@ void loop() {
 
     connect_to_wifi();
 
-    Serial.println(subscribe_Alarm_Topic);
-    Serial.println(publish_Ack_Topic);
+    // Serial.println(subscribe_Alarm_Topic);
+    // Serial.println(publish_Ack_Topic);
 #if defined(HMWK)
     if (!client.connected()) {
       reconnect();
