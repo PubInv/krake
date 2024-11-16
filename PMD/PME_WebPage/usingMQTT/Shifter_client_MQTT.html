@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Shifter_client_MQTT</title>.
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+<h1>MQTT Shiftr.io Client</h1>
+Instructions: Press F12 to see the console.
+<hr>
+<br>
+The MQTT client is: <b>mqtt://public:public@public.cloud.shiftr.io</b>
+
+<script>
+let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
+let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
+let metric = 'MessageFromProcessing_PMD: 4'
+
+let topic2 = "20240421_USA4"
+
+client.subscribe(topic);
+client.subscribe("20240421_USA4");
+
+client.publish(topic, metric);
+console.log("Web page Shifter_client_MQTT publised message: ");
+console.log(metric);
+
+client.on('message', function (topic2, message2) { // message is Buffer
+  console.log("Got a subscription message topic 20240421_USA4: ");
+  console.log(message2.toString());
+});
+
+client.end();
+</script>
+
+</body
+</html>

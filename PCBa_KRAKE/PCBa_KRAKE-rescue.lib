@@ -1,0 +1,173 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# LCD_20x4_Character-GPAD_SCH_LIB-GeneralPurposeAlarmDevicePCB-rescue
+#
+DEF LCD_20x4_Character-GPAD_SCH_LIB-GeneralPurposeAlarmDevicePCB-rescue U 0 20 Y Y 1 F N
+F0 "U" -250 750 50 H V C CNN
+F1 "LCD_20x4_Character-GPAD_SCH_LIB-GeneralPurposeAlarmDevicePCB-rescue" 200 750 50 H V L CNN
+F2 "Display:NHD-0420H1Z" 0 -900 50 H I C CNN
+F3 "" 100 -100 50 H I C CNN
+F4 "Aliexpress" -1080 -690 50 H I C CNN "Distributor 1"
+F5 "https://www.aliexpress.com/item/3256803213374992.html" -100 -790 50 H I C CNN "Distributor 1 PN"
+F6 "Amazon" -1120 -910 50 H I C CNN "Distributor 2"
+F7 "https://www.amazon.com/GeeekPi-Interface-Adapter-Backlight-Raspberry/dp/B07QLRD3TM/ref=sr_1_2" 790 -1000 50 H I C CNN "Distributor 2 PN"
+$FPLIST
+ NHD*0420H1Z*
+$ENDFPLIST
+DRAW
+S -300 700 300 -700 0 1 10 f
+X VSS 1 0 -800 100 U 50 50 1 1 W
+X DB3 10 -400 -200 100 R 50 50 1 1 I
+X DB4 11 -400 -300 100 R 50 50 1 1 B
+X DB5 12 -400 -400 100 R 50 50 1 1 B
+X DB6 13 -400 -500 100 R 50 50 1 1 B
+X DB7 14 -400 -600 100 R 50 50 1 1 B
+X A 15 400 -300 100 L 50 50 1 1 P
+X K 16 400 -200 100 L 50 50 1 1 P
+X VDD 2 0 800 100 D 50 50 1 1 W
+X VO 3 100 800 100 D 50 50 1 1 W
+X RS 4 -400 600 100 R 50 50 1 1 I
+X R/W 5 -400 500 100 R 50 50 1 1 I
+X E 6 -400 400 100 R 50 50 1 1 I
+X DB0 7 -400 100 100 R 50 50 1 1 I
+X DB1 8 -400 0 100 R 50 50 1 1 I
+X DB2 9 -400 -100 100 R 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+# LTST-C171KRKT-dk_LED-Indication-Discrete
+#
+DEF LTST-C171KRKT-dk_LED-Indication-Discrete D 0 0 Y Y 1 F N
+F0 "D" -150 100 60 H V C CNN
+F1 "LTST-C171KRKT-dk_LED-Indication-Discrete" -50 -150 60 H V C CNN
+F2 "digikey-footprints:0805" 200 200 60 H I L CNN
+F3 "http://optoelectronics.liteon.com/upload/download/DS22-2000-109/LTST-C171KRKT.pdf" 200 300 60 H I L CNN
+F4 "160-1427-1-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "LTST-C171KRKT" 200 500 60 H I L CNN "MPN"
+F6 "Optoelectronics" 200 600 60 H I L CNN "Category"
+F7 "LED Indication - Discrete" 200 700 60 H I L CNN "Family"
+F8 "http://optoelectronics.liteon.com/upload/download/DS22-2000-109/LTST-C171KRKT.pdf" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/lite-on-inc/LTST-C171KRKT/160-1427-1-ND/386800" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "LED RED CLEAR SMD" 200 1000 60 H I L CNN "Description"
+F11 "Lite-On Inc." 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+P 2 0 1 0 -25 150 -75 100 N
+P 2 0 1 0 0 50 0 -50 N
+P 2 0 1 0 25 125 -25 75 N
+P 3 0 1 0 -50 150 -25 150 -25 125 N
+P 3 0 1 0 0 125 25 125 25 100 N
+P 4 0 1 0 -100 50 -100 -50 0 0 -100 50 F
+X ~ 1 -200 0 100 R 50 50 1 1 P
+X ~ 2 100 0 100 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# MMBT2907ALT1G-dk_Transistors-Bipolar-BJT-Single
+#
+DEF MMBT2907ALT1G-dk_Transistors-Bipolar-BJT-Single Q 0 0 Y Y 1 F N
+F0 "Q" -94 154 60 H V C CNN
+F1 "MMBT2907ALT1G-dk_Transistors-Bipolar-BJT-Single" 200 0 60 V V C CNN
+F2 "digikey-footprints:SOT-23-3" 200 200 60 H I L CNN
+F3 "http://www.onsemi.com/pub/Collateral/MMBT2907ALT1-D.PDF" 200 300 60 H I L CNN
+F4 "MMBT2907ALT1GOSCT-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "MMBT2907ALT1G" 200 500 60 H I L CNN "MPN"
+F6 "Discrete Semiconductor Products" 200 600 60 H I L CNN "Category"
+F7 "Transistors - Bipolar (BJT) - Single" 200 700 60 H I L CNN "Family"
+F8 "http://www.onsemi.com/pub/Collateral/MMBT2907ALT1-D.PDF" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/on-semiconductor/MMBT2907ALT1G/MMBT2907ALT1GOSCT-ND/1139812" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "TRANS PNP 60V 0.6A SOT23" 200 1000 60 H I L CNN "Description"
+F11 "ON Semiconductor" 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+C 0 0 118 0 1 0 f
+P 2 0 1 0 -150 0 -100 0 N
+P 2 0 1 0 -140 0 0 0 N
+P 2 0 1 0 0 -50 100 -100 N
+P 2 0 1 0 0 50 100 100 N
+P 2 0 1 0 0 100 0 -100 N
+P 4 0 1 0 40 100 20 60 60 50 40 100 F
+X B 1 -200 0 100 R 50 50 1 1 I
+X E 2 100 200 100 D 50 50 1 1 P
+X C 3 100 -200 100 U 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# NCP1117ST50T3G
+#
+DEF NCP1117ST50T3G U 0 20 Y Y 1 F N
+F0 "U" 0 150 60 H V C CNN
+F1 "NCP1117ST50T3G" 0 250 60 H V C CNN
+F2 "digikey-footprints:SOT-223" 200 200 60 H I L CNN
+F3 "" 200 300 60 H I L CNN
+F4 "NCP1117ST50T3GOSCT-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "NCP1117ST50T3G" 200 500 60 H I L CNN "MPN"
+F6 "Integrated Circuits (ICs)" 200 600 60 H I L CNN "Category"
+F7 "PMIC - Voltage Regulators - Linear" 200 700 60 H I L CNN "Family"
+F8 "https://www.onsemi.com/pub/Collateral/NCP1117-D.PDF" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/on-semiconductor/NCP1117ST50T3G/NCP1117ST50T3GOSCT-ND/1967217" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "IC REG LINEAR 5V 1A SOT223" 200 1000 60 H I L CNN "Description"
+F11 "ON Semiconductor" 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+S -200 100 300 -300 0 1 0 f
+X ADJ/GND 1 0 -400 100 U 50 50 1 1 W
+X OUT 2 400 0 100 L 50 50 1 1 B
+X IN 3 -300 0 100 R 50 50 1 1 W
+X OUT 4 400 -100 100 L 50 50 1 1 w
+ENDDRAW
+ENDDEF
+#
+# NX3225GD-8MHZ-STD-CRA-3-dk_Crystals
+#
+DEF NX3225GD-8MHZ-STD-CRA-3-dk_Crystals XTAL 0 40 Y Y 1 F N
+F0 "XTAL" 0 150 50 H V C CNN
+F1 "NX3225GD-8MHZ-STD-CRA-3-dk_Crystals" 0 -150 50 H V C CNN
+F2 "digikey-footprints:SMD-2_3.2x2.5mm" 200 200 60 H I L CNN
+F3 "http://www.ndk.com/images/products/catalog/c_NX3225GD-STD-CRA-3_e.pdf" 200 300 60 H I L CNN
+F4 "644-1178-1-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "NX3225GD-8MHZ-STD-CRA-3" 200 500 60 H I L CNN "MPN"
+F6 "Crystals, Oscillators, Resonators" 200 600 60 H I L CNN "Category"
+F7 "Crystals" 200 700 60 H I L CNN "Family"
+F8 "http://www.ndk.com/images/products/catalog/c_NX3225GD-STD-CRA-3_e.pdf" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/ndk-america-inc/NX3225GD-8MHZ-STD-CRA-3/644-1178-1-ND/3125567" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "CRYSTAL 8.0000MHZ 8PF SMD" 200 1000 60 H I L CNN "Description"
+F11 "NDK America, Inc." 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+S -25 75 25 -75 1 1 0 F
+P 2 1 1 0 -50 75 -50 -75 N
+P 2 1 1 0 50 75 50 -75 N
+X ~ 1 -150 0 100 R 50 50 1 1 B
+X ~ 2 150 0 100 L 50 50 1 1 B
+ENDDRAW
+ENDDEF
+#
+# PKMCS0909E4000-R1-dk_Alarms-Buzzers-and-Sirens
+#
+DEF PKMCS0909E4000-R1-dk_Alarms-Buzzers-and-Sirens BZ 0 1 Y Y 1 F N
+F0 "BZ" 0 200 60 H V L CNN
+F1 "PKMCS0909E4000-R1-dk_Alarms-Buzzers-and-Sirens" -100 -100 60 H V L CNN
+F2 "digikey-footprints:Piezo_9x9mm_PKMCS0909E4000-R1" 200 200 60 H I L CNN
+F3 "https://www.murata.com/~/media/webrenewal/products/sound/sounder/vppt-buzj083-d.ashx" 200 300 60 H I L CNN
+F4 "490-9647-1-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "PKMCS0909E4000-R1" 200 500 60 H I L CNN "MPN"
+F6 "Audio Products" 200 600 60 H I L CNN "Category"
+F7 "Alarms, Buzzers, and Sirens" 200 700 60 H I L CNN "Family"
+F8 "https://www.murata.com/~/media/webrenewal/products/sound/sounder/vppt-buzj083-d.ashx" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/murata-electronics-north-america/PKMCS0909E4000-R1/490-9647-1-ND/4878401" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "AUDIO PIEZO TRANSDUCER 12.5V SMD" 200 1000 60 H I L CNN "Description"
+F11 "Murata Electronics North America" 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+A 200 50 71 450 -450 0 1 0 N 250 100 250 0
+A 200 50 112 634 -634 0 1 0 N 250 150 250 -50
+S 0 150 100 -50 0 1 0 f
+P 5 0 1 0 100 100 200 150 200 -50 100 0 100 100 f
+X ~ 1 -100 100 100 R 50 50 1 1 I
+X ~ 2 -100 0 100 R 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library

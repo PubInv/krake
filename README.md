@@ -1,9 +1,18 @@
 # Krake
-A wireless alarm device which makes loud noises and flashes lights to alert a human
+Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
 
-# WiFi enablement
+Krake is an **annunciator** meant to alert a human to something needing attention.
 
-# Arbirtrary Sonic Alarms
+# Wi-Fi enablement
+It will connect as a station to a Wi-Fi local area network.
+The Krake receives alarm messages from another device, the Controller.
+The Controller may be on the same local area network or the wider internet.
+
+Our [test page is here](https://pubinv.github.io/krake/PMD_GPAD_API.html).
+
+# Arbitrary Sonic Alarms
+These sounds are stored on an SD card and can be voice and can be multilingual.
+The SD card is removable so that the Krake alarms can be customized (localized) for language.
 
 
 # About the Name
@@ -44,39 +53,39 @@ A Crake is a bird with a distinctive, slighly alarming cry. We changed the spell
 
 # MockingKrake (Krake's Prototype)
 
-## Components: 
+## Components:
 - ESP32 DevKit V1.  For schematics of DevKit V1 and other information See: https://embedded-systems-design.github.io/overview-of-the-esp32-devkit-doit-v1/
-- DFplayer module.  The DFPlayer Mini MP3 Player For Arduino is a small and low cost MP3 module.  For example wiring diagrams of of DFPlayer module for stand alone and to Arduino UNO and other information See:  https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299 
-- SD card 16 GB 
-- speaker 8 ohm 
+- DFplayer module.  The DFPlayer Mini MP3 Player For Arduino is a small and low cost MP3 module.  For example wiring diagrams of of DFPlayer module for stand alone and to Arduino UNO and other information See:  https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299
+- SD card 16 GB
+- speaker 8 ohm
 - 5 lamps (emergency level ind)
-- 8 resistors 
+- 8 resistors
 - breadboard (solderless )
 - connecting wires
 - USB cable.  Type A (for connection to PC) to type B micro (to connection on ESP32 Devkit V1)
 
-:fast_forward:  `Newly added: 
+:fast_forward:  `Newly added:
   -  3 lamps:
      -  mute ind
      -  PWR ind
      -  ON - OFF ind
-   - rotary encoder 
+   - rotary encoder
 
 ## connections ft. ESP32
 
 lamps
-+ve --- lamp 1 -- resistor 330 ohm -- pin #2  
-+ve --- lamp 2 -- resistor 330 ohm -- pin #4  
-+ve --- lamp 3 -- resistor 330 ohm -- pin #5  
-+ve --- lamp 4 -- resistor 330 ohm -- pin #18  
++ve --- lamp 1 -- resistor 330 ohm -- pin #2
++ve --- lamp 2 -- resistor 330 ohm -- pin #4
++ve --- lamp 3 -- resistor 330 ohm -- pin #5
++ve --- lamp 4 -- resistor 330 ohm -- pin #18
 +ve --- lamp 5 -- resistor 330 ohm -- pin #19
 
-input value 
-ciruit devider or any sensor 
-circuit devider connections: 
+input value
+ciruit devider or any sensor
+circuit devider connections:
 -ve -- resistor --- resistor -- +ve
                |
-           pin #34 
+           pin #34
 
 Vin of the ESP32 connected to 3.3 V
 GND of ESP32 connected to -ve
@@ -85,12 +94,12 @@ DFplayer
 
 RX -- resistor 10 k -- pin #16 (TX2 of the ESP32)
 TX -- pin #17 (RX2 of the ESP32)
-VCC -- +ve  
-GND -- -ve 
+VCC -- +ve
+GND -- -ve
 
 
-DFplayer ft. speaker 
-SPK1 -- +ve of the speaker 
+DFplayer ft. speaker
+SPK1 -- +ve of the speaker
 SPK2 -- -ve of the speaker
 
 <img width="584" alt="Screenshot 2024-05-04 142512" src=https://github.com/PubInv/krake/assets/133608369/39036a1a-d32f-441c-ad68-157c7b0dcb62>
@@ -98,13 +107,13 @@ SPK2 -- -ve of the speaker
 
   <!-- > KRAKE 20240511
 
-<img width="626" alt="Screenshot 2024-06-02 093318" src="https://github.com/PubInv/krake/assets/133608369/825dbfa6-d195-47b9-9c5f-870838daa358">  
+<img width="626" alt="Screenshot 2024-06-02 093318" src="https://github.com/PubInv/krake/assets/133608369/825dbfa6-d195-47b9-9c5f-870838daa358">
 
->3D Frontview of the KRAKE PCBA 
+>3D Frontview of the KRAKE PCBA
 
-<img width="628" alt="image" src="https://github.com/PubInv/krake/assets/133608369/96d52ea8-1e95-4f58-8d42-c5fcf8986b38">  
+<img width="628" alt="image" src="https://github.com/PubInv/krake/assets/133608369/96d52ea8-1e95-4f58-8d42-c5fcf8986b38">
 
->3D backview of the KRAKE PCBA 
+>3D backview of the KRAKE PCBA
 
 ### Kicanvas live view of current schematic:
 
@@ -114,15 +123,46 @@ SPK2 -- -ve of the speaker
 
 [PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro) " -->
 
+
+# Buidling PCBa of Krake 
+
+## ESP32-WROOM-32D
+
+[esp32-WROOM-32D Datasheet](https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Espressif-Systems-ESP32-WROOM-32D-N4_C473012.pdf)
+
+<img width="417" alt="Screenshot 2024-11-09 031202" src="https://github.com/user-attachments/assets/a9bcc9fe-2d47-4a4f-9dd2-0b00217822fb">
+
+### ESP32-WROOM-32D module pin functions:
+
+- GPIO 0: Controls the boot mode, so avoid using it if you’re connecting LEDs that may be powered at boot.
+- GPIO 1 (TX) and GPIO 3 (RX): Used for UART0 communication, so connecting LEDs here might interfere with serial debugging.
+- GPIO 6 to GPIO 11: Used for flash memory on ESP32 modules with external flash, so they should not be used for other purposes.
+- GPIO 15: May have restrictions based on the board design; avoid using it for LEDs if it conflicts with boot or other functions.
+- GPIO 34 to GPIO 39: These are input-only pins, so they cannot drive LEDs directly.
+
+- GPIO 2: Commonly used for the onboard LED on some ESP32 development boards.
+- GPIO 4, GPIO 5: Frequently available and safe for IO.
+- GPIO 12, GPIO 13, GPIO 14: Commonly used for IO and don’t interfere with boot functions.
+- GPIO 16, GPIO 17: Good for general-purpose outputss.
+- GPIO 18, GPIO 19, GPIO 21: These are usually free for use and work well with IO.
+
+
 # Enhancements
 
-1. The Krake is an HTTP Server and receives alarm level requests by an HTTP Client Put or Get message.    
-2. The Krake is an HTTP Server and returns to a client browser a web page with the system alarm state.     
-3. The Krake has 5 bright white LEDs which indicate alarm states. State can be indicated by steady or blinking LEDs.    
-4. Plays five different audio levels corresponding to triggered emergency levels" To "The Krake can play WAV files which are stored at program time (manufacturing time) The size , ie duration, and number of messages is only limited by the size of an SDI card.   
-5. The Krake Liquid Crystal can display four rows of up to 20 character to further explain an alarm state.         
-6. Includes a mute button.     
-7. The Krake in nromal use connects as a Station to a WiFi Access Point. For set up, a user interface is provided to set (Manage) WiFi credentials by the user of a smart device and the Krake provides a WiFi Access Point WiFi.      
+1. The Krake is an HTTP Server and receives alarm level requests by an HTTP Client Put or Get message.
+2. The Krake is an HTTP Server and returns to a client browser a web page with the system alarm state.
+3. The Krake has 5 bright white LEDs which indicate alarm states. State can be indicated by steady or blinking LEDs.
+4. Plays five different audio levels corresponding to triggered emergency levels" To "The Krake can play WAV files which are stored at program time (manufacturing time) The size , ie duration, and number of messages is only limited by the size of an SDI card.
+5. The Krake Liquid Crystal can display four rows of up to 20 character to further explain an alarm state.
+6. Includes a mute button.
+7. The Krake in nromal use connects as a Station to a WiFi Access Point. For set up, a user interface is provided to set (Manage) WiFi credentials by the user of a smart device and the Krake provides a WiFi Access Point WiFi.
 
 
 # References
+
+Hollifield, Bill R., and Eddie Habibi. Alarm management: A comprehensive guide. Isa, 2010.
+
+# License
+
+* [Firmware: Affero GPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html#license-text)
+* [CERN Open Hardware Licence Version 2 - Strongly Reciprocal](https://ohwr.org/cern_ohl_s_v2.txt)

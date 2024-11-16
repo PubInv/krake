@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMD buttonsAlarmStatus</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+			fooground: linear-gradient(135deg, #b3ffe1, #05823e);
+            background: linear-gradient(135deg, #ffb3e1, #82053e);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #2e2e2e; /* Darker text color for better contrast */
+        }
+
+        h1, h2, p {
+            text-align: left;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        #Value, #level {
+            font-size: 1.2em;
+        }
+
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            background-color: grey;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .emergency-buttons, .fetch-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center ;
+            flex-wrap: wrap;
+        }
+
+        .setup-buttons, .fetch-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: center ;
+            flex-wrap: wrap;
+        }
+
+        .fetch-button {
+            margin-top: 20px;
+        }
+
+        .medical-logo {
+            position: absolute;
+            top: 10px;
+            left : 10px;
+            width: 80px;
+            height: 100px;
+        }
+    </style>
+	<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+    <img src="snakeOil.png" alt="PEM Medical Logo" class="medical-logo" >
+    <h1>PMD buttonsAlarmStatus</h1>
+	<hr>
+	A Pseudo Medical Device with whitch to control a Krake by MQTT.
+	<br>
+	The MQTT client is: <b>mqtt://public:public@public.cloud.shiftr.io</b>
+
+	<br>
+	<h2>Buttons for Alarms  at Emergency Level 0-6 and Status of ?TBD? </h2>
+    Press a button to issue an Alarm, or to Display status of TBD.
+    <p id="Value">Sensor Value: -</p>
+    <p id="level">Emergency Level: -</p>
+
+    <div class="button-container">
+        <div class="emergency-buttons">
+            <button onclick="publishEmergency(0)">No alarm, Level 0</button>
+            <button onclick="publishEmergency(1)">Informational, Level 1</button>
+            <button onclick="publishEmergency(2)">Problem, Level 2</button>
+            <button onclick="publishEmergency(3)">Warning, Level 3</button>
+            <button onclick="publishEmergency(4)">Critical, Level 4</button>
+            <button onclick="publishEmergency(5)">Panic, Level 5</button>
+            <button onclick="publishEmergency(6)">All Emergencies Level 6</button>
+        </div>
+        <div class="fetch-button">
+            <button onclick="fetchMuteStatus()">Display Mute Status</button>
+        </div>
+    </div>
+
+
+	
+	<h1>Setup MQTT Broker</h1>
+	<form>
+		<label for="brokerURL">Broker URL :</label>
+		<input type="text" value="public.cloud.shiftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="brokerUser">Broker User :</label>
+		<input type="text" value="public" id="nameUser" name="nameUser" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="brokerPassword">Broker Password:</label>
+		<input type="password" value="public" id="namePassword" name="namePassword" required minlength="4" maxlength="100" size="50" />
+		<br>		
+		<label for="Web_PMD_topic">Web PMD Topic:</label>
+		<input type="text" value="Sigma_Draconis_VII" id="nameTopic" name="nameTopic" required minlength="4" maxlength="100" size="50" />
+		<br>		
+		<b>Other PMDs: </b>
+		<UL>
+		<li>WEB_PMD_AUSTIN
+		<li>WEB_PMD_LEBANON
+		<li>WEB_PMD_MARYVILLE
+		</UL>
+		<div class="fetch-button">
+			<button onclick="setBroker()">Set Broker Values</button>
+		</div>
+	</form>
+	
+    <script>
+		let brokerURL = 'public.cloud.shiftr.io';
+		let brokerUser = 'public';
+		let brokerPassword = 'public';
+		let topic2 = "20240421_USA4"
+
+		function publishEmergency(level) {
+
+		//	let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
+			let client = mqtt.connect('wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL);
+
+			let topic = "PROCESSING_PMD_USA1_DTA_TOPIC_USA_MARYVILLE"
+			let metric = 'MessageFromProcessing_PMD: '
+			metric = metric + level
+
+			client.subscribe(topic);
+			client.subscribe("20240421_USA4");
+
+			client.publish(topic, metric);
+				console.log("Published to: " + topic);
+				console.log("the  message: " + metric);
+
+			client.on('message', function (topic2, message2) { // message is Buffer
+				console.log("Got a subscription message topic 20240421_USA4: ");
+				console.log(message2.toString());		
+				});
+			client.end();	
+		}//end publishEmergency
+
+	    function setBroker() {
+			event.preventDefault(); //Do not reload page
+			console.log("setBroker URL, User, PW, Topic");			
+        }//end setBroker()
+
+		
+        function updateSensorValue(value) {
+            document.getElementById('Value').innerText = 'Sensor Value: ' + value;
+        }
+
+        function updateLevel(level) {
+            document.getElementById('level').innerText = 'Emergency Level: ' + level;
+        }
+
+        function fetchMuteStatus() {
+			console.log("fetchMuteStatus called");
+			//to do write the code 
+        }
+
+        function sendEmergency(level) {
+
+            const emergencyEndpoint = 'http://192.168.1.3:5500/emergency';
+
+            fetch(emergencyEndpoint, {
+                method: 'POST',
+                body: JSON.stringify({ level: level }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.level !== undefined) {
+                    updateLevel(data.level);
+                } else {
+                    console.error('Invalid data format:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending emergency request:', error);
+            });			
+        }//end emergency level
+		
+    </script>
+	
+</body>
+</html>

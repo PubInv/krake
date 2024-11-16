@@ -10,9 +10,11 @@
 const int analogPin = 34;
 const int MUTE_BUTTON_PIN = 36;
 const int ON_OFF_BUTTON_PIN = 39;
-const int LED_PIN = 2; // on off LED
+const int LED_BUILTIN = 2; // on off LED
 const int LED_PIN_M[] = {23}; // Mute LED
 const int lampPins[] = {15, 4, 5, 18, 19}; // Emergency lamp pins including MUTE LED
+#define RX2 16
+#define TX2 17 
 
 // Global Variables
 bool ledState = false;
@@ -55,7 +57,7 @@ Password:<br><input type="password" name="password"><br><br>
 
 void setup() {
     Serial.begin(115200);
-    mySerial1.begin(9600, SERIAL_8N1, 16, 17);
+    mySerial1.begin(9600, SERIAL_8N1, RX2, TX2);
     Wire.begin();
     lcd.init();
     lcd.backlight();
@@ -63,8 +65,8 @@ void setup() {
 
     pinMode(MUTE_BUTTON_PIN, INPUT_PULLUP);
     pinMode(ON_OFF_BUTTON_PIN, INPUT_PULLUP);
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, LOW);
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);
 
     for (int pin : lampPins) {
         pinMode(pin, OUTPUT);
@@ -116,13 +118,13 @@ void handleONOFFButton() {
         lastButtonState = currentButtonState; // Update last state
             if (buttonPressed == LOW) { // Button pressed (active low)
                 ledState = !ledState; // Toggle LED state
-                digitalWrite(LED_PIN, ledState ? HIGH : LOW);
+                digitalWrite(LED_BUILTIN, ledState ? HIGH : LOW);
                 Serial.println(ledState ? "KRAKE ON" : "KRAKE OFF");
                 
                 // Turn off all GPIO pins when the ON/OFF button is pressed
                 if (ledState == LOW) {
                     for (int pin = 0; pin <= 39; ++pin) {
-                        if (pin != MUTE_BUTTON_PIN && pin != ON_OFF_BUTTON_PIN && pin != LED_PIN) {
+                        if (pin != MUTE_BUTTON_PIN && pin != ON_OFF_BUTTON_PIN && pin != LED_BUILTIN) {
                             digitalWrite(pin, LOW);
                         }
                     }
