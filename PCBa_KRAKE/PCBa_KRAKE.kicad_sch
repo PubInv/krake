@@ -6901,7 +6901,7 @@
   (symbol (lib_id "Regulator_Linear:AMS1117-3.3") (at -162.56 43.18 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0668f098-e577-4234-8711-82af43e1b67a)
-    (property "Reference" "U?" (at -162.56 36.83 0)
+    (property "Reference" "U1" (at -162.56 36.83 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "AMS1117-3.3" (at -162.56 39.37 0)
@@ -6919,7 +6919,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "U?") (unit 1)
+          (reference "U1") (unit 1)
         )
       )
     )
@@ -7577,7 +7577,7 @@
   (symbol (lib_id "Device:C_Polarized") (at -137.16 48.26 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 67c6cbdd-425c-46ac-80be-6f2fcedfd1b9)
-    (property "Reference" "C?" (at -134.1628 47.0916 0)
+    (property "Reference" "C6" (at -134.1628 47.0916 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "47uF 16V" (at -134.1628 49.403 0)
@@ -7612,7 +7612,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C?") (unit 1)
+          (reference "C6") (unit 1)
         )
       )
     )
@@ -7702,13 +7702,13 @@
   (symbol (lib_id "GPAD_SCH_LIB:DFPlayermini_241116") (at -173.99 138.43 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7873aa71-7666-4237-92af-9c7bfbd49623)
-    (property "Reference" "J?" (at -163.83 124.46 0)
+    (property "Reference" "J1" (at -163.83 124.46 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_01x08" (at -163.83 127 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "" (at -173.99 138.43 0)
+    (property "Footprint" "GeneralPurposeAlarmDevicePCB:DFPlayer_mini_20241116" (at -173.99 138.43 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at -173.99 138.43 0)
@@ -7733,7 +7733,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "J?") (unit 1)
+          (reference "J1") (unit 1)
         )
       )
     )
@@ -7854,7 +7854,7 @@
   (symbol (lib_id "Device:C_Polarized") (at -185.42 52.07 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 84f3bc42-79cd-4400-a072-998a54c42d2f)
-    (property "Reference" "C?" (at -182.4228 50.9016 0)
+    (property "Reference" "C1" (at -182.4228 50.9016 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "47uF 16V" (at -182.4228 53.213 0)
@@ -7889,7 +7889,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C?") (unit 1)
+          (reference "C1") (unit 1)
         )
       )
     )
@@ -8088,7 +8088,7 @@
   (symbol (lib_id "Device:C_Polarized") (at -158.75 97.79 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a9fba72b-f340-4379-9620-616229b6e10d)
-    (property "Reference" "C?" (at -155.7528 96.6216 0)
+    (property "Reference" "C4" (at -155.7528 96.6216 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "47uF 16V" (at -155.7528 98.933 0)
@@ -8123,7 +8123,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C?") (unit 1)
+          (reference "C4") (unit 1)
         )
       )
     )
@@ -8132,7 +8132,7 @@
   (symbol (lib_id "Device:C") (at -172.72 97.79 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b6564852-fea1-427d-ad1e-f734f17f42f1)
-    (property "Reference" "C?" (at -169.799 96.6216 0)
+    (property "Reference" "C2" (at -169.799 96.6216 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at -169.799 98.933 0)
@@ -8170,7 +8170,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C?") (unit 1)
+          (reference "C2") (unit 1)
         )
       )
     )
@@ -8230,7 +8230,7 @@
   (symbol (lib_id "Device:C") (at -151.13 48.26 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d42e8152-7a45-41ea-8903-ae569f4506e9)
-    (property "Reference" "C?" (at -148.209 47.0916 0)
+    (property "Reference" "C5" (at -148.209 47.0916 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at -148.209 49.403 0)
@@ -8268,7 +8268,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C?") (unit 1)
+          (reference "C5") (unit 1)
         )
       )
     )
@@ -8302,7 +8302,7 @@
   (symbol (lib_id "Device:C") (at -171.45 53.34 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e7f390f1-4d6d-44f9-84de-4b6e89995fa9)
-    (property "Reference" "C?" (at -168.529 52.1716 0)
+    (property "Reference" "C3" (at -168.529 52.1716 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at -168.529 54.483 0)
@@ -8340,7 +8340,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C?") (unit 1)
+          (reference "C3") (unit 1)
         )
       )
     )
@@ -8374,7 +8374,7 @@
   (symbol (lib_id "Device:R") (at -165.1 88.9 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f34148cc-2b6e-4056-bea3-b7baeb7c0cd2)
-    (property "Reference" "R?" (at -166.37 83.82 90)
+    (property "Reference" "R1" (at -166.37 83.82 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1R0" (at -165.1 86.36 90)
@@ -8412,7 +8412,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R?") (unit 1)
+          (reference "R1") (unit 1)
         )
       )
     )

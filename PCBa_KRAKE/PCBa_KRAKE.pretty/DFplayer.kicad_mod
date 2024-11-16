@@ -27,15 +27,6 @@
     (stroke (width 0.2) (type default)) (layer "B.Cu") (tstamp edfe1051-1c5e-4859-9f25-b1bfdeb73ba4))
   (fp_line (start 16.56 19.25) (end 0 19.25)
     (stroke (width 0.2) (type default)) (layer "B.Cu") (tstamp 977fb87d-ea34-403c-915a-5c2afbda29a3))
-  (fp_poly
-    (pts
-      (xy 1.148856 5.395183)
-      (xy 15.428856 5.385183)
-      (xy 15.438856 19.205183)
-      (xy 1.158856 19.195183)
-    )
-
-    (stroke (width 0.1) (type solid)) (fill solid) (layer "F.SilkS") (tstamp 78afbefc-1b32-4613-ac08-1fd770fdaa68))
   (pad "1" smd roundrect (at 1.24 0.86) (size 2.286 1.524) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
     (thermal_bridge_angle 45) (tstamp a878a870-b748-48cf-b4ea-748116a45e57))
   (pad "2" smd roundrect (at 1.32 3.23) (size 2.286 1.524) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
