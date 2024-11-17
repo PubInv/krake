@@ -117,6 +117,10 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const char* ssid = "VRX";
 const char* password = "textinsert";
 
+//Houstin network
+// const char* ssid = "DOS_WIFI";
+// const char* password = "$Suve07$$";
+
 // Austin network
 // const char* ssid = "readfamilynetwork";
 // const char* password = "magicalsparrow96";
