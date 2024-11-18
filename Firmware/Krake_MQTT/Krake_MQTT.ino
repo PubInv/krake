@@ -27,12 +27,12 @@
 //const char* password = "adt@12345";
 
 //Maryville network
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
+const char* ssid = "VRX";
+const char* password = "textinsert";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+// const char* ssid = "readfamilynetwork";
+// const char* password = "magicalsparrow96";
 
 
 // MQTT Broker

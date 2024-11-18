@@ -117,6 +117,10 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const char* ssid = "VRX";
 const char* password = "textinsert";
 
+//Houstin network
+// const char* ssid = "DOS_WIFI";
+// const char* password = "$Suve07$$";
+
 // Austin network
 // const char* ssid = "readfamilynetwork";
 // const char* password = "magicalsparrow96";
@@ -201,6 +205,10 @@ void publishOnLineMsg(void) {
     strcat(onLineMsg, rssiString);
     client.publish(publish_Ack_Topic, onLineMsg);
 
+// This should be moved to a place after the WiFi connece success 
+    Serial.print("Device connected at IPadderss: "); //FLE
+    Serial.println(WiFi.localIP());  //FLE
+
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
 #endif
@@ -223,6 +231,11 @@ bool connect_to_wifi() {
       Serial.println("");
       Serial.print("WiFi connected with RSSI: ");
       Serial.println(WiFi.RSSI());
+
+      Serial.println("");
+      Serial.print("Device connected at IPadderss: ");
+      Serial.println(WiFi.localIP());
+
       return true;
     }
   }
