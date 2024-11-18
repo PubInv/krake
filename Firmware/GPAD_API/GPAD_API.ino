@@ -62,11 +62,6 @@
 
 #include <PubSubClient.h>  // From library https://github.com/knolleary/pubsubclient
 
-
-
-
-
-
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
    Modified by Forrest Lee Erickson 20220523
@@ -108,14 +103,15 @@ unsigned long last_command_ms;
 // We have currently defined our alam time to include 10-second "songs",
 // So we will not process a new alarm condition until we have completed one song.
 const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
+const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-//const char* ssid = "ADT";
-//const char* password = "adt@12345";
+const char* ssid = "ADT";
+const char* password = "adt@12345";
 
 //Maryville network
-const char* ssid = "VRX";
-const char* password = "textinsert";
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
 
 //Houstin network
 // const char* ssid = "DOS_WIFI";
@@ -242,8 +238,11 @@ bool connect_to_wifi() {
   return true;
 }
 
+
 void reconnect() {
-  while (!client.connected()) {
+  int n = 0;
+  while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES) {
+    n++;
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
       Serial.println("success!");
@@ -251,10 +250,10 @@ void reconnect() {
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
-      delay(5000);
+      delay(1000);
     }
   }
-  Serial.println("connected!");
+  Serial.println((client.connected()) ? "connected!" : "failed to reconnect!");
 }
 // Function to turn on all lamps
 void turnOnAllLamps() {

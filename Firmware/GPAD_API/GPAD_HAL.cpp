@@ -314,7 +314,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport) {
         serialport->println(N);
         char msg[61];
         msg[0] = '\0';
-        strcpy(msg, buf + 2);
+        strncat(msg, buf, 60);
         // This copy loooks uncessary, but is not...we want "alarm"
         // to be a completely independent and abstract function.
         // it should copy the msg buffer
