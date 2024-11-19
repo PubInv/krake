@@ -26,20 +26,36 @@
  */
 
 String PROG_NAME = "FT_processingPMD_MQTT";
-String VERSION = "V0.8 ";
+String VERSION = "V0.9 ";
 
 //String KRAKE_DTA_TOPIC[] = {"KRAKE_20240421_USA1_ALM", "KRAKE_20240421_USA2_ALM", "KRAKE_20240421_USA3_ALM", "KRAKE_20240421_USA4_ALM", "KRAKE_20240421_USA5_ALM", 
 //  "KRAKE_20240421_LEB1_ALM", "KRAKE_20240421_LEB2_ALM", "KRAKE_20240421_LEB_ALM3", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
 
 String KRAKE_DTA_TOPIC[] = {"3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
-  "KRAKE_20240421_LEB1_ALM", "KRAKE_20240421_LEB2_ALM", "KRAKE_20240421_LEB_ALM3", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
+  "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
 
 
 //String KRAKE_ACK_TOPIC[] = {"KRAKE_20240421_USA1_ACK", "KRAKE_20240421_USA2_ACK", "KRAKE_20240421_USA3_ACK", "KRAKE_20240421_USA4_ACK", "KRAKE_20240421_USA5_ACK", 
 //  "KRAKE_20240421_LEB1_ACK", "KRAKE_20240421_LEB2_ACK", "KRAKE_20240421_LEB3_ACK", "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
 String KRAKE_ACK_TOPIC[] = {"3C61053DF08C_ACK", "3C6105324EAC_ACK", "3C61053DF63C_ACK", "10061C686A14_ACK", "FCB467F4F74C_ACK",
-"KRAKE_20240421_LEB1_ACK", "KRAKE_20240421_LEB2_ACK", "KRAKE_20240421_LEB3_ACK", "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
+"CCDBA730098C_ACK", "CCDBA730BFD4_ACD", "CCDBA7300954_ACD" , "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
 
+void setupDictionary(){
+  
+  StringDict mac_to_NameDict = new StringDict();
+  mac_to_NameDict.set("3C61053DF08C_ACK", "20240421_USA1");
+  mac_to_NameDict.set("3C6105324EAC_ACK", "20240421_USA2");
+  mac_to_NameDict.set("3C61053DF63C_ACK", "20240421_USA3");
+  mac_to_NameDict.set("10061C686A14_ACK", "20240421_USA4");
+  mac_to_NameDict.set("FCB467F4F74C_ACK", "20240421_USA5");
+  mac_to_NameDict.set("CCDBA730098C_ACK", "20240421_LEB1");
+  mac_to_NameDict.set("CCDBA730BFD4_ACK", "20240421_LEB2");
+  mac_to_NameDict.set("CCDBA7300954_ACK", "20240421_LEB3");
+  
+  //To print an element use:
+  //println(mac_to_NameDict.get("FCB467F4F74C")); // Output: ???
+  
+}//end setup mac_to_NameDict
 
 String thePayload = "";
 
@@ -81,8 +97,13 @@ class Adapter implements MQTTListener {
 
   void messageReceived(String topic, byte[] payload) {
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
-//    thePayload = thePayload + " " + "Recd msg: " + topic + " - " + new String(payload);
-    thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);
+
+    //thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);
+    
+      //println(mac_to_NameDict.get("FCB467F4F74C")); // Output: ???
+      
+    thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
+    
     println(thePayload);
     background(0); //Set background on messageReceived.
   }
@@ -97,6 +118,7 @@ Adapter adapter;
 
 void setup() {
   surface.setTitle(PROG_NAME + " Ver:" + VERSION);
+  setupDictionary(); //for mac to serial number. 
 
   adapter = new Adapter();
   client = new MQTTClient(this, adapter);
