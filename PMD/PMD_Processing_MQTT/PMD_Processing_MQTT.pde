@@ -8,6 +8,9 @@
 // Date: 20241101 Saved and renamed from FT_processingPMD_MQTT.  Fixed error on KRAKE_DTA_TOPIC[] from KRAKE_20240421_LEB1_ALM to KRAKE_20240421_LEB1_ALM
 // Date: 20241113 topics based on MAC address for US1-US5 assemblies. Rev 7.
 // Date: 20241115 Time stamp received messages. Rev 8.
+// Date: 20241119 Rev 0.9. Update with three LEB MAC addresses. 
+// Make a mac to SerialNumber dictionary for easier reading of the console.
+
 
 // Pseude Medical Device in Processing. 
 // This program is a development tool for the Krake(TM) wirless alarm device.
@@ -25,7 +28,7 @@
  #define ORIGIN "USA"
  */
 
-String PROG_NAME = "FT_processingPMD_MQTT";
+String PROG_NAME = "PMD_Processing_MQTT";
 String VERSION = "V0.9 ";
 
 //String KRAKE_DTA_TOPIC[] = {"KRAKE_20240421_USA1_ALM", "KRAKE_20240421_USA2_ALM", "KRAKE_20240421_USA3_ALM", "KRAKE_20240421_USA4_ALM", "KRAKE_20240421_USA5_ALM", 
@@ -39,10 +42,9 @@ String KRAKE_DTA_TOPIC[] = {"3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63
 //  "KRAKE_20240421_LEB1_ACK", "KRAKE_20240421_LEB2_ACK", "KRAKE_20240421_LEB3_ACK", "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
 String KRAKE_ACK_TOPIC[] = {"3C61053DF08C_ACK", "3C6105324EAC_ACK", "3C61053DF63C_ACK", "10061C686A14_ACK", "FCB467F4F74C_ACK",
 "CCDBA730098C_ACK", "CCDBA730BFD4_ACD", "CCDBA7300954_ACD" , "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
+StringDict mac_to_NameDict = new StringDict();
 
 void setupDictionary(){
-  
-  StringDict mac_to_NameDict = new StringDict();
   mac_to_NameDict.set("3C61053DF08C_ACK", "20240421_USA1");
   mac_to_NameDict.set("3C6105324EAC_ACK", "20240421_USA2");
   mac_to_NameDict.set("3C61053DF63C_ACK", "20240421_USA3");
@@ -51,10 +53,6 @@ void setupDictionary(){
   mac_to_NameDict.set("CCDBA730098C_ACK", "20240421_LEB1");
   mac_to_NameDict.set("CCDBA730BFD4_ACK", "20240421_LEB2");
   mac_to_NameDict.set("CCDBA7300954_ACK", "20240421_LEB3");
-  
-  //To print an element use:
-  //println(mac_to_NameDict.get("FCB467F4F74C")); // Output: ???
-  
 }//end setup mac_to_NameDict
 
 String thePayload = "";
@@ -73,35 +71,31 @@ class Adapter implements MQTTListener {
     }
 
 // Old formats for topics from KRAKE from firmware: FT_PMD_MQTT.ino VERSION "V0.7 "
-    client.subscribe("/mello");
-    client.subscribe("PMD_LB1");
-    client.subscribe("PMD_LB2");
-    client.subscribe("PMD_LB3");
-    client.subscribe("PMD_LB4");
-    client.subscribe("PMD_LB5");
-    client.subscribe("20240421_LEB1");
-    client.subscribe("20240421_LEB2");
-    client.subscribe("20240421_LEB3");
-    client.subscribe("20240421_LEB4");
-    client.subscribe("20240421_LEB5");
+    //client.subscribe("/mello");
+    //client.subscribe("PMD_LB1");
+    //client.subscribe("PMD_LB2");
+    //client.subscribe("PMD_LB3");
+    //client.subscribe("PMD_LB4");
+    //client.subscribe("PMD_LB5");
+    //client.subscribe("20240421_LEB1");
+    //client.subscribe("20240421_LEB2");
+    //client.subscribe("20240421_LEB3");
+    //client.subscribe("20240421_LEB4");
+    //client.subscribe("20240421_LEB5");
 
-    client.subscribe("PMD_Austin1");    
+    //client.subscribe("PMD_Austin1");    
 
-    client.subscribe("20240421_USA1");    
-    client.subscribe("20240421_USA2");    
-    client.subscribe("20240421_USA3");    
-    client.subscribe("20240421_USA4");    
-    client.subscribe("20240421_USA5");    
+    //client.subscribe("20240421_USA1");    
+    //client.subscribe("20240421_USA2");    
+    //client.subscribe("20240421_USA3");    
+    //client.subscribe("20240421_USA4");    
+    //client.subscribe("20240421_USA5");    
     //    client.subscribe("KRAKE_DTA_TOPIC");
   }
 
   void messageReceived(String topic, byte[] payload) {
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
-
-    //thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);
-    
-      //println(mac_to_NameDict.get("FCB467F4F74C")); // Output: ???
-      
+    //thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);  
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
     
     println(thePayload);
@@ -122,13 +116,10 @@ void setup() {
 
   adapter = new Adapter();
   client = new MQTTClient(this, adapter);
-  //  client.connect("mqtt://public:public@public.cloud.shiftr.io", "processing");
   client.connect("mqtt://public:public@public.cloud.shiftr.io", "Lee's processing");
 
   size(700, 360);
-  //disables drawing outlines
-  noStroke();
-  //background(255, 4, 255);
+  noStroke();    //disables drawing outlines
   background(64);
   frameRate(24);
 
