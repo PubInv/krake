@@ -106,8 +106,8 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-const char* ssid = "ADT";
-const char* password = "adt@12345";
+const char* ssid = "Home";
+const char* password = "adt@1963#";
 
 //Maryville network
 // const char* ssid = "VRX";
