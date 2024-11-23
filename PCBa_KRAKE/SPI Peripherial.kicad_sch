@@ -5,12 +5,14 @@
   (paper "USLetter")
 
   (title_block
-    (title "GeneralPurposeAlarmDevicePCB")
-    (date "2023-04-25")
-    (rev "2.2")
+    (title "KRAKE_PCB")
+    (date "2024-11-23")
+    (rev "1")
     (company "PublicInvention")
     (comment 1 "GNU Affero General Public License v3.0")
-    (comment 2 "DrawnBy: (Forrest) Lee Erickson")
+    (comment 2 "DrawnBy: (Forrest) Lee Erickson, Nagham Kheir")
+    (comment 3 "https://github.com/PubInv/krake")
+    (comment 4 "Inherited from the GPAD")
   )
 
   (lib_symbols
