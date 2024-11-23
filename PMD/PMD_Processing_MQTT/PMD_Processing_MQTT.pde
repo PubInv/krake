@@ -1,3 +1,6 @@
+String PROG_NAME = "PMD_Processing_MQTT";
+String VERSION = "V0.10 ";
+
 // File: PMD_Processing_MQTT 
 // Author: Forrest Lee Erickson
 // Date: 20241006
@@ -10,6 +13,7 @@
 // Date: 20241115 Time stamp received messages. Rev 8.
 // Date: 20241119 Rev 0.9. Update with three LEB MAC addresses. 
 // Make a mac to SerialNumber dictionary for easier reading of the console.
+// Date: 20241123 Rev 0.10. Update with another USA MAC addresses. 
 
 
 // Pseude Medical Device in Processing. 
@@ -28,19 +32,18 @@
  #define ORIGIN "USA"
  */
 
-String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.9 ";
+
 
 //String KRAKE_DTA_TOPIC[] = {"KRAKE_20240421_USA1_ALM", "KRAKE_20240421_USA2_ALM", "KRAKE_20240421_USA3_ALM", "KRAKE_20240421_USA4_ALM", "KRAKE_20240421_USA5_ALM", 
 //  "KRAKE_20240421_LEB1_ALM", "KRAKE_20240421_LEB2_ALM", "KRAKE_20240421_LEB_ALM3", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
 
-String KRAKE_DTA_TOPIC[] = {"3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
+String KRAKE_DTA_TOPIC[] = {"3C61053DC954_ALM", "3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
   "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
 
 
 //String KRAKE_ACK_TOPIC[] = {"KRAKE_20240421_USA1_ACK", "KRAKE_20240421_USA2_ACK", "KRAKE_20240421_USA3_ACK", "KRAKE_20240421_USA4_ACK", "KRAKE_20240421_USA5_ACK", 
 //  "KRAKE_20240421_LEB1_ACK", "KRAKE_20240421_LEB2_ACK", "KRAKE_20240421_LEB3_ACK", "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
-String KRAKE_ACK_TOPIC[] = {"3C61053DF08C_ACK", "3C6105324EAC_ACK", "3C61053DF63C_ACK", "10061C686A14_ACK", "FCB467F4F74C_ACK",
+String KRAKE_ACK_TOPIC[] = {"3C61053DC954_ACK", "3C61053DF08C_ACK", "3C6105324EAC_ACK", "3C61053DF63C_ACK", "10061C686A14_ACK", "FCB467F4F74C_ACK",
 "CCDBA730098C_ACK", "CCDBA730BFD4_ACD", "CCDBA7300954_ACD" , "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscrive to a Krake ack.
 StringDict mac_to_NameDict = new StringDict();
 
@@ -53,6 +56,7 @@ void setupDictionary(){
   mac_to_NameDict.set("CCDBA730098C_ACK", "20240421_LEB1");
   mac_to_NameDict.set("CCDBA730BFD4_ACK", "20240421_LEB2");
   mac_to_NameDict.set("CCDBA7300954_ACK", "20240421_LEB3");
+  mac_to_NameDict.set("3C61053DC954_ACK", "Not Homework2, Maryville TN");
 }//end setup mac_to_NameDict
 
 String thePayload = "";
