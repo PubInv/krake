@@ -53,7 +53,8 @@
 // This should be done with an "#elif", but I can't get it to work
 #if defined(HMWK)
 
-#define SWITCH_MUTE 34
+//#define SWITCH_MUTE 34
+#define SWITCH_MUTE 0 //Boot button
 
 #define LED_D9 23
 #define LIGHT0 15
