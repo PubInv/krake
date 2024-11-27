@@ -279,7 +279,7 @@ void turnOffAllLamps() {
 
 
 
-// Handeler for MQTT subscrived messages
+// Handeler for MQTT subscribed messages
 void callback(char* topic, byte* payload, unsigned int length) {
   // todo, remove use of String here....
   // Note: We will check for topic or topics in the future...
