@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.12 ";
+String VERSION = "V0.13 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -18,6 +18,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241123 Rev 0.10. Update with another USA MAC addresses. 
 // Date: 20241130 Rev 0.11. Format source. Add PROJECT_URL and display it in draw(). Update background in draw().  
 // Date: 20241130 Rev 0.12. Move void keyPressed() to UserInput tab.  
+// Date: 20241130 Rev 0.13. WinkInProcessingPMD to simulate an LED heart beat.
 
 
 // Description:
@@ -106,6 +107,8 @@ void setup() {
 
 void draw() {
   background(myBackground);
+  updateLED(); 
+  circle(width -20, 12, 20);
   //Need a heart beat message
   //Text on draw window
   fill(255);
