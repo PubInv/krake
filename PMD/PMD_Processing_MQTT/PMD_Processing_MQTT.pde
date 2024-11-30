@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.13 ";
+String VERSION = "V0.14 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -19,6 +19,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241130 Rev 0.11. Format source. Add PROJECT_URL and display it in draw(). Update background in draw().  
 // Date: 20241130 Rev 0.12. Move void keyPressed() to UserInput tab.  
 // Date: 20241130 Rev 0.13. WinkInProcessingPMD to simulate an LED heart beat.
+// Date: 20241130 Rev 0.14. Set MQTT WILL message(s).
 
 
 // Description:
@@ -69,6 +70,8 @@ class Adapter implements MQTTListener {
     println("client connected");
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       client.subscribe(KRAKE_ACK_TOPIC[i]);
+      //client.setWill(String topic, String payload);
+      client.setWill(KRAKE_ACK_TOPIC[i]+"/will", KRAKE_ACK_TOPIC[i]+" Has disconnected.");
     }//end for i
   }// end clientCOnnect
 
@@ -84,7 +87,7 @@ class Adapter implements MQTTListener {
     println("connection lost");
     myBackground = color(128, 0, 0);
   }
-}
+}//end Class Adapter
 
 Adapter adapter;
 color myBackground = color(64, 64, 64);  //Start grey
