@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.11 ";
+String VERSION = "V0.12 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -17,6 +17,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Make a mac to SerialNumber dictionary for easier reading of the console.
 // Date: 20241123 Rev 0.10. Update with another USA MAC addresses. 
 // Date: 20241130 Rev 0.11. Format source. Add PROJECT_URL and display it in draw(). Update background in draw().  
+// Date: 20241130 Rev 0.12. Move void keyPressed() to UserInput tab.  
 
 
 // Description:
@@ -124,30 +125,3 @@ void draw() {
   fill(200);
   text("PROJECT_URL: " + PROJECT_URL, 10, height - 10);
 }//end draw()
-
-
-/* Keyboard Event handler for single key.
- Sets digits prefixed with an "a" for alarm.
- Alpha as is.
- Suppresses all other keys
- Publishes to all devices, aka topics, KRAKE_DTA_TOPIC[i]
- */
-void keyPressed() {
-  for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
-    int keyIndex = -1;
-    if (key >= 'A' && key <= 'Z') {
-      MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:UpperCase";
-      client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
-    } else if (key >= 'a' && key <= 'z') {
-      MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:LowerCase";
-      client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
-    } else if (key >= '0' && key <= '9') {     //Alarms by number pressed.
-      keyIndex = key - '0';                                                           //Offset the numerical ASCII down to an int.
-      MessageFromProcessing_PMD = "MessageFromProcessing_PMD:" + " " + (int(key)-48);
-      //Form the GPAD API compatible message for KRAKE Topic.  Need a for loop for all Krakes.
-      MessageFromProcessing_PMD = "a" + (int(key)-48) + "MessageFromProcessing_PMD:" + (int(key)-48);
-      client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
-    }
-  }// end of for 
-  myBackground = color(0, 16, 0);
-}
