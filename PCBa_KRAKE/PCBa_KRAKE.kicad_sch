@@ -5700,7 +5700,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 26964fbf-e8bd-441a-83b8-f05dde8f2bbe)
   )
-  (text "controls boot" (at -97.79 82.55 0)
+  (text "controls boot" (at -88.265 83.185 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 4111fe6e-ba44-4652-a43b-9cf27698d78a)
   )
