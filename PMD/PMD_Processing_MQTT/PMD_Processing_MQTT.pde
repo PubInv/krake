@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.14 ";
+String VERSION = "V0.15 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -66,8 +66,10 @@ import mqtt.*;
 MQTTClient client;
 
 class Adapter implements MQTTListener {
+  //This appears to auto reconnect
   void clientConnected() {
-    println("client connected");
+    println("client connected"); 
+    mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       client.subscribe(KRAKE_ACK_TOPIC[i]);
       //client.setWill(String topic, String payload);
@@ -81,15 +83,19 @@ class Adapter implements MQTTListener {
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
     println(thePayload);
     myBackground = color(0, 0, 0);
+    mqttBrokerIsConnected = true;
   }
 
   void connectionLost() {
     println("connection lost");
     myBackground = color(128, 0, 0);
+    mqttBrokerIsConnected = false;
   }
 }//end Class Adapter
 
 Adapter adapter;
+boolean mqttBrokerIsConnected = false;
+
 color myBackground = color(64, 64, 64);  //Start grey
 
 void setup() {
@@ -110,9 +116,9 @@ void setup() {
 
 void draw() {
   background(myBackground);
-  updateLED(); 
-  circle(width -20, 12, 20);
-  //Need a heart beat message
+  //A heart beat LED
+  updateLED(); //Set the LED color
+  circle(width -20, 12, 20); //draw the LED.  
   //Text on draw window
   fill(255);
   textSize(25);
@@ -125,6 +131,14 @@ void draw() {
   text("Alarms, press digits 0-9, s, u, h", 10, 60);
   fill(252, 10, 55);
   text(thePayload, 10, 100);
+  
+  if (mqttBrokerIsConnected) {
+    fill(200);
+    text("mqttBrokerIsConnected", 10, 150);
+  }else{
+    fill(252, 10, 55);
+     text("mqttBroker NOT Connected", 10, 150);
+  }
 
   //Footer
   textSize(10);
