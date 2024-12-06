@@ -24,6 +24,13 @@
 #include "gpad_utility.h"
 #include <SPI.h>
 
+
+
+
+// Use Serial1 for UART communication
+HardwareSerial uartSerial1(1);
+
+
 #include <DailyStruggleButton.h>
 DailyStruggleButton muteButton;
 // Time in ms you need to hold down the button to be considered a long press
@@ -271,6 +278,9 @@ void GPAD_HAL_setup(Stream *serialport) {
   AlarmMessageBuffer[0] = '\0';
 
   // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
+
+  // Here initialize the UART1
+  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup
 }
 
 // TODO: Move to GPAD_API

@@ -98,6 +98,8 @@
 #define DEBUG 0
 
 
+
+
 unsigned long last_command_ms;
 
 // We have currently defined our alam time to include 10-second "songs",
@@ -110,16 +112,16 @@ const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 // const char* password = "adt@1963#";
 
 //Maryville network
-const char* ssid = "VRX";
-const char* password = "textinsert";
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
 
 //Houstin network
 // const char* ssid = "DOS_WIFI";
 // const char* password = "$Suve07$$";
 
 // Austin network
-// const char* ssid = "readfamilynetwork";
-// const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -437,7 +439,10 @@ void loop() {
   // delay(20);
   GPAD_HAL_loop();
 
-  processSerial(&Serial);
+  processSerial(&Serial,&Serial);
+
+  // Here we also process the UART1 using the same routine.
+  processSerial(&Serial,&uartSerial1);
 
   // // Now try to read from the SPI Port!
 #if defined(GPAD)

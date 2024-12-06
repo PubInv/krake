@@ -41,27 +41,27 @@ CD\n
 where C is an character, and D is a single digit.
 */
 
-void processSerial(Stream *serialport) {
+void processSerial(Stream *debugPort,Stream *inputPort) {
   // Now see if we have a serial command
   int rlen;
   // TODO: This code can probably hang; it needs to have
   // timeouts added!
-  if (serialport->available() > 0) {
+  if (inputPort->available() > 0) {
     // read the incoming bytes:
-    int rlen = serialport->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
+    int rlen = inputPort->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
     // readBytesUntil does not terminate the string!
     buf[rlen] = '\0';
     // prints the received data
-    serialport->print(F("I received: "));
-    serialport->print(rlen);
+    debugPort->print(F("I received: "));
+    debugPort->print(rlen);
     for (int i = 0; i < rlen; i++)
-      serialport->print(buf[i]);
-    serialport->println();
-    interpretBuffer(buf, rlen, serialport);
+      debugPort->print(buf[i]);
+    debugPort->println();
+    interpretBuffer(buf, rlen, inputPort);
     // Now "light and scream"appropriately...
     // This does not work on HMWK2 device
-    annunciateAlarmLevel(serialport);
+    annunciateAlarmLevel(debugPort);
     delay(3000);
-    printAlarmState(serialport);
+    printAlarmState(debugPort);
   }
 }
