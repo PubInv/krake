@@ -89,6 +89,16 @@
 #define BUTTON_PIN 2  //Button to GND, 10K Resistor to +5V.
 #endif
 
+
+// Define TX and RX pins for UART1 (change if needed)
+// #define TXD1 21
+// #define RXD1 19
+// This may be the UART2, which I am using for testing...
+#define TXD1 17
+#define RXD1 16
+#define UART1_BAUD_RATE 115200
+extern HardwareSerial uartSerial1;
+
 // SPI Functions....
 void setup_spi();
 void receive_byte(byte c);
