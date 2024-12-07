@@ -9649,7 +9649,7 @@
 
   (footprint "RF_Module:ESP32-WROOM-32D" (layer "F.Cu")
     (tstamp c127e48a-736b-4070-b58f-ac9c192d87bd)
-    (at 110.096 152.522)
+    (at 89.154 0.593)
     (descr "2.4 GHz Wi-Fi and Bluetooth module, https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32d_esp32-wroom-32u_datasheet_en.pdf")
     (tags "2.4 GHz Wi-Fi and Bluetooth module ESP32-D0WD Espressif ESP32-WROOM-32E")
     (property "Cost" "3.42")
@@ -9900,10 +9900,10 @@
       (fill (thermal_gap 0.508) (thermal_bridge_width 0.508))
       (polygon
         (pts
-          (xy 86.096 142.972)
-          (xy 134.096 142.972)
-          (xy 134.096 121.782)
-          (xy 86.096 121.782)
+          (xy 65.154 -8.957)
+          (xy 113.154 -8.957)
+          (xy 113.154 -30.147)
+          (xy 65.154 -30.147)
         )
       )
     )
