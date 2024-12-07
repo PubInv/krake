@@ -122,6 +122,16 @@ SPK2 -- -ve of the speaker
 ### Kicanvas live view of current PCBA:
 
 [PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro) " -->
+## Typical Current Consumption of MockingKrake - DUT: Homework2 USA1 
+* LCD is wired to 3.3 V
+* DF Player is wired to 3.3 V and connected to 8 Ohm speaker
+
+| TEST NUMBER | Amp | LCD TEST CONDITION | DFP TEST CONDITION | 
+|---|---------------------------------------|----------------------------------------|---|
+| 1 |  0.12 to 0.16 | LCD backlight ON, Alarm a1 | DF Player OFF | 
+| 2 |  0.08 to 0.11 | LCD backlight OFF, Alarm a0 | DF Player OFF | 
+| 3 |  0.23 max | LCD backlight OFF, Alarm a0 | DF Player ON | 
+| 4 |  0.24 max | LCD backlight ON, Alarm A5 | DF Player ON | 
 
 
 # Buidling PCBa of Krake 
