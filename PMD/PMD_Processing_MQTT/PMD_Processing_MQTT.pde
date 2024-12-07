@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.17 ";
+String VERSION = "V0.39 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -69,8 +69,11 @@ class Adapter implements MQTTListener {
   void clientConnected() {
     String theTimeStamp = "";
     theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
-    print(theTimeStamp);
-    println("clientConnected"); 
+    theTimeStamp = theTimeStamp + "MQTT clientConnected" ;
+    println(theTimeStamp);  
+    appendTextToFile(myLogFileName, "MQTT clientConnected");
+    
+    
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       client.subscribe(KRAKE_ACK_TOPIC[i]);
@@ -90,8 +93,10 @@ class Adapter implements MQTTListener {
   void connectionLost() {
     String theTimeStamp = "";
     theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
-    print(theTimeStamp);
-    println("MQTT Client Connection lost");
+    theTimeStamp = theTimeStamp + "MQTT Client Connection lost" ;
+    println(theTimeStamp);  
+    appendTextToFile(myLogFileName, "MQTT Client Connection lost");
+    
     myBackground = color(128, 0, 0);
     mqttBrokerIsConnected = false;
   }
@@ -108,6 +113,12 @@ void setup() {
   noStroke();    //disables drawing outlines
   background (myBackground);
   frameRate(24);
+
+  //Start up logging system
+  String startTime = (str(year()) + str(month()) +str(day()) +"_" + str(hour()) + str(minute()) + str(second()) );
+  myLogFileName = (startTime + "_" + myLogFileName);
+  appendTextToFile(myLogFileName, ("Your log is born."));
+
 
   setupDictionary(); //for MAC to serial numbers. 
 
