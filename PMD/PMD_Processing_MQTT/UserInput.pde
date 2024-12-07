@@ -25,7 +25,8 @@ void keyPressed() {
       myBackground = color(0, 16, 0);
     }// end of for
   } else { //Client not connected so do nothing
-    print("Not publishing keys");
+    print(str(year())+str(month())+str(day())+"_"+str(hour())+str(minute())+str(second())+ " ");
+    println("Client not connected. keyPressed() do nothing.");
     myBackground = color(16, 0, 0);
   }
 }
