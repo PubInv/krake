@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.15 ";
+String VERSION = "V0.39 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -38,7 +38,6 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
  #define ORIGIN "USA"
  */
 
-
 String KRAKE_DTA_TOPIC[] = {"3C61053DC954_ALM", "3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
   "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
 
@@ -68,7 +67,13 @@ MQTTClient client;
 class Adapter implements MQTTListener {
   //This appears to auto reconnect
   void clientConnected() {
-    println("client connected"); 
+    String theTimeStamp = "";
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+    theTimeStamp = theTimeStamp + "MQTT clientConnected" ;
+    println(theTimeStamp);  
+    appendTextToFile(myLogFileName, "MQTT clientConnected");
+    
+    
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       client.subscribe(KRAKE_ACK_TOPIC[i]);
@@ -79,7 +84,6 @@ class Adapter implements MQTTListener {
 
   void messageReceived(String topic, byte[] payload) {
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
-    //thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);  
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
     println(thePayload);
     myBackground = color(0, 0, 0);
@@ -87,7 +91,12 @@ class Adapter implements MQTTListener {
   }
 
   void connectionLost() {
-    println("connection lost");
+    String theTimeStamp = "";
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+    theTimeStamp = theTimeStamp + "MQTT Client Connection lost" ;
+    println(theTimeStamp);  
+    appendTextToFile(myLogFileName, "MQTT Client Connection lost");
+    
     myBackground = color(128, 0, 0);
     mqttBrokerIsConnected = false;
   }
@@ -104,6 +113,12 @@ void setup() {
   noStroke();    //disables drawing outlines
   background (myBackground);
   frameRate(24);
+
+  //Start up logging system
+  String startTime = (str(year()) + str(month()) +str(day()) +"_" + str(hour()) + str(minute()) + str(second()) );
+  myLogFileName = (startTime + "_" + myLogFileName);
+  appendTextToFile(myLogFileName, ("Your log is born."));
+
 
   setupDictionary(); //for MAC to serial numbers. 
 
