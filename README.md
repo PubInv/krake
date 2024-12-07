@@ -140,7 +140,8 @@ SPK2 -- -ve of the speaker
 
 [esp32-WROOM-32D Datasheet](https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Espressif-Systems-ESP32-WROOM-32D-N4_C473012.pdf)
 
-<img width="417" alt="Screenshot 2024-11-09 031202" src="https://github.com/user-attachments/assets/a9bcc9fe-2d47-4a4f-9dd2-0b00217822fb">
+![esp32-pinout-chip-ESP-WROOM-32](https://github.com/user-attachments/assets/c536d734-6dd7-4b16-834e-3e3d778a77b9)
+
 
 ### ESP32-WROOM-32D module pin functions:
 
