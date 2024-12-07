@@ -122,6 +122,16 @@ SPK2 -- -ve of the speaker
 ### Kicanvas live view of current PCBA:
 
 [PCBA LINK](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FKrake_V1%2FKrake_V1.kicad_pro) " -->
+## Typical Current Consumption of MockingKrake - DUT: Homework2 USA1 
+* LCD is wired to 3.3 V
+* DF Player is wired to 3.3 V and connected to 8 Ohm speaker
+
+| TEST NUMBER | Amp | LCD TEST CONDITION | DFP TEST CONDITION | 
+|---|---------------------------------------|----------------------------------------|---|
+| 1 |  0.12 to 0.16 | LCD backlight ON, Alarm a1 | DF Player OFF | 
+| 2 |  0.08 to 0.11 | LCD backlight OFF, Alarm a0 | DF Player OFF | 
+| 3 |  0.23 max | LCD backlight OFF, Alarm a0 | DF Player ON | 
+| 4 |  0.24 max | LCD backlight ON, Alarm A5 | DF Player ON | 
 
 
 # Buidling PCBa of Krake 
@@ -130,7 +140,8 @@ SPK2 -- -ve of the speaker
 
 [esp32-WROOM-32D Datasheet](https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Espressif-Systems-ESP32-WROOM-32D-N4_C473012.pdf)
 
-<img width="417" alt="Screenshot 2024-11-09 031202" src="https://github.com/user-attachments/assets/a9bcc9fe-2d47-4a4f-9dd2-0b00217822fb">
+![esp32-pinout-chip-ESP-WROOM-32](https://github.com/user-attachments/assets/c536d734-6dd7-4b16-834e-3e3d778a77b9)
+
 
 ### ESP32-WROOM-32D module pin functions:
 
