@@ -10,7 +10,21 @@ void keyPressed() {
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       int keyIndex = -1;
       if (key >= 'A' && key <= 'Z') {
-        MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:UpperCase";
+        //        MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:UpperCase";
+        MessageFromProcessing_PMD = "a5Lee's Browser Not Responding. Might be Internet Provider Problem";
+
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'b' ) {
+        MessageFromProcessing_PMD = "a2Lee has restart it. Back in Discord";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'l' ) {
+        MessageFromProcessing_PMD = "a5Lee's Browser AGAIN Not Responding.";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'm' ) {
+        MessageFromProcessing_PMD = "a2Lee's browser not responding. Giving up.";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'r' ) {
+        MessageFromProcessing_PMD = "a1Lee's closing browser to restart it.";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key >= 'a' && key <= 'z') {
         MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:LowerCase";
