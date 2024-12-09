@@ -143,6 +143,7 @@ void draw() {
   //A heart beat LED
   updateLED(); //Set the LED color
   circle(width -20, 12, 20); //draw the LED.  
+    checkOverButton();
   //Text on draw window
   fill(255);
   textSize(25);
@@ -164,7 +165,7 @@ void draw() {
     text("mqttBroker NOT Connected", 10, 150);
   }
   
-  checkOverButton();
+//  checkOverButton();
 
   //Footer
   textSize(10);

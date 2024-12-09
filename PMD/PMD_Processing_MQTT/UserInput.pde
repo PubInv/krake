@@ -2,9 +2,13 @@
  
  */
 
+int buttonHorz = 50;
+int buttonVert = 160;
+
+
 void checkOverButton() {
-  int buttonHorz = 105;
-  int buttonVert = 60;
+  //int buttonHorz = 50;
+  //int buttonVert = 160;
   //int arrowHorz = 155;
   //int arrowVert = 85;
   int arrowHorz = buttonHorz +50 ;
@@ -13,16 +17,19 @@ void checkOverButton() {
   if (overButton == true) {
     fill(255);
   } else {
-    fill(25);
+    fill(32);
+    //noFill();
   }
-//  rect(105, 60, 75, 75);
+  //  rect(105, 60, 75, 75);
+  stroke(128);
   rect(buttonHorz, buttonVert, 75, 75);
-  
-//  line(135, 105, 155, 85);
+    
+  fill(255);
+    //  line(135, 105, 155, 85);
   line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
-//  line(140, 85, 155, 85);
+  //  line(140, 85, 155, 85);
   line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
-//  line(155, 85, 155, 100); 
+  //  line(155, 85, 155, 100); 
   line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
 }
 
@@ -44,7 +51,7 @@ void mouseDragged() {
 }
 
 void checkButtons() {
-  if (mouseX > 105 && mouseX < 180 && mouseY > 60 && mouseY <135) {
+  if (mouseX > buttonHorz && mouseX < buttonHorz +75 && mouseY > buttonVert && mouseY <buttonVert+75) {
     overButton = true;
   } else {
     overButton = false;
