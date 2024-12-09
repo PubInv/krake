@@ -5,6 +5,10 @@
 void checkOverButton() {
   int buttonHorz = 105;
   int buttonVert = 60;
+  //int arrowHorz = 155;
+  //int arrowVert = 85;
+  int arrowHorz = buttonHorz +50 ;
+  int arrowVert = buttonVert + 25;
 
   if (overButton == true) {
     fill(255);
@@ -13,12 +17,13 @@ void checkOverButton() {
   }
 //  rect(105, 60, 75, 75);
   rect(buttonHorz, buttonVert, 75, 75);
+  
 //  line(135, 105, 155, 85);
-  line(buttonHorz+30, buttonVert+45, buttonHorz+50, 85);
+  line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
 //  line(140, 85, 155, 85);
-  line(buttonHorz+35, buttonVert+25, buttonHorz+50, buttonVert+25);
-//  line(155, 85, 155, 100);
-  line(buttonHorz+50, buttonVert+25, buttonHorz+50, 100);
+  line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
+//  line(155, 85, 155, 100); 
+  line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
 }
 
 void mousePressed() {
