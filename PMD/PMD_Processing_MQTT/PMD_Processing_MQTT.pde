@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.20 ";
+String VERSION = "V0.21 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -111,7 +111,7 @@ boolean mqttBrokerIsConnected = false;
 color myBackground = color(64, 64, 64);  //Start grey
 
 void setup() {
-  surface.setTitle(PROG_NAME + " Ver:" + VERSION);
+//  surface.setTitle(PROG_NAME + " Ver:" + VERSION);
   size(700, 360);
   noStroke();    //disables drawing outlines
   background (myBackground);
@@ -129,6 +129,9 @@ void setup() {
 
   client.connect(BROKER_URL, PROG_NAME);    //  BROKER_URL and name
   MessageFromProcessing_PMD = "Nothing published Yet"; //An intial message for the draw()
+
+  getNetworkInterface();
+  surface.setTitle(PROG_NAME + " Ver:" + VERSION + "MAC: " + theMAC);
 }//end setup()
 
 void draw() {
