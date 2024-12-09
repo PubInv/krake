@@ -3,7 +3,7 @@
  */
 
 int buttonHorz = 50;
-int buttonVert = 160;
+int buttonVert = 200;
 
 
 void checkOverButton() {
@@ -20,10 +20,11 @@ void checkOverButton() {
     fill(32);
     //noFill();
   }
+  
+  //Draw button
   //  rect(105, 60, 75, 75);
   stroke(128);
-  rect(buttonHorz, buttonVert, 75, 75);
-    
+  rect(buttonHorz, buttonVert, 75, 75);   
   fill(255);
     //  line(135, 105, 155, 85);
   line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
@@ -31,6 +32,7 @@ void checkOverButton() {
   line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
   //  line(155, 85, 155, 100); 
   line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
+  text("Broker View", buttonHorz+10, buttonVert+ 20);
 }
 
 void mousePressed() {
