@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.21 ";
+String VERSION = "V0.22 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -22,6 +22,8 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241130 Rev 0.14. Set MQTT WILL message(s).
 // Date: 20241209 Rev 0.19. Add log file name into draw() window.
 // Date: 20241209 Rev 0.20. Save screens on client connect or lost.
+// Date: 20241209 Rev 0.21.  Add MAC address to the sketch title.
+// Date: 20241209 Rev 0.22.  Add MAC address to the MQTT Username. Display Broker in draw window.
 
 
 // Description:
@@ -111,7 +113,8 @@ boolean mqttBrokerIsConnected = false;
 color myBackground = color(64, 64, 64);  //Start grey
 
 void setup() {
-//  surface.setTitle(PROG_NAME + " Ver:" + VERSION);
+  getNetworkInterface();
+  surface.setTitle(PROG_NAME + " Ver:" + VERSION + "MAC: " + theMAC);
   size(700, 360);
   noStroke();    //disables drawing outlines
   background (myBackground);
@@ -127,11 +130,10 @@ void setup() {
   adapter = new Adapter();
   client = new MQTTClient(this, adapter);
 
-  client.connect(BROKER_URL, PROG_NAME);    //  BROKER_URL and name
+  //client.connect(BROKER_URL, USERNAME);    //  BROKER_URL and name
+  client.connect(BROKER_URL, PROG_NAME + "_" + theMAC);    //  BROKER_URL and name
   MessageFromProcessing_PMD = "Nothing published Yet"; //An intial message for the draw()
 
-  getNetworkInterface();
-  surface.setTitle(PROG_NAME + " Ver:" + VERSION + "MAC: " + theMAC);
 }//end setup()
 
 void draw() {
@@ -163,6 +165,7 @@ void draw() {
   //Footer
   textSize(10);
   fill(200);
+  text("Broker Name: " + BROKER_URL , 10, height-30);
   text("myLogFileName: " + myLogFileName, 10, height - 20); 
   text("PROJECT_URL: " + PROJECT_URL, 10, height - 10);
   //end of Footer
