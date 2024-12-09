@@ -32,7 +32,7 @@ void checkOverButton() {
   line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
   //  line(155, 85, 155, 100); 
   line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
-  text("Broker View", buttonHorz+10, buttonVert+ 20);
+  text("Broker View", buttonHorz+10, buttonVert);
 }
 
 void mousePressed() {
