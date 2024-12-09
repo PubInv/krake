@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.19 ";
+String VERSION = "V0.20 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -21,6 +21,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241130 Rev 0.13. WinkInProcessingPMD to simulate an LED heart beat.
 // Date: 20241130 Rev 0.14. Set MQTT WILL message(s).
 // Date: 20241209 Rev 0.19. Add log file name into draw() window.
+// Date: 20241209 Rev 0.20. Save screens on client connect or lost.
 
 
 // Description:
@@ -60,6 +61,7 @@ void setupDictionary() {
 
 String MessageFromProcessing_PMD = "";  // The MQTT message first part.
 String thePayload = "";  // The MQTT received.
+boolean clientStatusChanged = false;
 
 import mqtt.*;
 
@@ -73,7 +75,7 @@ class Adapter implements MQTTListener {
     theTimeStamp = theTimeStamp + "MQTT clientConnected" ;
     println(theTimeStamp);  
     appendTextToFile(myLogFileName, "MQTT clientConnected");
-
+    clientStatusChanged = true; //TO flag save of draw() window.
 
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
@@ -97,7 +99,7 @@ class Adapter implements MQTTListener {
     theTimeStamp = theTimeStamp + "MQTT Client Connection lost" ;
     println(theTimeStamp);  
     appendTextToFile(myLogFileName, "MQTT Client Connection lost");
-
+    clientStatusChanged = true;  //TO flag save of draw() window.
     myBackground = color(128, 0, 0);
     mqttBrokerIsConnected = false;
   }
@@ -120,13 +122,12 @@ void setup() {
   myLogFileName = (startTime + "_" + myLogFileName);
   appendTextToFile(myLogFileName, ("Your log is born."));
 
-
   setupDictionary(); //for MAC to serial numbers. 
 
   adapter = new Adapter();
   client = new MQTTClient(this, adapter);
 
-  client.connect(BROKER_URL, "Lee's processing");    //  BROKER_URL
+  client.connect(BROKER_URL, PROG_NAME);    //  BROKER_URL and name
   MessageFromProcessing_PMD = "Nothing published Yet"; //An intial message for the draw()
 }//end setup()
 
@@ -161,4 +162,13 @@ void draw() {
   fill(200);
   text("myLogFileName: " + myLogFileName, 10, height - 20); 
   text("PROJECT_URL: " + PROJECT_URL, 10, height - 10);
+  //end of Footer
+
+  //Save the screen when MQTT connection events
+  if (clientStatusChanged) {                
+    String theTimeStamp = "";
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()); //time stamp
+    save("./data/" + theTimeStamp+"_clientEvent.png");  
+    clientStatusChanged = false;
+  }
 }//end draw()
