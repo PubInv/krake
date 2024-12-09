@@ -1,3 +1,51 @@
+/*Mouse code
+ 
+ */
+
+void checkOverButton() {
+  int buttonHorz = 105;
+  int buttonVert = 60;
+
+  if (overButton == true) {
+    fill(255);
+  } else {
+    fill(25);
+  }
+//  rect(105, 60, 75, 75);
+  rect(buttonHorz, buttonVert, 75, 75);
+//  line(135, 105, 155, 85);
+  line(buttonHorz+30, buttonVert+45, buttonHorz+50, 85);
+//  line(140, 85, 155, 85);
+  line(buttonHorz+35, buttonVert+25, buttonHorz+50, buttonVert+25);
+//  line(155, 85, 155, 100);
+  line(buttonHorz+50, buttonVert+25, buttonHorz+50, 100);
+}
+
+void mousePressed() {
+  if (overButton) { 
+    //    link("http://www.processing.org");
+    //    link("chrome.exe%20shiftr.io");
+    //    link("chrome.exe%20http://www.shiftr.io");
+    link("http://www.shiftr.io");
+  }
+}
+
+void mouseMoved() { 
+  checkButtons();
+}
+
+void mouseDragged() {
+  checkButtons();
+}
+
+void checkButtons() {
+  if (mouseX > 105 && mouseX < 180 && mouseY > 60 && mouseY <135) {
+    overButton = true;
+  } else {
+    overButton = false;
+  }
+}
+
 /* Keyboard Event handler for single key.
  Sets digits prefixed with an "a" for alarm.
  Alpha as is.

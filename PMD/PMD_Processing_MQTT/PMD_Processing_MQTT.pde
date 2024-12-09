@@ -112,6 +112,8 @@ boolean mqttBrokerIsConnected = false;
 
 color myBackground = color(64, 64, 64);  //Start grey
 
+boolean overButton = false;
+
 void setup() {
   getNetworkInterface();
   surface.setTitle(PROG_NAME + " Ver:" + VERSION + "MAC: " + theMAC);
@@ -161,6 +163,8 @@ void draw() {
     fill(252, 10, 55);
     text("mqttBroker NOT Connected", 10, 150);
   }
+  
+  checkOverButton();
 
   //Footer
   textSize(10);
