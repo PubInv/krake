@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.18 ";
+String VERSION = "V0.19 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -20,6 +20,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241130 Rev 0.12. Move void keyPressed() to UserInput tab.  
 // Date: 20241130 Rev 0.13. WinkInProcessingPMD to simulate an LED heart beat.
 // Date: 20241130 Rev 0.14. Set MQTT WILL message(s).
+// Date: 20241209 Rev 0.19. Add log file name into draw() window.
 
 
 // Description:
@@ -72,8 +73,8 @@ class Adapter implements MQTTListener {
     theTimeStamp = theTimeStamp + "MQTT clientConnected" ;
     println(theTimeStamp);  
     appendTextToFile(myLogFileName, "MQTT clientConnected");
-    
-    
+
+
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       client.subscribe(KRAKE_ACK_TOPIC[i]);
@@ -96,7 +97,7 @@ class Adapter implements MQTTListener {
     theTimeStamp = theTimeStamp + "MQTT Client Connection lost" ;
     println(theTimeStamp);  
     appendTextToFile(myLogFileName, "MQTT Client Connection lost");
-    
+
     myBackground = color(128, 0, 0);
     mqttBrokerIsConnected = false;
   }
@@ -146,17 +147,18 @@ void draw() {
   text("Alarms, press digits 0-9, s, u, h", 10, 60);
   fill(252, 10, 55);
   text(thePayload, 10, 100);
-  
+
   if (mqttBrokerIsConnected) {
     fill(200);
     text("mqttBrokerIsConnected", 10, 150);
-  }else{
+  } else {
     fill(252, 10, 55);
-     text("mqttBroker NOT Connected", 10, 150);
+    text("mqttBroker NOT Connected", 10, 150);
   }
 
   //Footer
   textSize(10);
   fill(200);
+  text("myLogFileName: " + myLogFileName, 10, height - 20); 
   text("PROJECT_URL: " + PROJECT_URL, 10, height - 10);
 }//end draw()
