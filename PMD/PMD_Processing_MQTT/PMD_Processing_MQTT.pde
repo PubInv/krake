@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.15 ";
+String VERSION = "V0.22 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -20,6 +20,10 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241130 Rev 0.12. Move void keyPressed() to UserInput tab.  
 // Date: 20241130 Rev 0.13. WinkInProcessingPMD to simulate an LED heart beat.
 // Date: 20241130 Rev 0.14. Set MQTT WILL message(s).
+// Date: 20241209 Rev 0.19. Add log file name into draw() window.
+// Date: 20241209 Rev 0.20. Save screens on client connect or lost.
+// Date: 20241209 Rev 0.21.  Add MAC address to the sketch title.
+// Date: 20241209 Rev 0.22.  Add MAC address to the MQTT Username. Display Broker in draw window.
 
 
 // Description:
@@ -37,7 +41,6 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
  #define LICENSE "GNU Affero General Public License, version 3 "
  #define ORIGIN "USA"
  */
-
 
 String KRAKE_DTA_TOPIC[] = {"3C61053DC954_ALM", "3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
   "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
@@ -60,6 +63,7 @@ void setupDictionary() {
 
 String MessageFromProcessing_PMD = "";  // The MQTT message first part.
 String thePayload = "";  // The MQTT received.
+boolean clientStatusChanged = false;
 
 import mqtt.*;
 
@@ -68,7 +72,13 @@ MQTTClient client;
 class Adapter implements MQTTListener {
   //This appears to auto reconnect
   void clientConnected() {
-    println("client connected"); 
+    String theTimeStamp = "";
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+    theTimeStamp = theTimeStamp + "MQTT clientConnected" ;
+    println(theTimeStamp);  
+    appendTextToFile(myLogFileName, "MQTT clientConnected");
+    clientStatusChanged = true; //TO flag save of draw() window.
+
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       client.subscribe(KRAKE_ACK_TOPIC[i]);
@@ -79,7 +89,6 @@ class Adapter implements MQTTListener {
 
   void messageReceived(String topic, byte[] payload) {
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
-    //thePayload = thePayload + " " + "Msg_recd: " + topic + " - " + new String(payload);  
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
     println(thePayload);
     myBackground = color(0, 0, 0);
@@ -87,7 +96,12 @@ class Adapter implements MQTTListener {
   }
 
   void connectionLost() {
-    println("connection lost");
+    String theTimeStamp = "";
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+    theTimeStamp = theTimeStamp + "MQTT Client Connection lost" ;
+    println(theTimeStamp);  
+    appendTextToFile(myLogFileName, "MQTT Client Connection lost");
+    clientStatusChanged = true;  //TO flag save of draw() window.
     myBackground = color(128, 0, 0);
     mqttBrokerIsConnected = false;
   }
@@ -99,19 +113,27 @@ boolean mqttBrokerIsConnected = false;
 color myBackground = color(64, 64, 64);  //Start grey
 
 void setup() {
-  surface.setTitle(PROG_NAME + " Ver:" + VERSION);
+  getNetworkInterface();
+  surface.setTitle(PROG_NAME + " Ver:" + VERSION + "MAC: " + theMAC);
   size(700, 360);
   noStroke();    //disables drawing outlines
   background (myBackground);
   frameRate(24);
+
+  //Start up logging system
+  String startTime = (str(year()) + str(month()) +str(day()) +"_" + str(hour()) + str(minute()) + str(second()) );
+  myLogFileName = (startTime + "_" + myLogFileName);
+  appendTextToFile(myLogFileName, ("Your log is born."));
 
   setupDictionary(); //for MAC to serial numbers. 
 
   adapter = new Adapter();
   client = new MQTTClient(this, adapter);
 
-  client.connect(BROKER_URL, "Lee's processing");    //  BROKER_URL
+  //client.connect(BROKER_URL, USERNAME);    //  BROKER_URL and name
+  client.connect(BROKER_URL, PROG_NAME + "_" + theMAC);    //  BROKER_URL and name
   MessageFromProcessing_PMD = "Nothing published Yet"; //An intial message for the draw()
+
 }//end setup()
 
 void draw() {
@@ -131,17 +153,28 @@ void draw() {
   text("Alarms, press digits 0-9, s, u, h", 10, 60);
   fill(252, 10, 55);
   text(thePayload, 10, 100);
-  
+
   if (mqttBrokerIsConnected) {
     fill(200);
     text("mqttBrokerIsConnected", 10, 150);
-  }else{
+  } else {
     fill(252, 10, 55);
-     text("mqttBroker NOT Connected", 10, 150);
+    text("mqttBroker NOT Connected", 10, 150);
   }
 
   //Footer
   textSize(10);
   fill(200);
+  text("Broker Name: " + BROKER_URL , 10, height-30);
+  text("myLogFileName: " + myLogFileName, 10, height - 20); 
   text("PROJECT_URL: " + PROJECT_URL, 10, height - 10);
+  //end of Footer
+
+  //Save the screen when MQTT connection events
+  if (clientStatusChanged) {                
+    String theTimeStamp = "";
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()); //time stamp
+    save("./data/" + theTimeStamp+"_clientEvent.png");  
+    clientStatusChanged = false;
+  }
 }//end draw()

@@ -38,6 +38,18 @@
 //For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
 // This should be done with an "#elif", but I can't get it to work
 
+#if defined(KRAKE)
+
+#define SWITCH_MUTE 35
+//#define TONE_PIN 8
+#define LIGHT0 12
+#define LIGHT1 14
+#define LIGHT2 27
+#define LIGHT3 26
+#define LIGHT4 25
+#define LED_BUILTIN 2
+#endif
+
 #if defined(GPAD)
 
 #define SWITCH_MUTE 2
