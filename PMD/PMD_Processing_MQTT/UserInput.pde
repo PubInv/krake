@@ -1,3 +1,65 @@
+/*Mouse code
+ 
+ */
+
+int buttonHorz = 50;
+int buttonVert = 200;
+
+
+void checkOverButton() {
+  //int buttonHorz = 50;
+  //int buttonVert = 160;
+  //int arrowHorz = 155;
+  //int arrowVert = 85;
+  int arrowHorz = buttonHorz +50 ;
+  int arrowVert = buttonVert + 25;
+
+  if (overButton == true) {
+    fill(255);
+  } else {
+    fill(32);
+    //noFill();
+  }
+  
+  //Draw button
+  //  rect(105, 60, 75, 75);
+  stroke(128);
+  rect(buttonHorz, buttonVert, 75, 75);   
+  fill(255);
+    //  line(135, 105, 155, 85);
+  line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
+  //  line(140, 85, 155, 85);
+  line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
+  //  line(155, 85, 155, 100); 
+  line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
+  text("Broker View", buttonHorz+10, buttonVert);
+}
+
+void mousePressed() {
+  if (overButton) { 
+    //    link("http://www.processing.org");
+    //    link("chrome.exe%20shiftr.io");
+    //    link("chrome.exe%20http://www.shiftr.io");
+    link("http://www.shiftr.io");
+  }
+}
+
+void mouseMoved() { 
+  checkButtons();
+}
+
+void mouseDragged() {
+  checkButtons();
+}
+
+void checkButtons() {
+  if (mouseX > buttonHorz && mouseX < buttonHorz +75 && mouseY > buttonVert && mouseY <buttonVert+75) {
+    overButton = true;
+  } else {
+    overButton = false;
+  }
+}
+
 /* Keyboard Event handler for single key.
  Sets digits prefixed with an "a" for alarm.
  Alpha as is.
