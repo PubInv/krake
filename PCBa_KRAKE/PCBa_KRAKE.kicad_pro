@@ -615,6 +615,10 @@
     [
       "b048976a-3284-45ec-9285-06d31a0a2b0c",
       "RS232"
+    ],
+    [
+      "b8d8fd1d-0a30-4b7d-ac57-549b73ec2592",
+      "Enclosure Sheet"
     ]
   ],
   "text_variables": {}
