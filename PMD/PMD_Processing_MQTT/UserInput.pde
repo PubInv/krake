@@ -37,10 +37,7 @@ void checkOverButton() {
 
 void mousePressed() {
   if (overButton) { 
-    //    link("http://www.processing.org");
-    //    link("chrome.exe%20shiftr.io");
-    //    link("chrome.exe%20http://www.shiftr.io");
-    link("http://www.shiftr.io");
+    link("http://www.shiftr.io/try");
   }
 }
 
