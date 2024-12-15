@@ -1,6 +1,6 @@
 (kicad_sch (version 20230121) (generator eeschema)
 
-  (uuid 5cfa0082-7a03-4cae-9373-e0660f0de50e)
+  (uuid 10594b9c-d1cb-47d8-a9c8-685ec6050c14)
 
   (paper "A4")
 
@@ -1220,19 +1220,19 @@
     (uuid fc09cae2-27a7-48a4-bbec-37045b7fd31e)
   )
 
-  (hierarchical_label "CTS" (shape input) (at 143.51 37.465 90) (fields_autoplaced)
+  (hierarchical_label "CTS1" (shape input) (at 143.51 37.465 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 47ef9bca-cd51-4cde-915a-36a519dcf0e4)
   )
-  (hierarchical_label "TX0" (shape input) (at 132.08 37.465 90) (fields_autoplaced)
+  (hierarchical_label "TX1" (shape input) (at 132.08 37.465 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 61ac1c68-2294-400e-ad63-580e9a522e13)
   )
-  (hierarchical_label "RX0" (shape input) (at 127 37.465 90) (fields_autoplaced)
+  (hierarchical_label "RX1" (shape input) (at 127 37.465 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid d1a5894f-69c2-441b-a0ef-b508c0a424d5)
   )
-  (hierarchical_label "RTS" (shape input) (at 138.43 37.465 90) (fields_autoplaced)
+  (hierarchical_label "RTS1" (shape input) (at 138.43 37.465 90) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid dd6c4c5d-a118-49d8-9af7-a7633a08fe20)
   )
