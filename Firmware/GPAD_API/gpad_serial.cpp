@@ -41,6 +41,8 @@ CD\n
 where C is an character, and D is a single digit.
 */
 
+// Note: The buffer "buf" used here might be more safely made 
+// a parameter passed in from the caller.
 void processSerial(Stream *debugPort,Stream *inputPort) {
   // Now see if we have a serial command
   int rlen;
