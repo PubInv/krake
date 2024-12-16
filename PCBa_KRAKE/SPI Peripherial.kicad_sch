@@ -1746,8 +1746,8 @@
     (property "Cost" "0.0015" (at 70.485 60.96 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 7ba0b202-8682-4965-b00a-ac3299ecd230))
-    (pin "2" (uuid 132c5c2f-d2bd-426d-a372-72911c2782f5))
+    (pin "1" (uuid 70025f75-0469-44dc-9fed-9fc194e6cc3a))
+    (pin "2" (uuid a0905b9a-ccc2-4828-ac2c-d337c4db7f9c))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -1793,8 +1793,8 @@
     (property "Cost" "0.0015" (at 99.695 78.105 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 680161d9-6c50-4bce-80f9-7da837524da7))
-    (pin "2" (uuid 7ca99a77-3a5a-4fad-9212-72e179087b02))
+    (pin "1" (uuid 859979ef-04c6-4ed5-8218-b0cc646698f2))
+    (pin "2" (uuid acbc0ad5-c1f8-4199-a41d-e4214a1a4da0))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -1840,8 +1840,8 @@
     (property "Cost" "0.0015" (at 70.485 85.725 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 34a281e7-183d-4bde-bb30-6f687a141b07))
-    (pin "2" (uuid 202b01a4-a5f4-4bcf-a06b-5f96b7cbb80d))
+    (pin "1" (uuid 4447ec83-a387-4254-abbc-0265e6895223))
+    (pin "2" (uuid 1a0bacac-d7e1-4554-8db2-ab7720c7fa96))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -1887,8 +1887,8 @@
     (property "Cost" "0.0015" (at 52.705 95.885 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid a10674fe-003f-411f-8cd2-d17392195d70))
-    (pin "2" (uuid 5a85017b-a32e-45ce-be4f-20ed0dc7cd04))
+    (pin "1" (uuid 8a1d6743-e75d-40c2-a344-b159a347ee36))
+    (pin "2" (uuid 2051dcb7-e99a-4d7a-b1e9-c0917eb278cd))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -1913,7 +1913,7 @@
     (property "Datasheet" "" (at 52.705 80.645 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 2ded14a5-a743-4b0e-be7e-50ebf4685122))
+    (pin "1" (uuid 71cb1689-3d68-45f7-98b1-d16c7aa2104c))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -1968,12 +1968,12 @@
     (property "Cost" "0.8901" (at 33.655 80.645 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 3b434d35-94cf-4d61-97e8-84c27115d428))
-    (pin "2" (uuid 784aa990-eea2-4e0f-ae95-6460cdb00845))
-    (pin "3" (uuid 1e7c00cf-8d94-4979-aaf5-8febb5f3f200))
-    (pin "4" (uuid 5816786b-355b-46a1-8368-fc163fbb1229))
-    (pin "5" (uuid e2a9f848-f0f7-4ceb-82b5-ff713f9cf94c))
-    (pin "6" (uuid 03a61d46-b5de-4b16-aea8-07563161d31a))
+    (pin "1" (uuid 1457dcf2-9bb6-40e3-96aa-541000e9082a))
+    (pin "2" (uuid 0bfd4321-ae0c-41a7-ba4c-003e146b0530))
+    (pin "3" (uuid a3362f4e-a18b-458c-a56c-a293896f92d5))
+    (pin "4" (uuid 5c6d205a-a1ce-4faf-9c79-ac97fb55339e))
+    (pin "5" (uuid d1c587eb-b527-4cd7-847f-f3fe80df9dd8))
+    (pin "6" (uuid 3611a759-d7b5-4b33-b882-b403f8b30494))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -2019,8 +2019,8 @@
     (property "Distributor 1 PN" "C207017" (at 83.82 67.31 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 405601b8-d5d6-49c3-95fe-475523eda8ec))
-    (pin "2" (uuid 33c4d297-fd8b-49b6-93ed-a6cf2f73d8e6))
+    (pin "1" (uuid 42eedaae-fc5e-483c-b35d-6ed6fd5c645a))
+    (pin "2" (uuid 4558db2c-a1b4-4d40-a4e3-543667ef2dde))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -2066,15 +2066,15 @@
     (property "Cost" "0.0015" (at 187.96 125.73 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid b4e4ba5e-bfc6-49ab-96e1-b7d6b9e5aebf))
-    (pin "2" (uuid 988736e5-435a-4e53-bc76-78de99b8beda))
+    (pin "1" (uuid 6f1eedb5-7f98-4bfc-8007-3941632c451f))
+    (pin "2" (uuid 7dcfef89-c8d7-448d-874e-21d623c3524f))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R319") (unit 1)
         )
       )
     )
@@ -2095,16 +2095,16 @@
     (property "Datasheet" "https://www.diodes.com/assets/Datasheets/ds11005.pdf" (at 165.862 126.365 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid dbd5c33f-3545-4052-acfd-d2a1ff8a70f4))
-    (pin "2" (uuid 350b3849-44ed-4487-b9ff-fee4545c3efe))
-    (pin "3" (uuid 817799ff-0268-48de-b7c2-cdd80888b11a))
+    (pin "1" (uuid 53a71560-0396-44a3-bbdd-8a6340a7ece8))
+    (pin "2" (uuid 3cfce836-d35f-4cad-91be-0e5fb8168bfd))
+    (pin "3" (uuid 42ed1bf8-b84f-4731-8978-8e09f4288693))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "D?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "D?") (unit 1)
+          (reference "D303") (unit 1)
         )
       )
     )
@@ -2146,15 +2146,15 @@
     (property "Cost" "0.0015" (at 206.375 137.795 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid a633d1f5-ac5a-4b5f-a81f-49a568f200c4))
-    (pin "2" (uuid a912cb69-7a6e-455c-b9fb-b2b862e80307))
+    (pin "1" (uuid df5715a6-4e37-43cf-9f61-914f544b7df0))
+    (pin "2" (uuid 8ad3ceb1-884e-4d0f-9e08-021355492226))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R320") (unit 1)
         )
       )
     )
@@ -2175,16 +2175,16 @@
     (property "Datasheet" "https://www.diodes.com/assets/Datasheets/ds11005.pdf" (at 82.677 123.825 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid abc85296-f108-4e34-86e8-e13b25076ea3))
-    (pin "2" (uuid 314e4819-2dcb-4f43-895d-b1a7743a8175))
-    (pin "3" (uuid aacc679e-ac87-4c38-92d8-81b304a0878a))
+    (pin "1" (uuid 5557f7d7-0c0a-4102-9f89-17efb9bd360b))
+    (pin "2" (uuid 195aee49-e296-4bff-a070-ea03002f6276))
+    (pin "3" (uuid 6b4f5414-2976-4268-a30d-22be4c5a55cf))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "D?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "D?") (unit 1)
+          (reference "D301") (unit 1)
         )
       )
     )
@@ -2205,7 +2205,7 @@
     (property "Datasheet" "" (at 106.045 47.625 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 3cb7aa4e-d2a1-48d4-b5bf-0a9394659b34))
+    (pin "1" (uuid 091d31bf-0002-4057-8666-54c4b136a61d))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -2230,7 +2230,7 @@
     (property "Datasheet" "" (at 205.105 34.925 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 20f1bb6c-3951-4cf6-b1f4-c0de72cfec78))
+    (pin "1" (uuid df3fb6aa-60e7-4e28-991e-69e9acbf91a2))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -2276,16 +2276,16 @@
     (property "Cost" "0.0196" (at 226.695 45.72 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 606ca863-efd6-4f3c-91ac-5ec849f81589))
-    (pin "2" (uuid 92668fba-f331-4ae0-9a4d-9349550049ba))
-    (pin "3" (uuid 194611e6-388e-43c6-bb97-0089d1904146))
+    (pin "1" (uuid a40ea02c-72d3-4951-9384-f89242168138))
+    (pin "2" (uuid e16bcef2-8708-463c-9103-b7c8f37839b7))
+    (pin "3" (uuid f5e6291f-6af2-46aa-8265-3b7cacbd4be4))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "Q?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "Q?") (unit 1)
+          (reference "Q305") (unit 1)
         )
       )
     )
@@ -2327,15 +2327,15 @@
     (property "Cost" "0.0015" (at 106.045 125.095 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 136c3357-21fe-4817-a4f2-0f0106640de6))
-    (pin "2" (uuid 004cc77d-0732-414f-bc67-cc74e4ebd1b1))
+    (pin "1" (uuid 56f2de3c-f84a-487f-b595-b7ee5f651b97))
+    (pin "2" (uuid c37d5161-9a4e-4295-ab43-c247de97e9a6))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R313") (unit 1)
         )
       )
     )
@@ -2356,7 +2356,7 @@
     (property "Datasheet" "" (at 158.75 126.365 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 22a44dce-6fdf-4247-ae2d-b1a1dfe05dee))
+    (pin "1" (uuid 5db157bf-65d3-46d6-b877-a6e52ecf4af7))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -2381,16 +2381,16 @@
     (property "Datasheet" "https://www.diodes.com/assets/Datasheets/ds11005.pdf" (at 113.157 47.625 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid fc92d888-d0f0-4510-99bc-59abfd956cc7))
-    (pin "2" (uuid 33332d33-6aa1-4b3a-8107-ee748fa1a9ef))
-    (pin "3" (uuid 49045771-6bed-4ce6-bd19-f88aa29b28f4))
+    (pin "1" (uuid 176feb28-c05f-45bb-945e-6b9993ac8df1))
+    (pin "2" (uuid 7883d32b-a663-4493-bf0d-b83ba9c5cee8))
+    (pin "3" (uuid e67592c6-8ff3-42a8-8216-7bbf2ae2ba89))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "D?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "D?") (unit 1)
+          (reference "D302") (unit 1)
         )
       )
     )
@@ -2432,16 +2432,16 @@
     (property "Cost" "0.0196" (at 121.92 127 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 11d8dea9-244f-438d-8f81-2f5b2b4abad5))
-    (pin "2" (uuid 032b2101-b949-49ce-a5c6-f942c6b8fc74))
-    (pin "3" (uuid ebc71a3b-dc71-40ac-bb85-9282bd4c8a57))
+    (pin "1" (uuid 3e59249f-c83b-4f1b-b04a-015eae140598))
+    (pin "2" (uuid c11b3fc6-08da-449d-b6f2-0414c74d8f28))
+    (pin "3" (uuid a26829d2-356e-4a69-99ba-2960ea27b08c))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "Q?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "Q?") (unit 1)
+          (reference "Q302") (unit 1)
         )
       )
     )
@@ -2483,15 +2483,15 @@
     (property "Cost" "0.0021" (at 205.105 31.115 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid b50dcd62-5700-4646-8ed2-a39b17a138ed))
-    (pin "2" (uuid 9c3762ab-4d81-4053-8395-af93ab928038))
+    (pin "1" (uuid d6766886-58be-465a-9a66-3ba99aa30e12))
+    (pin "2" (uuid 83143db2-5f1a-4993-b63a-fd0433ee15b5))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C103") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "C?") (unit 1)
+          (reference "C303") (unit 1)
         )
       )
     )
@@ -2533,15 +2533,15 @@
     (property "Cost" "0.0015" (at 215.265 126.365 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 30626f50-6f09-4511-b2d2-68a13d015fb4))
-    (pin "2" (uuid c8a39ec9-d4ff-427a-82a9-f6f4872e940a))
+    (pin "1" (uuid af655de0-89d8-47bd-a13a-e6839d091155))
+    (pin "2" (uuid d54871d2-a7d7-422c-8830-71d563b1b89a))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R322") (unit 1)
         )
       )
     )
@@ -2583,15 +2583,15 @@
     (property "Cost" "0.0015" (at 133.35 125.73 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 52d8d17b-85bb-471b-9797-a971fafc9f4f))
-    (pin "2" (uuid e2cff873-34fe-48d9-ac48-9cb0e2ca20fb))
+    (pin "1" (uuid 74c6ce0d-96c0-43c2-86b2-d46bcef007d4))
+    (pin "2" (uuid 5e4f0b9c-5b53-41cf-a3cb-079baab82432))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R315") (unit 1)
         )
       )
     )
@@ -2612,16 +2612,16 @@
     (property "Datasheet" "https://www.diodes.com/assets/Datasheets/ds11005.pdf" (at 188.087 49.53 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid f02db7fe-8907-473c-bb4a-4f08885d7a95))
-    (pin "2" (uuid f2f186a9-06d2-4ca5-acce-e8a0482b8410))
-    (pin "3" (uuid 6b5c1948-ebab-4206-91da-cf7c7f583a55))
+    (pin "1" (uuid 74758804-0db2-4a45-bddb-752a97e4cba2))
+    (pin "2" (uuid 6fb7798f-d133-4478-960d-4226c9ee8da6))
+    (pin "3" (uuid b9dd076a-8b13-43ef-ac35-b2a6c21657c5))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "D?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "D?") (unit 1)
+          (reference "D304") (unit 1)
         )
       )
     )
@@ -2663,15 +2663,15 @@
     (property "Cost" "0.0015" (at 151.765 55.245 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 425f02af-3907-4ccb-bc07-1e00f36ec0b8))
-    (pin "2" (uuid 80ee4ad3-6296-40be-921f-7f93642e7f10))
+    (pin "1" (uuid f469ab22-af80-4652-bfbf-8de25bce1f0a))
+    (pin "2" (uuid 5dba2902-3922-466d-862c-207bea3681d7))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R317") (unit 1)
         )
       )
     )
@@ -2713,15 +2713,15 @@
     (property "Cost" "0.0015" (at 137.795 43.18 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 96c0be8a-cf1f-4cf6-afc7-ea01a9d04e6d))
-    (pin "2" (uuid ad3d11e2-07ce-4269-b17c-08e47da82e23))
+    (pin "1" (uuid 1cfd583d-cbb4-470d-8479-c56aa45e3c26))
+    (pin "2" (uuid e1d96084-a65f-4e9a-b42e-54db2c74dbd3))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R316") (unit 1)
         )
       )
     )
@@ -2763,16 +2763,16 @@
     (property "Cost" "0.0196" (at 149.225 45.085 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid e927dccc-4306-4f50-bcbf-3411ad70f554))
-    (pin "2" (uuid 05b006b2-be50-4ee5-9828-53e60625a17c))
-    (pin "3" (uuid 3aeeb7c2-bcd7-414c-8021-3504c535a35f))
+    (pin "1" (uuid c26214c2-5243-4231-95a8-e363ce99d200))
+    (pin "2" (uuid bace391b-09a8-46f4-8622-ee306fb15250))
+    (pin "3" (uuid 2ea9218c-38e7-494b-acaf-7d1d0fc796f4))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "Q?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "Q?") (unit 1)
+          (reference "Q303") (unit 1)
         )
       )
     )
@@ -2814,16 +2814,16 @@
     (property "Cost" "0.0196" (at 203.835 127.635 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid a76fcde1-0c83-493b-bf9d-18fb5c351f6c))
-    (pin "2" (uuid 56e6764d-fbc6-4a7b-9758-c7e41e9ffbf8))
-    (pin "3" (uuid ca736895-f7c2-4aa1-b1c7-96ca04cd48cf))
+    (pin "1" (uuid f05a7a6a-e4c1-4e5a-86fb-11d12f5c13d9))
+    (pin "2" (uuid 02db29c0-7239-42f9-b6f9-f5112d6de25a))
+    (pin "3" (uuid a6e711a6-17f0-4f44-bfb1-03f2bceec68b))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "Q?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "Q?") (unit 1)
+          (reference "Q304") (unit 1)
         )
       )
     )
@@ -2844,7 +2844,7 @@
     (property "Datasheet" "" (at 180.975 49.53 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid b4639143-59af-465b-a4ca-8da717c04e4e))
+    (pin "1" (uuid 023dc778-5725-45e1-bedf-33877e913be2))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
@@ -2890,15 +2890,15 @@
     (property "Cost" "0.0015" (at 210.82 43.815 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 12e14985-beab-45ad-9299-ec1f62f0c1fc))
-    (pin "2" (uuid 85826f04-4965-41d5-9aff-be23c0510f0c))
+    (pin "1" (uuid fc401f01-ac18-4df2-9397-917a5add01fc))
+    (pin "2" (uuid ac9c5778-d6e8-4cd7-b4f2-7359a4596f5e))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R321") (unit 1)
         )
       )
     )
@@ -2940,15 +2940,15 @@
     (property "Cost" "0.0015" (at 238.125 44.45 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid f59c06a4-6cc9-4f9e-96ac-85813697c29c))
-    (pin "2" (uuid 51ba5b76-9891-48d7-bf0e-af47d13a5abf))
+    (pin "1" (uuid a3d5db62-286a-4f6a-b463-fb1987185637))
+    (pin "2" (uuid 4d412c91-c35e-40bd-805c-96660341d962))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R324") (unit 1)
         )
       )
     )
@@ -2990,15 +2990,15 @@
     (property "Cost" "0.0015" (at 229.235 55.88 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 5de2ff16-cdb5-4c49-b6d3-da30e0146120))
-    (pin "2" (uuid 2f8ed366-93ea-4fcf-b5e0-344bc42003dc))
+    (pin "1" (uuid 20645181-6e3d-4490-8c49-30a07c8fa989))
+    (pin "2" (uuid 2ec32617-849c-43ba-b293-17a5e4e4dd67))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R323") (unit 1)
         )
       )
     )
@@ -3040,15 +3040,15 @@
     (property "Cost" "0.0015" (at 160.655 43.815 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid a64dc459-ed47-4f27-badc-0aaa64e8f831))
-    (pin "2" (uuid 2c4c33fc-afed-4285-abe4-eadb65d447e2))
+    (pin "1" (uuid 3b00fc49-b8c9-4ead-b73c-6a6288343e39))
+    (pin "2" (uuid 820d3ba7-b424-4207-80c9-73acf7f47460))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R318") (unit 1)
         )
       )
     )
@@ -3090,15 +3090,15 @@
     (property "Cost" "0.0015" (at 124.46 137.16 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 1bb748b0-ab76-40de-8a5f-6f4e22b24a35))
-    (pin "2" (uuid 21f5c718-8f30-4de6-9a56-e0aa42e97ed3))
+    (pin "1" (uuid bfbe1237-6db4-453d-b312-4da2598be9d3))
+    (pin "2" (uuid e72700de-4c9b-42b3-b961-b54a7f51064c))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
           (reference "R?") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
-          (reference "R?") (unit 1)
+          (reference "R314") (unit 1)
         )
       )
     )
@@ -3119,7 +3119,7 @@
     (property "Datasheet" "" (at 75.565 123.825 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid b9eedcd0-fcbf-442d-b4f7-b226a6d4594b))
+    (pin "1" (uuid 619b1fea-083f-4ae7-9021-bcf48593c548))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b93801"
