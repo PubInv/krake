@@ -18,9 +18,16 @@ Modified to make UART 1 pins GPIO 2 and 5 by Forrest Lee Erickson, Dec. 16, 2024
 // In this issue: https://github.com/PubInv/krake/issues/109
 // I am therefore testing with GPIO12 and GPIO13 (also labeled D12 and D13 in the ESP32 Dev Kit)
 
+
+
 //Tested and works !!!
 #define TXD1 2
 #define RXD1 15
+
+//Tested and ???? works !!!
+#define TXD2 17
+#define RXD2 16
+
 
 // Tested and found to fail on 7 and 9.
 // #define TXD1 7
@@ -31,15 +38,29 @@ Modified to make UART 1 pins GPIO 2 and 5 by Forrest Lee Erickson, Dec. 16, 2024
 
 // Use Serial1 for UART communication
 HardwareSerial mySerialUART1(1);
-//HardwareSerial mySerialUART2(2);
+HardwareSerial mySerialUART2(2);
 
 int counter = 0;
 
 void setup() {
-  Serial.begin(115200);
- // mySerial.begin(9600, SERIAL_8N1, RXD1, TXD1);  // UART setup
-  mySerialUART1.begin(115200, SERIAL_8N1, RXD1, TXD1);  // UART setup  
-  Serial.println("ESP32 UART Transmitter");
+  Serial.begin(115200);  //UART 0 setup
+    while (!Serial) {
+    ;  // wait for serial port to connect. Needed for native USB
+  }
+   
+  mySerialUART1.begin(115200, SERIAL_8N1, RXD1, TXD1);  // UART1 setup  
+    while (!mySerialUART1) {
+    ;  // wait for UART1 to connect.
+  }
+  mySerialUART2.begin(115200, SERIAL_8N1, RXD2, TXD2);  // UART2 setup  
+    while (!mySerialUART2) {
+    ;  // wait for UART2 to connect.
+  }
+  
+  delay(500);
+  Serial.println("ESP32 UART0 Transmitter");
+  mySerialUART1.println("ESP32 UART1 Transmitter");
+  mySerialUART2.println("ESP32 UART2 Transmitter");
 }
 
 void loop() {
@@ -47,6 +68,11 @@ void loop() {
   while (mySerialUART1.available()) {
  //   Serial.println("Bytes Available! :");
     Serial.write(mySerialUART1.read());
+  }
+
+  while (mySerialUART2.available()) {
+ //   Serial.println("Bytes Available! :");
+    Serial.write(mySerialUART2.read());
   }
 
   // Send message over UART
