@@ -6,37 +6,34 @@
 *********/
 
 /** 
+This program demonstrates use of all three UARTs on the ESP32.
+
 Modified by Robert L. Read to perform a loop back, Dec. 15, 2024
 Modified to make UART 1 pins GPIO 2 and 5 by Forrest Lee Erickson, Dec. 16, 2024
+Modified to add UART 2 on pins GPIO 16 and 17 by Forrest Lee Erickson, Dec. 16, 2024
 **/
 
 // Define TX and RX pins for UART (change if needed)
-// #define TXD1 19
-// #define RXD1 21
 // On a ESP32 Dev Kit: https://lastminuteengineers.com/esp32-pinout-reference/
+
 // The GPIO7 and GPIO8 are NOT exposed, even though Lee has asked me to test 
 // In this issue: https://github.com/PubInv/krake/issues/109
 // I am therefore testing with GPIO12 and GPIO13 (also labeled D12 and D13 in the ESP32 Dev Kit)
-
-
 
 //Tested and works !!!
 #define TXD1 2
 #define RXD1 15
 
-//Tested and ???? works !!!
+//Tested and works !!!
 #define TXD2 17
 #define RXD2 16
 
-
-// Tested and found to fail on 7 and 9.
+// Tested and found to fail on 7 and 9. because of ESP32 flash memory conflict.
 // #define TXD1 7
 // #define RXD1 8
 
-// #define TXD1 12
-// #define RXD1 13
 
-// Use Serial1 for UART communication
+// Use for UART communication
 HardwareSerial mySerialUART1(1);
 HardwareSerial mySerialUART2(2);
 
@@ -81,13 +78,8 @@ void loop() {
   mySerialUART1.println("\n");
   
   Serial.println("Sent: " + String(counter));
-  // Serial.println("RX1");
-  // Serial.println(RX1);
-  // Serial.println("TX1");
-  // Serial.println(TX1);
   
-  // increment the counter
-  counter++;
+  counter++;   // increment the counter so the message changes.
   
-  delay(1000); 
+  delay(1000); // Lets not got too fast to read.
 }
