@@ -7,6 +7,7 @@
 
 /** 
 Modified by Robert L. Read to perform a loop back, Dec. 15, 2024
+Modified to make UART 1 pins GPIO 2 and 5 by Forrest Lee Erickson, Dec. 16, 2024
 **/
 
 // Define TX and RX pins for UART (change if needed)
@@ -16,8 +17,17 @@ Modified by Robert L. Read to perform a loop back, Dec. 15, 2024
 // The GPIO7 and GPIO8 are NOT exposed, even though Lee has asked me to test 
 // In this issue: https://github.com/PubInv/krake/issues/109
 // I am therefore testing with GPIO12 and GPIO13 (also labeled D12 and D13 in the ESP32 Dev Kit)
-#define TXD1 12
-#define RXD1 13
+
+//Tested and works !!!
+#define TXD1 2
+#define RXD1 15
+
+// Tested and found to fail on 7 and 9.
+// #define TXD1 7
+// #define RXD1 8
+
+// #define TXD1 12
+// #define RXD1 13
 
 // Use Serial1 for UART communication
 HardwareSerial mySerial(1);
