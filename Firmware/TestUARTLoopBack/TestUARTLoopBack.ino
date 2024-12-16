@@ -30,28 +30,29 @@ Modified to make UART 1 pins GPIO 2 and 5 by Forrest Lee Erickson, Dec. 16, 2024
 // #define RXD1 13
 
 // Use Serial1 for UART communication
-HardwareSerial mySerial(1);
+HardwareSerial mySerialUART1(1);
+//HardwareSerial mySerialUART2(2);
 
 int counter = 0;
 
 void setup() {
   Serial.begin(115200);
  // mySerial.begin(9600, SERIAL_8N1, RXD1, TXD1);  // UART setup
-  mySerial.begin(115200, SERIAL_8N1, RXD1, TXD1);  // UART setup  
+  mySerialUART1.begin(115200, SERIAL_8N1, RXD1, TXD1);  // UART setup  
   Serial.println("ESP32 UART Transmitter");
 }
 
 void loop() {
 
-  while (mySerial.available()) {
+  while (mySerialUART1.available()) {
  //   Serial.println("Bytes Available! :");
-    Serial.write(mySerial.read());
+    Serial.write(mySerialUART1.read());
   }
 
   // Send message over UART
-  mySerial.print("a");
-  mySerial.println(String(counter % 6));
-  mySerial.println("\n");
+  mySerialUART1.print("a");
+  mySerialUART1.println(String(counter % 6));
+  mySerialUART1.println("\n");
   
   Serial.println("Sent: " + String(counter));
   // Serial.println("RX1");
