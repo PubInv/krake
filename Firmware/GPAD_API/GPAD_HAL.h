@@ -34,6 +34,14 @@
 #define HMWK 1
 // #define KRAKE 1
 
+// Use these to choose the I2C address of LCD
+// GPAD device (earlier version of the Krake)
+// #define LCD_ADDRESS 0x38 
+// Maryville version
+// #define LCD_ADDRESS 0x27 
+// General (Lebanon) Version
+#define LCD_ADDRESS 0x3F 
+
 //Pin definitions.  Assign symbolic constant to Arduino pin numbers.
 //For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
 // This should be done with an "#elif", but I can't get it to work

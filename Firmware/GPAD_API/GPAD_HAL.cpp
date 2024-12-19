@@ -24,12 +24,8 @@
 #include "gpad_utility.h"
 #include <SPI.h>
 
-
-
-
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1);
-
 
 #include <DailyStruggleButton.h>
 DailyStruggleButton muteButton;
@@ -50,11 +46,8 @@ extern char macAddressString[13];
 
 //For LCD
 #include <LiquidCrystal_I2C.h>
-#ifdef HMWK
-LiquidCrystal_I2C lcd(0x27, 20, 4);  // set for default LCD address of 0x27 for a 20 chars and 4 line as in HW
-#elif
-LiquidCrystal_I2C lcd(0x38, 20, 4);  // set the LCD address to 0x27 for a 20 chars and 4 line display in Wokwi, and 0x38 for the physical GPAD board
-#endif
+
+LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
 
 //Setup for buzzer.
 //const int BUZZER_TEST_FREQ = 130; // One below middle C3. About 67 db, 3" x 4.875" 8 Ohm speakers no cabinet at 1 Meter.

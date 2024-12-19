@@ -63,7 +63,8 @@ void processSerial(Stream *debugPort,Stream *inputPort) {
     // Now "light and scream"appropriately...
     // This does not work on HMWK2 device
     annunciateAlarmLevel(debugPort);
-    delay(3000);
+// removing in an attempt to make faster; reason for adding unknown  - rlr
+//    delay(3000);
     printAlarmState(debugPort);
   }
 }

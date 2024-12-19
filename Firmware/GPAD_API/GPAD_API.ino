@@ -90,15 +90,9 @@
 
 #define GPAD_VERSION1
 
-
-
-
 #define DEBUG_SPI 0
 //#define DEBUG 4
 #define DEBUG 0
-
-
-
 
 unsigned long last_command_ms;
 
@@ -204,8 +198,8 @@ void publishOnLineMsg(void) {
     client.publish(publish_Ack_Topic, onLineMsg);
 
 // This should be moved to a place after the WiFi connece success 
-    Serial.print("Device connected at IPadderss: "); //FLE
-    Serial.println(WiFi.localIP());  //FLE
+//    Serial.print("Device connected at IPaddress: "); //FLE
+//   Serial.println(WiFi.localIP());  //FLE
 
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
@@ -231,7 +225,7 @@ bool connect_to_wifi() {
       Serial.println(WiFi.RSSI());
 
       Serial.println("");
-      Serial.print("Device connected at IPadderss: ");
+      Serial.print("Device connected at IPaddress: ");
       Serial.println(WiFi.localIP());
 
       return true;
@@ -240,7 +234,8 @@ bool connect_to_wifi() {
   return true;
 }
 
-
+// TODO: have this return a success or failure status and move
+// the delay up.
 void reconnect() {
   int n = 0;
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES) {
