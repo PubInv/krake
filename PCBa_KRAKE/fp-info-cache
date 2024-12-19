@@ -1,4 +1,4 @@
-21790712352657245
+21792446730745460
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -54606,6 +54606,13 @@ http://www.bourns.com/docs/Product-Datasheets/TC33.pdf
 0
 3
 3
+GeneralPurposeAlarmDevicePCB
+USB_C_Receptacle_HRO_TYPE-C-31-M-12
+USB Type-C receptacle for USB 2.0 and PD, http://www.krhro.com/uploads/soft/180320/1-1P320120243.pdf
+usb usb-c 2.0 pd
+0
+20
+17
 GeneralPurposeAlarmDevicePCB
 USB_Micro-B_Amphenol_10118194_Horizontal
 USB Micro-B receptacle, horizontal, SMD, 10118194, https://cdn.amphenol-icc.com/media/wysiwyg/files/drawing/10118194.pdf
