@@ -1,4 +1,4 @@
-21792446730745460
+21794181529826426
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -54592,6 +54592,13 @@ tact sw push 12mm
 0
 4
 4
+GeneralPurposeAlarmDevicePCB
+Speaker2w_Buzzer_12x9.5RM7.6
+Generic Buzzer, D12mm height 9.5mm with RM7.6mm
+buzzer
+0
+2
+2
 GeneralPurposeAlarmDevicePCB
 Switch_Tactile_THT_6x6mm
 http://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1825910&DocType=Customer+Drawing&DocLang=English
