@@ -2809,7 +2809,7 @@
   (symbol (lib_id "GPAD_SCH_LIB:22-23-2021") (at 170.18 151.13 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1274d1c8-4fa2-41cc-bd6b-4bd49d9f2b5f)
-    (property "Reference" "J?" (at 166.37 148.59 90)
+    (property "Reference" "J502" (at 166.37 148.59 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "22-23-2021" (at 173.99 157.48 90)
@@ -2868,7 +2868,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062dd8e5f"
-          (reference "J?") (unit 1)
+          (reference "J502") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "J?") (unit 1)
