@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.22 ";
+String VERSION = "V0.23 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -25,6 +25,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241209 Rev 0.20. Save screens on client connect or lost.
 // Date: 20241209 Rev 0.21.  Add MAC address to the sketch title.
 // Date: 20241209 Rev 0.22.  Add MAC address to the MQTT Username. Display Broker in draw window.
+// Date: 20241221 Rev 0.23.  Add LEB4 and MockingKrake MAC addresses.
 
 
 // Description:
@@ -44,10 +45,10 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
  */
 
 String KRAKE_DTA_TOPIC[] = {"3C61053DC954_ALM", "3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
-  "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "KRAKE_20240421_LEB4_ALM", "KRAKE_20240421_LEB5_ALM" }; //Publish to a Krake data topic for ALARMs.
+  "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "A0DD6C0EFD28_ALM", "KRAKE_20240421_LEB5_ALM", "A0B765F51E28_ALM" }; //Publish to a Krake data topic for ALARMs.
 
 String KRAKE_ACK_TOPIC[] = {"3C61053DC954_ACK", "3C61053DF08C_ACK", "3C6105324EAC_ACK", "3C61053DF63C_ACK", "10061C686A14_ACK", "FCB467F4F74C_ACK", 
-  "CCDBA730098C_ACK", "CCDBA730BFD4_ACK", "CCDBA7300954_ACK", "KRAKE_20240421_LEB4_ACK", "KRAKE_20240421_LEB5_ACK" }; //Subscribe to a Krake ack.
+  "CCDBA730098C_ACK", "CCDBA730BFD4_ACK", "CCDBA7300954_ACK", "A0DD6C0EFD28_ACK", "KRAKE_20240421_LEB5_ACK","A0B765F51E28_ACK" }; //Subscribe to a Krake ack.
 
 StringDict mac_to_NameDict = new StringDict();
 void setupDictionary() {
@@ -59,6 +60,9 @@ void setupDictionary() {
   mac_to_NameDict.set("CCDBA730098C_ACK", "20240421_LEB1");
   mac_to_NameDict.set("CCDBA730BFD4_ACK", "20240421_LEB2");
   mac_to_NameDict.set("CCDBA7300954_ACK", "20240421_LEB3");
+  mac_to_NameDict.set("A0DD6C0EFD28_ACK", "20240421_LEB4");
+//  mac_to_NameDict.set("A0DD6C0EFD??_ACK", "20240421_LEB5");
+  mac_to_NameDict.set("A0B765F51E28_ACK", "MockingKrake_LEB");
   mac_to_NameDict.set("3C61053DC954_ACK", "Not Homework2, Maryville TN");
 }//end setup mac_to_NameDict
 
