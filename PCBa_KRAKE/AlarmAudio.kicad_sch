@@ -2863,8 +2863,8 @@
     (property "Distributor 1 PN" "900-0022232021-ND" (at 170.18 151.13 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 62d1d2b5-455a-4cdb-8f20-011bbe6597c4))
-    (pin "2" (uuid 5da1f2e7-5965-435d-9e57-53ea6d53d44e))
+    (pin "1" (uuid b4b2d5e8-b80a-479e-b5f0-f536c1ad96cd))
+    (pin "2" (uuid 0207d82c-5cc8-4b6a-ae55-b2517a9a3977))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062dd8e5f"

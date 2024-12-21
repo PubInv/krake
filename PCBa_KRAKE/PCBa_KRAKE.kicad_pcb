@@ -6823,7 +6823,7 @@
 
   (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder" (layer "F.Cu")
     (tstamp 0d73ee20-d2e2-4e86-aebc-a24f04643134)
-    (at -93.1175 -11.166)
+    (at -99.822 -27.432)
     (descr "Capacitor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "capacitor handsolder")
     (property "AssemblyType" "SMT")
@@ -6945,7 +6945,7 @@
 
   (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder" (layer "F.Cu")
     (tstamp 11f7d046-60be-439f-b147-b0b61333959d)
-    (at -93.1175 -13.676)
+    (at -99.4145 -30.734)
     (descr "Capacitor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "capacitor handsolder")
     (property "AssemblyType" "SMT")
@@ -8834,7 +8834,7 @@
 
   (footprint "Connector_Dsub:DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset9.90mm_Housed_MountingHolesOffset11.32mm" (layer "F.Cu")
     (tstamp 2862e2fa-8e8f-46c3-974b-82dafe723971)
-    (at -73.2675 -37.806662)
+    (at -66.965 -62.53)
     (descr "9-pin D-Sub connector, horizontal/angled (90 deg), THT-mount, female, pitch 2.77x2.84mm, pin-PCB-offset 9.9mm, distance of mounting holes 25mm, distance of mounting holes to PCB edge 11.32mm, see https://disti-assets.s3.amazonaws.com/tonar/files/datasheets/16730.pdf")
     (tags "9-pin D-Sub connector horizontal angled 90deg THT female pitch 2.77x2.84mm pin-PCB-offset 9.9mm mounting-holes-distance 25mm mounting-hole-offset 25mm")
     (property "Sheetfile" "RS232.kicad_sch")
@@ -14799,7 +14799,7 @@
 
   (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder" (layer "F.Cu")
     (tstamp cf0eb853-2ad0-45f6-963b-f9c9ca35e2c9)
-    (at -93.1175 -16.186)
+    (at -99.06 -34.544)
     (descr "Capacitor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
     (tags "capacitor handsolder")
     (property "AssemblyType" "SMT")
@@ -17161,7 +17161,7 @@
 
   (footprint "Package_SO:SOIC-16_4.55x10.3mm_P1.27mm" (layer "F.Cu")
     (tstamp fb956717-01c2-48db-acb3-f95662891d75)
-    (at -77.4175 -11.516)
+    (at -86.106 -30.48)
     (descr "SOIC, 16 Pin (https://toshiba.semicon-storage.com/info/docget.jsp?did=12858&prodName=TLP291-4), generated with kicad-footprint-generator ipc_gullwing_generator.py")
     (tags "SOIC SO")
     (property "Sheetfile" "RS232.kicad_sch")
