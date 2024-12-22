@@ -5159,7 +5159,7 @@
   (symbol (lib_id "Regulator_Linear:AMS1117-3.3") (at 249.555 22.86 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0668f098-e577-4234-8711-82af43e1b67a)
-    (property "Reference" "U1" (at 249.555 16.51 0)
+    (property "Reference" "U103" (at 249.555 16.51 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "AMS1117-3.3" (at 249.555 19.05 0)
@@ -5177,7 +5177,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "U1") (unit 1)
+          (reference "U103") (unit 1)
         )
       )
     )
@@ -5258,7 +5258,7 @@
   (symbol (lib_id "Device:R") (at 73.025 180.975 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 12a06a26-cc67-4997-b99c-46146aca26c8)
-    (property "Reference" "R101" (at 71.755 175.895 90)
+    (property "Reference" "R109" (at 71.755 175.895 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1R0" (at 73.025 178.435 90)
@@ -5296,7 +5296,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R101") (unit 1)
+          (reference "R109") (unit 1)
         )
       )
     )
@@ -5971,7 +5971,7 @@
   (symbol (lib_id "Device:C_Polarized") (at 271.145 27.94 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 67c6cbdd-425c-46ac-80be-6f2fcedfd1b9)
-    (property "Reference" "C6" (at 271.145 26.035 0)
+    (property "Reference" "C118" (at 271.145 26.035 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "47uF 16V" (at 267.97 30.48 0)
@@ -6006,7 +6006,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C6") (unit 1)
+          (reference "C118") (unit 1)
         )
       )
     )
@@ -6287,7 +6287,7 @@
   (symbol (lib_id "Device:C_Polarized") (at 232.41 28.575 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 84f3bc42-79cd-4400-a072-998a54c42d2f)
-    (property "Reference" "C1" (at 227.33 26.67 0)
+    (property "Reference" "C115" (at 227.33 26.67 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "47uF 16V" (at 227.33 31.115 0)
@@ -6322,7 +6322,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C1") (unit 1)
+          (reference "C115") (unit 1)
         )
       )
     )
@@ -6599,7 +6599,7 @@
   (symbol (lib_id "Device:C_Polarized") (at 35.56 97.155 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a9fba72b-f340-4379-9620-616229b6e10d)
-    (property "Reference" "C4" (at 38.5572 95.9866 0)
+    (property "Reference" "C106" (at 38.5572 95.9866 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "47uF 16V" (at 38.5572 98.298 0)
@@ -6634,7 +6634,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C4") (unit 1)
+          (reference "C106") (unit 1)
         )
       )
     )
@@ -6690,7 +6690,7 @@
   (symbol (lib_id "Device:C") (at 21.59 97.155 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b6564852-fea1-427d-ad1e-f734f17f42f1)
-    (property "Reference" "C2" (at 24.511 95.9866 0)
+    (property "Reference" "C103" (at 24.511 95.9866 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at 24.511 98.298 0)
@@ -6728,7 +6728,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C2") (unit 1)
+          (reference "C103") (unit 1)
         )
       )
     )
@@ -6957,7 +6957,7 @@
   (symbol (lib_id "Device:C") (at 260.985 27.94 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d42e8152-7a45-41ea-8903-ae569f4506e9)
-    (property "Reference" "C5" (at 261.62 26.035 0)
+    (property "Reference" "C117" (at 261.62 26.035 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at 260.985 30.48 0)
@@ -6995,7 +6995,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C5") (unit 1)
+          (reference "C117") (unit 1)
         )
       )
     )
@@ -7119,7 +7119,7 @@
   (symbol (lib_id "Device:C") (at 240.665 28.575 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e7f390f1-4d6d-44f9-84de-4b6e89995fa9)
-    (property "Reference" "C3" (at 237.49 26.67 0)
+    (property "Reference" "C116" (at 236.855 26.67 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at 236.22 31.115 0)
@@ -7157,7 +7157,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C3") (unit 1)
+          (reference "C116") (unit 1)
         )
       )
     )
@@ -7191,7 +7191,7 @@
   (symbol (lib_id "Device:R") (at 29.21 88.265 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f34148cc-2b6e-4056-bea3-b7baeb7c0cd2)
-    (property "Reference" "R1" (at 27.94 83.185 90)
+    (property "Reference" "R101" (at 27.94 83.185 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1R0" (at 29.21 85.725 90)
@@ -7229,7 +7229,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R1") (unit 1)
+          (reference "R101") (unit 1)
         )
       )
     )
@@ -7238,7 +7238,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x10") (at 134.62 142.875 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f4976296-dca4-4db7-9215-2f391dd01491)
-    (property "Reference" "J105" (at 121.285 135.89 90)
+    (property "Reference" "J107" (at 121.285 135.89 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_01x10" (at 117.475 137.795 90)
@@ -7275,7 +7275,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "J105") (unit 1)
+          (reference "J107") (unit 1)
         )
       )
     )
