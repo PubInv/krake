@@ -20,28 +20,28 @@ void checkOverButton() {
     fill(32);
     //noFill();
   }
-  
+
   //Draw button
   //  rect(105, 60, 75, 75);
   stroke(128);
-  rect(buttonHorz, buttonVert, 75, 75);   
+  rect(buttonHorz, buttonVert, 75, 75);
   fill(255);
-    //  line(135, 105, 155, 85);
+  //  line(135, 105, 155, 85);
   line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
   //  line(140, 85, 155, 85);
   line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
-  //  line(155, 85, 155, 100); 
+  //  line(155, 85, 155, 100);
   line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
   text("Broker View", buttonHorz+10, buttonVert);
 }
 
 void mousePressed() {
-  if (overButton) { 
+  if (overButton) {
     link("http://www.shiftr.io/try");
   }
 }
 
-void mouseMoved() { 
+void mouseMoved() {
   checkButtons();
 }
 
@@ -84,6 +84,9 @@ void keyPressed() {
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it.";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'n' ) {
+        MessageFromProcessing_PMD = "a1Please blink 5 when in Discord.";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key >= 'a' && key <= 'z') {
         MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:LowerCase";
