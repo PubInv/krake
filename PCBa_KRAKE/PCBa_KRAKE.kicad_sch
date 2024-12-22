@@ -5258,7 +5258,7 @@
   (symbol (lib_id "Device:R") (at 73.025 180.975 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 12a06a26-cc67-4997-b99c-46146aca26c8)
-    (property "Reference" "R109" (at 71.755 175.895 90)
+    (property "Reference" "R1009" (at 71.755 175.895 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1R0" (at 73.025 178.435 90)
@@ -5296,7 +5296,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R109") (unit 1)
+          (reference "R1009") (unit 1)
         )
       )
     )
@@ -5617,10 +5617,10 @@
   (symbol (lib_id "GPAD_SCH_LIB:SWITCH_TACTILE_SPST-NO_0.05A_24V") (at 50.165 63.5 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 266d135f-2a5e-48fa-8409-76ce7a9511a7)
-    (property "Reference" "S101" (at 50.165 54.6862 0)
+    (property "Reference" "S101" (at 50.165 58.42 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Value" "SWITCH_TACTILE_SPST-NO_0.05A_24V" (at 54.61 58.42 0)
+    (property "Value" "SWITCH_TACTILE_SPST-NO_0.05A_24V" (at 61.595 67.945 0)
       (effects (font (size 1.524 1.524)))
     )
     (property "Footprint" "GeneralPurposeAlarmDevicePCB:Switch_Tactile_THT_6x6mm" (at 45.085 58.42 0)
@@ -6096,10 +6096,10 @@
   (symbol (lib_id "Device:R") (at 67.945 60.96 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 798ccfae-855f-4652-a3d9-503dded1a8cf)
-    (property "Reference" "R503" (at 66.675 58.42 90)
+    (property "Reference" "R503" (at 69.215 63.5 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "330R" (at 71.12 59.69 90)
+    (property "Value" "330R" (at 68.58 59.055 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" (at 67.945 59.182 90)
@@ -6137,7 +6137,7 @@
           (reference "R503") (unit 1)
         )
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R108") (unit 1)
+          (reference "R1008") (unit 1)
         )
       )
     )
@@ -6428,7 +6428,7 @@
   (symbol (lib_id "Device:R") (at 68.58 94.615 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 8f12a267-68e5-4722-bab1-19d5ad973cfe)
-    (property "Reference" "R105" (at 71.755 93.345 0)
+    (property "Reference" "R1005" (at 71.755 93.345 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "10K" (at 71.12 90.805 0)
@@ -6466,7 +6466,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R105") (unit 1)
+          (reference "R1005") (unit 1)
         )
       )
     )
@@ -6643,7 +6643,7 @@
   (symbol (lib_id "Device:R") (at 54.61 94.615 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b226c008-308e-4e0f-adf3-ed92220a4232)
-    (property "Reference" "R103" (at 57.15 93.345 0)
+    (property "Reference" "R1003" (at 57.15 93.345 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "10K" (at 56.515 90.805 0)
@@ -6681,7 +6681,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R103") (unit 1)
+          (reference "R1003") (unit 1)
         )
       )
     )
@@ -6737,7 +6737,7 @@
   (symbol (lib_id "Device:C") (at 77.47 78.105 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp yes)
     (uuid b8bbdaed-02a0-4430-b962-e7f00239ddab)
-    (property "Reference" "C110" (at 80.391 76.9366 0)
+    (property "Reference" "C1100" (at 80.391 76.9366 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at 80.391 79.248 0)
@@ -6775,7 +6775,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "C110") (unit 1)
+          (reference "C1100") (unit 1)
         )
       )
     )
@@ -6784,7 +6784,7 @@
   (symbol (lib_id "Device:R") (at 60.96 94.615 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b96c4198-a7e7-4e44-b939-3719ceb9f4a2)
-    (property "Reference" "R104" (at 63.5 93.345 0)
+    (property "Reference" "R1004" (at 63.5 93.345 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "10K" (at 62.865 90.805 0)
@@ -6822,7 +6822,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "R104") (unit 1)
+          (reference "R1004") (unit 1)
         )
       )
     )
