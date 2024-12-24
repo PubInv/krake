@@ -1,7 +1,7 @@
 // Define the GPIO pins for CLK, DT, and SW
-const int CLK = 26;   // Connected to the CLK pin of the encoder
-const int DT = 14;    // Connected to the DT pin of the encoder
-const int SW = 25;    // Connected to the SW (Switch) pin of the encoder
+const int CLK = 39;   // Connected to the CLK pin of the encoder
+const int DT = 36;    // Connected to the DT pin of the encoder
+const int SW = 34;    // Connected to the SW (Switch) pin of the encoder
 
 int currentStateCLK;
 int previousStateCLK;
@@ -62,5 +62,5 @@ void loop() {
   }
 
   // Small delay to debounce the switch and encoder
-  delay(10);
+  delay(300);
 }
