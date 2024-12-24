@@ -90,7 +90,7 @@ void keyPressed() {
       } else if (key == 'n' ) {    //For Nagham
         String theTimeStamp = "";
         theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
-        MessageFromProcessing_PMD = "a5Lee is in Discord, " + theTimeStamp ;
+        MessageFromProcessing_PMD = "a5Nagham is in Discord, " + theTimeStamp ;
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it.";
