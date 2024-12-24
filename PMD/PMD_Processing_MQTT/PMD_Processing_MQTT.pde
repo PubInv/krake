@@ -1,5 +1,5 @@
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.22 ";
+String VERSION = "V0.23 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -24,6 +24,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241209 Rev 0.20. Save screens on client connect or lost.
 // Date: 20241209 Rev 0.21.  Add MAC address to the sketch title.
 // Date: 20241209 Rev 0.22.  Add MAC address to the MQTT Username. Display Broker in draw window.
+// Date: 20241224 Rev 0.23.  Add time stamp to PMD message for Lee and Nagham.
 
 
 // Description:
