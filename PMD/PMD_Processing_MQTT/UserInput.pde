@@ -20,13 +20,13 @@ void checkOverButton() {
     fill(32);
     //noFill();
   }
-  
+
   //Draw button
   //  rect(105, 60, 75, 75);
   stroke(128);
   rect(buttonHorz, buttonVert, 75, 75);   
   fill(255);
-    //  line(135, 105, 155, 85);
+  //  line(135, 105, 155, 85);
   line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
   //  line(140, 85, 155, 85);
   line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
@@ -37,10 +37,7 @@ void checkOverButton() {
 
 void mousePressed() {
   if (overButton) { 
-    //    link("http://www.processing.org");
-    //    link("chrome.exe%20shiftr.io");
-    //    link("chrome.exe%20http://www.shiftr.io");
-    link("http://www.shiftr.io");
+    link("http://www.shiftr.io/try");
   }
 }
 
@@ -79,11 +76,21 @@ void keyPressed() {
       } else if (key == 'b' ) {
         MessageFromProcessing_PMD = "a2Lee has restart it. Back in Discord";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'd' ) {
+        String theTimeStamp = "";
+        theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+        MessageFromProcessing_PMD = "a5Lee is in Discord, " + theTimeStamp ;
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'l' ) {
         MessageFromProcessing_PMD = "a5Lee's Browser AGAIN Not Responding.";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'm' ) {
         MessageFromProcessing_PMD = "a2Lee's browser not responding. Giving up.";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'n' ) {    //For Nagham
+        String theTimeStamp = "";
+        theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+        MessageFromProcessing_PMD = "a5Lee is in Discord, " + theTimeStamp ;
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it.";
