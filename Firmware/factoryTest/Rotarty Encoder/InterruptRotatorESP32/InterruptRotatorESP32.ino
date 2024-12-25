@@ -107,14 +107,15 @@ void setup()
   // encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR3);
 
   // use FOUR0 mode when PIN_IN1, PIN_IN2 signals are always LOW in latch position.
-  // encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR0);
+   encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR0);
 
   // use TWO03 mode when PIN_IN1, PIN_IN2 signals are both LOW or HIGH in latch position.
-  encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
+ // encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
+  
   // register interrupt routine
-  attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPosition, RISING);
-  attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPosition, RISING);
+  attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPosition, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPosition, CHANGE);
 } // setup()
 
 
