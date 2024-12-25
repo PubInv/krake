@@ -62,5 +62,5 @@ void loop() {
   }
 
   // Small delay to debounce the switch and encoder
-  delay(300);
+//  delay(300);
 }
