@@ -2696,7 +2696,7 @@
   (symbol (lib_id "GPAD_SCH_LIB:USB_C_Receptacle_USB2.0_GPAD") (at 71.12 102.87 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d1a30577-ae94-4552-be46-71ba6e28d972)
-    (property "Reference" "J201" (at 71.12 80.01 0)
+    (property "Reference" "J501" (at 71.12 80.01 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "USB_C_Receptacle_USB2.0" (at 71.12 82.55 0)
@@ -2737,7 +2737,7 @@
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
-          (reference "J201") (unit 1)
+          (reference "J501") (unit 1)
         )
       )
     )

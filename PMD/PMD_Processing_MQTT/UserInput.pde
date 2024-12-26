@@ -20,28 +20,28 @@ void checkOverButton() {
     fill(32);
     //noFill();
   }
-  
+
   //Draw button
   //  rect(105, 60, 75, 75);
   stroke(128);
-  rect(buttonHorz, buttonVert, 75, 75);   
+  rect(buttonHorz, buttonVert, 75, 75);
   fill(255);
-    //  line(135, 105, 155, 85);
+  //  line(135, 105, 155, 85);
   line(arrowHorz-20, arrowVert + 30, arrowHorz, arrowVert);
   //  line(140, 85, 155, 85);
   line(arrowHorz - 15, arrowVert, arrowHorz, arrowVert);
-  //  line(155, 85, 155, 100); 
+  //  line(155, 85, 155, 100);
   line(arrowHorz, arrowVert, arrowHorz, arrowVert + 15);
   text("Broker View", buttonHorz+10, buttonVert);
 }
 
 void mousePressed() {
-  if (overButton) { 
+  if (overButton) {
     link("http://www.shiftr.io/try");
   }
 }
 
-void mouseMoved() { 
+void mouseMoved() {
   checkButtons();
 }
 
@@ -77,7 +77,9 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a2Lee has restart it. Back in Discord";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'l' ) {
-        MessageFromProcessing_PMD = "a5Lee's Browser AGAIN Not Responding.";
+        String theTimeStamp = "";
+        theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+        MessageFromProcessing_PMD = "a5Lee is in Discord, " + theTimeStamp ;
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'm' ) {
         MessageFromProcessing_PMD = "a2Lee's browser not responding. Giving up.";
