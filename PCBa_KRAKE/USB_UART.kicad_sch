@@ -1772,8 +1772,8 @@
     (property "Cost" "0.0021" (at 137.16 82.55 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid c0ce4fda-75b3-4174-a20f-837461e2bf32))
-    (pin "2" (uuid dd478129-17b3-4d8e-b6e4-71a691b27c5a))
+    (pin "1" (uuid 9f5cfd73-f67a-4cf1-b146-4d071ed80c06))
+    (pin "2" (uuid 911f4b12-ce17-47db-a0c8-26b7006ca061))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"

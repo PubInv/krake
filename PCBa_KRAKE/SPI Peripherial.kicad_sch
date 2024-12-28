@@ -2138,8 +2138,8 @@
     (property "Cost" "0.0015" (at 206.375 137.795 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 18817573-6ba2-4ec7-84dd-cc3331f944bc))
-    (pin "2" (uuid 6ef7a5e8-751a-4209-92d2-a93592dddbb2))
+    (pin "1" (uuid 1f24e855-042f-4912-98d4-a3cb72ba04cd))
+    (pin "2" (uuid 39fd4308-7ef4-4c07-9572-171c4d753a7b))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
@@ -2525,8 +2525,8 @@
     (property "Cost" "0.0015" (at 215.265 126.365 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid d8be5329-f88d-4082-8e99-4128f860e2d5))
-    (pin "2" (uuid 5c27e0f8-0615-4791-99ec-c9a9b48fb959))
+    (pin "1" (uuid c01363bf-a440-4f17-9916-e3156cced0da))
+    (pin "2" (uuid 103c0308-32e8-41f2-813e-e968b785dbc0))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
@@ -2806,9 +2806,9 @@
     (property "Cost" "0.0196" (at 203.835 127.635 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid aa5e7e0a-b81e-464a-a2d4-a366cdc4a9ca))
-    (pin "2" (uuid 81d39586-35c8-488a-9b7f-8c466607728f))
-    (pin "3" (uuid 2afd5536-e465-4f1f-b4cd-1a40a403b6ab))
+    (pin "1" (uuid f35898d1-068f-475d-9da6-45a6ac4b8489))
+    (pin "2" (uuid da7c3c5a-81f9-4b30-891a-967b193590cc))
+    (pin "3" (uuid d288e01d-437f-4f76-882d-cdbb0c9eaf2c))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062b871ee"
