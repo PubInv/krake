@@ -2,10 +2,12 @@
  
  */
 
+//Broker Button
 int buttonHorz = 50;
 int buttonVert = 200;
 
 
+//Broker Button
 void checkOverButton() {
   //int buttonHorz = 50;
   //int buttonVert = 160;
@@ -16,14 +18,17 @@ void checkOverButton() {
 
   if (overButton == true) {
     fill(255);
+    stroke(32);
   } else {
-    fill(32);
+//    fill(32);
+    fill(shiftrBackground);  //Background at shiftr.io
+    stroke(0);
     //noFill();
   }
 
   //Draw button
   //  rect(105, 60, 75, 75);
-  stroke(128);
+//  stroke(128);
   rect(buttonHorz, buttonVert, 75, 75);
   fill(255);
   //  line(135, 105, 155, 85);

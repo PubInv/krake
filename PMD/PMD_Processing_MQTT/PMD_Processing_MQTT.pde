@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.23 ";
+String VERSION = "V0.24 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -26,6 +26,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241209 Rev 0.21.  Add MAC address to the sketch title.
 // Date: 20241209 Rev 0.22.  Add MAC address to the MQTT Username. Display Broker in draw window.
 // Date: 20241221 Rev 0.23.  Add LEB4 and MockingKrake MAC addresses.
+// Date: 20241221 Rev 0.24.  Make the the broker button color same as the visualizer.
 
 
 // Description:
@@ -116,6 +117,8 @@ Adapter adapter;
 boolean mqttBrokerIsConnected = false;
 
 color myBackground = color(64, 64, 64);  //Start grey
+color shiftrBackground = color(0,171,92);  //Shifter.io
+
 
 boolean overButton = false;
 
