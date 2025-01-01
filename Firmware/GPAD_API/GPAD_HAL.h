@@ -110,13 +110,20 @@
 #endif
 
 
-// Define TX and RX pins for UART1 (change if needed)
-// #define TXD1 21
-// #define RXD1 19
-// This may be the UART2, which I am using for testing...
-#define TXD1 17
-#define RXD1 16
+// Define TX and RX pins for UART1 
+// For PCB and for Mocking Krake Maryville
+//See also Issue# 94
+#define TXD1 15
+#define RXD1 2
 #define UART1_BAUD_RATE 115200
+extern HardwareSerial uartSerial1;
+
+// Define TX and RX pins for UART2
+// For PCB and for Mocking Krake Maryville
+// DFPLayer requries 9600 BPS
+#define TXD2 15
+#define RXD2 2
+#define UART2_BAUD_RATE 9600
 extern HardwareSerial uartSerial1;
 
 // SPI Functions....

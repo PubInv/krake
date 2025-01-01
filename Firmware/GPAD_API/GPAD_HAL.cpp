@@ -25,7 +25,9 @@
 #include <SPI.h>
 
 // Use Serial1 for UART communication
-HardwareSerial uartSerial1(1);
+HardwareSerial uartSerial1(1);  //For user Serial Port
+HardwareSerial uartSerial2(2);  //For DFPLayer, audio
+
 
 #include <DailyStruggleButton.h>
 DailyStruggleButton muteButton;
@@ -105,6 +107,7 @@ volatile boolean process;
 byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 
 #define DEBUG 0
+//#define DEBUG 1
 
 
 
@@ -150,7 +153,7 @@ volatile unsigned long last_byte_ms = 0;
 //    receive_byte(SPDR);
 // }
 #elif defined(GPAD)  // compile for an UNO, for example...
-ISR(SPI_STC_vect)                    //Inerrrput routine function
+ISR(SPI_STC_vect)  //Inerrrput routine function
 {
   receive_byte(SPDR);
 }  //end ISR
@@ -272,8 +275,28 @@ void GPAD_HAL_setup(Stream *serialport) {
 
   // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
 
+#if !defined(HMWK)  //On Homework2, LCD goes blank early
   // Here initialize the UART1
-  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup
+  pinMode(RXD1, INPUT_PULLUP);
+  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup. On Homework2, LCD goes blank early
+  uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
+  while (!Serial1) {
+    ;  // wait for serial port to connect. Needed for native USB
+  }
+#if (DEBUG > 0)
+  serialport->println(F("uartSerial1 Setup"));
+#endif
+#endif
+
+  // Here initialize the UART2
+  pinMode(RXD2, INPUT_PULLUP);
+  uartSerial2.begin(UART2_BAUD_RATE, SERIAL_8N1, RXD2, TXD2);  // UART setup
+  //   while (!Serial2) {
+  //   ;  // wait for serial port to connect. Needed for native USB
+  // }
+#if (DEBUG > 0)
+  serialport->println(F("uartSerial2 Setup"));
+#endif
 }
 
 // TODO: Move to GPAD_API
