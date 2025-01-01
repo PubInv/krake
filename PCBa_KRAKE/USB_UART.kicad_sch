@@ -2124,10 +2124,10 @@
     )
   )
 
-  (symbol (lib_id "Device:R") (at 201.93 76.2 270) (unit 1)
+  (symbol (lib_id "Device:R") (at 201.93 76.2 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0337563e-c4c6-4c4a-bc15-49f7e2e14351)
-    (property "Reference" "R1" (at 200.66 71.12 90)
+    (property "Reference" "R1" (at 203.2 71.12 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1R0" (at 201.93 73.66 90)
@@ -2160,8 +2160,8 @@
     (property "Cost" "0.0015" (at 201.93 76.2 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid bedf64bd-7556-498c-b48b-bb515bdb8be8))
-    (pin "2" (uuid 9b1fca5a-fd77-446b-ba91-67b567ebdfd2))
+    (pin "1" (uuid 453ce998-aab9-4630-9b00-2577498741a9))
+    (pin "2" (uuid 461f9f20-837c-4f85-905b-0a6cde030a0e))
     (instances
       (project "PCBa_KRAKE"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
