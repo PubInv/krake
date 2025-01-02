@@ -306,7 +306,10 @@ void GPAD_HAL_setup(Stream *serialport) {
 #endif
 }
 
-// TODO: Move to GPAD_API
+// This routine should be refactored so that it only "interprets"
+// the character buffer and returns an "abstract" command to be acted on
+// elseshere. This will allow us to remove the PubSubClient from the this file,
+// the Hardware Abstraction Layer.
 void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client) {
   if (rlen < 1) {
     printError(serialport);
