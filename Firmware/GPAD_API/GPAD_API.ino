@@ -102,8 +102,8 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-// const char* ssid = "Home";
-// const char* password = "adt@1963#";
+const char* ssid = "Home";
+const char* password = "adt@1963#";
 
 //Maryville network
 const char* ssid = "VRX";
@@ -300,7 +300,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 #endif
 
     Serial.println("Received MQTT Msg.");
-    interpretBuffer(mbuff, m, &Serial);  //Process the MQTT message
+    interpretBuffer(mbuff, m, &Serial, &client);  //Process the MQTT message
     annunciateAlarmLevel(&Serial);
   }
 }  //end call back
@@ -434,10 +434,12 @@ void loop() {
   // delay(20);
   GPAD_HAL_loop();
 
-  processSerial(&Serial,&Serial);
+  processSerial(&Serial,&Serial,&client);
 
   // Here we also process the UART1 using the same routine.
-  processSerial(&Serial,&uartSerial1);
+  processSerial(&Serial,&uartSerial1,&client);
+
+  // Here we will listen for an SPI command...
 
   // // Now try to read from the SPI Port!
 #if defined(GPAD)

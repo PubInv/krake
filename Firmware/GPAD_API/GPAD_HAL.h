@@ -22,6 +22,7 @@
 #define GPAD_HAL 1
 #include <stream.h>
 #include <Arduino.h>
+#include <PubSubClient.h> 
 
 // On Nov. 5th, 2024, we image 3 different hardware platforms.
 // The GPAD exists, and is working: https://www.hardware-x.com/article/S2468-0672(24)00084-1/fulltext
@@ -38,9 +39,9 @@
 // GPAD device (earlier version of the Krake)
 // #define LCD_ADDRESS 0x38 
 // Maryville version
-#define LCD_ADDRESS 0x27 
+// #define LCD_ADDRESS 0x27 
 // General (Lebanon) Version
-//#define LCD_ADDRESS 0x3F 
+#define LCD_ADDRESS 0x3F 
 
 //Pin definitions.  Assign symbolic constant to Arduino pin numbers.
 //For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
@@ -136,7 +137,7 @@ void annunciateAlarmLevel(Stream *serialport);
 void clearLCD(void);
 void splashLCD(void);
 
-void interpretBuffer(char *buf, int rlen, Stream *serialport);
+void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client);
 
 // This module has to be initialized and called each time through the superloop
 void GPAD_HAL_setup(Stream *serialport);

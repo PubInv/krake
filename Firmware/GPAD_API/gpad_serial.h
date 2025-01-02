@@ -21,8 +21,10 @@
 #ifndef GPAD_SERIAL
 #define GPAD_SERIAL 1
 #include <Stream.h>
+#include <PubSubClient.h> 
 
-void processSerial(Stream *debugPort,Stream *inputPort);
+
+void processSerial(Stream *debugPort,Stream *inputPort, PubSubClient *client);
 
 
 #endif
