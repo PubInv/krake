@@ -350,6 +350,17 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport) {
 
         break;
       }
+    case 'i':  //Information
+      {
+        Serial.print("Firmware Version: ");
+        Serial.println(FIRMWARE_VERSION);
+        //todo publish in the ACK
+        char onInfoMsg[32] = "Firmware Version: ";
+        strcat(onInfoMsg, FIRMWARE_VERSION);
+        client.publish(publish_Ack_Topic, onInfoMsg);
+
+        break;
+      }
     default:
       serialport->println(F("Unknown Command"));
       break;
