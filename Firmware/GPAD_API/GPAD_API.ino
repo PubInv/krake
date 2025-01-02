@@ -106,16 +106,16 @@ const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 // const char* password = "adt@1963#";
 
 //Maryville network
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
+const char* ssid = "VRX";
+const char* password = "textinsert";
 
 //Houstin network
 // const char* ssid = "DOS_WIFI";
 // const char* password = "$Suve07$$";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+// const char* ssid = "readfamilynetwork";
+// const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
