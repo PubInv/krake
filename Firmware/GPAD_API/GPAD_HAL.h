@@ -38,7 +38,7 @@
 // GPAD device (earlier version of the Krake)
 // #define LCD_ADDRESS 0x38 
 // Maryville version
- #define LCD_ADDRESS 0x27 
+#define LCD_ADDRESS 0x27 
 // General (Lebanon) Version
 //#define LCD_ADDRESS 0x3F 
 

@@ -46,6 +46,13 @@ extern char AlarmMessageBuffer[81];
 
 extern char macAddressString[13];
 
+// TODO: Remove this; for explanation only
+extern char publish_Ack_Topic[17];
+
+#include <PubSubClient.h>  // From library https://github.com/knolleary/pubsubclient
+
+extern PubSubClient client;
+
 //For LCD
 #include <LiquidCrystal_I2C.h>
 
@@ -344,16 +351,16 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport) {
         // This copy loooks uncessary, but is not...we want "alarm"
         // to be a completely independent and abstract function.
         // it should copy the msg buffer
-        Serial.print("The MQTT Alarm Message: ");
-        Serial.println(msg);
+        serialport->print("The MQTT Alarm Message: ");
+        serialport->println(msg);
         alarm((AlarmLevel)N, msg, serialport);  //Makes Lamps indicate alarm.
 
         break;
       }
     case 'i':  //Information
       {
-        Serial.print("Firmware Version: ");
-        Serial.println(FIRMWARE_VERSION);
+        serialport->print("Firmware Version: ");
+        serialport->println(FIRMWARE_VERSION);
         //todo publish in the ACK
         char onInfoMsg[32] = "Firmware Version: ";
         strcat(onInfoMsg, FIRMWARE_VERSION);
