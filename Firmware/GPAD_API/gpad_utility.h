@@ -23,7 +23,7 @@
 #include <Stream.h>
 
 #define PROG_NAME "GPAD_API "
-#define FIRMWARE_VERSION "0.23 "
+#define FIRMWARE_VERSION "0.24 "
 //#define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
 //#define DEVICE_UNDER_TEST "20240421_LEB1"  //A Serial Number

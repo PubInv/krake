@@ -46,6 +46,13 @@ extern char AlarmMessageBuffer[81];
 
 extern char macAddressString[13];
 
+// TODO: Remove this; for explanation only
+extern char publish_Ack_Topic[17];
+
+#include <PubSubClient.h>  // From library https://github.com/knolleary/pubsubclient
+
+extern PubSubClient client;
+
 //For LCD
 #include <LiquidCrystal_I2C.h>
 
@@ -111,8 +118,8 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 
 
 
-const int NUM_PREFICES = 4;
-char legal_prefices[NUM_PREFICES] = { 'h', 's', 'a', 'u' };
+const int NUM_PREFICES = 5;
+char legal_prefices[NUM_PREFICES] = { 'h', 's', 'a', 'u', 'i'};
 
 
 void setup_spi() {
@@ -299,8 +306,11 @@ void GPAD_HAL_setup(Stream *serialport) {
 #endif
 }
 
-// TODO: Move to GPAD_API
-void interpretBuffer(char *buf, int rlen, Stream *serialport) {
+// This routine should be refactored so that it only "interprets"
+// the character buffer and returns an "abstract" command to be acted on
+// elseshere. This will allow us to remove the PubSubClient from the this file,
+// the Hardware Abstraction Layer.
+void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client) {
   if (rlen < 1) {
     printError(serialport);
     return;  // no action
@@ -344,10 +354,19 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport) {
         // This copy loooks uncessary, but is not...we want "alarm"
         // to be a completely independent and abstract function.
         // it should copy the msg buffer
-        Serial.print("The MQTT Alarm Message: ");
-        Serial.println(msg);
+        serialport->print("The MQTT Alarm Message: ");
+        serialport->println(msg);
         alarm((AlarmLevel)N, msg, serialport);  //Makes Lamps indicate alarm.
 
+        break;
+      }
+    case 'i':  //Information
+      {
+        //todo publish in the ACK
+        char onInfoMsg[32] = "Firmware Version: ";
+        strcat(onInfoMsg, FIRMWARE_VERSION);
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
         break;
       }
     default:

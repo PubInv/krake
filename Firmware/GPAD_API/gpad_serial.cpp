@@ -43,7 +43,7 @@ where C is an character, and D is a single digit.
 
 // Note: The buffer "buf" used here might be more safely made 
 // a parameter passed in from the caller.
-void processSerial(Stream *debugPort,Stream *inputPort) {
+void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client) {
   // Now see if we have a serial command
   int rlen;
   // TODO: This code can probably hang; it needs to have
@@ -59,7 +59,7 @@ void processSerial(Stream *debugPort,Stream *inputPort) {
     for (int i = 0; i < rlen; i++)
       debugPort->print(buf[i]);
     debugPort->println();
-    interpretBuffer(buf, rlen, inputPort);
+    interpretBuffer(buf, rlen, inputPort, client);
     // Now "light and scream"appropriately...
     // This does not work on HMWK2 device
     annunciateAlarmLevel(debugPort);

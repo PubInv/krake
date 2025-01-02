@@ -27,6 +27,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241209 Rev 0.22.  Add MAC address to the MQTT Username. Display Broker in draw window.
 // Date: 20241221 Rev 0.23.  Add LEB4 and MockingKrake MAC addresses.
 // Date: 20241221 Rev 0.24.  Make the the broker button color same as the visualizer.
+// Date: 20250102 Rev 0.25.  Sent an 'i' command.
 
 
 // Description:
