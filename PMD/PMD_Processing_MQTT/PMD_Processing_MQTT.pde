@@ -72,6 +72,7 @@ String MessageFromProcessing_PMD = "";  // The MQTT message first part.
 String thePayload = "";  // The MQTT received.
 boolean clientStatusChanged = false;
 
+import java.util.TimeZone; 
 import mqtt.*;
 
 MQTTClient client;

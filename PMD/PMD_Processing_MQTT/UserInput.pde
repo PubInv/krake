@@ -71,18 +71,33 @@ void checkButtons() {
 void keyPressed() {
 
   if (mqttBrokerIsConnected) {
+    TimeZone tz = TimeZone.getDefault();
+    String id = tz.getID();
+    
     for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
       int keyIndex = -1;
-      if (key >= 'A' && key <= 'Z') {
+//      if (key >= 'A' && key <= 'Z') {
+      if (key == 'Z') {
         //        MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:UpperCase";
         MessageFromProcessing_PMD = "a5Lee's Browser Not Responding. Might be Internet Provider Problem";
-
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'A' ) {
+        String theTimeStamp = "";
+        theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
+        MessageFromProcessing_PMD = "a1 Lee has left Discord, " + theTimeStamp +id ;
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+        println("");
+        println(MessageFromProcessing_PMD);
+        println("");
+        
       } else if (key == 'b' ) {
-        MessageFromProcessing_PMD = "a2Lee has restart it. Back in Discord";
+        MessageFromProcessing_PMD = "a2Lee is back in Discord";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'i' ) {
-        MessageFromProcessing_PMD = "a1Requesting information";
+        MessageFromProcessing_PMD = "i";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'j' ) {  //Request information in JSON format.
+        MessageFromProcessing_PMD = "j";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'l' ) {
         String theTimeStamp = "";
