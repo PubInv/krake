@@ -127,7 +127,7 @@ boolean overButton = false;
 void setup() {
   getNetworkInterface();
   surface.setTitle(PROG_NAME + " Ver:" + VERSION + "MAC: " + theMAC);
-  size(700, 360);
+  size(900, 360);
   noStroke();    //disables drawing outlines
   background (myBackground);
   frameRate(24);
