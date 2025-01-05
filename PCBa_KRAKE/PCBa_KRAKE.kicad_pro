@@ -56,7 +56,14 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "items_not_allowed|127900000|23300000|092ce836-83e2-4d79-96ff-2d4a6d5d0aa1|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|127925000|23325000|7d381e39-db6b-4177-9ce1-0ed406a9a0b5|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|127950011|24619000|f03385de-2152-480b-a4c2-5c11911be3be|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|130281822|23658308|0f41a46e-f3c1-4019-8fe5-db84d4d39a9d|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|130439998|24619000|0be6c9ad-bf8e-4610-9bd6-8caed44f2b21|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|132458000|23300000|32d28809-86f3-4a19-937f-5d6e52b69ad8|00000000-0000-0000-0000-000000000000"
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -187,6 +194,18 @@
         {
           "diameter": 0.0,
           "drill": 0.0
+        },
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        },
+        {
+          "diameter": 0.8,
+          "drill": 0.4
+        },
+        {
+          "diameter": 1.27,
+          "drill": 0.4318
         },
         {
           "diameter": 2.54,
@@ -480,8 +499,8 @@
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
         "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
+        "microvia_diameter": 0.8,
+        "microvia_drill": 0.4,
         "name": "Default",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
@@ -497,14 +516,31 @@
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
         "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
+        "microvia_diameter": 1.27,
+        "microvia_drill": 0.4318,
+        "name": "3.3V",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.25,
+        "via_diameter": 1.27,
+        "via_drill": 0.4318,
+        "wire_width": 10
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 1.27,
+        "microvia_drill": 0.4318,
         "name": "5v",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.35,
-        "via_diameter": 0.8,
-        "via_drill": 0.4,
+        "via_diameter": 1.27,
+        "via_drill": 0.4318,
         "wire_width": 10
       },
       {
@@ -514,8 +550,8 @@
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
         "line_style": 0,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
+        "microvia_diameter": 0.8,
+        "microvia_drill": 0.4,
         "name": "GND",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
