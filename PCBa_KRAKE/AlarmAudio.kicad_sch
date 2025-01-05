@@ -1986,7 +1986,7 @@
   )
 
   (symbol (lib_id "Device:Speaker") (at 170.18 138.43 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board no) (dnp no)
     (uuid 578db7ac-82a4-429c-b431-931843d1ea0b)
     (property "Reference" "LS?" (at 177.165 139.7 0)
       (effects (font (size 1.27 1.27)))
