@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.25 ";
+String VERSION = "V0.26 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -46,11 +46,8 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
  #define ORIGIN "USA"
  */
 
-String KRAKE_DTA_TOPIC[] = {"3C61053DC954_ALM", "3C61053DF08C_ALM", "3C6105324EAC_ALM", "3C61053DF63C_ALM", "10061C686A14_ALM", "FCB467F4F74C_ALM", 
-  "CCDBA730098C_ALM", "CCDBA730BFD4_ALM", "CCDBA7300954_ALM", "A0DD6C0EFD28_ALM", "KRAKE_20240421_LEB5_ALM", "A0B765F51E28_ALM" }; //Publish to a Krake data topic for ALARMs.
-
-String KRAKE_ACK_TOPIC[] = {"3C61053DC954_ACK", "3C61053DF08C_ACK", "3C6105324EAC_ACK", "3C61053DF63C_ACK", "10061C686A14_ACK", "FCB467F4F74C_ACK", 
-  "CCDBA730098C_ACK", "CCDBA730BFD4_ACK", "CCDBA7300954_ACK", "A0DD6C0EFD28_ACK", "KRAKE_20240421_LEB5_ACK", "A0B765F51E28_ACK" }; //Subscribe to a Krake ack.
+String KRAKE_MAC[] = {"3C61053DC954M", "3C61053DF08C", "3C6105324EAC", "3C61053DF63C", "10061C686A14", "FCB467F4F74C", 
+  "CCDBA730098C", "CCDBA730BFD4", "CCDBA7300954", "A0DD6C0EFD28", "KRAKE_20240421_LEB5", "A0B765F51E28" }; //Publish to a Krake data topic for ALARMs.
 
 StringDict mac_to_NameDict = new StringDict();
 void setupDictionary() {
@@ -89,16 +86,15 @@ class Adapter implements MQTTListener {
     clientStatusChanged = true; //TO flag save of draw() window.
 
     mqttBrokerIsConnected = true;
-    for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) {
-      client.subscribe(KRAKE_ACK_TOPIC[i]);
-      //client.setWill(String topic, String payload);
-      client.setWill(KRAKE_ACK_TOPIC[i]+"/will", KRAKE_ACK_TOPIC[i]+" Has disconnected.");
+    for (int i = 0; i < KRAKE_MAC.length; i++) {
+      client.subscribe(KRAKE_MAC[i]+"_ACK");
+      client.setWill(KRAKE_MAC[i]+"/will", KRAKE_MAC[i]+" Has disconnected.");
     }//end for i
   }// end clientCOnnect
 
   void messageReceived(String topic, byte[] payload) {
     //Check shorten topic for a match to a MAC
-    topic = topic.substring(0,12); //
+    topic = topic.substring(0, 12); //
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
     println(thePayload);

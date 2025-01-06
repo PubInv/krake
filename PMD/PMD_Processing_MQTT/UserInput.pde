@@ -76,52 +76,40 @@ void keyPressed() {
     String theTimeStamp = "";
     theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + id + " " ; //time stamp
 
-    for (int i = 0; i < KRAKE_DTA_TOPIC.length; i++) { //Need a for loop for all Krakes.
+    for (int i = 0; i < KRAKE_MAC.length; i++) { //Need a for loop for all Krakes.
       int keyIndex = -1;
-      //      if (key >= 'A' && key <= 'Z') {
       if (key == 'Z') {
         MessageFromProcessing_PMD = "a5Lee's Browser Not Responding. Might be Internet Provider Problem";
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'a' ) {
         MessageFromProcessing_PMD = "a1 Lee has left Discord, " + theTimeStamp ;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'b' ) {
         MessageFromProcessing_PMD = "a5 Lee is back in Discord" + theTimeStamp;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'c' ) {
         MessageFromProcessing_PMD = "a1 Nagham has left Discord, " + theTimeStamp ;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'd' ) {
         MessageFromProcessing_PMD = "a5 Nagam is back in Discord" + theTimeStamp;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);      
       } else if (key == 'i' ) {
         MessageFromProcessing_PMD = "i";
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'j' ) {  //Request information in JSON format.
         MessageFromProcessing_PMD = "j";
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'l' ) {
         MessageFromProcessing_PMD = "a5Lee is in Discord, " + theTimeStamp ;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'm' ) {
         MessageFromProcessing_PMD = "a2Lee's browser not responding. Giving up."  + theTimeStamp;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'n' ) {    //For Nagham
         MessageFromProcessing_PMD = "a5Nagham is in Discord, " + theTimeStamp ;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it."  + theTimeStamp;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key >= 'a' && key <= 'z') {
         MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:LowerCase" + theTimeStamp;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key >= '0' && key <= '9') {     //Alarms by number pressed.
         keyIndex = key - '0';                                                           //Offset the numerical ASCII down to an int.
         MessageFromProcessing_PMD = "MessageFromProcessing_PMD:" + " " + (int(key)-48);
         //Form the GPAD API compatible message for KRAKE Topic.  
         MessageFromProcessing_PMD = "a" + (int(key)-48) + "MessageFromProcessing_PMD:" + (int(key)-48)+ " " + theTimeStamp;
-        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       }
+
+      client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);
       myBackground = color(0, 16, 0);
     }// end of for
   } else { //Client not connected so do nothing
