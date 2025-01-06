@@ -41,7 +41,7 @@
 // Maryville version and Austin version
 // #define LCD_ADDRESS 0x27 
 // General (Lebanon) Version
-define LCD_ADDRESS 0x3F 
+#define LCD_ADDRESS 0x3F 
 
 //Pin definitions.  Assign symbolic constant to Arduino pin numbers.
 //For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
