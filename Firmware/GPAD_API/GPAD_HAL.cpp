@@ -348,6 +348,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         char D = buf[1];
         int N = D - '0';
         serialport->println(N);
+        // WARNING: Shouldn't this be MAX_BUFFER_SIZE?
         char msg[61];
         msg[0] = '\0';
         strncat(msg, buf, 60);
@@ -425,6 +426,24 @@ void splashLCD(void) {
   lcd.print("MAC: ");
   lcd.print(macAddressString);
 }
+bool printable(char c) {
+  return isAlphaNumeric(c) || ( c == ' ');
+}
+// Remove unwanted characters....
+void filter_control_chars(char *msg) {
+   size_t len = strlen(msg); 
+   char buff[MAX_BUFFER_SIZE];
+   strcpy(buff,msg);
+   int k = 0;
+   for(int i = 0; i < len; i++) {
+      char c = buff[i];
+      if (printable(c)) {
+        msg[k] = c;
+        k++;
+      }
+   }
+   msg[k] = '\0';
+}
 // TODO: We need to break the message up into strings to render properly
 // on the display
 void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
@@ -458,6 +477,8 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
   } else {
 
     char buffer[21] = { 0 };  // note space for terminator
+// filter unmeaningful characters from msg buffer
+   filter_control_chars(msg);
 
     size_t len = strlen(msg);          // doesn't count terminator
     size_t blen = sizeof(buffer) - 1;  // doesn't count terminator
