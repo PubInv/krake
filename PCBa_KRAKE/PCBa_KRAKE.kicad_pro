@@ -136,7 +136,7 @@
         "min_through_hole_diameter": 0.3,
         "min_track_width": 0.19999999999999998,
         "min_via_annular_width": 0.049999999999999996,
-        "min_via_diameter": 0.39999999999999997,
+        "min_via_diameter": 0.3,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },
@@ -566,7 +566,24 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": []
+    "netclass_patterns": [
+      {
+        "netclass": "Default",
+        "pattern": ""
+      },
+      {
+        "netclass": "3.3V",
+        "pattern": ""
+      },
+      {
+        "netclass": "5v",
+        "pattern": ""
+      },
+      {
+        "netclass": "GND",
+        "pattern": ""
+      }
+    ]
   },
   "pcbnew": {
     "last_paths": {
