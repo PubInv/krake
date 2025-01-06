@@ -81,6 +81,9 @@ void keyPressed() {
       } else if (key == 'b' ) {
         MessageFromProcessing_PMD = "a2Lee has restart it. Back in Discord";
         client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
+      } else if (key == 'i' ) {
+        MessageFromProcessing_PMD = "a1Requesting information";
+        client.publish(KRAKE_DTA_TOPIC[i], MessageFromProcessing_PMD);
       } else if (key == 'l' ) {
         String theTimeStamp = "";
         theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
