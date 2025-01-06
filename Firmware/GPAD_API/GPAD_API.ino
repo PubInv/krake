@@ -102,8 +102,8 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-const char* ssid = "Home";
-const char* password = "adt@1963#";
+// const char* ssid = "Home";
+// const char* password = "adt@1963#";
 
 //Maryville network
 const char* ssid = "VRX";
@@ -114,8 +114,8 @@ const char* password = "textinsert";
 // const char* password = "$Suve07$$";
 
 // Austin network
-// const char* ssid = "readfamilynetwork";
-// const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
