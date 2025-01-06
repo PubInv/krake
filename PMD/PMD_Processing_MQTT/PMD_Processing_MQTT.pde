@@ -28,6 +28,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241221 Rev 0.23.  Add LEB4 and MockingKrake MAC addresses.
 // Date: 20241221 Rev 0.24.  Make the the broker button color same as the visualizer.
 // Date: 20250102 Rev 0.25.  Sent an 'i' command.
+// Date: 20250106 Rev 0.26.  Simplify MAC to serial number management. Set a will for the "_ALM" topics.
 
 
 // Description:
@@ -46,9 +47,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
  #define ORIGIN "USA"
  */
 
-String KRAKE_MAC[] = {"3C61053DC954M", "3C61053DF08C", "3C6105324EAC", "3C61053DF63C", "10061C686A14", "FCB467F4F74C", 
-  "CCDBA730098C", "CCDBA730BFD4", "CCDBA7300954", "A0DD6C0EFD28", "KRAKE_20240421_LEB5", "A0B765F51E28" }; //Publish to a Krake data topic for ALARMs.
-
+// Make MAC to Serial number association in this dictionary
 StringDict mac_to_NameDict = new StringDict();
 void setupDictionary() {
   mac_to_NameDict.set("3C61053DF08C", "20240421_USA1");
@@ -65,6 +64,14 @@ void setupDictionary() {
   mac_to_NameDict.set("3C61053DC954", "Not Homework2, Maryville TN");
 }//end setup mac_to_NameDict
 
+// Makes an array out of the dictionary keys. 
+String KRAKE_MAC[] = {};
+void make_KrakeArray() {
+  for (String k : mac_to_NameDict.keys()) {
+//    println(k);
+    KRAKE_MAC = append(KRAKE_MAC, k);
+  }
+} 
 
 String MessageFromProcessing_PMD = "";  // The MQTT message first part.
 String thePayload = "";  // The MQTT received.
@@ -88,13 +95,14 @@ class Adapter implements MQTTListener {
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_MAC.length; i++) {
       client.subscribe(KRAKE_MAC[i]+"_ACK");
-      client.setWill(KRAKE_MAC[i]+"/will", KRAKE_MAC[i]+" Has disconnected.");
+//      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
+//      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
+      client.setWill(KRAKE_MAC[i]+"_ALM", "a0 PMD" + theMAC +" Has disconnected.");
     }//end for i
   }// end clientCOnnect
 
-  void messageReceived(String topic, byte[] payload) {
-    //Check shorten topic for a match to a MAC
-    topic = topic.substring(0, 12); //
+  void messageReceived(String topic, byte[] payload) {    
+    topic = topic.substring(0, 12); //Check shorten topic for a match to a MAC
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
     println(thePayload);
@@ -137,6 +145,7 @@ void setup() {
   appendTextToFile(myLogFileName, ("Your log is born."));
 
   setupDictionary(); //for MAC to serial numbers. 
+  make_KrakeArray(); // Make an array of the MAC addresses, KRAKE_MAC[]
 
   adapter = new Adapter();
   client = new MQTTClient(this, adapter);
@@ -151,7 +160,9 @@ void draw() {
   //A heart beat LED
   updateLED(); //Set the LED color
   circle(width -20, 12, 20); //draw the LED.  
+  
   checkOverButton();
+
   //Text on draw window
   fill(255);
   textSize(25);
@@ -172,8 +183,6 @@ void draw() {
     fill(252, 10, 55);
     text("mqttBroker NOT Connected", 10, 150);
   }
-
-  //  checkOverButton();
 
   //Footer
   textSize(10);
