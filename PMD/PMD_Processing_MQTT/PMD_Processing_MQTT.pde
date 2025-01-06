@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.26 ";
+String VERSION = "V0.27 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -29,6 +29,9 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20241221 Rev 0.24.  Make the the broker button color same as the visualizer.
 // Date: 20250102 Rev 0.25.  Sent an 'i' command.
 // Date: 20250106 Rev 0.26.  Simplify MAC to serial number management. Set a will for the "_ALM" topics.
+// Date: 20250106 Rev 0.27.  Set LWIT PMD. Add x and X keys to disconnect and exit the sketch.
+
+
 
 
 // Description:
@@ -68,7 +71,7 @@ void setupDictionary() {
 String KRAKE_MAC[] = {};
 void make_KrakeArray() {
   for (String k : mac_to_NameDict.keys()) {
-//    println(k);
+    //    println(k);
     KRAKE_MAC = append(KRAKE_MAC, k);
   }
 } 
@@ -87,7 +90,7 @@ class Adapter implements MQTTListener {
   void clientConnected() {
     String theTimeStamp = "";
     theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + " " ; //time stamp
-    theTimeStamp = theTimeStamp + "MQTT clientConnected" ;
+    theTimeStamp = theTimeStamp + "MQTT client Connected" ;
     println(theTimeStamp);  
     appendTextToFile(myLogFileName, "MQTT clientConnected");
     clientStatusChanged = true; //TO flag save of draw() window.
@@ -95,9 +98,9 @@ class Adapter implements MQTTListener {
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_MAC.length; i++) {
       client.subscribe(KRAKE_MAC[i]+"_ACK");
-//      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
-//      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
-      client.setWill(KRAKE_MAC[i]+"_ALM", "a0 PMD" + theMAC +" Has disconnected.");
+      //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
+      //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
+      client.setWill(KRAKE_MAC[i]+"_ALM", "a1 LWIT PMD" + theMAC +" has disconnected.");
     }//end for i
   }// end clientCOnnect
 
@@ -122,7 +125,20 @@ class Adapter implements MQTTListener {
   }
 }//end Class Adapter
 
+//FLE This does not seam to work.
+void disconnectMQTT() {
+  //Set exit flag
+  delay(1000);
+  if (disconnectMQTTBroker)   client.disconnect();    //  the MQTT BROKER
+  delay(1000);
+  mqttBrokerIsConnected = false;
+  disconnectMQTTBroker = false;
+}
+
+boolean exitProgram = false;
+
 Adapter adapter;
+boolean disconnectMQTTBroker = false;
 boolean mqttBrokerIsConnected = false;
 
 color myBackground = color(64, 64, 64);  //Start grey
@@ -160,7 +176,7 @@ void draw() {
   //A heart beat LED
   updateLED(); //Set the LED color
   circle(width -20, 12, 20); //draw the LED.  
-  
+
   checkOverButton();
 
   //Text on draw window
@@ -199,4 +215,14 @@ void draw() {
     save("./data/" + theTimeStamp+"_clientEvent.png");  
     clientStatusChanged = false;
   }
-}//end draw()
+  
+  if (disconnectMQTTBroker) {
+    disconnectMQTT();
+    disconnectMQTTBroker = false;
+  }
+
+  if (exitProgram == true) {
+    println("exitProgram is true");
+    exit();
+  }//end draw()
+}

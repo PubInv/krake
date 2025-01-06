@@ -100,6 +100,15 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a5Nagham is in Discord, " + theTimeStamp ;
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it."  + theTimeStamp;
+      } else if (key == 'X' ) { //Exit the MQTT broker
+        exit();
+      } else if (key == 'x' ) { //Exit the MQTT broker
+        MessageFromProcessing_PMD = "a1 PMD disconnecting MQTT broker."  + theTimeStamp;
+        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);
+        disconnectMQTTBroker = true;  // Not working
+        println("Exit PMT");
+        //        exit();
+        exitProgram = true;
       } else if (key >= 'a' && key <= 'z') {
         MessageFromProcessing_PMD = key + "MessageFromProcessing_PMD:LowerCase" + theTimeStamp;
       } else if (key >= '0' && key <= '9') {     //Alarms by number pressed.
@@ -109,7 +118,10 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a" + (int(key)-48) + "MessageFromProcessing_PMD:" + (int(key)-48)+ " " + theTimeStamp;
       }
 
-      client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);
+      if (mqttBrokerIsConnected) {
+        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);
+      }
+
       myBackground = color(0, 16, 0);
     }// end of for
   } else { //Client not connected so do nothing
