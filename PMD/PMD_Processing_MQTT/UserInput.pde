@@ -100,6 +100,8 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a5Nagham is in Discord, " + theTimeStamp ;
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it."  + theTimeStamp;
+      } else if (key == 't' ) {
+        MessageFromProcessing_PMD = "a1Test with CR and LF\r\n"  + theTimeStamp;
       } else if (key == 'X' ) { //Exit the MQTT broker
         exit();
       } else if (key == 'x' ) { //Exit the MQTT broker

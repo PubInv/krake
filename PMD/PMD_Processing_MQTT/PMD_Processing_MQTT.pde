@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.27 ";
+String VERSION = "V0.28 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -30,6 +30,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20250102 Rev 0.25.  Sent an 'i' command.
 // Date: 20250106 Rev 0.26.  Simplify MAC to serial number management. Set a will for the "_ALM" topics.
 // Date: 20250106 Rev 0.27.  Set LWIT PMD. Add x and X keys to disconnect and exit the sketch.
+// Date: 20250107 Rev 0.28.  Add test 't' sends "a1Test with CR and LF\r\n" to reproduceing  Unexpected characters at the end of the alarm message, GPAD API 0.22 #131
 
 
 
