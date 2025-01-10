@@ -34,9 +34,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.6,
-          "height": 1.6,
-          "width": 1.0
+          "drill": 0.0,
+          "height": 0.9,
+          "width": 0.9
         },
         "silk_line_width": 0.12,
         "silk_text_italic": false,
@@ -56,15 +56,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        "items_not_allowed|127900000|23300000|092ce836-83e2-4d79-96ff-2d4a6d5d0aa1|00000000-0000-0000-0000-000000000000",
-        "items_not_allowed|127925000|23325000|7d381e39-db6b-4177-9ce1-0ed406a9a0b5|00000000-0000-0000-0000-000000000000",
-        "items_not_allowed|127950011|24619000|f03385de-2152-480b-a4c2-5c11911be3be|00000000-0000-0000-0000-000000000000",
-        "items_not_allowed|130281822|23658308|0f41a46e-f3c1-4019-8fe5-db84d4d39a9d|00000000-0000-0000-0000-000000000000",
-        "items_not_allowed|130281822|23658308|ee03c28a-fff0-495d-b649-2df1ff4bd490|00000000-0000-0000-0000-000000000000",
-        "items_not_allowed|130439998|24619000|0be6c9ad-bf8e-4610-9bd6-8caed44f2b21|00000000-0000-0000-0000-000000000000",
-        "items_not_allowed|132458000|23300000|32d28809-86f3-4a19-937f-5d6e52b69ad8|00000000-0000-0000-0000-000000000000"
-      ],
+      "drc_exclusions": [],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -134,12 +126,12 @@
         "min_silk_clearance": 0.0,
         "min_text_height": 0.7999999999999999,
         "min_text_thickness": 0.08,
-        "min_through_hole_diameter": 0.3,
+        "min_through_hole_diameter": 0.19999999999999998,
         "min_track_width": 0.19999999999999998,
         "min_via_annular_width": 0.049999999999999996,
         "min_via_diameter": 0.3,
         "solder_mask_to_copper_clearance": 0.0,
-        "use_height_for_length_calcs": true
+        "use_height_for_length_calcs": false
       },
       "teardrop_options": [
         {
