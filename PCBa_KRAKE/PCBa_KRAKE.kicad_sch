@@ -2912,6 +2912,10 @@
     (stroke (width 0) (type default))
     (uuid a8ced33a-fed0-4d4d-b300-e4fff4ab72e9)
   )
+  (wire (pts (xy 241.3 115.57) (xy 246.38 115.57))
+    (stroke (width 0) (type default))
+    (uuid a9cca17e-2e3f-4f76-a787-90e84dd29a5c)
+  )
   (wire (pts (xy 111.76 101.6) (xy 114.3 101.6))
     (stroke (width 0) (type default))
     (uuid aa3571e0-51c2-4c46-b768-306543f56461)
@@ -7406,6 +7410,31 @@
     )
   )
 
+  (symbol (lib_id "power:+3.3V") (at 241.3 115.57 0) (mirror y) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid e4549564-5f3e-4be1-a322-c2a5a8e1cc6a)
+    (property "Reference" "#PWR0103" (at 241.3 119.38 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+3.3V" (at 241.3 110.49 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 241.3 115.57 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 241.3 115.57 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 1453901b-452e-4cec-8545-173b022e8d95))
+    (instances
+      (project "PCBa_KRAKE"
+        (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
+          (reference "#PWR0103") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "power:+3.3V") (at 52.07 180.34 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e65cc6c9-6b99-44bd-a037-206336e75b4e)
@@ -7798,6 +7827,10 @@
     (pin "Busy" output (at 266.7 114.3 0)
       (effects (font (size 1.27 1.27)) (justify right))
       (uuid 6b08f541-ae59-45a0-bf6b-674bbb8e1f1f)
+    )
+    (pin "3v3" input (at 246.38 115.57 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid d260c05c-8029-4ec2-8369-5e5c0185992f)
     )
     (instances
       (project "PCBa_KRAKE"
