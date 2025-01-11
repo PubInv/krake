@@ -1,4 +1,4 @@
-21794200837893359
+21795937460487092
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -54487,6 +54487,13 @@ SOD-323
 0
 2
 2
+GeneralPurposeAlarmDevicePCB
+JLC_ToolingHole_0576mm
+
+
+0
+0
+0
 GeneralPurposeAlarmDevicePCB
 KiCad-Logo2_8mm_SilkScreen
 KiCad Logo
