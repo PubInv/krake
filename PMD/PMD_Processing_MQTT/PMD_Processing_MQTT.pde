@@ -31,6 +31,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20250106 Rev 0.26.  Simplify MAC to serial number management. Set a will for the "_ALM" topics.
 // Date: 20250106 Rev 0.27.  Set LWIT PMD. Add x and X keys to disconnect and exit the sketch.
 // Date: 20250107 Rev 0.28.  Add test 't' sends "a1Test with CR and LF\r\n" to reproduceing  Unexpected characters at the end of the alarm message, GPAD API 0.22 #131
+// Date: 20250115 Rev 0.29.  Add test 'e' and 'f' for Robert Status in Discord.
 
 
 
