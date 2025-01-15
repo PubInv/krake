@@ -1472,6 +1472,11 @@
     )
   )
 
+  (text "The speaker is not mounted directly onto the board"
+    (at 170.18 144.78 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 2ae5e599-ddb4-45d8-9978-2b07f6faacb2)
+  )
   (text "Notes on DFPayer\n\nUSA1 has a low cost(TD5580A) which is not the DFROBOT\nMockingKrake has the DFROBOT"
     (at 187.96 41.275 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
