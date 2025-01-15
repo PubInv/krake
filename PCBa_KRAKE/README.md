@@ -2,9 +2,9 @@
 View both cchematic and PCB files with Kicanvas
 These are Rev 2 files.
 
-##  View Schematics on Line
+##  View Schematic on Line
 
-[Main Page GPAD Rev2](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fgeneral-alarm-device%2Fblob%2Fmain%2FHardware%2FGeneralPurposeAlarmDevicePCB%2FGeneralPurposeAlarmDevicePCB.kicad_sch)
+[PCBa_KRAKE%2FPCBa_KRAKE.sch](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fkrake%2Fblob%2Fmain%2FPCBa_KRAKE%2FPCBa_KRAKE.sch)
 
 [AlarmAudio.kicad_sch](https://kicanvas.org/?github=https%3A%2F%2Fgithub.com%2FPubInv%2Fgeneral-alarm-device%2Fblob%2Fmain%2FHardware%2FGeneralPurposeAlarmDevicePCB%2FAlarmAudio.kicad_sch)  
 

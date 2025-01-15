@@ -88,6 +88,10 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a1 Nagham has left Discord, " + theTimeStamp ;
       } else if (key == 'd' ) {
         MessageFromProcessing_PMD = "a5 Nagam is back in Discord" + theTimeStamp;
+      } else if (key == 'e' ) {
+        MessageFromProcessing_PMD = "a1 Robert has left Discord, " + theTimeStamp ;
+      } else if (key == 'f' ) {
+        MessageFromProcessing_PMD = "a5 Robert is back in Discord" + theTimeStamp;
       } else if (key == 'i' ) {
         MessageFromProcessing_PMD = "i";
       } else if (key == 'j' ) {  //Request information in JSON format.
