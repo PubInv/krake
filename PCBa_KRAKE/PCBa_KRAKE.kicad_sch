@@ -7131,7 +7131,7 @@
   )
 
   (symbol (lib_id "Device:C") (at 77.47 78.74 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid b8bbdaed-02a0-4430-b962-e7f00239ddab)
     (property "Reference" "C1100" (at 80.391 77.5716 0)
       (effects (font (size 1.27 1.27)) (justify left))
