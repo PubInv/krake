@@ -2558,7 +2558,7 @@
     (property "Value" "CH340T" (at 156.21 83.82 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Package_SO:SSOP-20_5.3x7.2mm_P0.65mm" (at 177.8 125.73 0)
+    (property "Footprint" "GeneralPurposeAlarmDevicePCB:SSOP-20_5.3x7.2mm_P0.65mm_CH340T" (at 177.8 125.73 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://cdn.sparkfun.com/datasheets/Dev/Arduino/Other/CH340DS1.PDF" (at 148.59 83.82 0)
