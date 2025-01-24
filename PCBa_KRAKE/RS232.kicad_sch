@@ -1548,6 +1548,9 @@
     (property "Cost" "0.038" (at 176.53 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "Description" "47uF 16V 33mA@120Hz ±20% SMD,D5xL5.4mm Aluminum Electrolytic Capacitors - SMD ROHS" (at 176.53 83.82 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid fe7474a5-cb20-466d-a575-71d4afc25598))
     (pin "2" (uuid 55adf2ac-0695-4e0b-9b4e-747ccfb5d1ed))
     (instances
