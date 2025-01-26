@@ -49,6 +49,7 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client) {
   // TODO: This code can probably hang; it needs to have
   // timeouts added!
   if (inputPort->available() > 0) {
+    // TODO: MAKE NON-BLOCKING
     // read the incoming bytes:
     int rlen = inputPort->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
     // readBytesUntil does not terminate the string!

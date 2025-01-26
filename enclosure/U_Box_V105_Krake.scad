@@ -632,13 +632,14 @@ if(BPanL==1){
 
 
 // Module Section
-//RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
-//
-//Coque();
-//
-//SpeakerHole(OnOff = 1, Cx = 15, Cy = 15, Cdia = 20, Ccenter = true);
-//
-//LedSpacer(OnOff, Cx, Cy, Cdia, Cpitch, Cheight, Ccenter);
+// RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
+difference() {
+    Coque();
+    SpeakerHole(OnOff = 1, Cx = 15, Cy = 15, Cdia = 20, Ccenter = true);
+}
+
+
+// LedSpacer(OnOff, Cx, Cy, Cdia, Cpitch, Cheight, Ccenter);
 //
 //SpeakerHolder(OnOff, Cx, Cy, Cdia, Ccenter);
 //
