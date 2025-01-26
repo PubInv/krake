@@ -30,7 +30,8 @@
 // - Longueur - Length  
   Length        = 83.82+13;       
 // - Largeur - Width
-  Width         = 138+13;                     
+  //Width         = 138+13;   
+  Width         = 170+13;                     
 // - Hauteur - Height  
   Height        = 40;  
 // - Epaisseur - Wall thickness  
@@ -79,15 +80,15 @@ FootPosY         = 5.08;
 
 /* [STL element to export] */
 //Coque haut - Top shell
-TShell          = 0;// [0:No, 1:Yes]
+TShell          = 1;// [0:No, 1:Yes]
 //Coque bas- Bottom shell
-BShell          = 0;// [0:No, 1:Yes]
+BShell          = 1;// [0:No, 1:Yes]
 //Panneau avant - Front panel
-FPanL           = 0;// [0:No, 1:Yes]
+FPanL           = 1;// [0:No, 1:Yes]
 //Panneau arrière - Back panel  
-BPanL           = 0;// [0:No, 1:Yes]
+BPanL           = 1;// [0:No, 1:Yes]
 //Buttons
-BButton         = 0;
+BButton         = 1;
 //show pcb
 PCB_View        = 0;
 LED_Standoff    = 0;
@@ -102,6 +103,9 @@ Dec_Thick       = Vent ? Thick*2 : Thick;
 // - Depth decoration
 Dec_size        = Vent ? Thick*2 : 0.8;
 
+// Krake Modifications for SpeakerHole
+SpeakerHoleY = 145;
+SpeakerHoleX = PCBLength-15.24;
 
 
 
@@ -540,14 +544,17 @@ if(TShell==1){
       
     
         }
+        
 if(BShell==1){
 // Coque bas - Bottom shell
+    i=0;
     difference(){
         color(Couleur1,1){
             union(){ 
         Coque();
-        translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,PCBLength-15.24,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
+        translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
         // Pied support PCB - PCB feet
+                
         if (PCBFeet==1){// Feet
             // Pieds PCB - PCB feet (x4) 
             translate([PCBPosX,PCBPosY,0]){ 
@@ -559,13 +566,17 @@ if(BShell==1){
           color( Couleur1,1){
              translate( [3*Thick+2,Thick+5,0]){//([-.5,0,0]){
              //(On/Off, Xpos, Ypos, Diameter)
-                SpeakerHole(1,PCBLength-15.24,15.24,11,Ccenter=true); //Buzzer
-                SpeakerHole(0,PCBLength-15.24,PCBWidth-FootPosX,11,Ccenter=true); //Speaker
-                CylinderHole(1,PCBLength-27.94,15.24,5); //LED1      
-                CylinderHole(1,PCBLength-40.64,15.24,5); //LED2
-                CylinderHole(1,PCBLength-53.34,15.24,5); //LED3
-                CylinderHole(1,PCBLength-66.04,15.24,5); //LED4
-                CylinderHole(1,PCBLength-78.74,15.24,5); //LED5
+              //  SpeakerHole(1,SpeakerHoleX,15.24,11,Ccenter=true); //Buzzer
+                 SpeakerHole(1,SpeakerHoleX,SpeakerHoleY,11,Ccenter=true); //Buzzer
+                SpeakerHole(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker
+                 for ( i = [0 : 4] ){
+                
+                    CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1  
+                 }
+//                CylinderHole(1,PCBLength-(27.94+12.7*1),15.24,5); //LED2 40.64
+//                CylinderHole(1,PCBLength-(27.94+12.7*2),15.24,5); // 53.34
+//                CylinderHole(1,PCBLength-(27.94+12.7*3),15.24,5); //LED4 66.04
+//                CylinderHole(1,PCBLength-(27.94+12.7*4),15.24,5); //LED5 78.74
                 CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
                 
                
@@ -573,7 +584,7 @@ if(BShell==1){
                 
              //(On/Off, Xpos,Ypos,Length,Width,Filet)
                 SquareHole(1,PCBLength-50.8,71.12,26,76,0,Ccenter=true);   //Display
-                CylinderHole(1,PCBLength-15.24,68.58,2); //reset hole
+                CylinderHole(1,SpeakerHoleX,68.58,2); //reset hole
                  //(On/Off, Xpos, Ypos, "Font", Size, Diameter, Arc(Deg), Starting Angle(Deg),"Text",_halign = "center",_valign="top") 
                 rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-(PCBLength-10),31.75,"Arial Black",4,9,110,270,"MUTE");
                 CylinderHole(1,PCBLength-10,31.75,15); //Mute Button
@@ -633,12 +644,15 @@ if(BPanL==1){
 
 // Module Section
 // RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
-difference() {
-    Coque();
-    SpeakerHole(OnOff = 1, Cx = 15, Cy = 15, Cdia = 20, Ccenter = true);
+module frontPanel(){
+    difference() {
+        Coque();
+    
+        SpeakerHole(OnOff = 1, Cx = 30, Cy = 20, Cdia = 20, Ccenter = true);
+    }
 }
 
-
+//frontPanel();
 // LedSpacer(OnOff, Cx, Cy, Cdia, Cpitch, Cheight, Ccenter);
 //
 //SpeakerHolder(OnOff, Cx, Cy, Cdia, Ccenter);
