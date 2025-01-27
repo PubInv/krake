@@ -107,8 +107,20 @@ Dec_size        = Vent ? Thick*2 : 0.8;
 SpeakerHoleY = 145;
 SpeakerHoleX = PCBLength-15.24;
 
-
-
+//Krake Modifications for Display
+ DisplayXpos = PCBLength-50.8;
+ DisplayYpos = 71.12;
+ DisplayLenght = 26;
+ DisplayWidth = 76;
+ DisplayFilet = 0;
+ 
+ //Krake Modificationd for muteButton
+ muteButtonXpos = PCBLength-10;
+ muteButtonYpos = 31.75;
+ muteButtonDiameter = 15;
+ //For instructions on mute Button inscription go to line 594.
+ 
+ 
 
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
 
@@ -564,7 +576,7 @@ if(BShell==1){
         }
     }}
           color( Couleur1,1){
-             translate( [3*Thick+2,Thick+5,0]){//([-.5,0,0]){
+             translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
              //(On/Off, Xpos, Ypos, Diameter)
               //  SpeakerHole(1,SpeakerHoleX,15.24,11,Ccenter=true); //Buzzer
                  SpeakerHole(1,SpeakerHoleX,SpeakerHoleY,11,Ccenter=true); //Buzzer
@@ -573,23 +585,16 @@ if(BShell==1){
                 
                     CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1  
                  }
-//                CylinderHole(1,PCBLength-(27.94+12.7*1),15.24,5); //LED2 40.64
-//                CylinderHole(1,PCBLength-(27.94+12.7*2),15.24,5); // 53.34
-//                CylinderHole(1,PCBLength-(27.94+12.7*3),15.24,5); //LED4 66.04
-//                CylinderHole(1,PCBLength-(27.94+12.7*4),15.24,5); //LED5 78.74
                 CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
-                
-               
-                
-                
-             //(On/Off, Xpos,Ypos,Length,Width,Filet)
-                SquareHole(1,PCBLength-50.8,71.12,26,76,0,Ccenter=true);   //Display
+          
+                 //(On/Off, Xpos,Ypos,Length,Width,Filet)
+                SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
                 CylinderHole(1,SpeakerHoleX,68.58,2); //reset hole
                  //(On/Off, Xpos, Ypos, "Font", Size, Diameter, Arc(Deg), Starting Angle(Deg),"Text",_halign = "center",_valign="top") 
-                rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-(PCBLength-10),31.75,"Arial Black",4,9,110,270,"MUTE");
-                CylinderHole(1,PCBLength-10,31.75,15); //Mute Button
-                CylinderSpacer(1,PCBLength-10,31.75,15+Thick+m/2); //cutout for mute button
-                // SquareHole(1,PCBLength-63.87,33.12,1,1,0,Ccenter=true);   //testing
+                rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-(muteButtonXpos),muteButtonYpos,"Arial Black",4,9,110,270,"MUTE");
+                CylinderHole(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter); //Mute Button
+                CylinderSpacer(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter+Thick+m/2); //cutout for mute button
+                // SquareHole(1,PCBLength-63.87,33.12,1,1,0,Ccenter=true);       //testing 
             }
         }
     }
@@ -599,7 +604,7 @@ if(BShell==1){
 if(BButton ==1){
 //button
     translate( [3*Thick+2,Thick+5,0])     
-    ButtonSwitch(1,PCBLength-10,31.75,15); //Mute Button
+    ButtonSwitch(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter); //Mute Button
 }
 
 if(LED_Standoff == 1){
@@ -653,31 +658,5 @@ module frontPanel(){
 }
 
 //frontPanel();
-// LedSpacer(OnOff, Cx, Cy, Cdia, Cpitch, Cheight, Ccenter);
-//
-//SpeakerHolder(OnOff, Cx, Cy, Cdia, Ccenter);
-//
-//ButtonSwitch(OnOff,Cx,Cy,Cdia,Ccenter);
-//
-//foot(FootDia, FootHole, FootHeight);
-//
-//Feet();
-//
-//Panel(Length,Width,Thick,Filet);
-//
-//CylinderSpacer(OnOff,Cx,Cy,Cdia,Ccenter);
-//
-//CylinderHole(OnOff,Cx,Cy,Cdia,Ccenter);
-//
-//SquareHole(OnOff,Sx,Sy,Sl,Sw,Filet,Ccenter);
-//
-//LText(OnOff, Tx, Ty, Font, Size, Content, _valign="baseline", _halign="left");
-//
-//CText(OnOff,Tx,Ty,Font,Size,TxtRadius,Angl,Turn,Content,_valign="baseline",_halign="center");
-//
-//FPanL();
-//
-//
-//
-//
+
 
