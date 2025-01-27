@@ -186,7 +186,7 @@
     (property "Value" "ENCLOSURE_KRAKE_VER1" (at 107.95 62.865 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "NA" (at 118.11 65.405 0)
+    (property "Footprint" "" (at 118.11 65.405 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 118.11 65.405 0)
