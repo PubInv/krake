@@ -7,7 +7,7 @@
   (title_block
     (title "KRAKE_PCB")
     (date "2024-11-23")
-    (rev "1")
+    (rev "1.0")
     (company "PublicInvention")
     (comment 1 "GNU Affero General Public License v3.0")
     (comment 2 "DrawnBy: (Forrest) Lee Erickson, Nagham Kheir")
@@ -1458,6 +1458,9 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" "Texas Instruments" (at 104.14 106.68 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Distributor 1 PN" "C354119" (at 104.14 106.68 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 7c6ca529-4f0e-4c21-8562-70302cd5e26c))
