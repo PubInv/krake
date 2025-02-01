@@ -80,15 +80,17 @@ FootPosY         = 5.08;
 
 /* [STL element to export] */
 //Coque haut - Top shell
-TShell          = 1;// [0:No, 1:Yes]
+TShell          = 0;// [0:No, 1:Yes]
 //Coque bas- Bottom shell
 BShell          = 1;// [0:No, 1:Yes]
 //Panneau avant - Front panel
-FPanL           = 1;// [0:No, 1:Yes]
+FPanL           = 0;// [0:No, 1:Yes]
 //Panneau arrière - Back panel  
-BPanL           = 1;// [0:No, 1:Yes]
+BPanL           = 0;// [0:No, 1:Yes]
 //Buttons
-BButton         = 1;
+BButton         = 0;
+//T and BShellScrew
+T_BShellScrew   = 1;
 //show pcb
 PCB_View        = 0;
 LED_Standoff    = 0;
@@ -120,6 +122,8 @@ SpeakerHoleX = PCBLength-15.24;
  muteButtonDiameter = 15;
  //For instructions on mute Button inscription go to line 594.
  
+ 
+
  
 
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
@@ -657,6 +661,38 @@ module frontPanel(){
     }
 }
 
-//frontPanel();
+//This is the purchased part.
 
+// This is a 2mm screw that connects the BShell to the TShell.
+if (T_BShellScrew==1){
+//translate([3*Thick+11,-1,Height/2+4]){
+                   // rotate([90,0,0])
+ // import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+//}
+
+
+ union(){ //sides holes
+                $fn=50;
+                translate([3*Thick+5,20,Height/2+4]){
+                    rotate([90,0,0]){
+                    import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+                    }
+                }
+                translate([Length-((3*Thick)+5),20,Height/2+4]){
+                    rotate([90,0,0]){
+                    import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+                    }
+                }
+                translate([3*Thick+5,Width+5,Height/2-4]){
+                    rotate([90,0,0]){
+                    import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+                    }
+                }
+                translate([Length-((3*Thick)+5),Width+5,Height/2-4]){
+                    rotate([90,0,0]){
+                    import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+                    }
+                }
+            }
+            }//fin de sides holes
 
