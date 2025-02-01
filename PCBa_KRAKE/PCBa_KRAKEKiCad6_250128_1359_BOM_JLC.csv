@@ -1,0 +1,157 @@
+Comment,Designator,Footprint,JLCPCB Part #(optional)
++5esp32,+5esp32,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
+39pF,C101,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C107049
+47uF 16V,C102,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C103,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C105,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C106,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C108,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C109,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+47uF 16V,C115,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C116,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C117,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C118,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C301,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C302,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C303,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C501,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C502,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C503,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C504,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C505,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C602,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C701,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C702,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C703,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+100nF,C704,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+47uF 16V,C705,Capacitor_SMD:CP_Elec_5x5.4,C2895272
+100nF,C706,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,C14663
+Schottky 2A,D101,Diode_SMD:D_SMB,C14996
+Schottky 2A,D103,Diode_SMD:D_SMB,C14996
+Schottky 2A,D104,Diode_SMD:D_SMB,C14996
+RED 0603,D106,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,C2286
+BAT54S,D301,Package_TO_SOT_SMD:SOT-23,C47546
+BAT54S,D302,Package_TO_SOT_SMD:SOT-23,C47546
+BAT54S,D303,Package_TO_SOT_SMD:SOT-23,C47546
+BAT54S,D304,Package_TO_SOT_SMD:SOT-23,C47546
+RED 0603,D501,LED_SMD:LED_0603_1608Metric,C2286
+Polyfuse_Small_1A,F101,Fuse:Fuse_0603_1608Metric,C207017
+Polyfuse_Small_1A,F401,Fuse:Fuse_0603_1608Metric,C207017
+Barrel_Jack_Switch_SMT,J101,GeneralPurposeAlarmDevicePCB:BarrelJack_CLIFF_FC681465S_SMT_Horizontal,C319134
+0.100_2Pin,J102,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,C168673
+0.100_2Pin,J103,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,C168673
+RJ12_6P6C_HORZ,J401,GeneralPurposeAlarmDevicePCB:RJ12_Amphenol_54601,C305981
+USB_C_Receptacle_USB2.0,J501,GeneralPurposeAlarmDevicePCB:USB_C_Receptacle_HRO_TYPE-C-31-M-12,C165948
+1X2P 1.27 mm Header,J601,Connector_PinHeader_1.27mm:PinHeader_1x02_P1.27mm_Vertical,C7496728
+0.100_2Pin,J602,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,C168673
+MMBT2222A-7-F,Q201,Package_TO_SOT_SMD:SOT-23,C94515
+MMBT2222A-7-F,Q202,Package_TO_SOT_SMD:SOT-23,C94515
+MMBT2222A-7-F,Q203,Package_TO_SOT_SMD:SOT-23,C94515
+MMBT2222A-7-F,Q204,Package_TO_SOT_SMD:SOT-23,C94515
+MMBT2222A-7-F,Q205,Package_TO_SOT_SMD:SOT-23,C94515
+MMBT2222A-7-F,Q206,Package_TO_SOT_SMD:SOT-23,C94515
+MMBT2222A-7-F,Q207,Package_TO_SOT_SMD:SOT-23,C94515
+BSS138,Q301,Package_TO_SOT_SMD:SOT-23,C400505
+BSS138,Q302,Package_TO_SOT_SMD:SOT-23,C400505
+BSS138,Q303,Package_TO_SOT_SMD:SOT-23,C400505
+BSS138,Q304,Package_TO_SOT_SMD:SOT-23,C400505
+BSS138,Q305,Package_TO_SOT_SMD:SOT-23,C400505
+BSS138,Q401,Package_TO_SOT_SMD:SOT-23,C400505
+BSS138,Q402,Package_TO_SOT_SMD:SOT-23,C400505
+1R0,R1002,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+10K,R1003,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+10K,R1004,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+10K,R1005,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+330R,R1008,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+1R0,R1009,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+1R0,R101,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+10K,R102,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+330R,R110,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R112,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+39R,R113,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C325713
+39R,R114,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C325713
+39R,R115,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C325713
+39R,R116,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C325713
+4K7,R201,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R202,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+4K7,R203,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R204,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+4K7,R205,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R206,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+4K7,R207,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R208,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+4K7,R209,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R210,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+5K1,R211,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C23186
+5K1,R212,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C23186
+1R0,R213,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+10K,R214,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+10K,R215,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+1R0,R216,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+4K7,R301,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R302,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R303,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+1K,R304,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269704
+1R0,R305,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+1R0,R307,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+1R0,R309,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+1R0,R310,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+4K7,R311,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R312,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R313,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R315,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R316,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R318,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R319,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R321,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R322,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R324,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R401,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R402,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R403,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R404,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+4K7,R405,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R406,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R409,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+4K7,R410,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R501,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R502,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R503,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+4K7,R504,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269713
+330R,R509,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R510,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R511,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+1R0,R512,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+10K,R603,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269701
+330R,R701,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R702,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R703,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R704,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R705,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R706,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R709,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+330R,R710,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269711
+1R0,R711,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,C269434
+POT 0.375 10K,RV301,GeneralPurposeAlarmDevicePCB:Potentiometer_Bourns_3386P_Vertical,C116281
+SWITCH_TACTILE_SPST-NO_0.05A_24V,S101,GeneralPurposeAlarmDevicePCB:Switch_Tactile_THT_6x6mm,C13828
+SWITCH_TACTILE_SPST-NO_0.05A_24V,S102,GeneralPurposeAlarmDevicePCB:Switch_Tactile_THT_6x6mm,C13828
+SWITCH_TACTILE_12mmx12mm_SPST-NO_0.05A_24V,S601,GeneralPurposeAlarmDevicePCB:SW_PUSH-12mm_WithCap_Green,C84931
+RotaryEncoder_Switch,SW101,Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm,C202365
+TP_GND,TP101,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C7589090
+Vin,TP102,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
++5V,TP103,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
+VBus,TP201,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
+V3,TP202,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
+nCTS,TP203,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5199804
+Vcc_LCD,TP401,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
+nINT,TP402,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5199804
+SCL,TP403,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5199804
+SDA,TP404,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5199804
+Vcontrast,TP405,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,C5277086
+LM7805_TO220,U101,Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown,C2977083
+ESP32-WROOM-32E-N4,U102,RF_Module:ESP32-WROOM-32D,C701341
+AMS1117-3.3,U103,Package_TO_SOT_SMD:SOT-223-3_TabPin2,C6186
+PCF8574AT_3_518,U301,Package_SO:SOIC-16W_7.5x10.3mm_P1.27mm,C86832
+Conn_01x16,U303,Connector_PinHeader_2.54mm:PinHeader_1x16_P2.54mm_Vertical,C22465876
+CH340T,U501,GeneralPurposeAlarmDevicePCB:SSOP-20_5.3x7.2mm_P0.65mm_CH340T,C8689
+MAX3232,U701,Package_SO:SOIC-16_4.55x10.3mm_P1.27mm,C354119

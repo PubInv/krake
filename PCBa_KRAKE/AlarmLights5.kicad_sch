@@ -2,12 +2,12 @@
 
   (uuid eb754b24-08d4-4186-b0bf-c7f5f4358e7b)
 
-  (paper "USLetter")
+  (paper "A4")
 
   (title_block
     (title "KRAKE_PCB")
     (date "2024-11-23")
-    (rev "1")
+    (rev "1.0")
     (company "PublicInvention")
     (comment 1 "GNU Affero General Public License v3.0")
     (comment 2 "DrawnBy: (Forrest) Lee Erickson, Nagham Kheir")

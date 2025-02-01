@@ -1,0 +1,47 @@
+Item #,*Designator,*Qty,Manufacturer,*Mfg Part #,Description / Value,*Package/Footprint ,Type,Your Instructions / Notes
+,Reference(s),Qty,Manufacturer,MPN,Value,Footprint,AssemblyType,Distributor 1
+,+5esp32,1,ronghe,RH-5000,+5esp32,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,C101,1,YAGEO,CC0603JRNPO9BN390,39pF,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,SMT,JLCPCB
+,"C102, C106, C109, C115, C118, C302, C502, C505, C705",9,KNSCHA,RVT47UF16V67RV0019,47uF 16V,Capacitor_SMD:CP_Elec_5x5.4,SMT,JLCPCB
+,"C103, C105, C108, C116, C117, C301, C303, C501, C503, C504, C602, C701, C702, C703, C704, C706",16,YAGEO,CC0603KRX7R9BB104,100nF,Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,SMT,JLCPCB
+,"D101, D103, D104",3,MDD(Microdiode Electronics),SS210,Schottky 2A,Diode_SMD:D_SMB,SMT,JLCPCB
+,D106,1,Lite-On Inc.,LTST-C171KRKT,RED 0603,LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder,SMT,JLCPCB
+,"D301, D302, D303, D304",4,Nexperia,"BAT54S,215",BAT54S,Package_TO_SOT_SMD:SOT-23,SMT,JLCPCB
+,D501,1,Hubei KENTO Elec,KT-0603R,RED 0603,LED_SMD:LED_0603_1608Metric,SMT,JLCPCB
+,"F101, F401",2,Littelfuse,0603L100SLYR,Polyfuse_Small_1A,Fuse:Fuse_0603_1608Metric,SMT,JLCPCB
+,J101,1,XKB Connectivity / Tensility International Corp,DC-005-5A-2.0-SMT / 54-00164,Barrel_Jack_Switch_SMT,GeneralPurposeAlarmDevicePCB:BarrelJack_CLIFF_FC681465S_SMT_Horizontal,SMT,JLCPCB
+,"J102, J103, J602",3,Amphenol ICC,68000-102HLF,0.100_2Pin,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,HAND,JLCPCB
+,J401,1,TE Connectivity,5555165-1,RJ12_6P6C_HORZ,GeneralPurposeAlarmDevicePCB:RJ12_Amphenol_54601,HAND,JLCPCB
+,J501,1,Korean Hroparts Elec,TYPE-C-31-M-12,USB_C_Receptacle_USB2.0,GeneralPurposeAlarmDevicePCB:USB_C_Receptacle_HRO_TYPE-C-31-M-12,SMT,JLCPCB
+,J601,1,XFCN,PZ150V-02P,1X2P 1.27 mm Header,Connector_PinHeader_1.27mm:PinHeader_1x02_P1.27mm_Vertical,HAND,JLCPCB
+,"Q201, Q202, Q203, Q204, Q205, Q206, Q207",7,Diodes Incorporated,MMBT2222A-7-F,MMBT2222A-7-F,Package_TO_SOT_SMD:SOT-23,SMT,JLCPCB
+,"Q301, Q302, Q303, Q304, Q305, Q401, Q402",7,"Yangzhou Yangjie Electronic Technology Co., Ltd",BSS138,BSS138,Package_TO_SOT_SMD:SOT-23,SMT,JLCPCB
+,"R101, R213, R216, R305, R307, R309, R310, R512, R711, R1002, R1009",11,TyoHM,RMC060315%N,1R0,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,"R102, R214, R215, R603, R1003, R1004, R1005",7,TyoHM,RMC 0603 10K F N,10K,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,"R110, R112, R202, R204, R206, R208, R210, R401, R402, R403, R404, R501, R502, R503, R509, R510, R511, R701, R702, R703, R704, R705, R706, R709, R710, R1008",26,TyoHM,RMC06033301%N,330R,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,"R113, R114, R115, R116",4,TyoHM,RMC0603391%N,39R,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,"R201, R203, R205, R207, R209, R301, R302, R303, R311, R312, R313, R315, R316, R318, R319, R321, R322, R324, R405, R406, R409, R410, R504",23,TyoHM,RMC 0603 4K7 F N,4K7,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,"R211, R212",2,UNI-ROYAL(Uniroyal Elec),0603WAF5101T5E,5K1,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,R304,1,TyoHM,RMC06031K1%N,1K,Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder,SMT,JLCPCB
+,RV301,1,BOURNS,3386P-1-103LF,POT 0.375 10K,GeneralPurposeAlarmDevicePCB:Potentiometer_Bourns_3386P_Vertical,SMT,JLCPCB
+,"S101, S102",2,TE Connectivity ALCOSWITCH Switches,"TE Connectivity 1825910-7,   Dongguan Guangzhu Industrial C13828",SWITCH_TACTILE_SPST-NO_0.05A_24V,GeneralPurposeAlarmDevicePCB:Switch_Tactile_THT_6x6mm,HAND,JLCPCB
+,S601,1,Omron Electronics,B3F-4055,SWITCH_TACTILE_12mmx12mm_SPST-NO_0.05A_24V,GeneralPurposeAlarmDevicePCB:SW_PUSH-12mm_WithCap_Green,HAND,JLCPCB
+,SW101,1,ALPSALPINE,EC11E18244AU,RotaryEncoder_Switch,Rotary_Encoder:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm,HAND,JLCPCB
+,TP101,1,ronghe,RH-5121,TP_GND,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP102,1,ronghe,RH-5000,Vin,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP103,1,ronghe,RH-5000,+5V,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP201,1,ronghe,RH-5000,VBus,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP202,1,ronghe,RH-5000,V3,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP203,1,ronghe,RH-5004,nCTS,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP401,1,ronghe,RH-5000,Vcc_LCD,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP402,1,ronghe,RH-5004,nINT,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP403,1,ronghe,RH-5004,SCL,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP404,1,ronghe,RH-5004,SDA,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,TP405,1,ronghe,RH-5000,Vcontrast,TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded,HAND,JLCPCB
+,U101,1,HANSCHIP semiconductor,LM7805CTG,LM7805_TO220,Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown,HAND,JLCPCB
+,U102,1,Espressif Systems,ESP32-WROOM-32E-N4,ESP32-WROOM-32E-N4,RF_Module:ESP32-WROOM-32D,SMT,JLCPCB
+,U103,1,Advanced Monolithic Systems,AMS1117-3.3,AMS1117-3.3,Package_TO_SOT_SMD:SOT-223-3_TabPin2,SMT,JLCPCB
+,U301,1,NXP Semicon,PCF8574AT_3_518,PCF8574AT_3_518,Package_SO:SOIC-16W_7.5x10.3mm_P1.27mm,SMT,JLCPCB
+,U303,1,XFCN,PZ254V-11-16P,Conn_01x16,Connector_PinHeader_2.54mm:PinHeader_1x16_P2.54mm_Vertical,HAND,JLCPCB
+,U501,1,WCH(Jiangsu Qin Heng),CH340T,CH340T,GeneralPurposeAlarmDevicePCB:SSOP-20_5.3x7.2mm_P0.65mm_CH340T,SMT,JLCPCB
+,U701,1,Texas Instruments,MAX3232ID,MAX3232,Package_SO:SOIC-16_4.55x10.3mm_P1.27mm,SMT,JLCPCB
