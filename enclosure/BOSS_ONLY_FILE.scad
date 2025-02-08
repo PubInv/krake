@@ -1,3 +1,8 @@
+//Name of File: BOSS_ONLY_FILE.scad
+//For Testing the fit of screws on printed 3D parts.
+//Author: Oyindamola Adeniran
+//Date: 20250208
+//Liscence: Public Domain
 
 Wallthickness = 2;
 Screwdiameter = 3; // Mc-Master Carr Screw 99461A941
@@ -6,20 +11,23 @@ Bossdiameter = 2*Holediameter;
 FootHeight   = 15; //From GPAD enclosure
 ScrewLenght = 8;
 counterBoreDepth = 0.3*Screwdiameter;
+wallLenght = 25.4;
+wallWidth = 25.4;
 
-//To-Do 
-//Hole isn't all the way through
-
+// Import 3mm Plastite Screw
 translate ([0,0,FootHeight+ScrewLenght+1])
 import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 
+// The Boss
 difference() {
     cylinder(h=FootHeight, d=Bossdiameter); // Main body
-    translate ([0, 0,Wallthickness*0.7])
+    translate ([0, 0,(Wallthickness*0.7)])
     cylinder(h=FootHeight+1, d=Holediameter, center = false);
     translate([0, 0,FootHeight-counterBoreDepth]) 
     cylinder(h=counterBoreDepth+1, d=Screwdiameter, center = false); // Side boss
 }
+
+// The Wall
 $fn = 100;
-translate([0,0,1])
-cube([25.4, 25.4,2], center = true);
+translate([0,0,Wallthickness/2])
+cube([wallLenght,wallWidth,Wallthickness], center = true);
