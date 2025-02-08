@@ -13,11 +13,16 @@ ScrewLenght = 8;
 counterBoreDepth = 0.3*Screwdiameter;
 wallLenght = 25.4;
 wallWidth = 25.4;
+Screw = 0;
+Boss = 1;
 
 // Import 3mm Plastite Screw
+if(Screw ==1){
 translate ([0,0,FootHeight+ScrewLenght+1])
 import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
+}
 
+if(Boss ==1){
 // The Boss
 difference() {
     cylinder(h=FootHeight, d=Bossdiameter); // Main body
@@ -31,3 +36,4 @@ difference() {
 $fn = 100;
 translate([0,0,Wallthickness/2])
 cube([wallLenght,wallWidth,Wallthickness], center = true);
+}
