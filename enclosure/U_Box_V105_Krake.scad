@@ -26,12 +26,14 @@
 
 ////////// - Paramètres de la boite - Box parameters - /////////////
 
+use <BOSS_ONLY_FILE.scad>
+
 /* [Box dimensions] */
 // - Longueur - Length  
   Length        = 83.82+13;       
 // - Largeur - Width
   //Width         = 138+13;   
-  Width         = 170+13;                     
+  Width         = 138+13;                     
 // - Hauteur - Height  
   Height        = 40;  
 // - Epaisseur - Wall thickness  
@@ -80,17 +82,18 @@ FootPosY         = 5.08;
 
 /* [STL element to export] */
 //Coque haut - Top shell
-TShell          = 0;// [0:No, 1:Yes]
+GPAD_TShell          = 0;// [0:No, 1:Yes]
 //Coque bas- Bottom shell
-BShell          = 1;// [0:No, 1:Yes]
+GPAD_BShell          = 1;// [0:No, 1:Yes]
 //Panneau avant - Front panel
-FPanL           = 0;// [0:No, 1:Yes]
+GPAD_FPanL           = 0;// [0:No, 1:Yes]
 //Panneau arrière - Back panel  
-BPanL           = 0;// [0:No, 1:Yes]
+GPAD_BPanL           = 0;// [0:No, 1:Yes]
 //Buttons
 BButton         = 0;
 //T and BShellScrew
 T_BShellScrew   = 1;
+BOSSScrew = 0;
 //show pcb
 PCB_View        = 0;
 LED_Standoff    = 0;
@@ -106,7 +109,7 @@ Dec_Thick       = Vent ? Thick*2 : Thick;
 Dec_size        = Vent ? Thick*2 : 0.8;
 
 // Krake Modifications for SpeakerHole
-SpeakerHoleY = 145;
+SpeakerHoleY = 15.24;
 SpeakerHoleX = PCBLength-15.24;
 
 //Krake Modifications for Display
@@ -122,8 +125,12 @@ SpeakerHoleX = PCBLength-15.24;
  muteButtonDiameter = 15;
  //For instructions on mute Button inscription go to line 594.
  
- 
-
+ // Import 3mm Plastite Screw
+if(BOSSScrew ==1){
+translate ([PCBLength-70.74,12.24,25])
+//translate ([0,0,FootHeight+ScrewLenght+1])
+import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
+}
  
 
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
@@ -414,26 +421,31 @@ module Feet(){
 
 
     translate([3*Thick+2,Thick+5,Thick/2-.01]){
-    translate([FootPosX,FootPosY,FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
+    translate([FootPosX,FootPosY,FootHeight/5.5]){
+        BOSS_ONLY();
+       // foot(FootDia,FootHole,FootHeight);
     }
-    translate([(PCBLength-FootPosX),FootPosY,FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
+    translate([(PCBLength-FootPosX),FootPosY,FootHeight/5.5]){
+        BOSS_ONLY();
+        //foot(FootDia,FootHole,FootHeight);
         }
-    translate([(PCBLength-FootPosX),(PCBWidth-FootPosY),FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
+    translate([(PCBLength-FootPosX),(PCBWidth-FootPosY),FootHeight/5.5]){
+        BOSS_ONLY();
+        //foot(FootDia,FootHole,FootHeight);
         }        
-    translate([FootPosX,PCBWidth-(FootPosY),FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
+    translate([FootPosX,PCBWidth-(FootPosY),FootHeight/5.5]){
+        BOSS_ONLY();
+        //foot(FootDia,FootHole,FootHeight);
     }
-    translate([(PCBLength-FootPosX),(PCBWidth-68.58),FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
+    #translate([(PCBLength-FootPosX),(PCBWidth-68.58),FootHeight/5.5]){
+        BOSS_ONLY();
+        //foot(FootDia,FootHole,FootHeight);
     }
 }
 } // Fin du module Feet
  
 
-
+//
  
 ////////////////////////////////////////////////////////////////////////
 ////////////////////// <- Holes Panel Manager -> ///////////////////////
@@ -458,7 +470,7 @@ module CylinderSpacer(OnOff,Cx,Cy,Cdia,Ccenter=false){
         cylinder(d=Cdia,10, $fn=50,center=Ccenter);
 }
 
-
+//This is for all the circular holes.
 //                          <- Circle hole -> 
 // Cx=Cylinder X position | Cy=Cylinder Y position | Cdia= Cylinder dia | Cheight=Cyl height
 module CylinderHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
@@ -548,7 +560,7 @@ module FPanL(){
 
 /////////////////////////// <- Main part -> /////////////////////////
 
-if(TShell==1){
+if(GPAD_TShell==1){
 // Coque haut - Top Shell
         color( Couleur1,1){
             translate([0,Width,Height+0.2]){
@@ -561,7 +573,7 @@ if(TShell==1){
     
         }
         
-if(BShell==1){
+if(GPAD_BShell==1){
 // Coque bas - Bottom shell
     i=0;
     difference(){
@@ -638,12 +650,12 @@ if(PCB_View==1){
 
 // Panneau avant - Front panel  <<<<<< Text and holes only on this one.
 //rotate([0,-90,-90]) 
-if(FPanL==1){
+if(GPAD_FPanL==1){
         translate([Length-(Thick*2+m/2),Thick+m/2,Thick+m/2])
         FPanL();
 }
 //Panneau arrière - Back panel
-if(BPanL==1){
+if(GPAD_BPanL==1){
         color(Couleur2)
         translate([Thick+m/2,Thick+m/2,Thick+m/2])
         Panel(Length,Width,Thick,Filet);
@@ -673,22 +685,22 @@ if (T_BShellScrew==1){
 
  union(){ //sides holes
                 $fn=50;
-                translate([3*Thick+5,20,Height/2+4]){
+                translate([3*Thick+11,0,Height/2+4]){
                     rotate([90,0,0]){
                     import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
                     }
                 }
-                translate([Length-((3*Thick)+5),20,Height/2+4]){
+                translate([Length-((3*Thick)+11),0,Height/2+4]){
                     rotate([90,0,0]){
                     import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
                     }
                 }
-                translate([3*Thick+5,Width+5,Height/2-4]){
+                translate([3*Thick+11,Width-5,Height/2-4]){
                     rotate([90,0,0]){
                     import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
                     }
                 }
-                translate([Length-((3*Thick)+5),Width+5,Height/2-4]){
+                translate([Length-((3*Thick)+11),Width-5,Height/2-4]){
                     rotate([90,0,0]){
                     import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
                     }
