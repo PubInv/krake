@@ -3,7 +3,7 @@ void setup() {
     while (!Serial);
 
     // Print flash size
-    Serial.ntpriln("Flash Size:");
+    Serial.println("Flash Size:");
     Serial.println(ESP.getFlashChipSize() / (1024 * 1024));
 }
 
