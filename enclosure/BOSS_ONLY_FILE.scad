@@ -15,7 +15,7 @@ wallLenght = 25.4;
 wallWidth = 25.4;
 inner_allowancePLA = 0.5;//Error on Lee's 3D printer(undersize error).
 outer_allowancePLA = 0.3; 
-Screw = 1;
+Screw = 0;
 Boss = 1;
 TheWall =1;
 
