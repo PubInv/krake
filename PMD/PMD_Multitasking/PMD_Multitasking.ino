@@ -26,12 +26,6 @@ const int LED_3 = 5;
 const int LED_4 = 18;
 const int LED_5 = 19;
 
-
-/* Add a detailed description here
- *  This device is the best PMD ever. 
- *  It does nothing except wink LEDs).
- */
-
 //Claases defined below
 class Flasher {
   // Class Member Variables
@@ -58,7 +52,7 @@ public:
     previousMillis = 0;
   }
 
-  void Update() {
+  void Update() {  // defining a member function of the Flasher class
     // check to see if it's time to change the state of the LED
     unsigned long currentMillis = millis();
 
@@ -89,24 +83,17 @@ void serialSplash() {
   Serial.println(F("==================================="));
   Serial.println();
 }
+
 //Defining the behavior
-/*
-LED 1 blinks 0.5 period and 50% duty cycle
-LED 2 blinks 1.2 period and 20% duty cycle
-LED 3 blinks 1.4 period and 62% duty cycle
-LED 4 blinks 3.0 period and 55% duty cycle
-LED 5 blinks 7.5 period and 10% duty cycle
-*/
-
 // Flasher led1(ledpin#, on time, off time);
-Flasher led1(LED_1, 250, 250);
-Flasher led2(LED_2, 1200 * 20 / 100, 1200 * 80 / 100);
-Flasher led3(LED_3, 1400 * 62 / 100, 1400 * 38 / 100);
-Flasher led4(LED_4, 3000 * 55 / 100, 3000 * 45 / 100);
-Flasher led5(LED_5, 7500 * 10 / 100, 7500 * 90 / 100);
-
+Flasher led1(LED_1, 250, 250);                          // LED 1 blinks 0.5 period and 50% duty cycle
+Flasher led2(LED_2, 1200 * 20 / 100, 1200 * 80 / 100);  // LED 2 blinks 1.2 period and 20% duty cycle
+Flasher led3(LED_3, 1400 * 62 / 100, 1400 * 38 / 100);  // LED 3 blinks 1.4 period and 62% duty cycle
+Flasher led4(LED_4, 3000 * 55 / 100, 3000 * 45 / 100);  // LED 4 blinks 3.0 period and 55% duty cycle
+Flasher led5(LED_5, 7500 * 10 / 100, 7500 * 90 / 100);  // LED 5 blinks 7.5 period and 10% duty cycle
 
 // The Setup
+
 void setup() {
 
   //setting GPIO to initial values
@@ -128,22 +115,24 @@ void setup() {
     ;  // wait for serial port to connect. Needed for native USB
   }
   delay(500);
+
   //Serial splash
   serialSplash();
 
   // More setup code here
-  // digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
-  // digitalWrite(LED_2, LOW);        //Make built in LED low at end of setup.
-  // digitalWrite(LED_3, LOW);        //Make built in LED low at end of setup.
-  // digitalWrite(LED_4, LOW);        //Make built in LED low at end of setup.
-  // digitalWrite(LED_5, LOW);        //Make built in LED low at end of setup.
+  digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
+  digitalWrite(LED_2, LOW);        //Make built in LED low at end of setup.
+  digitalWrite(LED_3, LOW);        //Make built in LED low at end of setup.
+  digitalWrite(LED_4, LOW);        //Make built in LED low at end of setup.
+  digitalWrite(LED_5, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_BUILTIN, LOW);  //Make built in LED low at end of setup.
-}  //end setup()
+} 
+ //end setup()
 
 void loop() {
   // More loop code here
-  // digitalWrite(LED_1, HIGH);
-  wink();
+  
+  wink(); // Heart beat aka activity indicator LED function. 
   led1.Update();
   led2.Update();
   led3.Update();
