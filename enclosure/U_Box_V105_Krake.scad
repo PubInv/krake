@@ -86,7 +86,7 @@ GPAD_TShell          = 0;// [0:No, 1:Yes]
 //Coque bas- Bottom shell
 GPAD_BShell          = 1;// [0:No, 1:Yes]
 //Panneau avant - Front panel
-GPAD_FPanL           = 0;// [0:No, 1:Yes]
+GPAD_FPanL           = 1;// [0:No, 1:Yes]
 //Panneau arrière - Back panel  
 GPAD_BPanL           = 0;// [0:No, 1:Yes]
 //Buttons
@@ -98,6 +98,10 @@ BOSSScrew = 0;
 PCB_View        = 0;
 LED_Standoff    = 0;
 LED_Standoff_Single    = 1; 
+
+//The Printed Assembly Board
+PWA = 1;
+
 /* [Hidden] */
 // - Couleur coque - Shell color  
 Couleur1        = "Orange";       
@@ -131,7 +135,10 @@ translate ([PCBLength-70.74,12.24,25])
 //translate ([0,0,FootHeight+ScrewLenght+1])
 import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
- 
+
+if(PWA ==1){ 
+import("KRAKE_PWArev1.stl");
+}
 
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
 
@@ -421,9 +428,11 @@ module Feet(){
 
 
     translate([3*Thick+2,Thick+5,Thick/2-.01]){
-    translate([FootPosX,FootPosY,FootHeight/5.5]){
-        BOSS_ONLY();
-       // foot(FootDia,FootHole,FootHeight);
+    translate([FootPosX,FootPosY,FootHeight/2]){
+        //BOSS_ONLY();
+        foot(FootDia,FootHole,FootHeight);
+        translate([FootPosX,FootPosY,-5])
+        #cylinder (h=13.5,d1=10,d2=10);
     }
     translate([(PCBLength-FootPosX),FootPosY,FootHeight/5.5]){
         BOSS_ONLY();
