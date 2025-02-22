@@ -99,16 +99,16 @@ void setup() {
   //setting GPIO to initial values
   pinMode(LED_BUILTIN, OUTPUT);     // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  // pinMode(LED_1, OUTPUT);           // set the LED pin mode
-  // digitalWrite(LED_1, HIGH);        // turn the LED on (HIGH is the voltage level)
-  // pinMode(LED_2, OUTPUT);           // set the LED pin mode
-  // digitalWrite(LED_2, HIGH);        // turn the LED on (HIGH is the voltage level)
-  // pinMode(LED_3, OUTPUT);           // set the LED pin mode
-  // digitalWrite(LED_3, HIGH);        // turn the LED on (HIGH is the voltage level)
-  // pinMode(LED_4, OUTPUT);           // set the LED pin mode
-  // digitalWrite(LED_4, HIGH);        // turn the LED on (HIGH is the voltage level)
-  // pinMode(LED_5, OUTPUT);           // set the LED pin mode
-  // digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
+  pinMode(LED_1, OUTPUT);           // set the LED pin mode
+  digitalWrite(LED_1, HIGH);        // turn the LED on (HIGH is the voltage level)
+  pinMode(LED_2, OUTPUT);           // set the LED pin mode
+  digitalWrite(LED_2, HIGH);        // turn the LED on (HIGH is the voltage level)
+  pinMode(LED_3, OUTPUT);           // set the LED pin mode
+  digitalWrite(LED_3, HIGH);        // turn the LED on (HIGH is the voltage level)
+  pinMode(LED_4, OUTPUT);           // set the LED pin mode
+  digitalWrite(LED_4, HIGH);        // turn the LED on (HIGH is the voltage level)
+  pinMode(LED_5, OUTPUT);           // set the LED pin mode
+  digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
 
   Serial.begin(BAUDRATE);
   while (!Serial) {
@@ -126,13 +126,13 @@ void setup() {
   digitalWrite(LED_4, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_5, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_BUILTIN, LOW);  //Make built in LED low at end of setup.
-} 
- //end setup()
+}
+//end setup()
 
 void loop() {
   // More loop code here
-  
-  wink(); // Heart beat aka activity indicator LED function. 
+
+  wink();  // Heart beat aka activity indicator LED function.
   led1.Update();
   led2.Update();
   led3.Update();
