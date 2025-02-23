@@ -70,8 +70,25 @@ public:
 };
 
 //functions defined below
+void testI2cAdress(void) {
+  Wire.begin();
+  Wire.beginTransmission(I2C_address);
+  byte error;
+  error = Wire.endTransmission();
 
-void serialSplash() {
+  if (error == 0) {
+    Serial.print("I2C device found at address 0x");
+    if (I2C_address < 16) {
+      Serial.print("0");
+    }
+    Serial.println(I2C_address, HEX);
+  } else {
+    Serial.print("I2C device not found");
+  }
+}
+
+
+void serialSplash(void) {
   //Serial splash
   Serial.println(F("==================================="));
   Serial.print(PROG_NAME);
@@ -120,22 +137,7 @@ void setup() {
   //Serial splash
   serialSplash();
 
-  Wire.begin();
-  Wire.beginTransmission(I2C_address);
-  byte error;
-  error = Wire.endTransmission();
-
-  if (error == 0) {
-    Serial.print("I2C device found at address 0x");
-    if (I2C_address < 16) {
-      Serial.print("0");
-    }
-    Serial.println(I2C_address, HEX);
-  } else {
-    Serial.print("I2C device not found");
-  }
-
-
+  testI2cAdress();
 
   // More setup code here
 
@@ -149,6 +151,8 @@ void setup() {
 //end setup()
 
 void loop() {
+
+
   // More loop code here
 
   wink();  // Heart beat aka activity indicator LED function.
