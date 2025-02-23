@@ -15,8 +15,9 @@
 
 #define BAUDRATE 115200  //Serial port
 
+#include <Wire.h>
 // Some PMD Hardware
-
+byte I2C_address = 0x3F;
 // Pins for switches and LEDs and more
 #define BOOT_BUTTON 0
 const int LED_BUILTIN = 2;
@@ -119,7 +120,25 @@ void setup() {
   //Serial splash
   serialSplash();
 
+  Wire.begin();
+  Wire.beginTransmission(I2C_address);
+  byte error;
+  error = Wire.endTransmission();
+
+  if (error == 0) {
+    Serial.print("I2C device found at address 0x");
+    if (I2C_address < 16) {
+      Serial.print("0");
+    }
+    Serial.println(I2C_address, HEX);
+  } else {
+    Serial.print("I2C device not found");
+  }
+
+
+
   // More setup code here
+
   digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_2, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_3, LOW);        //Make built in LED low at end of setup.
