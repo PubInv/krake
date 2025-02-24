@@ -7,7 +7,7 @@
 
 // Customized this by changing these defines
 
-#define VERSION "V0.0.1 "
+#define VERSION "V0.0.2 "
 #define MODEL_NAME "Model: HW2_BOOTUP"
 #define DEVICE_UNDER_TEST "SN: 00001"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
@@ -16,6 +16,11 @@
 #define BAUDRATE 115200  //Serial port
 
 #include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+int lcdColumns = 20;
+int lcdRows = 4;
+LiquidCrystal_I2C lcd(0x3F, lcdColumns, lcdRows);
+
 // Some PMD Hardware
 
 // Pins for switches and LEDs and more
@@ -120,9 +125,10 @@ void setup() {
 
   //Serial splash
   serialSplash();
-  
+
   I2cScanner();
   testI2cAdress();
+  LCD_setup();
 
 
 
