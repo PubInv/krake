@@ -120,8 +120,11 @@ void setup() {
 
   //Serial splash
   serialSplash();
-
+  
+  I2cScanner();
   testI2cAdress();
+
+
 
   // More setup code here
 
