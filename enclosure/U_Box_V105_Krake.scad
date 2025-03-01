@@ -86,11 +86,11 @@ GPAD_TShell          = 0;// [0:No, 1:Yes]
 //Coque bas- Bottom shell
 GPAD_BShell          = 1;// [0:No, 1:Yes]
 //Panneau avant - Front panel
-GPAD_FPanL           = 1;// [0:No, 1:Yes]
+GPAD_FPanL           = 0;// [0:No, 1:Yes]
 //Panneau arrière - Back panel  
 GPAD_BPanL           = 0;// [0:No, 1:Yes]
 //Buttons
-BButton         = 0;
+BButton         = 1;
 //T and BShellScrew
 T_BShellScrew   = 1;
 BOSSScrew = 0;
@@ -100,7 +100,7 @@ LED_Standoff    = 0;
 LED_Standoff_Single    = 1; 
 
 //The Printed Assembly Board
-PWA = 1;
+PWA = 0;
 
 /* [Hidden] */
 // - Couleur coque - Shell color  
@@ -137,6 +137,8 @@ import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
 
 if(PWA ==1){ 
+    translate([-10,-50,10])
+    rotate ([0,0,90])
 import("KRAKE_PWArev1.stl");
 }
 
@@ -275,7 +277,6 @@ module Coque(){//Coque - Shell
 
 
 //Speaker Grill//
-
 module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
     //difference(){
      if(OnOff==1)
@@ -432,7 +433,7 @@ module Feet(){
         //BOSS_ONLY();
         foot(FootDia,FootHole,FootHeight);
         translate([FootPosX,FootPosY,-5])
-        #cylinder (h=13.5,d1=10,d2=10);
+        cylinder (h=13.5,d1=10,d2=10);
     }
     translate([(PCBLength-FootPosX),FootPosY,FootHeight/5.5]){
         BOSS_ONLY();
@@ -446,7 +447,7 @@ module Feet(){
         BOSS_ONLY();
         //foot(FootDia,FootHole,FootHeight);
     }
-    #translate([(PCBLength-FootPosX),(PCBWidth-68.58),FootHeight/5.5]){
+    translate([(PCBLength-FootPosX),(PCBWidth-68.58),FootHeight/5.5]){
         BOSS_ONLY();
         //foot(FootDia,FootHole,FootHeight);
     }
@@ -603,9 +604,7 @@ if(GPAD_BShell==1){
           color( Couleur1,1){
              translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
              //(On/Off, Xpos, Ypos, Diameter)
-              //  SpeakerHole(1,SpeakerHoleX,15.24,11,Ccenter=true); //Buzzer
-                 SpeakerHole(1,SpeakerHoleX,SpeakerHoleY,11,Ccenter=true); //Buzzer
-                SpeakerHole(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker
+             SpeakerHole(1,SpeakerHoleX,SpeakerHoleY,11,Ccenter=true); //Buzzer
                  for ( i = [0 : 4] ){
                 
                     CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1  
@@ -677,7 +676,6 @@ if(GPAD_BPanL==1){
 module frontPanel(){
     difference() {
         Coque();
-    
         SpeakerHole(OnOff = 1, Cx = 30, Cy = 20, Cdia = 20, Ccenter = true);
     }
 }
