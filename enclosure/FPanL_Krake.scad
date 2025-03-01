@@ -172,10 +172,6 @@ module FPanL(){
             }
       }
 }
-if(GPAD_FPanL==1){
-        translate([Length-(Thick*2+m/2),Thick+m/2,Thick+m/2])
-        FPanL();
-}
 
 module frontPanel(){
     difference() {
@@ -184,4 +180,4 @@ module frontPanel(){
         SpeakerHole(OnOff = 1, Cx = 30, Cy = 20, Cdia = 20, Ccenter = true);
     }
 }
- 
+  
