@@ -594,7 +594,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "../Enclosure/GeneralPurposeAlarmDevicePCB.step",
+      "step": "../Enclosure/KRAKE_PWArev1.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
