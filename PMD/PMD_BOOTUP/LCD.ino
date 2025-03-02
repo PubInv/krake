@@ -10,20 +10,47 @@
 
 
 //LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
-// LiquidCrystal_I2C lcd(0x3F, lcdColumns, lcdRows);  
+// LiquidCrystal_I2C lcd(0x3F, lcdColumns, lcdRows);
 
-void LCD_setup()
-{
-  lcd.init();                      // initialize the lcd 
-  lcd.init();
+void LCD_setup() {
+  lcd.init();  // initialize the lcd
   // Print a message to the LCD.
   lcd.backlight();
-  lcd.setCursor(3,0);
-  lcd.print("Hello, world!");
-  lcd.setCursor(2,1);
-  lcd.print("Ywrobot Arduino!");
-   lcd.setCursor(0,2);
-  lcd.print("Arduino LCM IIC 2004");
-   lcd.setCursor(2,3);
-  lcd.print("Power By Ec-yuan!");
+  lcd.setCursor(0, 0);
+  // lcd.print("Hello, Public Invention!");
+  // lcd.print("Hello, Public Invention!qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwer");
+  // lcd.print("Hello, Public Invention!qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnmqwer0123456789");
+  // lcd.print("wwwwwwwww/xxxxxxxxx/yyyyyyyyy/zzzzzzzzz/wwwwwwwww/xxxxxxxxx/yyyyyyyyy/zzzzzzzzz/");
+  // lcd.print("The quick brown fox jumps over the lazy dog near the river at sunset today!testlcd");
+  lcd.print("The quick brown fox jumps over the lazy dog near the river at sunset today!test0");
+  delay(1000);
+  lcd.print("123456789");
+
+
+  // lcd.setCursor(4, 2);
+  // lcd.print("I am Krake!");
+}
+
+
+void LCD_Splash(void) {
+
+  // lcd.print("wwwwwwwww/xxxxxxxxx/yyyyyyyyy/zzzzzzzzz/wwwwwwwww/xxxxxxxxx/yyyyyyyyy/zzzzzzzzz/");
+  //  lcd.print(F("===================="));
+  lcd.clear();
+  lcd.setCursor(0, 0);  // home cursor
+  lcd.print(PROG_NAME);
+  lcd.print(VERSION);
+  delay(5000);
+  lcd.setCursor(0, 2);  //set cursor (culomn,raw)
+
+  // lcd.print(MODEL_NAME);
+  // lcd.print(DEVICE_UNDER_TEST);
+  lcd.setCursor(0, 3);  //set cursor (culomn,raw)
+  lcd.print(F("Compiled at: "));
+  delay(5000);
+  lcd.setCursor(0, 3);  //set cursor (culomn,raw)
+  lcd.print(F(__DATE__ "" __TIME__));  //compile date that is used for a unique identifier
+  // lcd.print(LICENSE);
+  // lcd.print(F("===================="));
+  // lcd.print();
 }
