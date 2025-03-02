@@ -7,7 +7,7 @@
 
 // Customized this by changing these defines
 
-#define VERSION "V0.0.2 "
+#define VERSION " V0.0.2 "
 #define MODEL_NAME "Model: HW2_BOOTUP"
 #define DEVICE_UNDER_TEST "SN: 00001"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
@@ -129,7 +129,7 @@ void setup() {
   I2cScanner();
   testI2cAdress();
   LCD_setup();
-
+  LCD_Splash();
 
 
   // More setup code here
