@@ -21,6 +21,7 @@ int lcdColumns = 20;
 int lcdRows = 4;
 LiquidCrystal_I2C lcd(0x3F, lcdColumns, lcdRows);
 
+
 // Some PMD Hardware
 
 // Pins for switches and LEDs and more
@@ -148,6 +149,9 @@ void loop() {
 
   // More loop code here
 
+  DFP_Test();
+  menu_options();
+  DFPoutputControl();
   wink();  // Heart beat aka activity indicator LED function.
   led1.Update();
   led2.Update();
