@@ -132,6 +132,8 @@ void setup() {
   LCD_setup();
   LCD_Splash();
 
+  DFP_Test();
+
 
   // More setup code here
 
@@ -149,9 +151,8 @@ void loop() {
 
   // More loop code here
 
-  DFP_Test();
-  menu_options();
-  DFPoutputControl();
+  // menu_options();
+  // DFPoutputControl();
   wink();  // Heart beat aka activity indicator LED function.
   led1.Update();
   led2.Update();

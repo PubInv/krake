@@ -1,41 +1,49 @@
+#define BAUD_DFPLAYER 9600
+
 #include <DFRobotDFPlayerMini.h>
-#include <SoftwareSerial.h>
 
+HardwareSerial mySerial1(2);  // Use UART2
+DFRobotDFPlayerMini dfPlayer;
 
-// Initialize software serial on pins 16 and 17
-SoftwareSerial mySoftwareSerial(16, 17);  // RX, TX
-DFRobotDFPlayerMini myDFPlayer;
-String line;
-char command;
-bool trackPlaying = false;
-
+const int trac1 = 1;
+const int trac2 = 2;
 
 
 void DFP_Test() {
 
-  // Serial communication with the module
-  mySoftwareSerial.begin(9600);
-
   // Check if the module is responding and if the SD card is found
-  Serial.println(F("Initializing DFPlayer module ..."));
-  if (!myDFPlayer.begin(mySoftwareSerial)) {
-    Serial.println(F("Not initialized:"));
-    Serial.println(F("1. Check the DFPlayer Mini connections"));
-    Serial.println(F("2. Insert an SD card"));
-    while (true);
+  Serial.println(F("Initializing DFPlayer module. UART2 Begin..."));
+
+  mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, 16, 17);
+  while (!mySerial1) {
+    ;  // wait for DFPlayer serial port to connect.
   }
-  Serial.println(F("DFPlayer Mini module initialized!"));
-  // Initial settings
-  myDFPlayer.setTimeOut(500);  // Serial timeout 500ms
-  myDFPlayer.volume(25);       // Volume 5
-  myDFPlayer.EQ(0);            // Normal equalization
+  // Essential Initialize of DFPlayer Mini
+  Serial.println("DFPlayer begin with ACK and Reset");
+  dfPlayer.begin(mySerial1, true, true);  // (Stream &stream, bool isACK, bool doReset)
+
+  //  delay(30);
+  //  Serial.println("Reset DFPlayer.");
+  dfPlayer.reset();
+  delay(3000);
+  Serial.println("Begin DFPlayer again.");
+  if (!dfPlayer.begin(mySerial1, true, true)) {
+    Serial.println("DFPlayer Mini not detected or not working.");
+    while (true)
+      ;  // Stop execution
+  }
+  Serial.println("DFPlayer Mini detected!");
+
+  // delay(3000);  //Required for volum to set
+  // //  // Set volume (0 to 30)
+  // //  dfPlayer.volume(30);       // Set initial volume max
+  // dfPlayer.volume(5);  // Set initial volume low
+  // delay(3000);
+  // Serial.print("Volume is set to: ");
+  // digitalWrite(LED_D6, HIGH);             //Start of volume read.
+  // Serial.println(dfPlayer.readVolume());  //Causes program lock up
+  // digitalWrite(LED_D6, LOW);              //End of volume read.
+
+  // dfPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
+  // delay(100);
 }
-
-
-
-
-
-
-
-
-
