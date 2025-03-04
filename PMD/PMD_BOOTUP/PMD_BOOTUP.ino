@@ -133,6 +133,7 @@ void setup() {
   LCD_Splash();
 
   DFP_Test();
+  DFPlayerSplash();
 
 
   // More setup code here
@@ -150,7 +151,6 @@ void loop() {
 
 
   // More loop code here
-
   // menu_options();
   // DFPoutputControl();
   wink();  // Heart beat aka activity indicator LED function.

@@ -35,15 +35,30 @@ void DFP_Test() {
   Serial.println("DFPlayer Mini detected!");
 
   // delay(3000);  //Required for volum to set
-  // //  // Set volume (0 to 30)
-  // //  dfPlayer.volume(30);       // Set initial volume max
-  // dfPlayer.volume(5);  // Set initial volume low
-  // delay(3000);
-  // Serial.print("Volume is set to: ");
-  // digitalWrite(LED_D6, HIGH);             //Start of volume read.
-  // Serial.println(dfPlayer.readVolume());  //Causes program lock up
-  // digitalWrite(LED_D6, LOW);              //End of volume read.
-
+ 
   // dfPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
   // delay(100);
 }
+
+
+void DFPlayerSplash(void) {
+
+
+ //  // Set volume (0 to 30)
+  //  dfPlayer.volume(30);       // Set initial volume max
+  dfPlayer.volume(5);  // Set initial volume low
+  delay(3000);
+  Serial.print("Volume is set to: ");
+  // digitalWrite(LED_D6, HIGH);             //Start of volume read.
+  Serial.println(dfPlayer.readVolume());  //Causes program lock up
+  // digitalWrite(LED_D6, LOW);              //End of volume read.
+  Serial.println("Play a track");
+  dfPlayer.play(4);
+
+
+
+}
+
+
+
+
