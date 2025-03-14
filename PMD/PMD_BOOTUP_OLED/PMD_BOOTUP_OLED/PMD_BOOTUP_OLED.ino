@@ -129,13 +129,12 @@ void setup() {
   //Serial splash
   serialSplash();
 
-  I2cScanner();
-  testI2cAdress();
+  // I2cScanner();
+  // testI2cAdress();
 
-  OLED_setup();
-  OLED_Splash();
-  I2cScanner();
-
+  // OLED_setup();
+  // OLED_Splash();
+  test();
   DFP_Test();
   DFPlayerSplash();
 
@@ -153,7 +152,7 @@ void setup() {
 
 void loop() {
 
-
+  test();
   // More loop code here
   // menu_options();
   // DFPoutputControl();

@@ -1,103 +1,45 @@
-// Author: Nagham Kheir
-// Date: 20250223
-// LICENSE "GNU Affero General Public License, version 3 "
+ //*Rui Santos
+//  Complete project details at https://randomnerdtutorials.com  
+//*********//
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH 128  // OLED display width, in pixels
-#define SCREEN_HEIGHT 64  // OLED display height, in pixels
-#define OLED_RESET -1     // Reset pin (not used)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-byte I2C_address = 0x3F;
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
+void test() {
+  Serial.begin(115200);
 
-
-// void loop() {
-//   // Nothing in loop, as scanner only runs once in setup
-//   // if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-//   //   Serial.println(F("SSD1306 allocation failed"));
-//   //   for (;;)
-//   //     ;
-//   // }
-
-//   OLED_Splash();
-//   testI2cAdress();
-// }
-
-void OLED_setup() {
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
+  delay(2000);
   display.clearDisplay();
-  display.setTextSize(1);
+
+  display.setTextSize(2);
   display.setTextColor(WHITE);
+  display.setCursor(0, 10);
+  // Display static text
+  display.println("Hello, I am a PMD!");
+    delay(2000);
+
+    display.clearDisplay();
   display.setCursor(0, 0);
-  display.println("OLED Initialized");
-  display.display();
-  delay(1000);
+  display.print("PROG_NAME");
+   display.setCursor(1, 1);
+  display.print("VERSION");
+  display.setCursor(2, 3);
+  display.print(F("Compiled at: "));
+  display.setCursor(3, 5);
+  display.print(F(__DATE__ " " __TIME__));
+
+
+  display.display(); 
 }
 
-void OLED_Splash(void) {
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("PROG_NAME");
-  display.println("VERSION");
-  display.setCursor(0, 2);
-  display.println(F("Compiled at: "));
-  display.setCursor(0, 3);
-  display.println(F(__DATE__ " " __TIME__));
-  display.display();
-  delay(3000);
-}
-
-void testI2cAdress(void) {
-  Wire.beginTransmission(I2C_address);
-  byte error = Wire.endTransmission();
-
-  display.clearDisplay();
-  display.setCursor(0, 0);
-
-  if (error == 0) {
-    display.print("Device found at: 0x");
-    if (I2C_address < 16) {
-      display.print("0");
-    }
-    display.println(I2C_address, HEX);
-  } else {
-    display.println("I2C device not found");
-  }
-  display.display();
-}
-
-void I2cScanner(void) {
-  byte error, address;
-  int nDevices = 0;
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("Scanning...");
-  display.display();
-
-  for (address = 1; address < 127; address++) {
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
-
-    if (error == 0) {
-      display.print("Found: 0x");
-      if (address < 16) {
-        display.print("0");
-      }
-      display.println(address, HEX);
-      nDevices++;
-      display.display();
-      delay(500);
-    }
-  }
-
-  if (nDevices == 0) {
-    display.println("No I2C devices found");
-  } else {
-    display.print("Total: ");
-    display.println(nDevices);
-  }
-  display.display();
-}
