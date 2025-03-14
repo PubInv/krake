@@ -1,4 +1,4 @@
-#define PROG_NAME "PMD_BOOTUP"
+#define PROG_NAME "PMD_BOOTUP_OLED"
 // Author: Nagham Kheir
 // Date: 20250222
 // A PMD BootUp, Similar to Do Nothing but Serial Splash, LCD Test, LCD Splash, DFPlayer Test, DFPlayer Splash, BootButton Test for stuck key. Loop() has only non blocking code.
@@ -7,8 +7,8 @@
 
 // Customized this by changing these defines
 
-#define VERSION " V0.0.2 "
-#define MODEL_NAME "Model: HW2_BOOTUP"
+#define VERSION " V0.0.3 "
+#define MODEL_NAME "Model: HW2_BOOTUP_OLED"
 #define DEVICE_UNDER_TEST "SN: 00001"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
@@ -16,11 +16,6 @@
 #define BAUDRATE 115200  //Serial port
 
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-int lcdColumns = 20;
-int lcdRows = 4;
-LiquidCrystal_I2C lcd(0x3F, lcdColumns, lcdRows);
-
 
 // Some PMD Hardware
 
