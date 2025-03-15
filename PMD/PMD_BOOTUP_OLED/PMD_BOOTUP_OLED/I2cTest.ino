@@ -12,18 +12,20 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-void test() {
+void initOLED() {
 
-  int16_t rowPosition = 0;
-  int16_t columnPosition = 0;
-  int16_t rowHeight = 10;  //just a guess
 
-  // Serial.begin(115200);
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {  // Address 0x3D for 128x64
     Serial.println(F("SSD1306 allocation failed"));
     //for(;;); // tODO: DO NOT TRAP AN ERROR.SET A FLAG.
   }
-  delay(2000);
+}
+
+void splashOLED() {
+  int16_t rowPosition = 0;
+  int16_t columnPosition = 0;
+  int16_t rowHeight = 10;  //just a guess
+
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);

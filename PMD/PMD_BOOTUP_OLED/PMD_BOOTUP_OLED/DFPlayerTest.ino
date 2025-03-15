@@ -1,15 +1,10 @@
 #define BAUD_DFPLAYER 9600
 
-#include <DFRobotDFPlayerMini.h>
-
-HardwareSerial mySerial1(2);  // Use UART2
-DFRobotDFPlayerMini dfPlayer;
-
 const int trac1 = 1;
 const int trac2 = 2;
 
 
-void DFP_Test() {
+void initDFP() {
 
   // Check if the module is responding and if the SD card is found
   Serial.println(F("Initializing DFPlayer module. UART2 Begin..."));
@@ -29,24 +24,27 @@ void DFP_Test() {
   Serial.println("Begin DFPlayer again.");
   if (!dfPlayer.begin(mySerial1, true, true)) {
     Serial.println("DFPlayer Mini not detected or not working.");
-    while (true)
-      ;  // Stop execution
+    availableDFPLAYER = false;
+    // while (true)
+    //   ;  // Stop execution
+  } else {
+    availableDFPLAYER = true;
+    // Serial.println("DFPlayer Mini detected!");
   }
-  Serial.println("DFPlayer Mini detected!");
-
-  // delay(3000);  //Required for volum to set
- 
   // dfPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
-  // delay(100);
 }
 
 
-void DFPlayerSplash(void) {
+void splashDFPlayer(void) {
 
+  if (!availableDFPLAYER) {
+    return;
+  }
+  Serial.println("MAde it through");
 
- //  // Set volume (0 to 30)
+  //  // Set volume (0 to 30)
   //  dfPlayer.volume(30);       // Set initial volume max
-  dfPlayer.volume(5);  // Set initial volume low
+  dfPlayer.volume(15);  // Set initial volume low
   delay(3000);
   Serial.print("Volume is set to: ");
   // digitalWrite(LED_D6, HIGH);             //Start of volume read.
@@ -54,11 +52,4 @@ void DFPlayerSplash(void) {
   // digitalWrite(LED_D6, LOW);              //End of volume read.
   Serial.println("Play a track");
   dfPlayer.play(4);
-
-
-
 }
-
-
-
-

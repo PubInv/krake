@@ -16,6 +16,9 @@
 #define BAUDRATE 115200  //Serial port
 
 #include <Wire.h>
+#include <DFRobotDFPlayerMini.h>
+HardwareSerial mySerial1(2);  // Use UART2
+DFRobotDFPlayerMini dfPlayer;
 
 // Some PMD Hardware
 
@@ -27,6 +30,11 @@ const int LED_2 = 4;
 const int LED_3 = 5;
 const int LED_4 = 18;
 const int LED_5 = 19;
+
+const int SW1 = 36;
+
+// bool dfpAvailable = false;
+bool availableDFPLAYER = false;
 
 //Claases defined below
 class Flasher {
@@ -73,7 +81,7 @@ public:
 
 
 
-void serialSplash(void) {
+void splashserial(void) {
   //Serial splash
   Serial.println(F("==================================="));
   Serial.print(PROG_NAME);
@@ -118,22 +126,12 @@ void setup() {
     ;  // wait for serial port to connect. Needed for native USB
   }
 
+  splashserial();
   Wire.begin();
-
-
-  //Serial splash
-  serialSplash();
-
-  // I2cScanner();
-  // testI2cAdress();
-
-  // OLED_setup();
-  // OLED_Splash();
-  test();
-  DFP_Test();
-  DFPlayerSplash();
-
-
+  initOLED();
+  splashOLED();
+  initDFP();
+  splashDFPlayer();
   // More setup code here
 
   digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
@@ -147,15 +145,17 @@ void setup() {
 
 void loop() {
 
-  test();
-  // More loop code here
-  // menu_options();
-  // DFPoutputControl();
+  if (availableDFPLAYER) {
+    if (digitalRead(SW1) == LOW) {
+      dfPlayer.play(1);
+      Serial.println("SW1 pressed");
+      delay(3000);
+    }
+  }
   wink();  // Heart beat aka activity indicator LED function.
   led1.Update();
   led2.Update();
   led3.Update();
   led4.Update();
   led5.Update();
-
 }  //end loop()
