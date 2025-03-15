@@ -7,7 +7,7 @@
 
 // Customized this by changing these defines
 
-#define VERSION " V0.0.3 "
+#define VERSION " V0.0.4 "
 #define MODEL_NAME "Model: HW2_BOOTUP_OLED"
 #define DEVICE_UNDER_TEST "SN: 00001"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
