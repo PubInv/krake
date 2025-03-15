@@ -106,7 +106,7 @@ Flasher led5(LED_5, 7500 * 10 / 100, 7500 * 90 / 100);  // LED 5 blinks 7.5 peri
 // The Setup
 
 void setup() {
-
+  pinMode(SW1, INPUT);  // sets the digital pin 36 as input
   //setting GPIO to initial values
   pinMode(LED_BUILTIN, OUTPUT);     // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
@@ -146,9 +146,11 @@ void setup() {
 void loop() {
 
   if (availableDFPLAYER) {
-    if (digitalRead(SW1) == LOW) {
+    if (!digitalRead(SW1)) {
       dfPlayer.play(1);
-      Serial.println("SW1 pressed");
+      Serial.print(digitalRead(SW1));
+      Serial.println( ", playing track 1");
+
       delay(3000);
     }
   }
