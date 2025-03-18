@@ -62,6 +62,14 @@
 
 #include <PubSubClient.h>  // From library https://github.com/knolleary/pubsubclient
 
+
+// #include <WiFiClient.h>
+// #include <WebServer.h>
+// #include <ESPmDNS.h>
+// #include <Update.h>
+
+#include <OTAWebPage.h>
+
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
    Modified by Forrest Lee Erickson 20220523
@@ -87,6 +95,10 @@
   SCK 13 or ICSP-3  Input
   SS 10 Input
 */
+#include <WebServer.h>
+
+WebServer server(80);
+
 
 #define GPAD_VERSION1
 
@@ -102,8 +114,8 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-const char* ssid = "Home";
-const char* password = "adt@1963#";
+// const char* ssid = "Home";
+// const char* password = "adt@1963#";
 
 //Maryville network
 // const char* ssid = "VRX";
@@ -114,8 +126,8 @@ const char* password = "adt@1963#";
 // const char* password = "$Suve07$$";
 
 // Austin network
-// const char* ssid = "readfamilynetwork";
-// const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -158,6 +170,8 @@ unsigned long nextLEDchangee_ms = 5000;  //time in ms.
 
 // extern int LIGHT[];
 // extern int NUM_LIGHTS;
+
+
 
 void serialSplash() {
   //Serial splash
@@ -399,6 +413,10 @@ void setup() {
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
+
+
+
+  setupfunction(&Serial);
 }  // end of setup()
 
 unsigned long last_ms = 0;
@@ -409,6 +427,10 @@ void toggle(int pin) {
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 void loop() {
+  server.handleClient();
+  delay(1);
+
+
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
     time_since_LOW_FREQ_ms = ms;
