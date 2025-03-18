@@ -349,6 +349,18 @@ void setup() {
   }
   delay(500);  //Wait before sending the first data to terminal
 
+ // Connect to WiFi network
+  WiFi.begin(ssid, password);
+  Serial.println("");
+
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  setupfunction(&Serial);
+
+
   // Set LED pins as outputs
 #if defined(LED_D9)
   pinMode(LED_D9, OUTPUT);
@@ -414,9 +426,6 @@ void setup() {
   Serial.println(F("Done With Setup!"));
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
 
-
-
-  setupfunction(&Serial);
 }  // end of setup()
 
 unsigned long last_ms = 0;
