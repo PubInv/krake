@@ -74,7 +74,7 @@ void keyPressed() {
     TimeZone tz = TimeZone.getDefault();
     String id = tz.getID();
     String theTimeStamp = "";
-    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) + id + " " ; //time stamp
+    theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ " "+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second())+ " " + id  ; //time stamp
 
     for (int i = 0; i < KRAKE_MAC.length; i++) { //Need a for loop for all Krakes.
       int keyIndex = -1;
