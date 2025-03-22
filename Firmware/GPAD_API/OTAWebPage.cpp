@@ -16,7 +16,11 @@ const char* host = "esp32";
 
 const char* loginIndex =
   "<Body>"
+<<<<<<< HEAD
   "<h2>GPAD_API  </h2>"
+=======
+  "<h2> GPAD Over-the-air </h2>"
+>>>>>>> 83fb05ac3b7c8a59d1a2e4f4a27748537f3104fd
   "<form name='loginForm'>"
   "<table width='20%' bgcolor='A09F9F' align='center'>"
   "<tr>"
