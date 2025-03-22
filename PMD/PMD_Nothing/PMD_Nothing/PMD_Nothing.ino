@@ -37,6 +37,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB
   }
   delay(500);
+  
   //Serial splash
   Serial.println(F("==================================="));
   Serial.print(PROG_NAME);
