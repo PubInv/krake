@@ -190,6 +190,55 @@ void setup() {
     request->send(LittleFS, "/index.html", "text/html", false, processor);
   });
 
+  // Route to set GPIO state to HIGH
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_2, HIGH);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+  // Route to set GPIO state to LOW
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_2, LOW);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+    // Route to set GPIO state to HIGH
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_3, HIGH);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+  // Route to set GPIO state to LOW
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_3, LOW);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+    // Route to set GPIO state to HIGH
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_4, HIGH);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+  // Route to set GPIO state to LOW
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_4, LOW);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+    // Route to set GPIO state to HIGH
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_5, HIGH);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+  // Route to set GPIO state to LOW
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
+    digitalWrite(LED_5, LOW);
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+
   // Start server
   server.begin();
 
