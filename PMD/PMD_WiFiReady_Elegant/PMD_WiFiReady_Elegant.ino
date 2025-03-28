@@ -19,7 +19,6 @@
 #define DEVICE_UNDER_TEST "SN: 00001"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
-
 #define BAUDRATE 115200  //Serial port
 
 #include <Wire.h>
@@ -29,6 +28,12 @@ DFRobotDFPlayerMini dfPlayer;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
+void notifyClients(const String &message) {
+  ws.textAll(message);
+}
+
 
 // Some PMD Hardware
 
@@ -46,6 +51,13 @@ const int SW1 = 36;
 const int SW2 = 39;
 const int SW3 = 34;
 const int SW4 = 35;
+
+
+
+const int LED_PINS[] = { LED_1, LED_2, LED_3, LED_4, LED_5 };
+const int SWITCH_PINS[] = { SW1, SW2, SW3, SW4 };  // SW1, SW2, SW3, SW4
+const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
+const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
 // bool dfpAvailable = false;
 bool availableDFPLAYER = false;
@@ -75,6 +87,7 @@ public:
     ledState = LOW;
     previousMillis = 0;
   }
+
 
   void Update() {  // defining a member function of the Flasher class
     // check to see if it's time to change the state of the LED
@@ -119,6 +132,15 @@ Flasher led5(LED_5, 7500 * 10 / 100, 7500 * 90 / 100);  // LED 5 blinks 7.5 peri
 
 // The Setup
 
+void IRAM_ATTR switchISR() {
+  for (int i = 0; i < SWITCH_COUNT; i++) {
+    if (digitalRead(SWITCH_PINS[i]) == LOW) {  // Assuming active LOW
+      notifyClients("SW" + String(i + 1) + " pressed!");
+    }
+  }
+}
+
+
 void setup() {
   pinMode(SW1, INPUT);  // sets the digital pin 36 as input
   pinMode(SW2, INPUT);  // sets the digital pin 39 as input
@@ -153,6 +175,8 @@ void setup() {
   splashOLED();
   initDFP();
   splashDFPlayer();
+
+
   // More setup code here
 
   digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
@@ -162,14 +186,11 @@ void setup() {
   digitalWrite(LED_5, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_BUILTIN, LOW);  //Make built in LED low at end of setup.
 
-
   //Elegant OTA Setup
 
   initWiFi();
   initLittleFS();
-
-  // Set GPIO2 as an OUTPUT
-  pinMode(23, OUTPUT);
+ 
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -178,70 +199,31 @@ void setup() {
 
   server.serveStatic("/", LittleFS, "/");
 
-  // Route to set GPIO state to HIGH
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_1, HIGH);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  // Route to control LEDs using parameters
+  server.on("/control", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("led") && request->hasParam("state")) {
+      int ledIndex = request->getParam("led")->value().toInt();
+      String state = request->getParam("state")->value();
+
+      if (ledIndex >= 1 && ledIndex <= LED_COUNT) {
+        digitalWrite(LED_PINS[ledIndex - 1], (state == "on") ? HIGH : LOW);
+        request->send(200, "text/plain", "OK");
+      } else {
+        request->send(400, "text/plain", "Invalid LED index");
+      }
+    } else {
+      request->send(400, "text/plain", "Missing parameters");
+    }
   });
 
-  // Route to set GPIO state to LOW
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_1, LOW);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-  // Route to set GPIO state to HIGH
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_2, HIGH);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-  // Route to set GPIO state to LOW
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_2, LOW);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-    // Route to set GPIO state to HIGH
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_3, HIGH);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-  // Route to set GPIO state to LOW
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_3, LOW);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-    // Route to set GPIO state to HIGH
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_4, HIGH);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-  // Route to set GPIO state to LOW
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_4, LOW);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-    // Route to set GPIO state to HIGH
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_5, HIGH);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
-  // Route to set GPIO state to LOW
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request) {
-    digitalWrite(LED_5, LOW);
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-
+  // Initialize switch pins as inputs with pull-ups
+  for (int i = 0; i < SWITCH_COUNT; i++) {
+    pinMode(SWITCH_PINS[i], INPUT_PULLUP);
+    attachInterrupt(SWITCH_PINS[i], switchISR, FALLING);
+  }
 
   // Start server
   server.begin();
-
   ElegantOTA.begin(&server);  // Start ElegantOTA
 
   // End of ELegant OTA Setup
@@ -269,13 +251,11 @@ void loop() {
       dfPlayer.play(5);
       Serial.print(digitalRead(SW4));
       Serial.println(", playing track 5");
-
-    
     }
   }
   // displayAlarm(); // check OLED i2cTest code and fix// OLED is not displaying the alarm message when the SW of emergency is trigerred
 
-
+  switchISR();
   wink();  // Heart beat aka activity indicator LED function.
   led1.Update();
   led2.Update();
