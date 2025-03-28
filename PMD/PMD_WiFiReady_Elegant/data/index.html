@@ -1,29 +1,66 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>ESP IOT DASHBOARD</title>
+<head>
+    <title>ESP IoT Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+</head>
+<body>
     <div class="topnav">
-      <h1>ESP WEB SERVER</h1>
+        <h1>ESP Web Server</h1>
     </div>
+
     <div class="content">
-      <div class="card-grid">
-          <div class="card">
-            <p class="card-title"><i class="fas fa-lightbulb"></i> GPIO 2</p>
-            <p>
-              <a href="on"><button class="button-on">ON</button></a>
-              <a href="off"><button class="button-off">OFF</button></a>
-            </p>
-            <p class="state">State: %STATE%</p>
-          </div>
-      </div>
+        <div class="card-grid" id="led-container"></div>
     </div>
+
     <hr>
-    <h6>2025March21</h6>
-  </body>
+    <h3>Switch Status:</h3>
+    <p id="switchStatus">Waiting for switch press...</p>
+
+    <hr>
+    <h6>2025 March 21</h6>
+
+    <script>
+        const ledCount = 5;
+        const container = document.getElementById("led-container");
+        const switchStatus = document.getElementById("switchStatus");
+
+        function toggleLED(led, state) {
+            fetch(`/control?led=${led}&state=${state}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Request failed");
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        for (let i = 1; i <= ledCount; i++) {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <p class="card-title"><i class="fas fa-lightbulb"></i> LED ${i}</p>
+                <p>
+                    <button class="button-on" onclick="toggleLED(${i}, 'on')">ON</button>
+                    <button class="button-off" onclick="toggleLED(${i}, 'off')">OFF</button>
+                </p>
+            `;
+            container.appendChild(card);
+        }
+
+        // WebSocket connection
+        const ws = new WebSocket(`ws://${window.location.host}/ws`);
+
+        ws.onmessage = function(event) {
+            switchStatus.innerText = event.data;
+        };
+
+        ws.onclose = function() {
+            switchStatus.innerText = "Connection lost. Reconnecting...";
+            setTimeout(() => location.reload(), 5000);
+        };
+    </script>
+</body>
 </html>
