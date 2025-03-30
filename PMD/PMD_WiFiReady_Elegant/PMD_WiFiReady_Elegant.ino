@@ -12,6 +12,10 @@
 #include "LittleFS.h"
 #include <ElegantOTA.h>
 #include <FS.h>  // File System Support
+#include <Wire.h> // req for i2c comm
+#include <DFRobotDFPlayerMini.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 // Customized this by changing these defines
 #define VERSION " V0.0.1 "
@@ -21,8 +25,7 @@
 #define ORIGIN "LB"
 #define BAUDRATE 115200  //Serial port
 
-#include <Wire.h>
-#include <DFRobotDFPlayerMini.h>
+
 HardwareSerial mySerial1(2);  // Use UART2
 DFRobotDFPlayerMini dfPlayer;
 
