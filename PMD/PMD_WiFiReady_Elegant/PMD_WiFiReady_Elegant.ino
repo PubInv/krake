@@ -136,21 +136,10 @@ Flasher led5(LED_5, 7500 * 10 / 100, 7500 * 90 / 100);  // LED 5 blinks 7.5 peri
 
 // The Setup
 
-// void IRAM_ATTR switchISR() {
-//   for (int i = 0; i < SWITCH_COUNT; i++) {
-//     if (digitalRead(SWITCH_PINS[i]) == LOW) {  // Assuming active LOW
-//       notifyClients("SW" + String(i + 1) + " pressed!");
-//     }
-//   }
-// }
 
 
 // void setup() {
 
-//   // pinMode(SW1, INPUT);  // sets the digital pin 36 as input
-//   // pinMode(SW2, INPUT);  // sets the digital pin 39 as input
-//   // pinMode(SW3, INPUT);  // sets the digital pin 34 as input
-//   // pinMode(SW4, INPUT);  // sets the digital pin 35 as input
 
 //   //setting GPIO to initial values
 //   pinMode(WiFiLed, OUTPUT);
@@ -269,10 +258,4 @@ Flasher led5(LED_5, 7500 * 10 / 100, 7500 * 90 / 100);  // LED 5 blinks 7.5 peri
 //   led4.Update();
 //   led5.Update();
 
-//   // This is needed to poll the button constantly
-//   myButton.poll();
-//   SW1.poll();
-//   SW2.poll();
-//   SW3.poll();
-//   SW4.poll();
 // }  //end loop()
