@@ -162,6 +162,7 @@ unsigned long nextLEDchangee_ms = 5000;  //time in ms.
 void serialSplash() {
   //Serial splash
   Serial.println(F("==================================="));
+  Serial.println(COMPANY_NAME);
   Serial.println(MODEL_NAME);
   //  Serial.println(DEVICE_UNDER_TEST);
   Serial.print(PROG_NAME);
@@ -241,7 +242,7 @@ void reconnect() {
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES) {
     n++;
     Serial.print("Attempting MQTT connection...");
-    if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
+    if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password)) {
       Serial.println("success!");
       client.subscribe(subscribe_Alarm_Topic);  // Subscribe to GPAD API alarms
     } else {
