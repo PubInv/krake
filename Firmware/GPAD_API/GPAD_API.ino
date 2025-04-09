@@ -91,8 +91,10 @@
 #define GPAD_VERSION1
 
 #define DEBUG_SPI 0
+
+//#define DEBUG 0
+#define DEBUG 1
 //#define DEBUG 4
-#define DEBUG 0
 
 unsigned long last_command_ms;
 
@@ -330,13 +332,10 @@ void setup() {
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-  delay(500);  //Wait before sending the first data to terminal
-  
-  serialSplash();
+    serialSplash();
   // We call this a second time to get the MAC on the screen
   clearLCD();
   splashLCD();
-
 
   // Set LED pins as outputs
 #if defined(LED_D9)
@@ -351,9 +350,13 @@ void setup() {
   turnOnAllLamps();
 
 //Init arrays.
-    subscribe_Alarm_Topic[0] = '\0';
+  subscribe_Alarm_Topic[0] = '\0';
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
+
+#if (DEBUG > 0)
+  Serial.println("Call: GPAD_HAL_setup(&Serial)");  
+#endif
 
   //Setup and present LCD splash screen
   GPAD_HAL_setup(&Serial);
@@ -366,6 +369,10 @@ void setup() {
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   client.setServer(mqtt_server, 1883);  //Default MQTT port
   client.setCallback(callback);
+
+#if (DEBUG > 0)
+  Serial.println("Starting WiFi as STA");  
+#endif
 
   WiFi.mode(WIFI_STA);
   WiFi.STA.begin();
@@ -399,9 +406,14 @@ void setup() {
   Serial.println("XXXXXXX");
 #endif
 
+  // We call this a second time to get the MAC on the screen
+//  clearLCD();
+  splashLCD();
+
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
+  turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
 }  // end of setup()
 
