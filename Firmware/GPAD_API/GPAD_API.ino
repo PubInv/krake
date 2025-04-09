@@ -433,14 +433,15 @@ void loop() {
 
     // Serial.println(subscribe_Alarm_Topic);
     // Serial.println(publish_Ack_Topic);
-#if defined(HMWK)
+#if defined HMWK  || defined KRAKE
     if (!client.connected()) {
       reconnect();
     }
 #endif
   }
 
-#if defined(HMWK)
+
+#if defined HMWK  || defined KRAKE
   client.loop();
   publishOnLineMsg();
   wink();  //The builtin LED
