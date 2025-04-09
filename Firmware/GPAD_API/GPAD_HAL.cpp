@@ -515,7 +515,8 @@ void unchanged_anunicateAlarmLevel(Stream *serialport) {
   unsigned char light_lvl = LIGHT_LEVEL[currentLevel][note];
   set_light_level(light_lvl);
   // TODO: Change this to our device types
-#if !defined(HMWK)
+//#if !defined(HMWK)
+#if defined(GPAD)
   if (!currentlyMuted) {
     unsigned char note_lvl = SONGS[currentLevel][note];
 

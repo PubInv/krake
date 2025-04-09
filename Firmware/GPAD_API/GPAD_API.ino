@@ -102,12 +102,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-const char* ssid = "Home";
-const char* password = "adt@1963#";
+// const char* ssid = "Home";
+// const char* password = "adt@1963#";
 
 //Maryville network
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
+const char* ssid = "VRX";
+const char* password = "textinsert";
 
 //Houstin network
 // const char* ssid = "DOS_WIFI";
@@ -322,10 +322,6 @@ bool readMacAddress(uint8_t* baseMac) {
 
 
 void setup() {
-  subscribe_Alarm_Topic[0] = '\0';
-  publish_Ack_Topic[0] = '\0';
-  macAddressString[0] = '\0';
-
   pinMode(LED_BUILTIN, OUTPUT);  // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   //Serial setup
@@ -335,6 +331,12 @@ void setup() {
     ;  // wait for serial port to connect. Needed for native USB
   }
   delay(500);  //Wait before sending the first data to terminal
+  
+  serialSplash();
+  // We call this a second time to get the MAC on the screen
+  clearLCD();
+  splashLCD();
+
 
   // Set LED pins as outputs
 #if defined(LED_D9)
@@ -347,6 +349,11 @@ void setup() {
   pinMode(LIGHT4, OUTPUT);
   // Turn off all LEDs initially
   turnOnAllLamps();
+
+//Init arrays.
+    subscribe_Alarm_Topic[0] = '\0';
+  publish_Ack_Topic[0] = '\0';
+  macAddressString[0] = '\0';
 
   //Setup and present LCD splash screen
   GPAD_HAL_setup(&Serial);
@@ -392,10 +399,6 @@ void setup() {
   Serial.println("XXXXXXX");
 #endif
 
-  serialSplash();
-  // We call this a second time to get the MAC on the screen
-  clearLCD();
-  splashLCD();
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
