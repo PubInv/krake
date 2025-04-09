@@ -200,9 +200,9 @@ void publishOnLineMsg(void) {
     strcat(onLineMsg, rssiString);
     client.publish(publish_Ack_Topic, onLineMsg);
 
-// This should be moved to a place after the WiFi connece success 
-//    Serial.print("Device connected at IPaddress: "); //FLE
-//   Serial.println(WiFi.localIP());  //FLE
+// This should be moved to a place after the WiFi connect success 
+  //  Serial.print("Device connected at IPaddress: "); //FLE
+  // Serial.println(WiFi.localIP());  //FLE
 
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
@@ -223,19 +223,26 @@ bool connect_to_wifi() {
       Serial.println("Failed to connect WiFi.");
       return false;
     } else {
-      Serial.println("");
-      Serial.print("WiFi connected with RSSI: ");
-      Serial.println(WiFi.RSSI());
+      Serial.print("WiFi connected");
 
-      Serial.println("");
-      Serial.print("Device connected at IPaddress: ");
-      Serial.println(WiFi.localIP());
+//FLE      Too early to do this test.
+      // Serial.println("");
+      // Serial.print("WiFi connected with RSSI: ");
+      // Serial.println(WiFi.RSSI());
+
+      // Serial.println("");
+      // Serial.print("Device connected at IPaddress: ");
+      // Serial.println(WiFi.localIP());
+
+      delay(100);
+      Serial.print("Device connected at IPaddress: "); //FLE
+      Serial.println(WiFi.localIP());  //FLE
 
       return true;
     }
   }
   return true;
-}
+}// end connect_to_wifi()
 
 // TODO: have this return a success or failure status and move
 // the delay up.
@@ -425,11 +432,18 @@ void toggle(int pin) {
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 void loop() {
+  bool is_WIFIconnected = false;
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
     time_since_LOW_FREQ_ms = ms;
 
-    connect_to_wifi();
+  //If WiFi was not connected and becomes connected then print IP address
+  if (!is_WIFIconnected && connect_to_wifi() ){
+    is_WIFIconnected = true;
+    Serial.print("Device connected at IPaddress: "); //FLE
+    Serial.println(WiFi.localIP());  //FLE
+  }
+    
 
     // Serial.println(subscribe_Alarm_Topic);
     // Serial.println(publish_Ack_Topic);
