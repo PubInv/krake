@@ -91,8 +91,10 @@
 #define GPAD_VERSION1
 
 #define DEBUG_SPI 0
+
+//#define DEBUG 0
+#define DEBUG 1
 //#define DEBUG 4
-#define DEBUG 0
 
 unsigned long last_command_ms;
 
@@ -102,12 +104,12 @@ const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
 //Aley network
-const char* ssid = "Home";
-const char* password = "adt@1963#";
+// const char* ssid = "Home";
+// const char* password = "adt@1963#";
 
 //Maryville network
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
+const char* ssid = "VRX";
+const char* password = "textinsert";
 
 //Houstin network
 // const char* ssid = "DOS_WIFI";
@@ -162,6 +164,7 @@ unsigned long nextLEDchangee_ms = 5000;  //time in ms.
 void serialSplash() {
   //Serial splash
   Serial.println(F("==================================="));
+  Serial.println(COMPANY_NAME);
   Serial.println(MODEL_NAME);
   //  Serial.println(DEVICE_UNDER_TEST);
   Serial.print(PROG_NAME);
@@ -197,9 +200,9 @@ void publishOnLineMsg(void) {
     strcat(onLineMsg, rssiString);
     client.publish(publish_Ack_Topic, onLineMsg);
 
-// This should be moved to a place after the WiFi connece success 
-//    Serial.print("Device connected at IPaddress: "); //FLE
-//   Serial.println(WiFi.localIP());  //FLE
+// This should be moved to a place after the WiFi connect success 
+  //  Serial.print("Device connected at IPaddress: "); //FLE
+  // Serial.println(WiFi.localIP());  //FLE
 
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
@@ -220,19 +223,26 @@ bool connect_to_wifi() {
       Serial.println("Failed to connect WiFi.");
       return false;
     } else {
-      Serial.println("");
-      Serial.print("WiFi connected with RSSI: ");
-      Serial.println(WiFi.RSSI());
+      Serial.print("WiFi connected");
 
-      Serial.println("");
-      Serial.print("Device connected at IPaddress: ");
-      Serial.println(WiFi.localIP());
+//FLE      Too early to do this test.
+      // Serial.println("");
+      // Serial.print("WiFi connected with RSSI: ");
+      // Serial.println(WiFi.RSSI());
+
+      // Serial.println("");
+      // Serial.print("Device connected at IPaddress: ");
+      // Serial.println(WiFi.localIP());
+
+      delay(100);
+      Serial.print("Device connected at IPaddress: "); //FLE
+      Serial.println(WiFi.localIP());  //FLE
 
       return true;
     }
   }
   return true;
-}
+}// end connect_to_wifi()
 
 // TODO: have this return a success or failure status and move
 // the delay up.
@@ -241,7 +251,7 @@ void reconnect() {
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES) {
     n++;
     Serial.print("Attempting MQTT connection...");
-    if (client.connect("ESP32_Receiver", mqtt_user, mqtt_password)) {
+    if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password)) {
       Serial.println("success!");
       client.subscribe(subscribe_Alarm_Topic);  // Subscribe to GPAD API alarms
     } else {
@@ -321,10 +331,6 @@ bool readMacAddress(uint8_t* baseMac) {
 
 
 void setup() {
-  subscribe_Alarm_Topic[0] = '\0';
-  publish_Ack_Topic[0] = '\0';
-  macAddressString[0] = '\0';
-
   pinMode(LED_BUILTIN, OUTPUT);  // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   //Serial setup
@@ -333,7 +339,10 @@ void setup() {
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-  delay(500);  //Wait before sending the first data to terminal
+    serialSplash();
+  // We call this a second time to get the MAC on the screen
+  clearLCD();
+  splashLCD();
 
   // Set LED pins as outputs
 #if defined(LED_D9)
@@ -347,6 +356,15 @@ void setup() {
   // Turn off all LEDs initially
   turnOnAllLamps();
 
+//Init arrays.
+  subscribe_Alarm_Topic[0] = '\0';
+  publish_Ack_Topic[0] = '\0';
+  macAddressString[0] = '\0';
+
+#if (DEBUG > 0)
+  Serial.println("Call: GPAD_HAL_setup(&Serial)");  
+#endif
+
   //Setup and present LCD splash screen
   GPAD_HAL_setup(&Serial);
 
@@ -358,6 +376,10 @@ void setup() {
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
   client.setServer(mqtt_server, 1883);  //Default MQTT port
   client.setCallback(callback);
+
+#if (DEBUG > 0)
+  Serial.println("Starting WiFi as STA");  
+#endif
 
   WiFi.mode(WIFI_STA);
   WiFi.STA.begin();
@@ -391,13 +413,14 @@ void setup() {
   Serial.println("XXXXXXX");
 #endif
 
-  serialSplash();
   // We call this a second time to get the MAC on the screen
-  clearLCD();
+//  clearLCD();
   splashLCD();
+
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
+  turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
 }  // end of setup()
 
@@ -409,22 +432,30 @@ void toggle(int pin) {
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 void loop() {
+  bool is_WIFIconnected = false;
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
     time_since_LOW_FREQ_ms = ms;
 
-    connect_to_wifi();
+  //If WiFi was not connected and becomes connected then print IP address
+  if (!is_WIFIconnected && connect_to_wifi() ){
+    is_WIFIconnected = true;
+    Serial.print("Device connected at IPaddress: "); //FLE
+    Serial.println(WiFi.localIP());  //FLE
+  }
+    
 
     // Serial.println(subscribe_Alarm_Topic);
     // Serial.println(publish_Ack_Topic);
-#if defined(HMWK)
+#if defined HMWK  || defined KRAKE
     if (!client.connected()) {
       reconnect();
     }
 #endif
   }
 
-#if defined(HMWK)
+
+#if defined HMWK  || defined KRAKE
   client.loop();
   publishOnLineMsg();
   wink();  //The builtin LED

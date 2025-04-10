@@ -284,15 +284,17 @@ void GPAD_HAL_setup(Stream *serialport) {
 
 #if !defined(HMWK)  //On Homework2, LCD goes blank early
   // Here initialize the UART1
-  pinMode(RXD1, INPUT_PULLUP);
-  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup. On Homework2, LCD goes blank early
-  uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
-  while (!Serial1) {
-    ;  // wait for serial port to connect. Needed for native USB
-  }
-#if (DEBUG > 0)
-  serialport->println(F("uartSerial1 Setup"));
-#endif
+  //FLE the Serial1 is faliing to terminate
+//   pinMode(RXD1, INPUT_PULLUP);
+//   uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup. On Homework2, LCD goes blank early
+//   uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
+//   while (!Serial1) {
+//     ;  // wait for serial port to connect. Needed for native USB
+//   }
+
+// #if (DEBUG > 0)
+//   serialport->println(F("uartSerial1 Setup"));
+// #endif
 #endif
 
   // Here initialize the UART2
@@ -515,7 +517,8 @@ void unchanged_anunicateAlarmLevel(Stream *serialport) {
   unsigned char light_lvl = LIGHT_LEVEL[currentLevel][note];
   set_light_level(light_lvl);
   // TODO: Change this to our device types
-#if !defined(HMWK)
+//#if !defined(HMWK)
+#if defined(GPAD)
   if (!currentlyMuted) {
     unsigned char note_lvl = SONGS[currentLevel][note];
 

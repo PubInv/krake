@@ -32,16 +32,16 @@
 
 // Define only ONE of these hardware options.
 // #define GPAD 1
-#define HMWK 1
-// #define KRAKE 1
+//#define HMWK 1
+#define KRAKE 1
 
 // Use these to choose the I2C address of LCD
 // GPAD device (earlier version of the Krake)
-// #define LCD_ADDRESS 0x38 
+#define LCD_ADDRESS 0x38 
 // Maryville version and Austin version
 // #define LCD_ADDRESS 0x27 
 // General (Lebanon) Version
-#define LCD_ADDRESS 0x3F 
+// #define LCD_ADDRESS 0x3F 
 
 //Pin definitions.  Assign symbolic constant to Arduino pin numbers.
 //For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
@@ -56,7 +56,7 @@
 #define LIGHT2 27
 #define LIGHT3 26
 #define LIGHT4 25
-#define LED_BUILTIN 2
+#define LED_BUILTIN 13
 #endif
 
 #if defined(GPAD)
@@ -76,22 +76,17 @@
 
 //#define SWITCH_MUTE 34
 #define SWITCH_MUTE 0 //Boot button
-
 #define LED_D9 23
 #define LIGHT0 15
 #define LIGHT1 4
 #define LIGHT2 5
 #define LIGHT3 18
 #define LIGHT4 19
-// The HMWK and Krake use a dev kit LED
+// The HMWK use a dev kit LED
 #define LED_BUILTIN 2
 
 #endif
 
-#if defined(KRAKE)
-
-
-#endif
 
 #ifdef GPAD_VERSION1  //The Version 1 PCB.
 //#define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
