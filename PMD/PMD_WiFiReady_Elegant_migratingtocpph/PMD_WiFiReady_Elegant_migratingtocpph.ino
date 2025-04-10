@@ -16,6 +16,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DailyStruggleButton.h>
+
 #include "WiFiManagerOTA.h"
 #include "Button.h"
 #include "DFP.h"
@@ -134,7 +135,7 @@ void setupOTA() {
   // End of ELegant OTA Setup
 }
 
- 
+
 void setup() {
 
   //setting GPIO to initial values
@@ -156,8 +157,9 @@ void setup() {
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-  WiFiMan();
+
   splashserial();
+  WiFiMan();
   Wire.begin();
   initOLED();
   splashOLED();
@@ -176,7 +178,7 @@ void setup() {
   digitalWrite(LED_4, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_5, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_BUILTIN, LOW);  //Make built in LED low at end of setup.
-} //end setup()
+}  //end setup()
 
 void loop() {
   wink();  // Heart beat aka activity indicator LED function.

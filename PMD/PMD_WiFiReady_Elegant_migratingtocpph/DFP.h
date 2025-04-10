@@ -8,7 +8,7 @@
 
 // Declare variables but don't define them
 extern HardwareSerial mySerial1;
-extern DFRobotDFPlayerMini dfPlayer;
+// extern DFRobotDFPlayerMini dfPlayer;
 
 #define BAUD_DFPLAYER 9600
 
@@ -18,7 +18,7 @@ extern bool availableDFPLAYER;
 // extern HardwareSerial mySerial1;
 // extern DFRobotDFPlayerMini dfPlayer;
 
-void initDFP();
+void initDFP(); // declaration // gives a type 
 void splashDFPlayer();
 
 #endif  // DFPLAYER_H
