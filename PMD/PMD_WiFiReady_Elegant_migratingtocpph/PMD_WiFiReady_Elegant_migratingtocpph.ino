@@ -55,7 +55,7 @@ int WiFiLed = 23;  // Built-in LED on ESP32
 // const int LED_5 = 25;
 // int WiFiLed = 23;  // Built-in LED on ESP32
 // add and define SWITCH_MUTE 35
- 
+
 const int LED_PINS[] = { LED_1, LED_2, LED_3, LED_4, LED_5 };
 // const int SWITCH_PINS[] = { SW1, SW2, SW3, SW4 };  // SW1, SW2, SW3, SW4
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
@@ -171,13 +171,13 @@ void setup() {
   }
 
   splashserial();
-  WiFiMan();
   Wire.begin();
   initOLED();
   splashOLED();
   initDFP();
   splashDFPlayer();
   setupButton();
+  WiFiMan();
   initWiFi();
   initLittleFS();
   setupOTA();
