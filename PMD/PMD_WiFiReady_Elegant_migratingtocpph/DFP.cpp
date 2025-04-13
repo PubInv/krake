@@ -1,12 +1,12 @@
 #include "DFP.h"
 
 // Define the global variables
-HardwareSerial mySerial1(2);  // Using UART2
+HardwareSerial mySerial1(2);  // Using UART2 // definition of an instant variabl in a class
 DFRobotDFPlayerMini dfPlayer;
 
 
 
-void initDFP(void) {
+void initDFP(void) { // definition 
 
   // Check if the module is responding and if the SD card is found
   Serial.println(F("Initializing DFPlayer module. UART2 Begin..."));
