@@ -11,7 +11,7 @@
 #define GPIO_SW4 35
 #define GPIO0 0
 
-#define VERSION " V0.0.1 "
+#define VERSION " V0.0.1.1 "
 #define MODEL_NAME "Model: bUTTOM"
 #define MODEL_NAME "Model: HW2_WiFiReady_Elegant"
 #define DEVICE_UNDER_TEST "SN: 00001"
