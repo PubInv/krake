@@ -8,8 +8,8 @@
 #define SCREEN_WIDTH 128  // OLED display width, in pixels
 #define SCREEN_HEIGHT 64  // OLED display height, in pixels
 #define PROG_NAME "PMD_WiFiReady_Elegant_migrating"
-#define VERSION " V0.0.1 "
-#define MODEL_NAME "Model: bUTTOM"
+#define VERSION " V.0.1 "
+//#define MODEL_NAME "Model: BUTTON"
 #define MODEL_NAME "Model: HW2_WiFiReady_Elegant"
 #define DEVICE_UNDER_TEST "SN: 00001"
 #define LICENSE "GNU Affero General Public License, version 3 "

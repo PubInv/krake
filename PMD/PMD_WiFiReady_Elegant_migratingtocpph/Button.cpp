@@ -35,14 +35,14 @@ void setupButton() {
     SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
 
     myButton.enableLongPress(longPressTime);
-    SW1.enableLongPress(longPressTime);
-    SW2.enableLongPress(longPressTime);
-    SW3.enableLongPress(longPressTime);
+    // SW1.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
+    // SW2.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
+    // SW3.enableLongPress(longPressTime);  //Also rotary encoder switch on KRAKE
     SW4.enableLongPress(longPressTime);
 
-    SW1.enableMultiHit(multiHitTime, multiHitTarget);
-    SW2.enableMultiHit(multiHitTime, multiHitTarget);
-    SW3.enableMultiHit(multiHitTime, multiHitTarget);
+    // SW1.enableMultiHit(multiHitTime, multiHitTarget);
+    // SW2.enableMultiHit(multiHitTime, multiHitTarget);
+    // SW3.enableMultiHit(multiHitTime, multiHitTarget);
     SW4.enableMultiHit(multiHitTime, multiHitTarget);
 }
 
