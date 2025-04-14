@@ -471,9 +471,9 @@ void setup() {
   // req for Wifi Man and OTA
   WiFiMan();
   initLittleFS();
-  setupOTA();
   server.begin();  // Start server web socket to render pages
   ElegantOTA.begin(&server);
+  setupOTA();
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
@@ -488,7 +488,10 @@ void toggle(int pin) {
 
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
+
+
 void loop() {
+
   bool is_WIFIconnected = false;
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
