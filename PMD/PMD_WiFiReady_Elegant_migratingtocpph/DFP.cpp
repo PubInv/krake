@@ -4,8 +4,6 @@
 HardwareSerial mySerial1(2);  // Using UART2 // definition of an instant variabl in a class
 DFRobotDFPlayerMini dfPlayer;
 
-bool isDFPlayerDetected = false;
-
 void initDFP(void) { // definition 
   //  Setup UART for DFPlayer
   Serial.println("UART2 Begin");
@@ -27,24 +25,14 @@ void initDFP(void) { // definition
   if (!dfPlayer.begin(mySerial1, true, false)) {
     Serial.println("DFPlayer Mini not detected or not working.");
     Serial.println("Check for missing SD Card.");
-    //while (true)
-    isDFPlayerDetected = false;
+    availableDFPLAYER = false;
     ;  // Stop execution
   } else {
-    isDFPlayerDetected = true;
     Serial.println("DFPlayer Mini detected!");
     availableDFPLAYER = true;
   }
 
-  //  delay(3000);  //Required for volum to set
-  // Set volume (0 to 30)
   dfPlayer.volume(20);  // Set initial volume max
-                        //  dfPlayer.volume(20);       // Set initial volume low
-  // delay(3000);
-  // Serial.print("Volume is set to: ");
-  // digitalWrite(LED_D6, HIGH);             //Start of volume read.
-  // Serial.println(dfPlayer.readVolume());  //Causes program lock up
-  // digitalWrite(LED_D6, LOW);              //End of volume read.
 
   dfPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
   delay(100);
