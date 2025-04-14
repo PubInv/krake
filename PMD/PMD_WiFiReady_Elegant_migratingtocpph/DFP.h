@@ -21,4 +21,7 @@ extern bool availableDFPLAYER;
 void initDFP(); // declaration // gives a type 
 void splashDFPlayer();
 
+void printDetail(uint8_t type, int value);
+void dfPlayerUpdate(void);
+
 #endif  // DFPLAYER_H

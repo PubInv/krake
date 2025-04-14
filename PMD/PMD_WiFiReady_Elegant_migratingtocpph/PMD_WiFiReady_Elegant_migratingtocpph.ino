@@ -213,5 +213,7 @@ void loop() {
   SW2.poll();
   SW3.poll();
   SW4.poll();
+
+  dfPlayerUpdate();
   
 }  //end loop()
