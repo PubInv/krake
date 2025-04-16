@@ -26,7 +26,7 @@
 
 #define COMPANY_NAME "PubInv "  // For the Broker ID for MQTT 
 #define PROG_NAME "GPAD_API "   // This program
-#define FIRMWARE_VERSION "0.28 "
+#define FIRMWARE_VERSION "0.28.1 "
 //#define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
 //#define DEVICE_UNDER_TEST "20240421_LEB1"  //A Serial Number

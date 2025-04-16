@@ -361,22 +361,6 @@ void setupOTA() {
 
   server.serveStatic("/", LittleFS, "/");
 
-  // Route to control LEDs using parameters
-  server.on("/control", HTTP_GET, [](AsyncWebServerRequest* request) {
-    if (request->hasParam("led") && request->hasParam("state")) {
-      int ledIndex = request->getParam("led")->value().toInt();
-      String state = request->getParam("state")->value();
-
-      if (ledIndex >= 1 && ledIndex <= LED_COUNT) {
-        digitalWrite(LED_PINS[ledIndex - 1], (state == "on") ? HIGH : LOW);
-        request->send(200, "text/plain", "OK");
-      } else {
-        request->send(400, "text/plain", "Invalid LED index");
-      }
-    } else {
-      request->send(400, "text/plain", "Missing parameters");
-    }
-  });
 
   // End of ELegant OTA Setup
 }

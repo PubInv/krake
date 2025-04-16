@@ -10,10 +10,57 @@
 </head>
 <body>
     <div class="topnav">
-        <h1>KRAKE Web Server</h1>
-       
+        <h1>KRAKE KRAKE ALL THE WAY</h1>
     </div>
-    A public invention device
- 
+
+    <div class="content">
+        <div class="card-grid" id="led-container"></div>
+    </div>
+
+    <hr>
+    <h3>Switch Status:</h3>
+    <p id="switchStatus">Waiting for switch press...</p>
+
+    <hr>
+    <h6>2025 March 21</h6>
+
+    <script>
+        const ledCount = 5;
+        const container = document.getElementById("led-container");
+        const switchStatus = document.getElementById("switchStatus");
+
+        function toggleLED(led, state) {
+            fetch(`/control?led=${led}&state=${state}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Request failed");
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        for (let i = 1; i <= ledCount; i++) {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <p class="card-title"><i class="fas fa-lightbulb"></i> LED ${i}</p>
+                <p>
+                    <button class="button-on" onclick="toggleLED(${i}, 'on')">ON</button>
+                    <button class="button-off" onclick="toggleLED(${i}, 'off')">OFF</button>
+                </p>
+            `;
+            container.appendChild(card);
+        }
+
+        // WebSocket connection
+        const ws = new WebSocket(`ws://${window.location.host}/ws`);
+
+        ws.onmessage = function(event) {
+            switchStatus.innerText = event.data;
+        };
+
+        ws.onclose = function() {
+            switchStatus.innerText = "Connection lost. Reconnecting...";
+            setTimeout(() => location.reload(), 5000);
+        };
+    </script>
 </body>
 </html>
