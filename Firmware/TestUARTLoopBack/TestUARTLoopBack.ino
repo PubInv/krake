@@ -63,7 +63,7 @@ void setup() {
 void loop() {
 
   while (mySerialUART1.available()) {
- //   Serial.println("Bytes Available! :");
+    Serial.println("Bytes Available UART1! :");
     Serial.write(mySerialUART1.read());
   }
 
@@ -73,11 +73,11 @@ void loop() {
   }
 
   // Send message over UART
-  mySerialUART1.print("a");
+  mySerialUART1.print("UART1: ");
   mySerialUART1.println(String(counter % 6));
-  mySerialUART1.println("\n");
+  //mySerialUART1.println("\n");
   
-  Serial.println("Sent: " + String(counter));
+  Serial.println("Sent: " + String(counter % 6));
   
   counter++;   // increment the counter so the message changes.
   
