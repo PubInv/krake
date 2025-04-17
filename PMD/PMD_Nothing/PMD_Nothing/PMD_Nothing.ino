@@ -28,7 +28,7 @@
 
 // The Setup
 void setup() {
-  const int LED_BUILTIN = 2;    // ESP32 Kit
+  const int LED_BUILTIN = 13;    // ESP32 Kit
   pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
 
