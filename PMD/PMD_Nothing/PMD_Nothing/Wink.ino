@@ -7,7 +7,7 @@
 
 // Heart beat aka activity indicator LED.
 //Set LED for Uno or ESP32 Dev Kit on board blue LED.
-const int LED_BUILTIN = 2;    // ESP32 Kit
+const int LED_BUILTIN = 13;    // ESP32 Kit
 //const int LED_BUILTIN = 13;    //Not really needed for Arduino UNO it is defined in library
 const int HIGH_TIME_LED = 900;
 const int LOW_TIME_LED = 100;

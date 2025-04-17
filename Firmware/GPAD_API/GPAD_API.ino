@@ -60,7 +60,23 @@
 #include <WiFi.h>
 #include <esp_wifi.h>
 
-#include <PubSubClient.h>  // From library https://github.com/knolleary/pubsubclient
+#include <PubSubClient.h>  // From library https://github.com/knolleary/
+
+#include <WiFiManager.h>  // WiFi Manager for ESP32
+#include "LittleFS.h"
+#include <ElegantOTA.h>
+#include <FS.h>    // File System Support
+#include <Wire.h>  // req for i2c comm
+
+#include "WiFiManagerOTA.h"
+
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
+// Initialize WiFi and MQTT clients
+WiFiClient espClient;
+PubSubClient client(espClient);
+
 
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
@@ -103,13 +119,18 @@ unsigned long last_command_ms;
 const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
+const int LED_PINS[] = { LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4 };
+// const int SWITCH_PINS[] = { SW1, SW2, SW3, SW4 };  // SW1, SW2, SW3, SW4
+const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
+// const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
+
 //Aley network
 // const char* ssid = "Home";
 // const char* password = "adt@1963#";
 
 //Maryville network
-const char* ssid = "VRX";
-const char* password = "textinsert";
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
 
 //Houstin network
 // const char* ssid = "DOS_WIFI";
@@ -137,9 +158,9 @@ char macAddressString[13];
 #define MACSTR "%02x:%02x:%02x:%02x:%02x:%02x"
 #define MACSTR_PLN "%02X%02X%02X%02X%02X%02X"
 
-// Initialize WiFi and MQTT clients
-WiFiClient espClient;
-PubSubClient client(espClient);
+// // Initialize WiFi and MQTT clients
+// WiFiClient espClient;
+// PubSubClient client(espClient);
 
 // String myMAC = "";
 
@@ -166,7 +187,7 @@ void serialSplash() {
   Serial.println(F("==================================="));
   Serial.println(COMPANY_NAME);
   Serial.println(MODEL_NAME);
-  //  Serial.println(DEVICE_UNDER_TEST);
+  //  Serial.println(DEVICE_UNDER_TEST); 
   Serial.print(PROG_NAME);
   Serial.println(FIRMWARE_VERSION);
   //  Serial.println(HARDWARE_VERSION);
@@ -200,9 +221,9 @@ void publishOnLineMsg(void) {
     strcat(onLineMsg, rssiString);
     client.publish(publish_Ack_Topic, onLineMsg);
 
-// This should be moved to a place after the WiFi connect success 
-  //  Serial.print("Device connected at IPaddress: "); //FLE
-  // Serial.println(WiFi.localIP());  //FLE
+    // This should be moved to a place after the WiFi connect success
+    //  Serial.print("Device connected at IPaddress: "); //FLE
+    // Serial.println(WiFi.localIP());  //FLE
 
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
@@ -225,7 +246,7 @@ bool connect_to_wifi() {
     } else {
       Serial.print("WiFi connected");
 
-//FLE      Too early to do this test.
+      //FLE      Too early to do this test.
       // Serial.println("");
       // Serial.print("WiFi connected with RSSI: ");
       // Serial.println(WiFi.RSSI());
@@ -235,14 +256,14 @@ bool connect_to_wifi() {
       // Serial.println(WiFi.localIP());
 
       delay(100);
-      Serial.print("Device connected at IPaddress: "); //FLE
-      Serial.println(WiFi.localIP());  //FLE
+      Serial.print("Device connected at IPaddress: ");  //FLE
+      Serial.println(WiFi.localIP());                   //FLE
 
       return true;
     }
   }
   return true;
-}// end connect_to_wifi()
+}  // end connect_to_wifi()
 
 // TODO: have this return a success or failure status and move
 // the delay up.
@@ -329,6 +350,21 @@ bool readMacAddress(uint8_t* baseMac) {
   }
 }
 
+//Elegant OTA Setup
+
+void setupOTA() {
+
+  // Route for root / web page
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+    request->send(LittleFS, "/index.html", "text/html", false, processor);
+  });
+
+  server.serveStatic("/", LittleFS, "/");
+
+
+  // End of ELegant OTA Setup
+}
+
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);  // set the LED pin mode
@@ -339,7 +375,7 @@ void setup() {
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-    serialSplash();
+  serialSplash();
   // We call this a second time to get the MAC on the screen
   clearLCD();
   splashLCD();
@@ -356,13 +392,13 @@ void setup() {
   // Turn off all LEDs initially
   turnOnAllLamps();
 
-//Init arrays.
+  //Init arrays.
   subscribe_Alarm_Topic[0] = '\0';
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
 
 #if (DEBUG > 0)
-  Serial.println("Call: GPAD_HAL_setup(&Serial)");  
+  Serial.println("Call: GPAD_HAL_setup(&Serial)");
 #endif
 
   //Setup and present LCD splash screen
@@ -378,7 +414,7 @@ void setup() {
   client.setCallback(callback);
 
 #if (DEBUG > 0)
-  Serial.println("Starting WiFi as STA");  
+  Serial.println("Starting WiFi as STA");
 #endif
 
   WiFi.mode(WIFI_STA);
@@ -414,9 +450,14 @@ void setup() {
 #endif
 
   // We call this a second time to get the MAC on the screen
-//  clearLCD();
+  //  clearLCD();
   splashLCD();
-
+  // req for Wifi Man and OTA
+  WiFiMan();
+  initLittleFS();
+  server.begin();  // Start server web socket to render pages
+  ElegantOTA.begin(&server);
+  setupOTA();
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
@@ -431,23 +472,26 @@ void toggle(int pin) {
 
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
+
+
 void loop() {
+
   bool is_WIFIconnected = false;
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
     time_since_LOW_FREQ_ms = ms;
 
-  //If WiFi was not connected and becomes connected then print IP address
-  if (!is_WIFIconnected && connect_to_wifi() ){
-    is_WIFIconnected = true;
-    Serial.print("Device connected at IPaddress: "); //FLE
-    Serial.println(WiFi.localIP());  //FLE
-  }
-    
+    //If WiFi was not connected and becomes connected then print IP address
+    if (!is_WIFIconnected && connect_to_wifi()) {
+      is_WIFIconnected = true;
+      Serial.print("Device connected at IPaddress: ");  //FLE
+      Serial.println(WiFi.localIP());                   //FLE
+    }
+
 
     // Serial.println(subscribe_Alarm_Topic);
     // Serial.println(publish_Ack_Topic);
-#if defined HMWK  || defined KRAKE
+#if defined HMWK || defined KRAKE
     if (!client.connected()) {
       reconnect();
     }
@@ -455,7 +499,7 @@ void loop() {
   }
 
 
-#if defined HMWK  || defined KRAKE
+#if defined HMWK || defined KRAKE
   client.loop();
   publishOnLineMsg();
   wink();  //The builtin LED
@@ -465,10 +509,10 @@ void loop() {
   // delay(20);
   GPAD_HAL_loop();
 
-  processSerial(&Serial,&Serial,&client);
+  processSerial(&Serial, &Serial, &client);
 
   // Here we also process the UART1 using the same routine.
-  processSerial(&Serial,&uartSerial1,&client);
+  processSerial(&Serial, &uartSerial1, &client);
 
   // Here we will listen for an SPI command...
 

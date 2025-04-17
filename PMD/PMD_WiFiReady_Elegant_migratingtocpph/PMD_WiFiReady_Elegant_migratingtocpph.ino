@@ -47,7 +47,7 @@ void notifyClients(const String &message) {
 
 // Pins for switches and LEDs and more //Krake
 #define BOOT_BUTTON 0
-const int LED_BUILTIN = 13; //Krake
+const int LED_BUILTIN = 13;  //Krake
 const int LED_1 = 12;
 const int LED_2 = 14;
 const int LED_3 = 27;
@@ -55,7 +55,7 @@ const int LED_4 = 26;
 const int LED_5 = 25;
 int WiFiLed = 23;  // Built-in LED on ESP32
 // add and define SWITCH_MUTE 35
- 
+
 const int LED_PINS[] = { LED_1, LED_2, LED_3, LED_4, LED_5 };
 // const int SWITCH_PINS[] = { SW1, SW2, SW3, SW4 };  // SW1, SW2, SW3, SW4
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
@@ -172,6 +172,7 @@ void setup() {
 
   //LCD
   splashserial();
+
   WiFiMan();
 
   Wire.begin();
@@ -190,7 +191,7 @@ void setup() {
   setupOTA();
   server.begin();             // Start web page server
   ElegantOTA.begin(&server);  // Start ElegantOTA
-  
+
   // More setup code here
   digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_2, LOW);        //Make built in LED low at end of setup.
@@ -215,5 +216,5 @@ void loop() {
   SW4.poll();
 
   dfPlayerUpdate();
-  
+
 }  //end loop()
