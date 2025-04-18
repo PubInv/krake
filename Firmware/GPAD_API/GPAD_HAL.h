@@ -109,16 +109,16 @@
 // Define TX and RX pins for UART1 
 // For PCB and for Mocking Krake Maryville
 //See also Issue# 94
-#define TXD1 15
-#define RXD1 2
+#define TXD1 2
+#define RXD1 15
 #define UART1_BAUD_RATE 115200
 extern HardwareSerial uartSerial1;
 
 // Define TX and RX pins for UART2
 // For PCB and for Mocking Krake Maryville
 // DFPLayer requries 9600 BPS
-#define TXD2 15
-#define RXD2 2
+#define TXD2 17
+#define RXD2 16
 #define UART2_BAUD_RATE 9600
 extern HardwareSerial uartSerial1;
 

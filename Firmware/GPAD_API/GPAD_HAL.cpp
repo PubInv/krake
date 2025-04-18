@@ -286,8 +286,8 @@ void GPAD_HAL_setup(Stream *serialport) {
   // Here initialize the UART1
   //FLE the Serial1 is faliing to terminate
 //   pinMode(RXD1, INPUT_PULLUP);
-//   uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup. On Homework2, LCD goes blank early
-//   uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
+  uartSerial1.begin( UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1 );  // UART setup. On Homework2, LCD goes blank early
+  // uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
 //   while (!Serial1) {
 //     ;  // wait for serial port to connect. Needed for native USB
 //   }
