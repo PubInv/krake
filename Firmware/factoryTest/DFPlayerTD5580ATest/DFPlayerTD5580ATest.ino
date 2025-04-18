@@ -31,6 +31,8 @@ const int LED_D6 = 23;  // ESP32 GPIO23 pin 16 on kit.
 
 const int trac1 = 1;
 const int trac2 = 2;
+#define TXD2 17
+#define RXD2 16
 
 bool isDFPlayerDetected = false;
 
@@ -38,7 +40,7 @@ bool isDFPlayerDetected = false;
 void setupDFPlayer() {
   //  Setup UART for DFPlayer
   Serial.println("UART2 Begin");
-  mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, 16, 17);
+  mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, RXD2, TXD2);
   while (!mySerial1) {
     ;  // wait for DFPlayer serial port to connect.
   }
