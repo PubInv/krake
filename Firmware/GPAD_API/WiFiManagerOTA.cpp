@@ -56,7 +56,9 @@ void initLittleFS() {
   if (!LittleFS.begin(true)) {
     Serial.println("An error occurred while mounting LittleFS.");
   } else {
+    #if (DEBUG >1)
     Serial.println("LittleFS mounted successfully.");
+    #endif 
   }
 }
 

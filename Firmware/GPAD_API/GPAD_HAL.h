@@ -18,6 +18,7 @@
 
 */
 
+
 #ifndef GPAD_HAL
 #define GPAD_HAL 1
 #include <stream.h>

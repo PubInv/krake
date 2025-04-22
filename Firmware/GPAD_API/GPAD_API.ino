@@ -187,7 +187,7 @@ void serialSplash() {
   Serial.println(F("==================================="));
   Serial.println(COMPANY_NAME);
   Serial.println(MODEL_NAME);
-  //  Serial.println(DEVICE_UNDER_TEST); 
+  //  Serial.println(DEVICE_UNDER_TEST);
   Serial.print(PROG_NAME);
   Serial.println(FIRMWARE_VERSION);
   //  Serial.println(HARDWARE_VERSION);
@@ -214,8 +214,12 @@ void publishOnLineMsg(void) {
 
     float rssi = WiFi.RSSI();
     char rssiString[8];
+
+#if (DEBUG > 1)
     Serial.print("Publish RSSI: ");
     Serial.println(rssi);
+#endif
+
     dtostrf(rssi, 1, 2, rssiString);
     char onLineMsg[32] = " online, RSSI:";
     strcat(onLineMsg, rssiString);
@@ -246,19 +250,11 @@ bool connect_to_wifi() {
     } else {
       Serial.print("WiFi connected");
 
-      //FLE      Too early to do this test.
-      // Serial.println("");
-      // Serial.print("WiFi connected with RSSI: ");
-      // Serial.println(WiFi.RSSI());
-
-      // Serial.println("");
-      // Serial.print("Device connected at IPaddress: ");
-      // Serial.println(WiFi.localIP());
-
+#if (DEBUG > 1)
       delay(100);
       Serial.print("Device connected at IPaddress: ");  //FLE
       Serial.println(WiFi.localIP());                   //FLE
-
+#endif
       return true;
     }
   }
@@ -397,7 +393,7 @@ void setup() {
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
 
-#if (DEBUG > 0)
+#if (DEBUG > 1)
   Serial.println("Call: GPAD_HAL_setup(&Serial)");
 #endif
 
@@ -442,7 +438,7 @@ void setup() {
   subscribe_Alarm_Topic[16] = '\0';
   publish_Ack_Topic[16] = '\0';
 
-#if (DEBUG > 0)
+#if (DEBUG > 1)
   Serial.println("XXXXXXX");
   Serial.println(subscribe_Alarm_Topic);
   Serial.println(publish_Ack_Topic);

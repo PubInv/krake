@@ -113,10 +113,13 @@ volatile boolean process;
 
 byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 
+// Local DEBUG defines,  GPAD_HAL
 #define DEBUG 0
 //#define DEBUG 1
 
-
+#if (DEBUG >0)
+Serial.println("Debug defined >0")
+#endif
 
 const int NUM_PREFICES = 5;
 char legal_prefices[NUM_PREFICES] = { 'h', 's', 'a', 'u', 'i'};
@@ -288,9 +291,6 @@ void GPAD_HAL_setup(Stream *serialport) {
 //   pinMode(RXD1, INPUT_PULLUP);
   uartSerial1.begin( UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1 );  // UART setup. On Homework2, LCD goes blank early
   uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
-  while (!Serial1) {
-    ;  // wait for serial port to connect. Needed for native USB
-  }
 
 #if (DEBUG > 0)
   serialport->println(F("uartSerial1 Setup"));
@@ -300,9 +300,7 @@ void GPAD_HAL_setup(Stream *serialport) {
   // Here initialize the UART2
   pinMode(RXD2, INPUT_PULLUP);
   uartSerial2.begin(UART2_BAUD_RATE, SERIAL_8N1, RXD2, TXD2);  // UART setup
-  //   while (!Serial2) {
-  //   ;  // wait for serial port to connect. Needed for native USB
-  // }
+  uartSerial2.flush();     
 #if (DEBUG > 0)
   serialport->println(F("uartSerial2 Setup"));
 #endif
