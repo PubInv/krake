@@ -361,11 +361,25 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
         break;
       }
-    case 'i':  //Information
+    case 'i':  //Information. Firmware Version, Mute Status,
       {
-        //todo publish in the ACK
         char onInfoMsg[32] = "Firmware Version: ";
         strcat(onInfoMsg, FIRMWARE_VERSION);
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
+
+        //
+        onInfoMsg[0] = '\0';
+        //onInfoMsg[32] = "Mute Status: ";
+        strcat(onInfoMsg, "Mute Status: ");
+        if (currentlyMuted) {
+          strcat(onInfoMsg, "MUTED");
+          
+        } else
+        {
+          strcat(onInfoMsg, "NOT MUTED");
+        }
+        
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
         break;
