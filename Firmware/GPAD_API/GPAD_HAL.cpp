@@ -363,25 +363,43 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
       }
     case 'i':  //Information. Firmware Version, Mute Status,
       {
-        char onInfoMsg[32] = "Firmware Version: ";
+        //Firmware Version
+        static char onInfoMsg[32] = "Firmware Version: ";
         strcat(onInfoMsg, FIRMWARE_VERSION);
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
 
-        //
+        // Mute status
         onInfoMsg[0] = '\0';
         //onInfoMsg[32] = "Mute Status: ";
         strcat(onInfoMsg, "Mute Status: ");
         if (currentlyMuted) {
-          strcat(onInfoMsg, "MUTED");
-          
+          strcat(onInfoMsg, "MUTED");          
         } else
         {
           strcat(onInfoMsg, "NOT MUTED");
-        }
-        
+        }        
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
+
+        //Alarm level
+        onInfoMsg[0] = '\0';    
+        static char str[20];    
+        str[0] = '\0';
+        strcat(onInfoMsg, "Current alarm Level: ");
+        sprintf(str, "%d", getCurrentAlarmLevel());
+        strcat(onInfoMsg, str);
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
+
+        //Alarm message
+        onInfoMsg[0] = '\0';    
+        strcat(onInfoMsg, "Current alarm message: ");
+//        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
+        strcat(onInfoMsg, getCurrentMessage());
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
+        
         break;
       }
     default:
