@@ -69,6 +69,7 @@
 #include <Wire.h>  // req for i2c comm
 
 #include "WiFiManagerOTA.h"
+#include <ESPAsyncWebServer.h>
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
