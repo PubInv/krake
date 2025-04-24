@@ -57,7 +57,7 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_BShell          = 1;
+GPAD_BShell          = 0;
 GPAD_FPanL           = 1;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
@@ -65,7 +65,7 @@ RotaryEncoder        = 0;  // change to a real rotary encoder
 T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
-PWA_GPAD             = 1;
+PWA_GPAD             = 0;
 PWA_KRAKE            = 1;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
@@ -88,7 +88,7 @@ SpeakerHoleY = Krake ? 103.24 : 15.24;
 SpeakerHoleX = PCBLength - 15.24;
 
 // Krake Modifications for RotaryEncodeHole
-RotaryEncoderXpos      = Krake ? PCBLength - 10 : 0;
+RotaryEncoderXpos      = Krake ? PCBLength - 15 : 0;
 RotaryEncoderYpos      = Krake ? 15.24 : 0;
 RotaryEncoderDiameter  = Krake ? 15.8 : 0;
 
@@ -99,8 +99,9 @@ DE9On     = Krake ? 1 : 0;
 I2COn     = Krake ? 0 : 1;
 RJ12On    = Krake ? 1 : 1;
 DCOn      = Krake ? 1 : 1;
-PWA_GPAD  = Krake ? 0 : 1;
-PWA_KRAKE = Krake ? 1 : 0;
+//PWA_GPAD  = Krake ? 0 : 1;
+//PWA_KRAKE = Krake ? 1 : 0;
+DE9SquareHole      = Krake ? 1 : 0;
 
 
 if (Krake + GPAD > 1)
@@ -543,24 +544,38 @@ text(Content[i], font = Font, size = Size,   halign = _halign,valign=_valign);
 }
 }
 }
+
+include <dsub.scad>
 ////////////////////// <- New module Panel -> //////////////////////
 module FPanL(){
+  
+centerDB9X = -25;
+centerDB9Y = -80;
+centerDB9Z = -5;
+
 difference(){
 color(Couleur2)
 Panel(Length,Width,Thick,Filet);
-
-
+ 
 rotate([90,0,90]){
+    
 color(Couleur2){
+    
+   
 //                     <- Cutting shapes from here ->  
 //(On/Off, Xpos,Ypos,Length,Width,Filet)3*Thick+2,Thick+5
 echo((Width - PCBWidth)/2-3*Thick+1);
 echo(Thick+1.2);
 translate([((Width - PCBWidth)/2), 0, 0] - [3*Thick+2, 0, 0]){
+ 
+rotate([0,180,90]) translate([centerDB9X,centerDB9Y,centerDB9Z])
+    dsub (1.2,17.04,10);
+    
 USBbSquareHole(USBbOn, 54.61+1.2, FootHeight+PCBThick, 9, 5, 1, Ccenter=false);//USBb
-USBcSquareHole(USBcOn, 52.41+1.2, FootHeight+PCBThick, 9, 4.2, 1, Ccenter=false);//USBc
+USBcSquareHole(USBcOn, 51+1.45, FootHeight+PCBThick-1, 11, 6, 1, Ccenter=false);//USBc
 I2CSquareHole(I2COn, 81.28-1.2, FootHeight+PCBThick, 14, 9, 1, Ccenter=false);//I2C
-DE9SquareHole(DE9On, 74.422-8.2, FootHeight+PCBThick, 30, 14.2, 1, Ccenter=false);//DE9
+//DE9SquareHole(DE9On, 74-9.5, FootHeight+PCBThick, 30, 13.2, 1, Ccenter=false);//DE9
+
 RJ12SquareHole(RJ12On, 98.425-1.3, FootHeight+PCBThick, 14, 13, 1, Ccenter=false);//SPI
 DCSquareHole(DCOn, 119.38+0.8, FootHeight+PCBThick, 10, 12, 1, Ccenter=false);//DC barrel
   
