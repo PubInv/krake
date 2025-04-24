@@ -31,6 +31,10 @@ HardwareSerial uartSerial2(2);  //For DFPLayer, audio
 
 #include <DailyStruggleButton.h>
 DailyStruggleButton muteButton;
+DailyStruggleButton encoderSwitchButton;
+
+
+
 // Time in ms you need to hold down the button to be considered a long press
 unsigned int longPressTime = 1000;
 // How many times you need to hit the button to be considered a multi-hit
@@ -217,6 +221,41 @@ void updateFromSPI() {
 
 // Have to get a serialport here
 //void myCallback(byte buttonEvent) {
+void encoderSwitchCallback(byte buttonEvent) {
+  switch (buttonEvent) {
+    case onPress:
+      // Do something...
+      local_ptr_to_serial->println(F("ENCODER_SWITCH onPress"));
+      // currentlyMuted = !currentlyMuted;
+      // start_of_song = millis();
+      // annunciateAlarmLevel(local_ptr_to_serial);
+      // printAlarmState(local_ptr_to_serial);
+      break;
+      // onLongPress is indidcated when you hold onto the button
+    // more than longPressTime in milliseconds
+    case onLongPress:
+      Serial.print("Encoder Switch Buttong Long Pressed For ");
+      Serial.print(longPressTime);
+      Serial.println("ms");
+      break;
+
+    // onMultiHit is indicated when you hit the button
+    // multiHitTarget times within multihitTime in milliseconds
+    case onMultiHit:
+      Serial.print("Encoder Switch Button Pressed ");
+      Serial.print(multiHitTarget);
+      Serial.print(" times in ");
+      Serial.print(multiHitTime);
+      Serial.println("ms");
+      break;
+    default:
+      Serial.println("Encoder Switch buttonEvent but not reckognized case");
+      break;
+  }
+}
+
+// Have to get a serialport here
+//void myCallback(byte buttonEvent) {
 void muteButtonCallback(byte buttonEvent) {
   switch (buttonEvent) {
     case onPress:
@@ -250,8 +289,12 @@ void muteButtonCallback(byte buttonEvent) {
   }
 }
 
-
 void GPAD_HAL_setup(Stream *serialport) {
+  //Setup and present LCD splash screen
+  //Setup the SWITCH_MUTE
+  //Setup the SWITCH_ENCODER
+  //Print instructions on DEBUG serial port
+
   local_ptr_to_serial = serialport;
   Wire.begin();
   lcd.init();
@@ -269,7 +312,9 @@ void GPAD_HAL_setup(Stream *serialport) {
 #endif
 
   //Setup GPIO pins, Mute and lights
-  pinMode(SWITCH_MUTE, INPUT_PULLUP);  //The SWITCH_MUTE is different on Atmega vs ESP32
+  pinMode(SWITCH_MUTE, INPUT_PULLUP);  //The SWITCH_MUTE is different on Atmega vs ESP32.  Is this redundant?
+  pinMode(SWITCH_ENCODER, INPUT_PULLUP);  //The SWITCH_ENCODER is new to Krake. Is this redundant?
+
   for (int i = 0; i < NUM_LIGHTS; i++) {
 #if (DEBUG > 0)
     serialport->print(LIGHT[i]);
@@ -278,7 +323,13 @@ void GPAD_HAL_setup(Stream *serialport) {
     pinMode(LIGHT[i], OUTPUT);
   }
   serialport->println("");
+
   muteButton.set(SWITCH_MUTE, muteButtonCallback);
+  //SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
+  //SW4.enableLongPress(longPressTime);
+  encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback, INT_PULL_UP);
+  encoderSwitchButton.enableLongPress(longPressTime);
+  encoderSwitchButton.enableMultiHit(multiHitTime, multiHitTarget);
 
   printInstructions(serialport);
   AlarmMessageBuffer[0] = '\0';
@@ -304,7 +355,7 @@ void GPAD_HAL_setup(Stream *serialport) {
 #if (DEBUG > 0)
   serialport->println(F("uartSerial2 Setup"));
 #endif
-}
+}// end GPAD_HAL_setup()
 
 // This routine should be refactored so that it only "interprets"
 // the character buffer and returns an "abstract" command to be acted on
@@ -364,8 +415,10 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     case 'i':  //Information. Firmware Version, Mute Status,
       {
         //Firmware Version
-        static char onInfoMsg[32] = "Firmware Version: ";
-        static char str[20];    
+        // static char onInfoMsg[32] = "Firmware Version: ";
+        // static char str[20];    
+        char onInfoMsg[32] = "Firmware Version: ";
+        char str[20];    
         
         strcat(onInfoMsg, FIRMWARE_VERSION);
         client->publish(publish_Ack_Topic, onInfoMsg);
@@ -427,8 +480,9 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 // This has to be called periodically, at a minimum to handle the mute_button
 void GPAD_HAL_loop() {
   muteButton.poll();
-#if defined(GPAD)
-  muteButton.poll();
+  encoderSwitchButton.poll();
+#if defined(GPAD)  //FLE??? Why is this conditional compile?
+  muteButton.poll();  
 #endif
 }
 

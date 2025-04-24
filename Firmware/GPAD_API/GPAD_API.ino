@@ -399,6 +399,8 @@ void setup() {
 #endif
 
   //Setup and present LCD splash screen
+  //Setup the SWITCH_MUTE
+  //Setup the SWITCH_ENCODER
   GPAD_HAL_setup(&Serial);
 
 #if (DEBUG > 0)
