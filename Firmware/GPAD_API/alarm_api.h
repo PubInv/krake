@@ -42,4 +42,7 @@ typedef struct {
 int alarm_event(AlarmEvent &event, Stream *serialport);
 int alarm(AlarmLevel level, char *str, Stream *serialport);
 
+AlarmLevel getCurrentAlarmLevel();
+char *getCurrentMessage();
+
 #endif

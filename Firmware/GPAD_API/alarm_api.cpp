@@ -53,3 +53,13 @@ int alarm(AlarmLevel level, char *str, Stream *serialport) {
   strcpy(AlarmMessageBuffer, str);
   return previousLevel;
 }
+
+AlarmLevel getCurrentAlarmLevel() {
+  return currentLevel;
+}
+
+char *getCurrentMessage() {
+  return AlarmMessageBuffer;
+}
+
+// TODO: Add "setup" routine here to initialize the buffer.
