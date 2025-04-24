@@ -92,6 +92,8 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a1 Robert has left Discord, " + theTimeStamp ;
       } else if (key == 'f' ) {
         MessageFromProcessing_PMD = "a5 Robert is back in Discord" + theTimeStamp;
+      } else if (key == 'h' ) {
+        MessageFromProcessing_PMD = "h";
       } else if (key == 'i' ) {
         MessageFromProcessing_PMD = "i";
       } else if (key == 'j' ) {  //Request information in JSON format.
@@ -104,8 +106,12 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a5Nagham is in Discord, " + theTimeStamp ;
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it."  + theTimeStamp;
+      } else if (key == 's' ) {
+        MessageFromProcessing_PMD = "s"; //Mute or Silence the alarm sound
       } else if (key == 't' ) {
         MessageFromProcessing_PMD = "a1Test with CR and LF\r\n"  + theTimeStamp;
+      } else if (key == 'u' ) {
+        MessageFromProcessing_PMD = "u"; //unMute or enable the alarm sound
       } else if (key == 'X' ) { //Exit the MQTT broker
         exit();
       } else if (key == 'x' ) { //Exit the MQTT broker
