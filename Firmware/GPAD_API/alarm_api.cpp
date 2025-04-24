@@ -61,3 +61,5 @@ AlarmLevel getCurrentAlarmLevel() {
 char *getCurrentMessage() {
   return AlarmMessageBuffer;
 }
+
+// TODO: Add "setup" routine here to initialize the buffer.

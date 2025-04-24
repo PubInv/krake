@@ -364,7 +364,8 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     case 'i':  //Information. Firmware Version, Mute Status,
       {
         //Firmware Version
-        static char onInfoMsg[32] = "Firmware Version: ";
+        // 81+23 = Maximum string length
+        static char onInfoMsg[81+24] = "Firmware Version: ";
         static char str[20];    
         
         strcat(onInfoMsg, FIRMWARE_VERSION);
