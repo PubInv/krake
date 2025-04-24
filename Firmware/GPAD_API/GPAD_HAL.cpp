@@ -365,7 +365,19 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
       {
         //Firmware Version
         static char onInfoMsg[32] = "Firmware Version: ";
+        static char str[20];    
+        
         strcat(onInfoMsg, FIRMWARE_VERSION);
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
+
+        //Up time
+        onInfoMsg[0] = '\0';    
+        
+        str[0] = '\0';
+        strcat(onInfoMsg, "System up time (mills): ");
+        sprintf(str, "%d", millis());
+        strcat(onInfoMsg, str);
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
 
@@ -383,8 +395,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         serialport->println(onInfoMsg);
 
         //Alarm level
-        onInfoMsg[0] = '\0';    
-        static char str[20];    
+        onInfoMsg[0] = '\0';            
         str[0] = '\0';
         strcat(onInfoMsg, "Current alarm Level: ");
         sprintf(str, "%d", getCurrentAlarmLevel());
