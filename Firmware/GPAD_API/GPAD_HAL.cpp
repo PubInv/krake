@@ -491,10 +491,9 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
         onInfoMsg[0] = '\0';
         strcat(onInfoMsg, "IP Address: ");
-
         // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
 
-        char ipString[16];        
+        char ipString[] = "(0,0,0,0)";        
         // // sprintf(ipString, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
         // sprintf(ipString, "%d.%d.%d.%d",  myIP[0], myIP[1], myIP[2], myIP[3]);
 
@@ -503,8 +502,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
         
-
-        break;
+        break; //end of 'i'
       }
     default:
       serialport->println(F("Unknown Command"));
