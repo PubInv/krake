@@ -24,7 +24,7 @@
 #include "gpad_utility.h"
 #include <SPI.h>
 
-extern IPAddress myIP();
+extern IPAddress myIP;
 
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1);  //For user Serial Port
@@ -501,6 +501,9 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
+
+        // serialport->print("myIP =");
+        // serialport->println(myIP);   // Caused Error Multiple libraries were found for "WiFiManager.h"
         
         break; //end of 'i'
       }
