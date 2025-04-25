@@ -24,6 +24,8 @@
 #include "gpad_utility.h"
 #include <SPI.h>
 
+extern IPAddress myIP();
+
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1);  //For user Serial Port
 HardwareSerial uartSerial2(2);  //For DFPLayer, audio
@@ -483,6 +485,24 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         strcat(onInfoMsg, getCurrentMessage());
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
+
+        //IP Address
+        //Serial.println(WiFi.localIP()); 
+
+        onInfoMsg[0] = '\0';
+        strcat(onInfoMsg, "IP Address: ");
+
+        // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
+
+        char ipString[16];        
+        // // sprintf(ipString, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+        // sprintf(ipString, "%d.%d.%d.%d",  myIP[0], myIP[1], myIP[2], myIP[3]);
+
+        strcat(onInfoMsg, ipString);  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
+
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
+        
 
         break;
       }
