@@ -57,7 +57,7 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_BShell          = 0;
+GPAD_BShell          = 1;
 GPAD_FPanL           = 1;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
@@ -87,10 +87,17 @@ muteButtonDiameter = 15;
 SpeakerHoleY = Krake ? 103.24 : 15.24;
 SpeakerHoleX = PCBLength - 15.24;
 
+//Parameters for LEDHole
+LEDspacing = 12.7 ;
+LEDYposOffset = 15.24 ; // offset from the Encoder edge of PCB
+LEDXposOffset = 27.94 ; // offset from the connector edge of PCB
+
+
 // Krake Modifications for RotaryEncodeHole
-RotaryEncoderXpos      = Krake ? PCBLength - 15 : 0;
+i=-1; // Encoder is one LEd spacing below LEDs
+RotaryEncoderXpos      = Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0;
 RotaryEncoderYpos      = Krake ? 15.24 : 0;
-RotaryEncoderDiameter  = Krake ? 15.8 : 0;
+RotaryEncoderDiameter  = Krake ? 16 : 0;
 
 // Connectors Modifications specific port logic
 USBbOn    = Krake ? 0 : 1;
@@ -131,7 +138,7 @@ minkowski (){
 cube ([$a-(Length/2),$b-(2*Filet),$c-(2*Filet)], center = false);
 rotate([0,90,0]){    
 cylinder(r=Filet,h=Length/2, center = false);
-    } 
+} 
 }
 }
 }// End of RoundBox Module
@@ -147,57 +154,57 @@ union(){
 difference() {//soustraction de la forme centrale - Substraction Fileted box
 
 difference(){//soustraction cube median - Median cube slicer
-    union() {//union               
-    difference(){//Coque    
-        RoundBox();
-        translate([Thick/2,Thick/2,Thick/2]){     
-                RoundBox($a=Length-Thick, $b=Width-Thick, $c=Height-Thick);
-                }
-                }//Fin diff Coque                            
-        difference(){//largeur Rails        
-             translate([Thick+m,Thick/2,Thick/2]){// Rails
-                  RoundBox($a=Length-((2*Thick)+(2*m)), $b=Width-Thick, $c=Height-(Thick*2));
-                                  }//fin Rails
-             translate([((Thick+m/2)*1.55),Thick/2,Thick/2+0.1]){ // +0.1 added to avoid the artefact
-                  RoundBox($a=Length-((Thick*3)+2*m), $b=Width-Thick, $c=Height-Thick);
-                            }           
-                        }//Fin largeur Rails
-            }//Fin union                                   
-       translate([-Thick,-Thick,Height/2]){// Cube à soustraire
-            cube ([Length+100, Width+100, Height], center=false);
-                    }                                            
-              }//fin soustraction cube median - End Median cube slicer
-       translate([-Thick/2,Thick,Thick]){// Forme de soustraction centrale 
-            RoundBox($a=Length+Thick, $b=Width-Thick*2, $c=Height-Thick);       
-            }                          
-        }                                          
+union() {//union               
+difference(){//Coque    
+RoundBox();
+translate([Thick/2,Thick/2,Thick/2]){     
+RoundBox($a=Length-Thick, $b=Width-Thick, $c=Height-Thick);
+}
+}//Fin diff Coque                            
+difference(){//largeur Rails        
+translate([Thick+m,Thick/2,Thick/2]){// Rails
+RoundBox($a=Length-((2*Thick)+(2*m)), $b=Width-Thick, $c=Height-(Thick*2));
+      }//fin Rails
+translate([((Thick+m/2)*1.55),Thick/2,Thick/2+0.1]){ // +0.1 added to avoid the artefact
+RoundBox($a=Length-((Thick*3)+2*m), $b=Width-Thick, $c=Height-Thick);
+}           
+}//Fin largeur Rails
+}//Fin union                                   
+translate([-Thick,-Thick,Height/2]){// Cube à soustraire
+cube ([Length+100, Width+100, Height], center=false);
+}                                            
+}//fin soustraction cube median - End Median cube slicer
+translate([-Thick/2,Thick,Thick]){// Forme de soustraction centrale 
+RoundBox($a=Length+Thick, $b=Width-Thick*2, $c=Height-Thick);       
+}                          
+}                                          
 
 
 difference(){// wall fixation box legs
 union(){
 translate([3*Thick +5,Thick,Height/2]){
-    rotate([90,0,0]){
-            $fn=6;
-            cylinder(d=16,Thick/2);
-            }   
-    }
-    
+rotate([90,0,0]){
+$fn=6;
+cylinder(d=16,Thick/2);
+}   
+}
+
 translate([Length-((3*Thick)+5),Thick,Height/2]){
-    rotate([90,0,0]){
-            $fn=6;
-            cylinder(d=16,Thick/2);
-            }   
-    }
+rotate([90,0,0]){
+$fn=6;
+cylinder(d=16,Thick/2);
+}   
+}
 
 }
-    translate([4,Thick+Filet,Height/2-57]){   
-     rotate([45,0,0]){
-           cube([Length,40,40]);    
-          }
-   }
-   translate([0,-(Thick*1.46),Height/2]){
-        cube([Length,Thick*2,10]);
-   }
+translate([4,Thick+Filet,Height/2-57]){   
+rotate([45,0,0]){
+cube([Length,40,40]);    
+}
+}
+translate([0,-(Thick*1.46),Height/2]){
+cube([Length,Thick*2,10]);
+}
 } //Fin fixation box legs
 }
 
@@ -366,31 +373,31 @@ cube(Post + [HoleWindage,HoleWindage,Protrusion],center=true);
 
 /////////////////////// - Foot with base filet - /////////////////////////////
 module foot(FootDia,FootHole,FootHeight){
-    Filet=2;
-    color(Couleur1)   
-   // translate([3*Thick+2,Thick+5,0]+[-FootPosX,-FootPosY,Filet])
-    difference(){
-    
-    difference(){
-            translate ([0,0,0.1]){
-                cylinder(d=FootDia+Filet,FootHeight+Thick, $fn=100,center=true);
-                        }
-                    rotate_extrude($fn=100){
-                            translate([(FootDia+Filet*2)/2,Filet,0]){
-                                    minkowski(){
-                                            square(10);
-                                            circle(Filet, $fn=100);
-                                        }
-                                 }
-                           }
-                   }
-            cylinder(d=FootHole,FootHeight+1, $fn=100);
-               }          
+Filet=2;
+color(Couleur1)   
+// translate([3*Thick+2,Thick+5,0]+[-FootPosX,-FootPosY,Filet])
+difference(){
+
+difference(){
+translate ([0,0,0.1]){
+cylinder(d=FootDia+Filet,FootHeight+Thick, $fn=100,center=true);
+}
+rotate_extrude($fn=100){
+translate([(FootDia+Filet*2)/2,Filet,0]){
+        minkowski(){
+                square(10);
+                circle(Filet, $fn=100);
+            }
+     }
+}
+}
+cylinder(d=FootHole,FootHeight+1, $fn=100);
+}          
 }// Fin module foot
-  
+
 module Feet(){     
-  
-    
+
+
 ////////////////////////////// - 4 Feet - //////////////////////////////////////////   
 //    
 //    translate([3*Thick+7,Thick+10,Thick/2]){
@@ -407,25 +414,25 @@ module Feet(){
 //    }   
 
 
-    translate([3*Thick+2,Thick+5,Thick/2-.01]){
-    translate([FootPosX,FootPosY,FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
-    }
-    translate([(PCBLength-FootPosX),FootPosY,FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
-        }
-    translate([(PCBLength-FootPosX),(PCBWidth-FootPosY),FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
-        }        
-    translate([FootPosX,PCBWidth-(FootPosY),FootHeight/2]){
-        foot(FootDia,FootHole,FootHeight);
-    }
-  //  translate([(PCBLength-FootPosX),(PCBWidth-68.58),FootHeight/2]){
-     //   foot(FootDia,FootHole,FootHeight);
-   // }
+translate([3*Thick+2,Thick+5,Thick/2-.01]){
+translate([FootPosX,FootPosY,FootHeight/2]){
+foot(FootDia,FootHole,FootHeight);
+}
+translate([(PCBLength-FootPosX),FootPosY,FootHeight/2]){
+foot(FootDia,FootHole,FootHeight);
+}
+translate([(PCBLength-FootPosX),(PCBWidth-FootPosY),FootHeight/2]){
+foot(FootDia,FootHole,FootHeight);
+}        
+translate([FootPosX,PCBWidth-(FootPosY),FootHeight/2]){
+foot(FootDia,FootHole,FootHeight);
+}
+//  translate([(PCBLength-FootPosX),(PCBWidth-68.58),FootHeight/2]){
+//   foot(FootDia,FootHole,FootHeight);
+// }
 }
 } // Fin du module Feet
- 
+
 
 
 
@@ -548,7 +555,7 @@ text(Content[i], font = Font, size = Size,   halign = _halign,valign=_valign);
 include <dsub.scad>
 ////////////////////// <- New module Panel -> //////////////////////
 module FPanL(){
-  
+
 centerDB9X = -25;
 centerDB9Y = -80;
 centerDB9Z = -5;
@@ -556,21 +563,21 @@ centerDB9Z = -5;
 difference(){
 color(Couleur2)
 Panel(Length,Width,Thick,Filet);
- 
+
 rotate([90,0,90]){
-    
+
 color(Couleur2){
-    
-   
+
+
 //                     <- Cutting shapes from here ->  
 //(On/Off, Xpos,Ypos,Length,Width,Filet)3*Thick+2,Thick+5
 echo((Width - PCBWidth)/2-3*Thick+1);
 echo(Thick+1.2);
 translate([((Width - PCBWidth)/2), 0, 0] - [3*Thick+2, 0, 0]){
- 
+
 rotate([0,180,90]) translate([centerDB9X,centerDB9Y,centerDB9Z])
-    dsub (1.2,17.04,10);
-    
+dsub (1.2,17.04,10);
+
 USBbSquareHole(USBbOn, 54.61+1.2, FootHeight+PCBThick, 9, 5, 1, Ccenter=false);//USBb
 USBcSquareHole(USBcOn, 51+1.45, FootHeight+PCBThick-1, 11, 6, 1, Ccenter=false);//USBc
 I2CSquareHole(I2COn, 81.28-1.2, FootHeight+PCBThick, 14, 9, 1, Ccenter=false);//I2C
@@ -578,7 +585,7 @@ I2CSquareHole(I2COn, 81.28-1.2, FootHeight+PCBThick, 14, 9, 1, Ccenter=false);//
 
 RJ12SquareHole(RJ12On, 98.425-1.3, FootHeight+PCBThick, 14, 13, 1, Ccenter=false);//SPI
 DCSquareHole(DCOn, 119.38+0.8, FootHeight+PCBThick, 10, 12, 1, Ccenter=false);//DC barrel
-  
+
 
 }}}}
 //                            <- To here -> 
@@ -641,10 +648,10 @@ Feet();
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //(On/Off, Xpos, Ypos, Diameter)
+  
 
 for ( i = [0 : 4] ){
-
-CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1  
+CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1  
 }
 CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
 
@@ -716,9 +723,9 @@ rotate([0,0,90])translate([0,0,PCBThick-0.2]);//import("General Alarm Device Enc
 %cube ([PCBLength,PCBWidth,PCBThick]);
 translate([PCBLength/2,PCBWidth/2,0]){ 
 color("Olive")
-    rotate([0,0,90])
+rotate([0,0,90])
 %text("SIMPLE PCB", halign="center", valign="center", font="Arial black") ;
-  
+
 }
 } // Fin PCB 
 }
@@ -737,11 +744,11 @@ color("Olive")
 
 if(PWA_KRAKE==1){
 //////////////////// - PCB only visible in the preview mode - /////////////////////    
-    translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
+translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
 
 rotate([0,0,90])translate([0,0,PCBThick-0.2]);
-    rotate([0,0,90])translate([-55.88,17.78,0])
-    import("KRAKE_PWArev1.stl", convexity=3);
+rotate([0,0,90])translate([-55.88,17.78,0])
+import("KRAKE_PWArev1.stl", convexity=3);
 //%cube ([PCBLength,PCBWidth,PCBThick]);
 //translate([PCBLength/2,PCBWidth/2,0]){ 
 //color("Olive")
