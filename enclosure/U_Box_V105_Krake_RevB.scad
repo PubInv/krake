@@ -49,6 +49,8 @@ FootPosY       = 5.08;
 
 Couleur1       = "Orange";
 Couleur2       = "OrangeRed";
+Couleur3       = "Green";
+
 Dec_Thick      = Vent ? Thick * 2 : Thick;
 Dec_size       = Vent ? Thick * 2 : 0.8;
 
@@ -57,8 +59,8 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_BShell          = 1;
-GPAD_FPanL           = 1;
+GPAD_BShell          = 0;
+GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
@@ -69,7 +71,7 @@ PWA_GPAD             = 0;
 PWA_KRAKE            = 1;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
-PWA                  = 0;
+PWA                  = 1;
 
 //Modifications for Display
 DisplayXpos = PCBLength-50.8;
@@ -106,8 +108,6 @@ DE9On     = Krake ? 1 : 0;
 I2COn     = Krake ? 0 : 1;
 RJ12On    = Krake ? 1 : 1;
 DCOn      = Krake ? 1 : 1;
-//PWA_GPAD  = Krake ? 0 : 1;
-//PWA_KRAKE = Krake ? 1 : 0;
 DE9SquareHole      = Krake ? 1 : 0;
 
 
@@ -122,12 +122,14 @@ translate ([PCBLength-70.74,12.24,25])
 //translate ([0,0,FootHeight+ScrewLenght+1])
 import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
-
-if(PWA ==1){ 
+/*
+if(PWAKrake ==1){ 
 translate([-10,-50,10])
 rotate ([0,0,90])
+    color([1, 0, 0]) {
 import("KRAKE_PWArev1.stl");
-}
+}}
+*/
 
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
 
@@ -745,9 +747,9 @@ color("Olive")
 if(PWA_KRAKE==1){
 //////////////////// - PCB only visible in the preview mode - /////////////////////    
 translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
-
 rotate([0,0,90])translate([0,0,PCBThick-0.2]);
 rotate([0,0,90])translate([-55.88,17.78,0])
+color(Couleur3)
 import("KRAKE_PWArev1.stl", convexity=3);
 //%cube ([PCBLength,PCBWidth,PCBThick]);
 //translate([PCBLength/2,PCBWidth/2,0]){ 
