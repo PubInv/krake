@@ -399,6 +399,8 @@ void setup() {
 #endif
 
   //Setup and present LCD splash screen
+  //Setup the SWITCH_MUTE
+  //Setup the SWITCH_ENCODER
   GPAD_HAL_setup(&Serial);
 
 #if (DEBUG > 0)
@@ -470,6 +472,8 @@ void toggle(int pin) {
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 
+//IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
+IPAddress myIP(); // declare for global
 
 void loop() {
 
@@ -481,8 +485,15 @@ void loop() {
     //If WiFi was not connected and becomes connected then print IP address
     if (!is_WIFIconnected && connect_to_wifi()) {
       is_WIFIconnected = true;
+
+      //Get the IP address into a variable I can make global
+      IPAddress myIP = WiFi.localIP();
+      const char* ipString = myIP.toString().c_str();
+      // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
+      
       Serial.print("Device connected at IPaddress: ");  //FLE
-      Serial.println(WiFi.localIP());                   //FLE
+//      Serial.println(WiFi.localIP());                   //FLE
+      Serial.println(myIP);                   //FLE
     }
 
 

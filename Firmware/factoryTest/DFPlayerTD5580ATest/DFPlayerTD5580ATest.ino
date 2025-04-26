@@ -1,6 +1,6 @@
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DFPlayerTD5580ATest "
-#define VERSION "V0.2 "
+#define VERSION "V0.3 "
 #define DEVICE_UNDER_TEST "PMD: LCD and DFPlayer"  //A PMD model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "USA"
@@ -12,6 +12,26 @@
    Date: 20250414 V0.2, added functionality from :https://github.com/DFRobot/DFRobotDFPlayerMini/blob/master/examples/FullFunction/FullFunction.ino
 
 */
+
+//OTA Stuff
+/*********
+  Rui Santos & Sara Santos - Random Nerd Tutorials
+  Complete project details at https://RandomNerdTutorials.com/esp32-ota-elegantota-arduino/
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Softwar
+*********/
+
+#include <Arduino.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <ElegantOTA.h>
+
+const char* ssid = "VRX";
+const char* password = "textinsert";
+
+AsyncWebServer server(80);
+
+
 
 
 #define BAUDRATE 115200
@@ -162,7 +182,8 @@ void printDetail(uint8_t type, int value){
 void dfPlayerUpdate(void){
    static unsigned long timer = millis();
   
-  if (millis() - timer > 3000) {
+//  if (millis() - timer > 3000) {
+  if (millis() - timer > 10000) {
     timer = millis();
     dfPlayer.next();  //Play next mp3 every 3 second.
   }
@@ -195,13 +216,20 @@ void setup() {
   Serial.println("===================================");
   Serial.println();
 
+  setupOTA();
+  Serial.print("OTA setup done.");
+
+
   setupDFPlayer();
+  Serial.print("DFPlayer setup done.");
 
   Serial.println("End of setup");
   digitalWrite(LED_PIN, LOW);
 }  // end of setup()
 
 void loop() {
+
+ElegantOTA.loop();
 
 dfPlayerUpdate();
 

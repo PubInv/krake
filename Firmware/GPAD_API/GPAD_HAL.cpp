@@ -24,19 +24,23 @@
 #include "gpad_utility.h"
 #include <SPI.h>
 
+extern IPAddress myIP;
+
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1);  //For user Serial Port
 HardwareSerial uartSerial2(2);  //For DFPLayer, audio
 
 
 #include <DailyStruggleButton.h>
-DailyStruggleButton muteButton;
 // Time in ms you need to hold down the button to be considered a long press
 unsigned int longPressTime = 1000;
 // How many times you need to hit the button to be considered a multi-hit
 byte multiHitTarget = 2;
 // How fast you need to hit all buttons to be considered a multi-hit
 unsigned int multiHitTime = 400;
+
+DailyStruggleButton muteButton;
+DailyStruggleButton encoderSwitchButton;
 
 
 extern const char *AlarmNames[];
@@ -117,12 +121,12 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 #define DEBUG 0
 //#define DEBUG 1
 
-#if (DEBUG >0)
+#if (DEBUG > 0)
 Serial.println("Debug defined >0")
 #endif
 
-const int NUM_PREFICES = 5;
-char legal_prefices[NUM_PREFICES] = { 'h', 's', 'a', 'u', 'i'};
+  const int NUM_PREFICES = 5;
+char legal_prefices[NUM_PREFICES] = { 'h', 's', 'a', 'u', 'i' };
 
 
 void setup_spi() {
@@ -216,6 +220,51 @@ void updateFromSPI() {
 }
 
 // Have to get a serialport here
+
+//void myCallback(byte buttonEvent) {
+void encoderSwitchCallback(byte buttonEvent) {
+  switch (buttonEvent) {
+    case onPress:
+      // Do something...
+      local_ptr_to_serial->println(F("ENCODER_SWITCH onPress"));
+      // currentlyMuted = !currentlyMuted;
+      // start_of_song = millis();
+      // annunciateAlarmLevel(local_ptr_to_serial);
+      // printAlarmState(local_ptr_to_serial);
+      break;
+    case onRelease:
+      // Do nothing...
+      local_ptr_to_serial->println(F("ENCODER_SWITCH onRelease"));
+      break;
+    case onHold:
+      // Do nothing...
+      local_ptr_to_serial->println(F("ENCODER_SWITCH onHold"));
+      break;
+      // onLongPress is indidcated when you hold onto the button
+    // more than longPressTime in milliseconds
+    case onLongPress:
+      Serial.print("ENCODER_SWITCH Button Long Pressed For ");
+      Serial.print(longPressTime);
+      Serial.println("ms");
+      break;
+
+    // onMultiHit is indicated when you hit the button
+    // multiHitTarget times within multihitTime in milliseconds
+    case onMultiHit:
+      Serial.print("Encoder Switch Button Pressed ");
+      Serial.print(multiHitTarget);
+      Serial.print(" times in ");
+      Serial.print(multiHitTime);
+      Serial.println("ms");
+      break;
+    default:
+      Serial.print("Encoder Switch buttonEvent but not reckognized case: ");
+      Serial.println(buttonEvent);
+      break;
+  }
+}
+
+// Have to get a serialport here
 //void myCallback(byte buttonEvent) {
 void muteButtonCallback(byte buttonEvent) {
   switch (buttonEvent) {
@@ -227,10 +276,18 @@ void muteButtonCallback(byte buttonEvent) {
       annunciateAlarmLevel(local_ptr_to_serial);
       printAlarmState(local_ptr_to_serial);
       break;
+    case onRelease:
+      // Do nothing...
+      local_ptr_to_serial->println(F("SWITCH_MUTE onRelease"));
+      break;
+    case onHold:
+      // Do nothing...
+      local_ptr_to_serial->println(F("SWITCH_MUTE onHold"));
+      break;
       // onLongPress is indidcated when you hold onto the button
     // more than longPressTime in milliseconds
     case onLongPress:
-      Serial.print("Buttong Long Pressed For ");
+      Serial.print("SWITCH_MUTE Long Pressed For ");
       Serial.print(longPressTime);
       Serial.println("ms");
       break;
@@ -245,13 +302,18 @@ void muteButtonCallback(byte buttonEvent) {
       Serial.println("ms");
       break;
     default:
-      Serial.println("buttonEvent but not reckognized case");
+      Serial.print("Mute buttonEvent but not reckognized case: ");
+      Serial.println(buttonEvent);
       break;
   }
 }
 
-
 void GPAD_HAL_setup(Stream *serialport) {
+  //Setup and present LCD splash screen
+  //Setup the SWITCH_MUTE
+  //Setup the SWITCH_ENCODER
+  //Print instructions on DEBUG serial port
+
   local_ptr_to_serial = serialport;
   Wire.begin();
   lcd.init();
@@ -269,7 +331,9 @@ void GPAD_HAL_setup(Stream *serialport) {
 #endif
 
   //Setup GPIO pins, Mute and lights
-  pinMode(SWITCH_MUTE, INPUT_PULLUP);  //The SWITCH_MUTE is different on Atmega vs ESP32
+  pinMode(SWITCH_MUTE, INPUT_PULLUP);     //The SWITCH_MUTE is different on Atmega vs ESP32.  Is this redundant?
+  pinMode(SWITCH_ENCODER, INPUT_PULLUP);  //The SWITCH_ENCODER is new to Krake. Is this redundant?
+
   for (int i = 0; i < NUM_LIGHTS; i++) {
 #if (DEBUG > 0)
     serialport->print(LIGHT[i]);
@@ -278,7 +342,16 @@ void GPAD_HAL_setup(Stream *serialport) {
     pinMode(LIGHT[i], OUTPUT);
   }
   serialport->println("");
+
   muteButton.set(SWITCH_MUTE, muteButtonCallback);
+  muteButton.enableLongPress(longPressTime);
+  muteButton.enableMultiHit(multiHitTime, multiHitTarget);
+
+  //SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
+  //  encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback, INT_PULL_UP);
+  encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback);
+  encoderSwitchButton.enableLongPress(longPressTime);
+  encoderSwitchButton.enableMultiHit(multiHitTime, multiHitTarget);
 
   printInstructions(serialport);
   AlarmMessageBuffer[0] = '\0';
@@ -288,8 +361,8 @@ void GPAD_HAL_setup(Stream *serialport) {
 #if !defined(HMWK)  //On Homework2, LCD goes blank early
   // Here initialize the UART1
   //FLE the Serial1 is faliing to terminate
-//   pinMode(RXD1, INPUT_PULLUP);
-  uartSerial1.begin( UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1 );  // UART setup. On Homework2, LCD goes blank early
+  //   pinMode(RXD1, INPUT_PULLUP);
+  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1);  // UART setup. On Homework2, LCD goes blank early
   uartSerial1.flush();                                         //Clear any Serial1 crud at reset.
 
 #if (DEBUG > 0)
@@ -300,11 +373,11 @@ void GPAD_HAL_setup(Stream *serialport) {
   // Here initialize the UART2
   pinMode(RXD2, INPUT_PULLUP);
   uartSerial2.begin(UART2_BAUD_RATE, SERIAL_8N1, RXD2, TXD2);  // UART setup
-  uartSerial2.flush();     
+  uartSerial2.flush();
 #if (DEBUG > 0)
   serialport->println(F("uartSerial2 Setup"));
 #endif
-}
+}  // end GPAD_HAL_setup()
 
 // This routine should be refactored so that it only "interprets"
 // the character buffer and returns an "abstract" command to be acted on
@@ -365,16 +438,18 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
       {
         //Firmware Version
         // 81+23 = Maximum string length
-        static char onInfoMsg[81+24] = "Firmware Version: ";
-        static char str[20];    
-        
+        //        char onInfoMsg[32] = "Firmware Version: ";
+        //        static char onInfoMsg[81+24] = "Firmware Version: "; //This does not have the bug.
+        char onInfoMsg[81 + 24] = "Firmware Version: ";  //This
+        char str[20];
+
         strcat(onInfoMsg, FIRMWARE_VERSION);
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
 
         //Up time
-        onInfoMsg[0] = '\0';    
-        
+        onInfoMsg[0] = '\0';
+
         str[0] = '\0';
         strcat(onInfoMsg, "System up time (mills): ");
         sprintf(str, "%d", millis());
@@ -387,16 +462,15 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         //onInfoMsg[32] = "Mute Status: ";
         strcat(onInfoMsg, "Mute Status: ");
         if (currentlyMuted) {
-          strcat(onInfoMsg, "MUTED");          
-        } else
-        {
+          strcat(onInfoMsg, "MUTED");
+        } else {
           strcat(onInfoMsg, "NOT MUTED");
-        }        
+        }
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
 
         //Alarm level
-        onInfoMsg[0] = '\0';            
+        onInfoMsg[0] = '\0';
         str[0] = '\0';
         strcat(onInfoMsg, "Current alarm Level: ");
         sprintf(str, "%d", getCurrentAlarmLevel());
@@ -405,14 +479,33 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         serialport->println(onInfoMsg);
 
         //Alarm message
-        onInfoMsg[0] = '\0';    
+        onInfoMsg[0] = '\0';
         strcat(onInfoMsg, "Current alarm message: ");
-//        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
+        //        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
         strcat(onInfoMsg, getCurrentMessage());
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
+
+        //IP Address
+        //Serial.println(WiFi.localIP()); 
+
+        onInfoMsg[0] = '\0';
+        strcat(onInfoMsg, "IP Address: ");
+        // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
+
+        char ipString[] = "(0,0,0,0)";        
+        // // sprintf(ipString, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+        // sprintf(ipString, "%d.%d.%d.%d",  myIP[0], myIP[1], myIP[2], myIP[3]);
+
+        strcat(onInfoMsg, ipString);  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
+
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
+
+        // serialport->print("myIP =");
+        // serialport->println(myIP);   // Caused Error Multiple libraries were found for "WiFiManager.h"
         
-        break;
+        break; //end of 'i'
       }
     default:
       serialport->println(F("Unknown Command"));
@@ -428,7 +521,8 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 // This has to be called periodically, at a minimum to handle the mute_button
 void GPAD_HAL_loop() {
   muteButton.poll();
-#if defined(GPAD)
+  encoderSwitchButton.poll();
+#if defined(GPAD)  //FLE??? Why is this conditional compile?
   muteButton.poll();
 #endif
 }
@@ -471,22 +565,22 @@ void splashLCD(void) {
   lcd.print(macAddressString);
 }
 bool printable(char c) {
-  return isAlphaNumeric(c) || ( c == ' ');
+  return isAlphaNumeric(c) || (c == ' ');
 }
 // Remove unwanted characters....
 void filter_control_chars(char *msg) {
-   size_t len = strlen(msg); 
-   char buff[MAX_BUFFER_SIZE];
-   strcpy(buff,msg);
-   int k = 0;
-   for(int i = 0; i < len; i++) {
-      char c = buff[i];
-      if (printable(c)) {
-        msg[k] = c;
-        k++;
-      }
-   }
-   msg[k] = '\0';
+  size_t len = strlen(msg);
+  char buff[MAX_BUFFER_SIZE];
+  strcpy(buff, msg);
+  int k = 0;
+  for (int i = 0; i < len; i++) {
+    char c = buff[i];
+    if (printable(c)) {
+      msg[k] = c;
+      k++;
+    }
+  }
+  msg[k] = '\0';
 }
 // TODO: We need to break the message up into strings to render properly
 // on the display
@@ -521,8 +615,8 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
   } else {
 
     char buffer[21] = { 0 };  // note space for terminator
-// filter unmeaningful characters from msg buffer
-   filter_control_chars(msg);
+                              // filter unmeaningful characters from msg buffer
+    filter_control_chars(msg);
 
     size_t len = strlen(msg);          // doesn't count terminator
     size_t blen = sizeof(buffer) - 1;  // doesn't count terminator

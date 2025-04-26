@@ -58,6 +58,7 @@
 #define LIGHT3 26
 #define LIGHT4 25
 #define LED_BUILTIN 13
+#define SWITCH_ENCODER 34 //Center switch aka button Normaly high.
 #endif
 
 #if defined(GPAD)
