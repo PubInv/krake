@@ -92,6 +92,8 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a1 Robert has left Discord, " + theTimeStamp ;
       } else if (key == 'f' ) {
         MessageFromProcessing_PMD = "a5 Robert is back in Discord" + theTimeStamp;
+      } else if (key == 'g' ) {
+        MessageFromProcessing_PMD = "a5 time to GET Update Firmware." + theTimeStamp;
       } else if (key == 'h' ) {
         MessageFromProcessing_PMD = "h";
       } else if (key == 'i' ) {
