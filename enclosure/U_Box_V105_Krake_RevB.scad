@@ -613,19 +613,20 @@ rotate([-90,0,-90])
 {
 
 Fontsize = 3; 
+    TextBaseLine = - FootHeight* 1 ; 
 //                      <- Adding text from here ->   
 
 
-LText(USBbOn,-55,-FootHeight*.9,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
+LText(USBbOn,-55,TextBaseLine,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
 
 //LText(USBcOn,54.61,FootHeight*.9,"Arial Black",3,"USB",_halign = "center",_valign="top");
 
-LText(USBcOn,-53,-FootHeight*.9,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
+LText(USBcOn,-53,TextBaseLine,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
 
-LText(I2COn, -81.28   ,-FootHeight*.9,"Arial Black",Fontsize,"I2C",_halign = "center",_valign="top");
-LText(DE9On, -74.44   ,-FootHeight*.9,"Arial Black",Fontsize,"COM",_halign = "center",_valign="top");
-LText(RJ12On,-98.425,-FootHeight*.9,"Arial Black",Fontsize,"Remote",_halign = "center",_valign="top");
-LText(DCOn,-119.9 ,-FootHeight*.9,"Arial Black",Fontsize,"DC",_halign = "center",_valign="top");    
+LText(I2COn, -81.28,TextBaseLine,"Arial Black",Fontsize,"I2C",_halign = "center",_valign="top");
+LText(DE9On, -74.44,TextBaseLine,"Arial Black",Fontsize,"COM",_halign = "center",_valign="top");
+LText(RJ12On,-98.425,TextBaseLine,"Arial Black",Fontsize,"Remote",_halign = "center",_valign="top");
+LText(DCOn,-119.9 ,TextBaseLine,"Arial Black",Fontsize,"DC",_halign = "center",_valign="top");    
 //SquareHole(1,0,FootHeight*.9,1,1,0,Ccenter=true); //origin
 //                            <- To here ->
 }
