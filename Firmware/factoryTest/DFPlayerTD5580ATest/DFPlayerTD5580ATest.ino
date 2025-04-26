@@ -33,7 +33,6 @@ AsyncWebServer server(80);
 
 
 
-
 #define BAUDRATE 115200
 #define BAUD_DFPLAYER 9600
 
@@ -46,8 +45,12 @@ AsyncWebServer server(80);
 HardwareSerial mySerial1(2);  // Use UART2
 DFRobotDFPlayerMini dfPlayer;
 
-const int LED_PIN = 2;  // ESP32 LED
+const int LED_PIN = 13;  // Krake
+
+//const int LED_PIN = 2;  // ESP32 LED
 const int LED_D6 = 23;  // ESP32 GPIO23 pin 16 on kit.
+
+const int nDFPlayer_BUSY = 4; //Busy from DFPLayer
 
 const int trac1 = 1;
 const int trac2 = 2;
@@ -191,6 +194,23 @@ void dfPlayerUpdate(void){
   if (dfPlayer.available()) {
     printDetail(dfPlayer.readType(), dfPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
   }
+}// end
+
+void dfPlayerNotBusy(){
+  //If not busy play next.
+  //if (digitalRead(4)){  //busy pin.
+  // if (digitalRead(nDFPlayer_BUSY)){  //busy pin.
+  //   dfPlayer.next();
+  // }
+  
+
+   if (dfPlayer.available()) {
+    printDetail(dfPlayer.readType(), dfPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
+    if(DFPlayerPlayFinished == dfPlayer.readType() ){
+       dfPlayer.next();
+    }
+  }
+
 }
 
 void setup() {
@@ -227,11 +247,27 @@ void setup() {
   digitalWrite(LED_PIN, LOW);
 }  // end of setup()
 
+void playNotBusy(){
+  boolean play_state = digitalRead(4);
+  if(play_state == HIGH){
+    //mp3_next ();
+    dfPlayer.next();
+    delay(1000);
+  }
+  delay(1000);
+}
+
+
 void loop() {
 
 ElegantOTA.loop();
 
 dfPlayerUpdate();
+
+//playNotBusy();
+//dfPlayerNotBusy();
+
+digitalWrite(LED_PIN, digitalRead(nDFPlayer_BUSY));
 
   // Serial.println("Play a track");
   // dfPlayer.play(0);
