@@ -60,7 +60,7 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 
 GPAD_TShell          = 0;
 GPAD_BShell          = 0;
-GPAD_FPanL           = 0;
+GPAD_FPanL           = 1;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
@@ -126,7 +126,7 @@ import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 if(PWAKrake ==1){ 
 translate([-10,-50,10])
 rotate ([0,0,90])
-    color([1, 0, 0]) {
+color([1, 0, 0]) {
 import("KRAKE_PWArev1.stl");
 }}
 */
@@ -166,7 +166,7 @@ RoundBox($a=Length-Thick, $b=Width-Thick, $c=Height-Thick);
 difference(){//largeur Rails        
 translate([Thick+m,Thick/2,Thick/2]){// Rails
 RoundBox($a=Length-((2*Thick)+(2*m)), $b=Width-Thick, $c=Height-(Thick*2));
-      }//fin Rails
+}//fin Rails
 translate([((Thick+m/2)*1.55),Thick/2,Thick/2+0.1]){ // +0.1 added to avoid the artefact
 RoundBox($a=Length-((Thick*3)+2*m), $b=Width-Thick, $c=Height-Thick);
 }           
@@ -386,11 +386,11 @@ cylinder(d=FootDia+Filet,FootHeight+Thick, $fn=100,center=true);
 }
 rotate_extrude($fn=100){
 translate([(FootDia+Filet*2)/2,Filet,0]){
-        minkowski(){
-                square(10);
-                circle(Filet, $fn=100);
-            }
-     }
+minkowski(){
+square(10);
+circle(Filet, $fn=100);
+}
+}
 }
 }
 cylinder(d=FootHole,FootHeight+1, $fn=100);
@@ -581,7 +581,7 @@ rotate([0,180,90]) translate([centerDB9X,centerDB9Y,centerDB9Z])
 dsub (1.2,17.04,10);
 
 USBbSquareHole(USBbOn, 54.61+1.2, FootHeight+PCBThick, 9, 5, 1, Ccenter=false);//USBb
-USBcSquareHole(USBcOn, 51+1.45, FootHeight+PCBThick-1, 11, 6, 1, Ccenter=false);//USBc
+USBcSquareHole(USBcOn, 51+1.45, FootHeight-0.5+PCBThick-1, 11, 6, 1, Ccenter=false);//USBc
 I2CSquareHole(I2COn, 81.28-1.2, FootHeight+PCBThick, 14, 9, 1, Ccenter=false);//I2C
 //DE9SquareHole(DE9On, 74-9.5, FootHeight+PCBThick, 30, 13.2, 1, Ccenter=false);//DE9
 
@@ -592,23 +592,48 @@ DCSquareHole(DCOn, 119.38+0.8, FootHeight+PCBThick, 10, 12, 1, Ccenter=false);//
 }}}}
 //                            <- To here -> 
 
+// placing text for the front panel 
+
+//translate ([-.5,0,0])
+//rotate([90,0,90])        
+//translate([-((Width + PCBWidth)/2) ,0,0]+[-2.3,0,0])
 
 color(Couleur1){
-translate ([-.5,0,0])
-rotate([90,0,90])        
-translate([((Width - PCBWidth)/2) ,0,0]+[-2.3,0,0]){
+//translate ([-.5,0,0])
+ 
+translate ([-.5, 4,-3])
+
+    
+// module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left")
+
+rotate([-90,0,-90])    
+
+// module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left")
+
+//translate([0 ,0,0])
+{
+
+Fontsize = 3; 
 //                      <- Adding text from here ->   
-//(On/Off, Xpos, Ypos, "Font", Size, "Text",_halign = "center",_valign="top")  
-LText(USBbOn,54.61,FootHeight*.9,"Arial Black",3,"USB",_halign = "center",_valign="top");
-LText(USBcOn,54.61,FootHeight*.9,"Arial Black",3,"USB",_halign = "center",_valign="top");
-LText(I2COn, 81.28   ,FootHeight*.9,"Arial Black",3,"I2C",_halign = "center",_valign="top");
-LText(DE9On, 76.28   ,FootHeight*.9,"Arial Black",3,"COM",_halign = "center",_valign="top");
-LText(RJ12On,98.425,FootHeight*.9,"Arial Black",3,"Remote",_halign = "center",_valign="top");
-LText(DCOn,119.38,FootHeight*.9,"Arial Black",3,"DC",_halign = "center",_valign="top");    
+
+
+LText(USBbOn,54.61,FootHeight*.9,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
+
+//LText(USBcOn,54.61,FootHeight*.9,"Arial Black",3,"USB",_halign = "center",_valign="top");
+
+LText(USBcOn,-53,-FootHeight*.9,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
+
+LText(I2COn, -81.28   ,-FootHeight*.9,"Arial Black",Fontsize,"I2C",_halign = "center",_valign="top");
+LText(DE9On, -74.44   ,-FootHeight*.9,"Arial Black",Fontsize,"COM",_halign = "center",_valign="top");
+LText(RJ12On,-98.425,-FootHeight*.9,"Arial Black",Fontsize,"Remote",_halign = "center",_valign="top");
+LText(DCOn,-119.9 ,-FootHeight*.9,"Arial Black",Fontsize,"DC",_halign = "center",_valign="top");    
 //SquareHole(1,0,FootHeight*.9,1,1,0,Ccenter=true); //origin
 //                            <- To here ->
 }
 }
+
+
+
 }
 
 
@@ -650,7 +675,7 @@ Feet();
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //(On/Off, Xpos, Ypos, Diameter)
-  
+
 
 for ( i = [0 : 4] ){
 CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1  
@@ -663,9 +688,10 @@ CylinderHole(1,SpeakerHoleX,68.58,2); //reset hole
 //(On/Off, Xpos, Ypos, "Font", Size, Diameter, Arc(Deg), Starting Angle(Deg),"Text",_halign = "center",_valign="top") 
 
 
-rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-( RotaryEncoderXpos),RotaryEncoderYpos,"Arial Black",4,9,110,270,"RE");
+//rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-( RotaryEncoderXpos),RotaryEncoderYpos,"Arial Black",4,9,110,270,"RE");
 CylinderHole(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter); //RotaryEncoder
-CylinderSpacer(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter+Thick+m/2); //cutout for mute button
+CylinderSpacer(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter+Thick+m/2); //cutout for mute button 
+
 }}
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
@@ -746,7 +772,7 @@ color("Olive")
 
 if(PWA_KRAKE==1){
 //////////////////// - PCB only visible in the preview mode - /////////////////////    
-translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
+translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
 rotate([0,0,90])translate([0,0,PCBThick-0.2]);
 rotate([0,0,90])translate([-55.88,17.78,0])
 color(Couleur3)
