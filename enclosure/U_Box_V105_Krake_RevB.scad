@@ -5,8 +5,8 @@
 ////////////////////////////////////////////////////////////////////
 
 /* Project Selector */
-Krake = 0;      // [0:Off, 1:On]
-GPAD  = 1;      // [0:Off, 1:On]
+Krake = 1;      // [0:Off, 1:On]
+GPAD  = 0;      // [0:Off, 1:On]
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -59,7 +59,7 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_BShell          = 0;
+GPAD_BShell          = 1;
 GPAD_FPanL           = 1;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
@@ -268,7 +268,7 @@ cylinder(d=2,20);
 module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
 //difference(){
 if(OnOff==1)
-translate([Cx,Cy,-1]){
+translate([Cx+.5,Cy+2.5,-1]){
 for(j = [1  : 3]){
 
 rotate(a = 360*j/3,v = [0,0,1])
@@ -282,6 +282,40 @@ cylinder(d=i*.65,h = 10, $fn=100,center=Ccenter);
 
 }
 }
+}}
+{
+// Parameters
+speaker_diameter =  28;
+tolerance = 0.5;
+speaker_hole = speaker_diameter + tolerance;
+ledge_thickness = 0.00000000001;  // thickness of material above concave
+concave_depth = 2;    // how deep the concave should be
+enclosure_radius = speaker_diameter/2;
+enclosure_height = 19;
+
+// Full Enclosure
+
+difference() {
+
+// Main cylinder body
+translate([PCBLength*.92,PCBWidth*.82,15])
+
+cylinder(d = enclosure_radius*2, h = enclosure_height, center = true);
+
+// Hollow the inside
+translate([PCBLength*.92,PCBWidth*.82,15])
+translate([0,0,-enclosure_height/2 + ledge_thickness])
+cylinder(d = enclosure_radius*2 - 3.5, h = enclosure_height, center = false);
+
+// Speaker main hole (cut through the top wall, but leave concave shape)
+translate([PCBLength*.92,PCBWidth*.82,15])
+translate([0,0,enclosure_height/2 - ledge_thickness/2])
+cylinder(d = speaker_hole, h = enclosure_height, center = true);
+
+// Concave pocket (made by subtracting part of a sphere)
+translate([PCBLength*.92,PCBWidth*.82,15])
+translate([0,0,enclosure_height/2 - concave_depth])
+sphere(r = speaker_diameter/2 + 5);  // Sphere slightly bigger than speaker
 }
 }
 
@@ -533,7 +567,7 @@ module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left"){
 
 if(OnOff==1)
 translate([Tx,Ty,Thick+.5])
-linear_extrude(height = 0.5){
+linear_extrude(height =0.7){
 text(Content, size=Size, font=Font, halign = _halign,valign=_valign);
 }
 }
@@ -545,7 +579,7 @@ translate([Tx,Ty,Thick+.5])
 for (i= [0:len(Content)-1] ){   
 rotate([0,0,i*Angle+90+Turn])
 translate([0,TxtRadius,0]) {
-linear_extrude(height = 0.5){
+linear_extrude(height = 0.7){
 text(Content[i], font = Font, size = Size,   halign = _halign,valign=_valign);
 }
 }   
@@ -588,52 +622,36 @@ RJ12SquareHole(RJ12On, 98.425-1.3, FootHeight+PCBThick, 14, 13, 1, Ccenter=false
 DCSquareHole(DCOn, 119.38+0.8, FootHeight+PCBThick, 10, 12, 1, Ccenter=false);//DC barrel
 
 
-}}}}
+}}}
+
 //                            <- To here -> 
 
 // placing text for the front panel 
-
 //translate ([-.5,0,0])
 //rotate([90,0,90])        
 //translate([-((Width + PCBWidth)/2) ,0,0]+[-2.3,0,0])
-
 color(Couleur1){
 //translate ([-.5,0,0])
-
-translate ([-.5, 4,-3])
-
-
+translate ([-0.9, 4,-3])
 // module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left")
-
 rotate([-90,0,-90])    
-
 // module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left")
-
-//translate([0 ,0,0])
 {
-
 Fontsize = 3; 
-    TextBaseLine = - FootHeight* 1 ; 
+TextBaseLine = - FootHeight * .92 ; 
 //                      <- Adding text from here ->   
 
-
 LText(USBbOn,-55,TextBaseLine,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
-
-//LText(USBcOn,54.61,FootHeight*.9,"Arial Black",3,"USB",_halign = "center",_valign="top");
-
 LText(USBcOn,-53,TextBaseLine,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
-
 LText(I2COn, -81.28,TextBaseLine,"Arial Black",Fontsize,"I2C",_halign = "center",_valign="top");
 LText(DE9On, -74.44,TextBaseLine,"Arial Black",Fontsize,"COM",_halign = "center",_valign="top");
 LText(RJ12On,-98.425,TextBaseLine,"Arial Black",Fontsize,"Remote",_halign = "center",_valign="top");
 LText(DCOn,-119.9 ,TextBaseLine,"Arial Black",Fontsize,"DC",_halign = "center",_valign="top");    
-//SquareHole(1,0,FootHeight*.9,1,1,0,Ccenter=true); //origin
+
 //                            <- To here ->
 }
 }
-
-
-
+}
 }
 
 
@@ -687,10 +705,9 @@ SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Cce
 CylinderHole(1,SpeakerHoleX,68.58,2); //reset hole
 //(On/Off, Xpos, Ypos, "Font", Size, Diameter, Arc(Deg), Starting Angle(Deg),"Text",_halign = "center",_valign="top") 
 
-
-//rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-( RotaryEncoderXpos),RotaryEncoderYpos,"Arial Black",4,9,110,270,"RE");
+// RotaryEncoder
 CylinderHole(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter); //RotaryEncoder
-CylinderSpacer(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter+Thick+m/2); //cutout for mute button 
+CylinderSpacer(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter+Thick+m/2); //cutout for RotaryEncoder
 
 }}
 color( Couleur1,1){
@@ -706,8 +723,10 @@ CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
 //(On/Off, Xpos,Ypos,Length,Width,Filet)
 SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
 CylinderHole(1,SpeakerHoleX,68.58,2); //reset hole
+
 //(On/Off, Xpos, Ypos, "Font", Size, Diameter, Arc(Deg), Starting Angle(Deg),"Text",_halign = "center",_valign="top") 
-rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-(muteButtonXpos),muteButtonYpos,"Arial Black",4,9,110,270,"MUTE");
+rotate([0,180,0])translate( [0,0,-(Thick+.99)])CText(1,-(muteButtonXpos),muteButtonYpos,"Arial Black",4,9,110,270,"MUTE")color(Couleur3);
+
 CylinderHole(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter); //Mute Button
 CylinderSpacer(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter+Thick+m/2); //cutout for mute button
 
