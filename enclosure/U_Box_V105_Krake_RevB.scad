@@ -5,8 +5,8 @@
 ////////////////////////////////////////////////////////////////////
 
 /* Project Selector */
-Krake = 1;      // [0:Off, 1:On]
-GPAD  = 0;      // [0:Off, 1:On]
+Krake = 0;      // [0:Off, 1:On]
+GPAD  = 1;      // [0:Off, 1:On]
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -68,7 +68,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;
+PWA_KRAKE            = 0;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 1;
@@ -108,8 +108,7 @@ DE9On     = Krake ? 1 : 0;
 I2COn     = Krake ? 0 : 1;
 RJ12On    = Krake ? 1 : 1;
 DCOn      = Krake ? 1 : 1;
-DE9SquareHole      = Krake ? 1 : 0;
-
+//DE9SquareHole      = Krake ? 1 : 0;
 
 if (Krake + GPAD > 1)
 echo("WARNING: More than one project mode active!!!");
@@ -576,10 +575,10 @@ color(Couleur2){
 echo((Width - PCBWidth)/2-3*Thick+1);
 echo(Thick+1.2);
 translate([((Width - PCBWidth)/2), 0, 0] - [3*Thick+2, 0, 0]){
-
+if (DE9On ==1) {
 rotate([0,180,90]) translate([centerDB9X,centerDB9Y,centerDB9Z])
 dsub (1.2,17.04,10);
-
+}
 USBbSquareHole(USBbOn, 54.61+1.2, FootHeight+PCBThick, 9, 5, 1, Ccenter=false);//USBb
 USBcSquareHole(USBcOn, 51+1.45, FootHeight-0.5+PCBThick-1, 11, 6, 1, Ccenter=false);//USBc
 I2CSquareHole(I2COn, 81.28-1.2, FootHeight+PCBThick, 14, 9, 1, Ccenter=false);//I2C
@@ -600,10 +599,10 @@ DCSquareHole(DCOn, 119.38+0.8, FootHeight+PCBThick, 10, 12, 1, Ccenter=false);//
 
 color(Couleur1){
 //translate ([-.5,0,0])
- 
+
 translate ([-.5, 4,-3])
 
-    
+
 // module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left")
 
 rotate([-90,0,-90])    
@@ -617,7 +616,7 @@ Fontsize = 3;
 //                      <- Adding text from here ->   
 
 
-LText(USBbOn,54.61,FootHeight*.9,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
+LText(USBbOn,-55,-FootHeight*.9,"Arial Black",Fontsize,"USB",_halign = "center",_valign="top");
 
 //LText(USBcOn,54.61,FootHeight*.9,"Arial Black",3,"USB",_halign = "center",_valign="top");
 
