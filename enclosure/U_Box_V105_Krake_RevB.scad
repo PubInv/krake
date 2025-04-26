@@ -298,22 +298,22 @@ enclosure_height = 19;
 difference() {
 
 // Main cylinder body
-translate([PCBLength*.92,PCBWidth*.82,15])
+translate([PCBLength*.92,PCBWidth*.82,12])
 
 cylinder(d = enclosure_radius*2, h = enclosure_height, center = true);
 
 // Hollow the inside
-translate([PCBLength*.92,PCBWidth*.82,15])
+translate([PCBLength*.92,PCBWidth*.82,12])
 translate([0,0,-enclosure_height/2 + ledge_thickness])
 cylinder(d = enclosure_radius*2 - 3.5, h = enclosure_height, center = false);
 
 // Speaker main hole (cut through the top wall, but leave concave shape)
-translate([PCBLength*.92,PCBWidth*.82,15])
+translate([PCBLength*.92,PCBWidth*.82,12])
 translate([0,0,enclosure_height/2 - ledge_thickness/2])
 cylinder(d = speaker_hole, h = enclosure_height, center = true);
 
 // Concave pocket (made by subtracting part of a sphere)
-translate([PCBLength*.92,PCBWidth*.82,15])
+translate([PCBLength*.92,PCBWidth*.82,12])
 translate([0,0,enclosure_height/2 - concave_depth])
 sphere(r = speaker_diameter/2 + 5);  // Sphere slightly bigger than speaker
 }
