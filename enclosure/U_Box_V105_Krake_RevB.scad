@@ -60,7 +60,7 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 
 GPAD_TShell          = 0;
 GPAD_BShell          = 1;
-GPAD_FPanL           = 1;
+GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
@@ -265,14 +265,22 @@ cylinder(d=2,20);
 
 
 //Speaker Grill//
+
+color(c=[0,0,2.8])
+translate([PCBLength*.91,PCBWidth*.82,3])
+
+import("Speaker2W-SpeakerOutline.stl");
+
+
 module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
 //difference(){
 if(OnOff==1)
+    
 translate([Cx+.5,Cy+2.5,-1]){
 for(j = [1  : 3]){
 
 rotate(a = 360*j/3,v = [0,0,1])
-for(i = [0.8 : Cdia/60 : Cdia/2]){
+for(i = [1.8 : Cdia/60 : Cdia/1.5]){
 rotate(a = 1*(i/Cdia)*360,v = [0,0,1])
 translate([i,i,0])
 
@@ -283,41 +291,47 @@ cylinder(d=i*.65,h = 10, $fn=100,center=Ccenter);
 }
 }
 }}
-{
-// Parameters
-speaker_diameter =  28;
-tolerance = 0.5;
-speaker_hole = speaker_diameter + tolerance;
-ledge_thickness = 0.00000000001;  // thickness of material above concave
-concave_depth = 2;    // how deep the concave should be
-enclosure_radius = speaker_diameter/2;
-enclosure_height = 19;
+{// Parameters
+speaker_diameter = 25.5; // mm
+speaker_thickness = 5; // mm (adjust if needed)
+clamp_width = 5;       // Hieght of clamp ring
+flexure_thickness = 1; // Thickness of flexure arms
+flexure_gap = 1.5;     // Gap to allow flex movement
+base_thickness = 0;    // Base plate thickness
+overlap = -1;           // Small overlap to hold speaker
 
-// Full Enclosure
+$fn = 100; // Smoothness
 
-difference() {
+module speaker_clamp() {
+    difference() {
+        // Outer clamp ring
+        translate([PCBLength*.91,PCBWidth*.82,3])
+        cylinder(h = clamp_width-.001, r = (speaker_diameter/2) + flexure_gap + flexure_thickness);
 
-// Main cylinder body
-translate([PCBLength*.92,PCBWidth*.82,12])
+        // Inner clearance for speaker
+        translate([PCBLength*.91,PCBWidth*.82,3])
+        translate([0,0,overlap])
+            cylinder(h = clamp_width +0.2 - overlap, r = (speaker_diameter/2) + flexure_gap);
 
-cylinder(d = enclosure_radius*2, h = enclosure_height, center = true);
-
-// Hollow the inside
-translate([PCBLength*.92,PCBWidth*.82,12])
-translate([0,0,-enclosure_height/2 + ledge_thickness])
-cylinder(d = enclosure_radius*2 - 3.5, h = enclosure_height, center = false);
-
-// Speaker main hole (cut through the top wall, but leave concave shape)
-translate([PCBLength*.92,PCBWidth*.82,12])
-translate([0,0,enclosure_height/2 - ledge_thickness/2])
-cylinder(d = speaker_hole, h = enclosure_height, center = true);
-
-// Concave pocket (made by subtracting part of a sphere)
-translate([PCBLength*.92,PCBWidth*.82,12])
-translate([0,0,enclosure_height/2 - concave_depth])
-sphere(r = speaker_diameter/2 + 5);  // Sphere slightly bigger than speaker
+        // Create flexure cuts
+        translate([PCBLength*.91,PCBWidth*.82,3])
+        for (angle = [0,90,180,270]) {
+            rotate([0,0,angle])
+                translate([speaker_diameter/2, -flexure_thickness/2, 0])
+                    cube([flexure_gap*2, flexure_thickness +7, clamp_width +4]);
+        }
+    }
+    
+    // Base platform
+    translate([PCBLength*.87,PCBWidth*.82,3])
+    translate([0,0,-base_thickness])
+        cylinder(h = base_thickness , r = (speaker_diameter/2) + flexure_gap  + flexure_thickness + 3);
 }
+
+// Build the model
+speaker_clamp();
 }
+
 
 //LED Spacer
 module LedSpacer(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){ 
