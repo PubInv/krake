@@ -72,6 +72,7 @@ PWA_KRAKE            = 0;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 1;
+SPK                  = 0;
 
 //Modifications for Display
 DisplayXpos = PCBLength-50.8;
@@ -86,8 +87,8 @@ muteButtonYpos = 31.75;
 muteButtonDiameter = 15;
 
 //Modifications for SpeakerHole
-SpeakerHoleY = Krake ? 103.24 : 15.24;
-SpeakerHoleX = PCBLength - 15.24;
+SpeakerHoleY = Krake ? PCBWidth*.769 : 15.24;
+SpeakerHoleX = Krake ? PCBLength*.815 :PCBLength - 15.24;
 
 //Parameters for LEDHole
 LEDspacing = 12.7 ;
@@ -266,17 +267,18 @@ cylinder(d=2,20);
 
 //Speaker Grill//
 
+if(SPK==1){
 color(c=[0,0,2.8])
 translate([PCBLength*.91,PCBWidth*.82,3])
 
 import("Speaker2W-SpeakerOutline.stl");
-
+}
 
 module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
 //difference(){
 if(OnOff==1)
     
-translate([Cx+.5,Cy+2.5,-1]){
+translate([Cx ,Cy ,-1]){
 for(j = [1  : 3]){
 
 rotate(a = 360*j/3,v = [0,0,1])
