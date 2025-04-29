@@ -296,36 +296,36 @@ cylinder(d=i*.65,h = 10, $fn=100,center=Ccenter);
 {// Parameters
 speaker_diameter = 25.5; // mm
 speaker_thickness = 5; // mm (adjust if needed)
-clamp_width = 5;       // Hieght of clamp ring
+clamp_width = 6;       // Hieght of clamp ring
 flexure_thickness = 1; // Thickness of flexure arms
 flexure_gap = 1.5;     // Gap to allow flex movement
 base_thickness = 0;    // Base plate thickness
 overlap = -1;           // Small overlap to hold speaker
-
+clamp_Z = 1.7 ; // Zpos of the clamp, interesecting with the enclosure shell
 $fn = 100; // Smoothness
 
 module speaker_clamp() {
     difference() {
         // Outer clamp ring
-        translate([PCBLength*.91,PCBWidth*.82,3])
-        cylinder(h = clamp_width-.001, r = (speaker_diameter/2) + flexure_gap + flexure_thickness);
+        translate([PCBLength*.91,PCBWidth*.82,clamp_Z])
+     #   cylinder(h = clamp_width-.001, r = (speaker_diameter/2) + flexure_gap + flexure_thickness);
 
         // Inner clearance for speaker
-        translate([PCBLength*.91,PCBWidth*.82,3])
+        translate([PCBLength*.91,PCBWidth*.82,clamp_Z])
         translate([0,0,overlap])
-            cylinder(h = clamp_width +0.2 - overlap, r = (speaker_diameter/2) + flexure_gap);
+        #    cylinder(h = clamp_width +0.2 - overlap, r = (speaker_diameter/2) + flexure_gap);
 
         // Create flexure cuts
-        translate([PCBLength*.91,PCBWidth*.82,3])
+        translate([PCBLength*.91,PCBWidth*.82,clamp_Z])
         for (angle = [0,90,180,270]) {
             rotate([0,0,angle])
                 translate([speaker_diameter/2, -flexure_thickness/2, 0])
-                    cube([flexure_gap*2, flexure_thickness +7, clamp_width +4]);
+          #          cube([flexure_gap*2, flexure_thickness +7, clamp_width +4]);
         }
     }
     
     // Base platform
-    translate([PCBLength*.87,PCBWidth*.82,3])
+    translate([PCBLength*.87,PCBWidth*.82,clamp_Z])
     translate([0,0,-base_thickness])
         cylinder(h = base_thickness , r = (speaker_diameter/2) + flexure_gap  + flexure_thickness + 3);
 }
@@ -333,7 +333,7 @@ module speaker_clamp() {
 // Build the model
 speaker_clamp();
 }
-
+ 
 
 //LED Spacer
 module LedSpacer(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){ 
