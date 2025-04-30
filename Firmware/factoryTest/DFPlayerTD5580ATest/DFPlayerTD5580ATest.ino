@@ -1,6 +1,6 @@
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DFPlayerTD5580ATest "
-#define VERSION "V0.3 "
+#define VERSION "V0.4 "
 #define DEVICE_UNDER_TEST "PMD: LCD and DFPlayer"  //A PMD model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "USA"
@@ -31,19 +31,15 @@ const char* password = "textinsert";
 
 AsyncWebServer server(80);
 
-
-
 #define BAUDRATE 115200
 #define BAUD_DFPLAYER 9600
 
-
 #include <DFRobotDFPlayerMini.h>
+DFRobotDFPlayerMini dfPlayer;
 
 // Create a SoftwareSerial object with RX and TX pins
 //SoftwareSerial mySerial(16, 17); // RX, TX
-
 HardwareSerial mySerial1(2);  // Use UART2
-DFRobotDFPlayerMini dfPlayer;
 
 const int LED_PIN = 13;  // Krake
 
@@ -185,8 +181,8 @@ void printDetail(uint8_t type, int value){
 void dfPlayerUpdate(void){
    static unsigned long timer = millis();
   
-//  if (millis() - timer > 3000) {
-  if (millis() - timer > 10000) {
+  if (millis() - timer > 3000) {
+//  if (millis() - timer > 10000) {
     timer = millis();
     dfPlayer.next();  //Play next mp3 every 3 second.
   }
@@ -217,9 +213,10 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
 
-  pinMode(LED_D6, OUTPUT);
-  digitalWrite(LED_D6, LOW);  //Start out low
+  // pinMode(LED_D6, OUTPUT);
+  // digitalWrite(LED_D6, LOW);  //Start out low
 
+  pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
 
   // Start serial communication
   Serial.begin(BAUDRATE);
@@ -238,7 +235,6 @@ void setup() {
 
   setupOTA();
   Serial.print("OTA setup done.");
-
 
   setupDFPlayer();
   Serial.print("DFPlayer setup done.");
@@ -267,7 +263,8 @@ dfPlayerUpdate();
 //playNotBusy();
 //dfPlayerNotBusy();
 
-digitalWrite(LED_PIN, digitalRead(nDFPlayer_BUSY));
+digitalWrite(LED_PIN, !digitalRead(nDFPlayer_BUSY)); //Polarity of the LED must be inverted relative to the BUSY.
+
 
   // Serial.println("Play a track");
   // dfPlayer.play(0);
