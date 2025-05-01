@@ -1,6 +1,6 @@
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DFPlayerTD5580ATest "
-#define VERSION "V0.5 "
+#define VERSION "V0.6 "
 #define DEVICE_UNDER_TEST "PMD: LCD and DFPlayer"  //A PMD model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "USA"
@@ -34,29 +34,24 @@ const char* password = "textinsert";
 
 AsyncWebServer server(80);
 
-#define BAUDRATE 115200
-#define BAUD_DFPLAYER 9600
+#define BAUDRATE 115200  // For UART0 the DEBUG Serial Monitor
 
-#include <DFRobotDFPlayerMini.h>
-DFRobotDFPlayerMini dfPlayer;
-
-// Create a SoftwareSerial object with RX and TX pins
-//SoftwareSerial mySerial(16, 17); // RX, TX
-HardwareSerial mySerial1(2);  // Use UART2
-
-const int LED_PIN = 13;  // Krake
-
-//const int LED_PIN = 2;  // ESP32 LED
-const int LED_D6 = 23;  // ESP32 GPIO23 pin 16 on kit.
-
-const int nDFPlayer_BUSY = 4;  //Busy from DFPLayer
-
-const int trac1 = 1;
-const int trac2 = 2;
+#define BAUD_DFPLAYER 9600  //for UART2 to the DFPlayer
 #define TXD2 17
 #define RXD2 16
 
+#include <DFRobotDFPlayerMini.h>
+
+DFRobotDFPlayerMini dfPlayer;
+
+HardwareSerial mySerial1(2);  // Use UART2
+
+const int LED_PIN = 13;  // Krake
+//const int LED_PIN = 2;  // ESP32 LED
+
+const int nDFPlayer_BUSY = 4;  //not Busy from DFPLayer
 bool isDFPlayerDetected = false;
+int volumeDFPlayer = 20;    // Set volume initial volume. Range is [0 to 30]
 
 //Functions
 void setupDFPlayer() {
@@ -64,43 +59,25 @@ void setupDFPlayer() {
   Serial.println("UART2 Begin");
   mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, RXD2, TXD2);
   while (!mySerial1) {
+    Serial.println("UART2 inot initilaized.");
+    delay(1000);
     ;  // wait for DFPlayer serial port to connect.
   }
-  // Essential Initialize of DFPlayer Mini
-  //  Serial.println("DFPlayer begin with ACK and Reset");
-
-  //  dfPlayer.begin(mySerial1, true, true);  // (Stream &stream, bool isACK, bool doReset)
-  // dfPlayer.begin(mySerial1, true, false);  // (Stream &stream, bool isACK, bool doReset)
-  // dfPlayer.reset();
-
-  // delay(3000);
-
-  Serial.println("Begin DFPlayer isACK true, doReset false.");
-  //  if (!dfPlayer.begin(mySerial1, true, true)) {
+  Serial.println("Begin DFPlayer: isACK true, doReset false.");
   if (!dfPlayer.begin(mySerial1, true, false)) {
     Serial.println("DFPlayer Mini not detected or not working.");
     Serial.println("Check for missing SD Card.");
-    //while (true)
     isDFPlayerDetected = false;
-    ;  // Stop execution
   } else {
     isDFPlayerDetected = true;
     Serial.println("DFPlayer Mini detected!");
   }
 
-  //  delay(3000);  //Required for volum to set
-  // Set volume (0 to 30)
-  dfPlayer.volume(20);  // Set initial volume max
-                        //  dfPlayer.volume(20);       // Set initial volume low
-  // delay(3000);
-  // Serial.print("Volume is set to: ");
-  // digitalWrite(LED_D6, HIGH);             //Start of volume read.
-  // Serial.println(dfPlayer.readVolume());  //Causes program lock up
-  // digitalWrite(LED_D6, LOW);              //End of volume read.
-
+  dfPlayer.volume(volumeDFPlayer);  // Set initial volume
   dfPlayer.setTimeOut(500);  // Set serial communictaion time out 500ms
-  delay(100);
+  delay(100);  //Todo, ?? necessary for DFPlayer processing
 
+  Serial.print("=================");
   Serial.print("dfPlayer State: ");
   Serial.println(dfPlayer.readState());  //read mp3 state
   Serial.print("dfPlayer Volume: ");
@@ -116,6 +93,7 @@ void setupDFPlayer() {
 
   //  dfPlayer.EQ(0);          // Normal equalization //Causes program lock up
 
+  Serial.print("=================");
 
 }  //setupDFPLayer
 
@@ -221,8 +199,6 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
 
-  // pinMode(LED_D6, OUTPUT);
-  // digitalWrite(LED_D6, LOW);  //Start out low
 
   pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
 
