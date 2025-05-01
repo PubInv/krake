@@ -238,7 +238,7 @@ void encoderSwitchCallback(byte buttonEvent) {
       break;
     case onHold:
       // Do nothing...
-      local_ptr_to_serial->println(F("ENCODER_SWITCH onHold"));
+      //local_ptr_to_serial->println(F("ENCODER_SWITCH onHold"));
       break;
       // onLongPress is indidcated when you hold onto the button
     // more than longPressTime in milliseconds
