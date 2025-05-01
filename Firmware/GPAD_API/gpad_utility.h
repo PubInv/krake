@@ -21,18 +21,11 @@
 #ifndef GPAD_UTILITY
 #define GPAD_UTILITY 1
 #include <Stream.h>
-
-
-
 #define COMPANY_NAME "PubInv "  // For the Broker ID for MQTT 
 #define PROG_NAME "GPAD_API "   // This program
-#define FIRMWARE_VERSION "0.37 "
+#define FIRMWARE_VERSION "0.38 "
 //#define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
-//#define DEVICE_UNDER_TEST "20240421_LEB1"  //A Serial Number
-//#define DEVICE_UNDER_TEST "20240421_LEB3"  //A Serial Number
-//#define DEVICE_UNDER_TEST "20240421_USA1"  //A Serial Number
-//#define DEVICE_UNDER_TEST "20240421_USA5"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "US"
 

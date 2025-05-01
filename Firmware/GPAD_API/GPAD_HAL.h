@@ -22,7 +22,7 @@
 #ifndef GPAD_HAL
 #define GPAD_HAL 1
 #include <stream.h>
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <PubSubClient.h> 
 
 // On Nov. 5th, 2024, we image 3 different hardware platforms.

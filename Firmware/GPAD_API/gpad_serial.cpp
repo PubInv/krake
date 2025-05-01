@@ -22,7 +22,7 @@
 #include "gpad_utility.h"
 #include "alarm_api.h"
 #include "GPAD_HAL.h"
-#include <Arduino.h>
+//#include <Arduino.h>
 
 extern bool currentlyMuted;
 
