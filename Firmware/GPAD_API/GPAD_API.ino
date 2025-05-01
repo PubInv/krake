@@ -71,6 +71,9 @@
 #include "WiFiManagerOTA.h"
 #include <ESPAsyncWebServer.h>
 
+#include "InterruptRotator.h"
+
+
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
@@ -462,6 +465,8 @@ void setup() {
   Serial.println(F("Done With Setup!"));
   turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
+
+ initRotator();
 }  // end of setup()
 
 unsigned long last_ms = 0;
@@ -473,7 +478,7 @@ const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 
 //IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
-IPAddress myIP(); // declare for global
+IPAddress myIP();  // declare for global
 
 void loop() {
 
@@ -490,10 +495,10 @@ void loop() {
       IPAddress myIP = WiFi.localIP();
       const char* ipString = myIP.toString().c_str();
       // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
-      
+
       Serial.print("Device connected at IPaddress: ");  //FLE
-//      Serial.println(WiFi.localIP());                   //FLE
-      Serial.println(myIP);                   //FLE
+                                                        //      Serial.println(WiFi.localIP());                   //FLE
+      Serial.println(myIP);                             //FLE
     }
 
 
@@ -528,4 +533,6 @@ void loop() {
 #if defined(GPAD)
   updateFromSPI();
 #endif
+
+  updateRotator();
 }
