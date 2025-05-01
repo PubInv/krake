@@ -18,7 +18,7 @@
 
 */
 
-#include <arduino.h>
+//#include <arduino.h>
 #include "GPAD_HAL.h"
 #include "alarm_api.h"
 #include "gpad_utility.h"

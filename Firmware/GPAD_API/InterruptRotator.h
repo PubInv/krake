@@ -1,16 +1,9 @@
 #ifndef INTERRUPT_ROTATOR_H
 #define INTERRUPT_ROTATOR_H
 
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <RotaryEncoder.h>
 
-// Metadata
-#define COMPANY_NAME       "Public Invention "
-#define PROG_NAME          "InterruptRotatorESP32 "
-#define MODEL_NAME         "KRAKE_"
-#define DEVICE_UNDER_TEST  "20240421_USA1"  // A Serial Number  
-#define LICENSE            "GNU Affero General Public License, version 3 "
-#define ORIGIN             "LB"
 
 // GPIO definitions for ESP32
 #if defined(ESP32)
