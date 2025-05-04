@@ -6,9 +6,9 @@
 *********/
 
 
-void setupOTA(){
+void setupOTA() {
 
-   WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
 
@@ -30,6 +30,6 @@ void setupOTA(){
   server.begin();
   Serial.println("HTTP server started");
 
-  ElegantOTA.begin(&server);    // Start ElegantOTA
+  ElegantOTA.begin(&server);  // Start ElegantOTA
 
-}//end setupOTA
+}  //end setupOTA

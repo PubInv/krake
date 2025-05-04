@@ -77,13 +77,13 @@ void setupDFPlayer() {
 
   dfPlayer.volume(volumeDFPlayer);  // Set initial volume
   dfPlayer.setTimeOut(500);         // Set serial communictaion time out 500ms
-  delay(100);                       //Todo, ?? necessary for DFPlayer processing
+  //  delay(100);                       //Todo, ?? necessary for DFPlayer processing
 
-displayDFPlayerStats();
+  displayDFPlayerStats();
 
 }  //setupDFPLayer
 
-void displayDFPlayerStats(){
+void displayDFPlayerStats() {
   Serial.print("=================");
   Serial.print("dfPlayer State: ");
   Serial.println(dfPlayer.readState());  //read mp3 state
@@ -164,7 +164,7 @@ void printDetail(uint8_t type, int value) {
 
 
 void dfPlayerUpdate(void) {
-   unsigned long timePlay = 3000;   //Plays 3 seconds of all files.
+  unsigned long timePlay = 3000;  //Plays 3 seconds of all files.
   static unsigned long timer = millis();
   if (millis() - timer > timePlay) {
     //  if (millis() - timer > 10000) {
@@ -177,46 +177,11 @@ void dfPlayerUpdate(void) {
 }  // end
 
 
-void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
-  pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
-
-  // Start serial communication
-  Serial.begin(BAUDRATE);
-  while (!Serial) {
-    ;  // wait for serial port to connect. Needed for native USB
-  }
-  //delay(500);
-  Serial.println("===================================");
-  Serial.println(DEVICE_UNDER_TEST);
-  Serial.print(PROG_NAME);
-  Serial.println(VERSION);
-  Serial.print("Compiled at: ");
-  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
-  Serial.println("===================================");
-  Serial.println();
-
-  //DFPlayer Splash
-  setupDFPlayer();
-  Serial.print("DFPlayer setup done.");
-  delay(100);
-  dfPlayer.play(9); //DFPlayer Splash
-  delay(100);
-
-  setupOTA();
-  Serial.print("OTA setup done.");
-
-
-
-  Serial.println("End of setup");
-  digitalWrite(LED_PIN, LOW);
-}  // end of setup()
 
 
 // Functions to learn DFPlayer behavior
 void playNotBusy() {
-    //Plays all files succsivly.
+  //Plays all files succsivly.
   Serial.println("PlayNotBusy");
   if (HIGH == digitalRead(nDFPlayer_BUSY)) {
     //mp3_next ();
@@ -227,7 +192,7 @@ void playNotBusy() {
   }
   delay(1000);  //This should be removed from code. We set a time for the next allowed message.
   // Or better yet use interupt to find the end of BUSY and set time for the next allowed DFPlayer message
-}// end playNotBusy
+}  // end playNotBusy
 
 
 
@@ -250,7 +215,7 @@ bool playAlarmLevel(int alarmNumberToPlay) {
       if (HIGH == digitalRead(nDFPlayer_BUSY)) {  // Should the test for busy be at the start of this function???
         //mp3_next ();
         dfPlayer.play(tracNumber);
-      } else{
+      } else {
         Serial.println("Not done playing previous file");
       }
     if (dfPlayer.available()) {
@@ -261,6 +226,35 @@ bool playAlarmLevel(int alarmNumberToPlay) {
 }  // end of playAlarmLevel
 
 
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, HIGH);
+  pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
+
+  // Start serial communication
+  Serial.begin(BAUDRATE);
+  while (!Serial) {
+    ;  // wait for serial port to connect. Needed for native USB
+  }
+
+  //delay(500);
+  void serialSplash();
+
+  //DFPlayer Splash
+  setupDFPlayer();
+  dfPlayer.play(9);  //DFPlayer Splash
+
+  setupOTA();
+  Serial.print("OTA setup done.");
+
+  while (LOW == digitalRead(nDFPlayer_BUSY)) {
+    ;  //Hold still till splash file plays
+  }
+
+  Serial.println("End of setup");
+  digitalWrite(LED_PIN, LOW);
+}  // end of setup()
+
 void loop() {
   ElegantOTA.loop();
   //dfPlayerUpdate();  //Play all but for only a constant time.
@@ -268,4 +262,5 @@ void loop() {
   //playAlarmLevel(3);
   digitalWrite(LED_PIN, !digitalRead(nDFPlayer_BUSY));  //Polarity of the LED must be inverted relative to the BUSY.
 
+  checkSerial();
 }  // end of loop()
