@@ -62,7 +62,7 @@ void setupDFPlayer() {
   mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, RXD2, TXD2);
   while (!mySerial1) {
     Serial.println("UART2 inot initilaized.");
-    delay(1000);
+    delay(100);
     ;  // wait for DFPlayer serial port to connect.
   }
   Serial.println("Begin DFPlayer: isACK true, doReset false.");
@@ -79,6 +79,11 @@ void setupDFPlayer() {
   dfPlayer.setTimeOut(500);         // Set serial communictaion time out 500ms
   delay(100);                       //Todo, ?? necessary for DFPlayer processing
 
+displayDFPlayerStats();
+
+}  //setupDFPLayer
+
+void displayDFPlayerStats(){
   Serial.print("=================");
   Serial.print("dfPlayer State: ");
   Serial.println(dfPlayer.readState());  //read mp3 state
@@ -95,9 +100,7 @@ void setupDFPlayer() {
   Serial.println(dfPlayer.readFileCountsInFolder(3));  //read file counts in folder SD:/03
   //  dfPlayer.EQ(0);          // Normal equalization //Causes program lock up
   Serial.print("=================");
-
-}  //setupDFPLayer
-
+}
 void printDetail(uint8_t type, int value) {
   switch (type) {
     case TimeOut:
@@ -194,11 +197,17 @@ void setup() {
   Serial.println("===================================");
   Serial.println();
 
+  //DFPlayer Splash
+  setupDFPlayer();
+  Serial.print("DFPlayer setup done.");
+  delay(100);
+  dfPlayer.play(9); //DFPlayer Splash
+  delay(100);
+
   setupOTA();
   Serial.print("OTA setup done.");
 
-  setupDFPlayer();
-  Serial.print("DFPlayer setup done.");
+
 
   Serial.println("End of setup");
   digitalWrite(LED_PIN, LOW);
@@ -255,8 +264,8 @@ bool playAlarmLevel(int alarmNumberToPlay) {
 void loop() {
   ElegantOTA.loop();
   //dfPlayerUpdate();  //Play all but for only a constant time.
-  //playNotBusy();  // Play all but  only when not busy.
-  playAlarmLevel(3);
+  playNotBusy();  // Play all but  only when not busy.
+  //playAlarmLevel(3);
   digitalWrite(LED_PIN, !digitalRead(nDFPlayer_BUSY));  //Polarity of the LED must be inverted relative to the BUSY.
 
 }  // end of loop()
