@@ -1,7 +1,7 @@
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DFPlayerTD5580ATest "
-#define VERSION "V0.6 "
-#define DEVICE_UNDER_TEST "PMD: LCD and DFPlayer"  //A PMD model number
+#define VERSION "V0.7 "
+#define DEVICE_UNDER_TEST "Krake: DFPlayer and OTA"  //A PMD model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "USA"
 
@@ -77,7 +77,17 @@ void setupDFPlayer() {
 
   dfPlayer.volume(volumeDFPlayer);  // Set initial volume
   dfPlayer.setTimeOut(500);         // Set serial communictaion time out 500ms
-  //  delay(100);                       //Todo, ?? necessary for DFPlayer processing
+  //  delay(100);
+
+  dfPlayer.start();  //Todo, ?? necessary for DFPlayer processing
+  delay(1000);
+  dfPlayer.play(11);  //DFPlayer Splash
+  delay(100);
+  dfPlayer.stop();
+  delay(1000);
+  dfPlayer.previous();
+  delay(1500);
+  dfPlayer.play();  //DFPlayer Splash
 
   displayDFPlayerStats();
 
@@ -238,11 +248,11 @@ void setup() {
   }
 
   //delay(500);
-  void serialSplash();
+  serialSplash();
 
   //DFPlayer Splash
   setupDFPlayer();
-  dfPlayer.play(9);  //DFPlayer Splash
+  //  dfPlayer.play(9);  //DFPlayer Splash
 
   setupOTA();
   Serial.print("OTA setup done.");
@@ -258,7 +268,7 @@ void setup() {
 void loop() {
   ElegantOTA.loop();
   //dfPlayerUpdate();  //Play all but for only a constant time.
-  playNotBusy();  // Play all but  only when not busy.
+  //  playNotBusy();  // Play all but  only when not busy.
   //playAlarmLevel(3);
   digitalWrite(LED_PIN, !digitalRead(nDFPlayer_BUSY));  //Polarity of the LED must be inverted relative to the BUSY.
 
