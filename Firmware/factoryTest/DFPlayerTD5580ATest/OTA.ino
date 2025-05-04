@@ -27,6 +27,10 @@ void setupOTA() {
     request->send(200, "text/plain", "Hi! I am DFPlayerTD5580ATest.");
   });
 
+//  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+//       request->send(LittleFS, "/index.html", "text/html"); // Serve index.html
+//     });
+
   server.begin();
   Serial.println("HTTP server started");
 
