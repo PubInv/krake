@@ -1,7 +1,7 @@
 /* GPAD_API.ino
   The program implements the main API of the General Purpose Alarm Device.
 
-  Copyright (C) 2022 Robert Read
+  Copyright (C) 2025 Robert Read
 
   This program includes free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -73,6 +73,8 @@
 
 #include "InterruptRotator.h"
 
+#include "DFPlayer.h"
+
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -141,8 +143,8 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const char* password = "$Suve07$$";
 
 // Austin network
-// const char* ssid = "readfamilynetwork";
-// const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
@@ -467,6 +469,9 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
 
  initRotator();
+
+
+ setupDFPlayer();
 }  // end of setup()
 
 unsigned long last_ms = 0;
