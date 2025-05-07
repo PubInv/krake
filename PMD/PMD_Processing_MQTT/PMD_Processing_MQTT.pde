@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.30 ";
+String VERSION = "V0.31 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -66,11 +66,8 @@ void setupDictionary() {
   
  
   mac_to_NameDict.set("ECC9FF7D8EE8", "KRAKE_US0005");
-//  mac_to_NameDict.set("ecc9ff7d8ef4", "KRAKE_US0004");
-  mac_to_NameDict.set("ECC9FF7D8EFf4", "KRAKE_US0004");
-  //mac_to_NameDict.set("ecc9ff7c8c98", "KRAKE_US0003");
+  mac_to_NameDict.set("ECC9FF7D8EF4", "KRAKE_US0004");
   mac_to_NameDict.set("ECC9FF7C8C98", "KRAKE_US0003");
-//  mac_to_NameDict.set("ecc9ff7d8f00", "KRAKE_US0002");
   mac_to_NameDict.set("ECC9FF7D8F00", "KRAKE_US0002");
   mac_to_NameDict.set("ECC9FF7C8BDC", "KRAKE_US0001");
   mac_to_NameDict.set("3C61053DF08C", "20240421_USA1");
