@@ -6,14 +6,13 @@
 #define TXD2 17
 #define RXD2 16
 
-
-
 void displayDFPlayerStats();
 
 void setupDFPlayer();
 
 bool playAlarmLevel(int alarmNumberToPlay);
 void playNotBusy();
+void playNotBusyLevel(int level);
 void dfPlayerUpdate(void);
 
 void printDetail(uint8_t type, int value);

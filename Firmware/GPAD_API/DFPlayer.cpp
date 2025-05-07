@@ -123,6 +123,11 @@ void checkSerial(void) {
 
 //Functions
 void setupDFPlayer() {
+// Debatably, this this should be in the GPAD_HAL, not here....but
+// it is modular to place it here.
+  pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
+
+
   //  Setup UART for DFPlayer
   Serial.println("UART2 Begin");
   mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, RXD2, TXD2);
@@ -263,6 +268,7 @@ void playNotBusy() {
   if (HIGH == digitalRead(nDFPlayer_BUSY)) {
     //mp3_next ();
     dfPlayer.next();
+
   }
   if (dfPlayer.available()) {
     printDetail(dfPlayer.readType(), dfPlayer.read());  //Print the detail message from DFPlayer to handle different errors and states.
@@ -271,6 +277,23 @@ void playNotBusy() {
   // Or better yet use interupt to find the end of BUSY and set time for the next allowed DFPlayer message
 }  // end playNotBusy
 
+void playNotBusyLevel(int level) {
+  //Plays all files succsivly.
+  Serial.println("PlayNotBusyLevel");
+  if (HIGH == digitalRead(nDFPlayer_BUSY)) {
+    //mp3_next ();
+    // Note....we should in fact use file names, not numbers here,
+    // or must at least build a data structure to associate the two.
+    // that shoulde be future work.
+    dfPlayer.play(level+1);
+    Serial.println("HIGH .next called! =================");
+  } 
+  if (dfPlayer.available()) {
+    printDetail(dfPlayer.readType(), dfPlayer.read());  //Print the detail message from DFPlayer to handle different errors and states.
+  }
+  delay(1000);  //This should be removed from code. We set a time for the next allowed message.
+  // Or better yet use interupt to find the end of BUSY and set time for the next allowed DFPlayer message
+}
 
 
 // Play a track but not if the DFPlayer is busy

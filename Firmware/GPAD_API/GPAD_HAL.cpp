@@ -62,6 +62,8 @@ extern PubSubClient client;
 
 LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
 
+#include "DFPlayer.h"
+
 //Setup for buzzer.
 //const int BUZZER_TEST_FREQ = 130; // One below middle C3. About 67 db, 3" x 4.875" 8 Ohm speakers no cabinet at 1 Meter.
 //const int BUZZER_TEST_FREQ = 260; // Middle C4. About ?? db, 3" x 4.875" 8 Ohm speakers no cabinet at 1 Meter.
@@ -662,13 +664,20 @@ void unchanged_anunicateAlarmLevel(Stream *serialport) {
     //   serialport->println(note_lvl);
 
     tone(TONE_PIN, BUZZER_LVL_FREQ_HZ[note_lvl], INF_DURATION);
+
+
   } else {
     noTone(TONE_PIN);
   }
 #endif
+
 }
 void annunciateAlarmLevel(Stream *serialport) {
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
   showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
+  // here is the new call
+  serialport->println("dfPlayer.play");
+  serialport->println(currentLevel);
+  playNotBusyLevel(currentLevel);
 }
