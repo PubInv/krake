@@ -2,8 +2,8 @@
 #include <LittleFS.h>
 
 const char* default_ssid = "ESP32-Setup";  // Default AP Name
-String ssid = "";
-String password = "";
+String ssid_wf = "";
+String password_wf = "";
 String ledState = "";
 int WiFiLed = 2;  // Modify based on actual LED pin
 
@@ -26,10 +26,10 @@ bool loadCredentials() {
     return false;
   }
 
-  ssid = file.readStringUntil('\n');
-  password = file.readStringUntil('\n');
-  ssid.trim();
-  password.trim();
+  ssid_wf = file.readStringUntil('\n');
+  password_wf = file.readStringUntil('\n');
+  ssid_wf.trim();
+  password_wf.trim();
 
   file.close();
   Serial.println("Loaded WiFi credentials from storage.");
@@ -44,9 +44,9 @@ void WiFiMan() {
       Serial.println("Failed to connect. Restarting...");
       ESP.restart();
     }
-    ssid = WiFi.SSID();
-    password = WiFi.psk();
-    saveCredentials(ssid.c_str(), password.c_str());
+    ssid_wf = WiFi.SSID();
+    password_wf = WiFi.psk();
+    saveCredentials(ssid_wf.c_str(), password_wf.c_str());
   }
 
   Serial.println("Connected to WiFi!");
@@ -64,7 +64,7 @@ void initLittleFS() {
 
 void initWiFi() {
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid.c_str(), password.c_str());
+  WiFi.begin(ssid_wf.c_str(), password_wf.c_str());
   Serial.print("Connecting to WiFi ..");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print('.');

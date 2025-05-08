@@ -23,11 +23,12 @@
 #include <Stream.h>
 #define COMPANY_NAME "PubInv "  // For the Broker ID for MQTT 
 #define PROG_NAME "GPAD_API "   // This program
-#define FIRMWARE_VERSION "0.38 "
+#define FIRMWARE_VERSION "0.39 " // Version to integrate DFPlayer
 //#define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "US"
+#define DEVICE_UNDER_TEST "Krake: DFPlayer"  //This is GPAD code, but if it is used in testing...
 
 void printError(Stream *serialport);
 void printInstructions(Stream *serialport);

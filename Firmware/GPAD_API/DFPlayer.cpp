@@ -1,47 +1,6 @@
-#define COMPANY_NAME "pubinv.org "
-#define PROG_NAME "DFPlayerTD5580ATest "
-#define VERSION "V0.7 "
-#define DEVICE_UNDER_TEST "Krake: DFPlayer and OTA"  //A PMD model number
-#define LICENSE "GNU Affero General Public License, version 3 "
-#define ORIGIN "USA"
 
-/*
-   File: DFPlayerTD5580ATest
-   Author: Forrest Lee Erickson
-   Date: 20240929
-   Date: 20250414 V0.2, added functionality from :https://github.com/DFRobot/DFRobotDFPlayerMini/blob/master/examples/FullFunction/FullFunction.ino
-
-*/
-
-#include <Arduino.h>
-#include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <ElegantOTA.h>
-
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
-
-// const char* ssid = "Hometplink";
-// const char* password = "adt@1963#";
-
-//Houstin network
-// const char* ssid = "DOS_WIFI";
-// const char* password = "$Suve07$$";
-
-// Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
-
-
-AsyncWebServer server(80);
-
-#define BAUDRATE 115200  // For UART0 the DEBUG Serial Monitor
-
-#define BAUD_DFPLAYER 9600  //for UART2 to the DFPlayer
-#define TXD2 17
-#define RXD2 16
-
+#include "DFPlayer.h"
+#include "gpad_utility.h"
 #include <DFRobotDFPlayerMini.h>
 DFRobotDFPlayerMini dfPlayer;
 
@@ -55,8 +14,120 @@ bool isDFPlayerDetected = false;
 int volumeDFPlayer = 20;  // Set volume initial volume. Range is [0 to 30]
 int numberFilesDF = 0;    // Number of the audio files found.
 
+
+
+// The serial command system is from: https://www.dfrobot.com/blog-1462.html?srsltid=AfmBOoqm5pHrLswInrTwZ9vcYdxxPC_zH2zXnoro2FyTLEL4L57IW3Sn
+
+char command;
+int pausa = 0;
+
+
+void serialSplashDFP() {
+  Serial.println("===================================");
+  Serial.println(DEVICE_UNDER_TEST);
+  Serial.print(PROG_NAME);
+  Serial.println(FIRMWARE_VERSION);
+  Serial.print("Compiled at: ");
+  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+  Serial.println("===================================");
+  Serial.println();
+}
+
+void menu_opcoes() {
+  Serial.println();
+  Serial.println(F("=================================================================================================================================="));
+  Serial.println(F("Commands:"));
+  Serial.println(F(" [1-3] To select the MP3 file"));
+  Serial.println(F(" [s] stopping reproduction"));
+  Serial.println(F(" [p] pause/continue music"));
+  Serial.println(F(" [+ or -] increases or decreases the volume"));
+  Serial.println(F(" [< or >] forwards or backwards the track"));
+  Serial.println();
+  Serial.println(F("================================================================================================================================="));
+}  //end menu_opcoes()
+
+
+void checkSerial(void) {
+
+  //Waits for data entry via serial
+  while (Serial.available() > 0) {
+    command = Serial.read();
+
+    if ((command >= '1') && (command <= '9')) {
+      Serial.print("Music reproduction");
+      Serial.println(command);
+      command = command - 48;
+      dfPlayer.play(command);
+      menu_opcoes();
+    }
+
+    //Reproduction
+    //Stop
+
+    if (command == 's') {
+      dfPlayer.stop();
+      Serial.println("Music Stopped!");
+      menu_opcoes();
+    }
+
+    //Pausa/Continua a musica
+    if (command == 'p') {
+      pausa = !pausa;
+      if (pausa == 0) {
+        Serial.println("Continue...");
+        dfPlayer.start();
+      }
+
+      if (pausa == 1) {
+        Serial.println("Music Paused!");
+        dfPlayer.pause();
+      }
+
+      menu_opcoes();
+    }
+
+
+    //Increases volume
+    if (command == '+') {
+      dfPlayer.volumeUp();
+      Serial.print("Current volume:");
+      Serial.println(dfPlayer.readVolume());
+      menu_opcoes();
+    }
+
+    if (command == '<') {
+      dfPlayer.previous();
+      Serial.println("Previous:");
+      Serial.print("Current track:");
+      Serial.println(dfPlayer.readCurrentFileNumber() - 1);
+      menu_opcoes();
+    }
+
+    if (command == '>') {
+      dfPlayer.next();
+      Serial.println("next:");
+      Serial.print("Current track:");
+      Serial.println(dfPlayer.readCurrentFileNumber() + 1);
+      menu_opcoes();
+    }
+
+    //Decreases volume
+    if (command == '-') {
+      dfPlayer.volumeDown();
+      Serial.print("Current Volume:");
+      Serial.println(dfPlayer.readVolume());
+      menu_opcoes();
+    }
+  }
+}  // end checkSerial
+
 //Functions
 void setupDFPlayer() {
+// Debatably, this this should be in the GPAD_HAL, not here....but
+// it is modular to place it here.
+  pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
+
+
   //  Setup UART for DFPlayer
   Serial.println("UART2 Begin");
   mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, RXD2, TXD2);
@@ -197,6 +268,7 @@ void playNotBusy() {
   if (HIGH == digitalRead(nDFPlayer_BUSY)) {
     //mp3_next ();
     dfPlayer.next();
+
   }
   if (dfPlayer.available()) {
     printDetail(dfPlayer.readType(), dfPlayer.read());  //Print the detail message from DFPlayer to handle different errors and states.
@@ -205,6 +277,23 @@ void playNotBusy() {
   // Or better yet use interupt to find the end of BUSY and set time for the next allowed DFPlayer message
 }  // end playNotBusy
 
+void playNotBusyLevel(int level) {
+  //Plays all files succsivly.
+  Serial.println("PlayNotBusyLevel");
+  if (HIGH == digitalRead(nDFPlayer_BUSY)) {
+    //mp3_next ();
+    // Note....we should in fact use file names, not numbers here,
+    // or must at least build a data structure to associate the two.
+    // that shoulde be future work.
+    dfPlayer.play(level+1);
+    Serial.println("HIGH .next called! =================");
+  } 
+  if (dfPlayer.available()) {
+    printDetail(dfPlayer.readType(), dfPlayer.read());  //Print the detail message from DFPlayer to handle different errors and states.
+  }
+  delay(1000);  //This should be removed from code. We set a time for the next allowed message.
+  // Or better yet use interupt to find the end of BUSY and set time for the next allowed DFPlayer message
+}
 
 
 // Play a track but not if the DFPlayer is busy
@@ -239,41 +328,32 @@ bool playAlarmLevel(int alarmNumberToPlay) {
 }  // end of playAlarmLevel
 
 
-void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
-  pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
+// void setupDFP() {
+//   pinMode(LED_PIN, OUTPUT);
+//   digitalWrite(LED_PIN, HIGH);
+//   pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
 
-  // Start serial communication
-  Serial.begin(BAUDRATE);
-  while (!Serial) {
-    ;  // wait for serial port to connect. Needed for native USB
-  }
+//   // Start serial communication
+//   Serial.begin(BAUDRATE);
+//   while (!Serial) {
+//     ;  // wait for serial port to connect. Needed for native USB
+//   }
 
-  //delay(500);
-  serialSplash();
+//   //delay(500);
+//   serialSplash();
 
-  //DFPlayer Splash
-  setupDFPlayer();
-  //  dfPlayer.play(9);  //DFPlayer Splash
+//   //DFPlayer Splash
+//   setupDFPlayer();
+//   //  dfPlayer.play(9);  //DFPlayer Splash
 
-  setupOTA();
-  Serial.print("OTA setup done.");
+//   setupOTA();
+//   Serial.print("OTA setup done.");
 
-  while (LOW == digitalRead(nDFPlayer_BUSY)) {
-    ;  //Hold still till splash file plays
-  }
+//   while (LOW == digitalRead(nDFPlayer_BUSY)) {
+//     ;  //Hold still till splash file plays
+//   }
 
-  Serial.println("End of setup");
-  digitalWrite(LED_PIN, LOW);
-}  // end of setup()
+//   Serial.println("End of setup");
+//   digitalWrite(LED_PIN, LOW);
+// }  // end of setup()
 
-void loop() {
-  ElegantOTA.loop();
-  //dfPlayerUpdate();  //Play all but for only a constant time.
-  // playNotBusy();  // Play all but  only when not busy.
-  //playAlarmLevel(3);
-  digitalWrite(LED_PIN, !digitalRead(nDFPlayer_BUSY));  //Polarity of the LED must be inverted relative to the BUSY.
-
-  checkSerial();
-}  // end of loop()

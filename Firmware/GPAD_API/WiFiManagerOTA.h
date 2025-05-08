@@ -8,8 +8,8 @@
 #include <LittleFS.h>
 
 extern const char* default_ssid;
-extern String ssid;
-extern String password;
+// extern String ssid;
+// extern String password;
 extern String ledState;
 extern int WiFiLed;
 
