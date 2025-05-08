@@ -169,11 +169,11 @@ void splashOLED() {
   rowPosition += rowHeight;
   display.setCursor(0, rowPosition);
   display.println("IP: " + WiFi.localIP().toString());
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
+  // rowPosition += rowHeight;
+  // display.setCursor(0, rowPosition);
   
-  display.print(_count / 10);  // rough BPM estimation if sampling every 10ms
-  display.print(F("  BPM"));
+  // display.print(_count / 10);  // rough BPM estimation if sampling every 10ms
+  // display.print(F("  BPM"));
 
   display.display();
 }
