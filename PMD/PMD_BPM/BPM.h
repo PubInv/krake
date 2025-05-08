@@ -7,7 +7,7 @@ class PulseCounter {
 public:
   PulseCounter(int sensorPin, int ledPin, int threshold, unsigned long intervalMs);
   void begin();
-  void update();
+  int update();
 
 private:
   int _sensorPin;

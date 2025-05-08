@@ -169,11 +169,11 @@ void splashOLED() {
   rowPosition += rowHeight;
   display.setCursor(0, rowPosition);
   display.println("IP: " + WiFi.localIP().toString());
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  
-  display.print(_count / 10);  // rough BPM estimation if sampling every 10ms
-  display.print(F("  BPM"));
+  // rowPosition += rowHeight;
+  // display.setCursor(0, rowPosition);
+
+  // display.print(_count / 10);  // rough BPM estimation if sampling every 10ms
+  // display.print(F("  BPM"));
 
   display.display();
 }
@@ -227,6 +227,8 @@ void setup() {
 }  //end setup()
 
 void loop() {
+  int16_t rowHeight = 8;  // Just a guess
+  static int myBPM = 0;
   wink();  // Heart beat aka activity indicator LED function.
   // led1.Update();
   // led2.Update();
@@ -236,7 +238,12 @@ void loop() {
   // This is needed to pull the button constantly
   myButton.poll();
   loopButton();
-  pulse.update();
+  myBPM = pulse.update();
+
+  display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
+  display.print("myBPM= ");
+  display.print((char)myBPM);
+  display.display();
 
   //splashOLED();
 
