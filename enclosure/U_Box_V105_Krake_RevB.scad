@@ -4,6 +4,8 @@
 //  License: CC BY-NC 3.0                                        //
 ////////////////////////////////////////////////////////////////////
 
+KrakeEnclosureVersion = 0.1; // change this with each rev
+
 /* Project Selector */
 Krake = 1;      // [0:Off, 1:On]
 GPAD  = 0;      // [0:Off, 1:On]
@@ -12,7 +14,7 @@ GPAD  = 0;      // [0:Off, 1:On]
 // Export Options
 ////////////////////////////////////////////////////////////////////
 
-GPAD_TShell          = 1;
+GPAD_TShell          = 0;
 GPAD_BShell          = 1;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -26,7 +28,7 @@ PWA_KRAKE            = 0;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
-SPK                  = 1;
+SPK                  = 0;
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -309,19 +311,19 @@ module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
         difference() {
             // Outer clamp ring
             translate([PCBLength*.91,PCBWidth*.82,clamp_Z])
-            #   cylinder(h = clamp_width-.001, r = (speaker_diameter/2) + flexure_gap + flexure_thickness);
+            #cylinder(h = clamp_width-.001, r = (speaker_diameter/2) + flexure_gap + flexure_thickness);
 
             // Inner clearance for speaker
             translate([PCBLength*.91,PCBWidth*.82,clamp_Z])
             translate([0,0,overlap])
-            #    cylinder(h = clamp_width +0.2 - overlap, r = (speaker_diameter/2) + flexure_gap);
+            #cylinder(h = clamp_width +0.2 - overlap, r = (speaker_diameter/2) + flexure_gap);
 
             // Create flexure cuts
             translate([PCBLength*.91,PCBWidth*.82,clamp_Z])
             for (angle = [0,90,180,270]) {
                 rotate([0,0,angle])
                 translate([speaker_diameter/2, -flexure_thickness/2, 0])
-                #          cube([flexure_gap*2, flexure_thickness +7, clamp_width +4]);
+                #cube([flexure_gap*2, flexure_thickness +7, clamp_width +4]);
             }
         }
         
@@ -331,8 +333,8 @@ module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
         cylinder(h = base_thickness , r = (speaker_diameter/2) + flexure_gap  + flexure_thickness + 3);
     }
 
-    // Build the model
-    speaker_clamp();
+//    // Build the model
+//    speaker_clamp();
 }
 
 
@@ -688,6 +690,9 @@ if(GPAD_TShell==1){
 if(GPAD_BShell==1){
     // Coque bas - Bottom shell
     i=0;
+    
+    speaker_clamp();
+    
     difference(){
         color(Couleur1,1){
             union(){ 
