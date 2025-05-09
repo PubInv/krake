@@ -688,7 +688,7 @@ module FPanL(){
 
 /////////////////////////// <- Main part -> /////////////////////////
 
-module VESAmount75(stud_height_mm) {
+module VESAmount75(stud_height_mm,h_offset_mm) {
     // A VESA mount for D 75mm
     // from Wikipedia https://en.wikipedia.org/wiki/Flat_Display_Mounting_Interface
     // D 75mm	MIS-D, 75, C	75	75
@@ -701,7 +701,7 @@ module VESAmount75(stud_height_mm) {
     hsd = half_stud_distance_mm;
     
     sh = stud_height_mm;
-    translate([0,0,sh-4])
+    translate([0,0,sh-h_offset_mm])
         union() {
             rotate([180,0,0])
             translate([hsd,hsd,0])
@@ -717,7 +717,7 @@ module VESAmount75(stud_height_mm) {
                 m4_stud(0,0,sh,0);
         }
 }
-module VESApunch75(stud_height_mm ) {
+module VESApunch75(stud_height_mm,h_offset_mm) {
     sh = stud_height_mm +2; // addin length for cutting
     radius = 4.5; // just a guess!
     
@@ -725,7 +725,7 @@ module VESApunch75(stud_height_mm ) {
     sd = stud_distance_mm;
     half_stud_distance_mm = sd/2;
     hsd = half_stud_distance_mm;
-    translate([0,0,sh-4])
+    translate([0,0,sh-h_offset_mm])
     union() {
         rotate([180,0,0])
         translate([hsd,hsd,0])
@@ -743,6 +743,7 @@ module VESApunch75(stud_height_mm ) {
 }
 module TShellWithVESA() {
     stud_height_mm = 7.8;
+    h_offset_mm = 1;
         // Coque haut - Top Shell
     difference() {
         translate([0,Width,Height+0.2]){
@@ -753,14 +754,14 @@ module TShellWithVESA() {
             }
         }
         translate([Length/2,Width/2,Height+0.2]) 
-        VESApunch75(stud_height_mm);
+        VESApunch75(stud_height_mm,h_offset_mm);
     }
 
     // Note: The Coque is not centered on the origin,
     // so we have to do some math for that....
     translate([Length/2,Width/2,Height+0.2]) 
     color("green"){
-        VESAmount75(stud_height_mm);
+        VESAmount75(stud_height_mm,h_offset_mm);
     }
     
 // #VESApunch75(stud_height_mm);
