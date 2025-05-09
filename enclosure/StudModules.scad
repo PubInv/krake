@@ -342,9 +342,10 @@ module m3_long_stud(x,y,sh,off=0) {
 //M4 Heat-set insert
 module m4_stud(x,y,sh,off=0) {	
 
-	maxid = 6.35;       				//Maximum Insert Diameter
+    maxid = 6.35;
 	ted = 5.38;         				//Tapered End Diameter
 	oil = 7.94;         				//Overal Insert Length
+    // ROB says this controls the hole
 	ophs = 5.28;        				//Optimum Pilot Hole Size
 	oshd = 5.94;        				//Optimum Surface Hole Diameter
 	rmwt = maxid*0.53;  				//Recommended Min Wall Thickness

@@ -782,7 +782,7 @@ if(GPAD_TShell==1){
 }
 
 module centeredHeatSetInsert() {
-    translate([0,-60.2,0])
+    translate([0,-60.05,0])
    import( "flanged insert M4 D7.1 H9.11.stl",convexity=1);
 }
 
