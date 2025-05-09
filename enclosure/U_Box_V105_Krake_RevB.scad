@@ -4,6 +4,16 @@
 //  License: CC BY-NC 3.0                                        //
 ////////////////////////////////////////////////////////////////////
 
+
+
+
+// Thanks to RonRN18 for this Creative Commons Attribution set of Heat-set insert:
+// https://www.thingiverse.com/thing:5849866
+include <StudModules.scad>
+
+
+
+
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
@@ -15,7 +25,8 @@ GPAD  = 0;      // [0:Off, 1:On]
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_BShell          = 1;
+GPAD_TShellWithVESA  = 1;
+GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
 BButton              = 0 ;
@@ -29,6 +40,7 @@ LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
+HEAT_SET_INSERTS     = 1;
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -676,10 +688,92 @@ module FPanL(){
 
 /////////////////////////// <- Main part -> /////////////////////////
 
+module VESAmount75(stud_height_mm) {
+    // A VESA mount for D 75mm
+    // from Wikipedia https://en.wikipedia.org/wiki/Flat_Display_Mounting_Interface
+    // D 75mm	MIS-D, 75, C	75	75
+    
+    // First, I will create the 4 studs in the correct
+    // (square) pattern
+    stud_distance_mm = 75;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    
+    sh = stud_height_mm;
+    translate([0,0,sh-4])
+        union() {
+            rotate([180,0,0])
+            translate([hsd,hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([hsd,-hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([-hsd,hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([-hsd,-hsd,0])
+                m4_stud(0,0,sh,0);
+        }
+}
+module VESApunch75(stud_height_mm ) {
+    sh = stud_height_mm +2; // addin length for cutting
+    radius = 4.5; // just a guess!
+    
+    stud_distance_mm = 75;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    translate([0,0,sh-4])
+    union() {
+        rotate([180,0,0])
+        translate([hsd,hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([hsd,-hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([-hsd,hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([-hsd,-hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        }
+}
+module TShellWithVESA() {
+    stud_height_mm = 7.8;
+        // Coque haut - Top Shell
+    difference() {
+        translate([0,Width,Height+0.2]){
+            color( Couleur1,1){
+                rotate([0,180,180]){
+                    Coque();
+                }
+            }
+        }
+        translate([Length/2,Width/2,Height+0.2]) 
+        VESApunch75(stud_height_mm);
+    }
+
+    // Note: The Coque is not centered on the origin,
+    // so we have to do some math for that....
+    translate([Length/2,Width/2,Height+0.2]) 
+    color("green"){
+        VESAmount75(stud_height_mm);
+    }
+    
+// #VESApunch75(stud_height_mm);
+}
+
+if(GPAD_TShellWithVESA==1){
+    TShellWithVESA();
+}
+
 if(GPAD_TShell==1){
     // Coque haut - Top Shell
-    color( Couleur1,1){
-        translate([0,Width,Height+0.2]){
+    translate([0,Width,Height+0.2]){
+        color( Couleur1,1){
             rotate([0,180,180]){
                 Coque();
             }
@@ -687,6 +781,37 @@ if(GPAD_TShell==1){
     }
 }
 
+module centeredHeatSetInsert() {
+    translate([0,-60.2,0])
+   import( "flanged insert M4 D7.1 H9.11.stl",convexity=1);
+}
+
+if(HEAT_SET_INSERTS==1){
+
+     stud_distance_mm = 75;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    insert_height = 6;
+    #color("gray")
+    translate([Length/2,Width/2,Height+0.2]) 
+    translate([0,0,insert_height/2+1])
+    union() {
+        rotate([180,0,0])
+        translate([hsd,hsd,0])
+        centeredHeatSetInsert();
+        rotate([180,0,0])
+        translate([hsd,-hsd,0])
+        centeredHeatSetInsert();
+        rotate([180,0,0])
+        translate([-hsd,hsd,0])
+        centeredHeatSetInsert();
+        rotate([180,0,0])
+        translate([-hsd,-hsd,0])
+        centeredHeatSetInsert();
+        }
+
+}
 if(GPAD_BShell==1){
     // Coque bas - Bottom shell
     i=0;
