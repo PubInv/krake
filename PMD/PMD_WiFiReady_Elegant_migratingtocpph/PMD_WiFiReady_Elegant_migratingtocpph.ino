@@ -4,6 +4,11 @@
 // https://github.com/PubInv/krake/issues/158
 // Hardware: Homework2 20240421
 
+#define HMWK
+//#define KRAKE
+#define OLED
+
+
 #include <WiFiManager.h>  // WiFi Manager for ESP32
 #include <WiFi.h>
 #include <AsyncTCP.h>
@@ -179,9 +184,12 @@ void setup() {
   initOLED();
   splashOLED();
 
+
+#ifdef KRAKE
   //DFPlayer
   initDFP();
   splashDFPlayer();
+#endif
 
   //Buttons, switches
   setupButton();
