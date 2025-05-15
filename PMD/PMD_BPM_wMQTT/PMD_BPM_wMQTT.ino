@@ -22,6 +22,8 @@
 #include "BPM.h"
 #include "MQTTmain.h"
 #include <MQTT.h>
+#include "ID.h"
+
 #define BAUDRATE 115200  //Serial port \
                          // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -155,21 +157,22 @@ void setup() {
     ;  // wait for serial port to connect. Needed for native USB
   }
 
-  splashserial();  //LCD
-  WiFiMan();
+  splashserial();
   Wire.begin();
   initOLED();
   splashOLED();
-  setupButton();  //Buttons, switches
+  WiFiMan();
   initWiFi();
   initLittleFS();
   setupOTA();
   server.begin();             // Start web page server
   ElegantOTA.begin(&server);  // Start ElegantOTA
-  pulse.begin();
   client.begin(BROKER, net);
   client.onMessage(messageReceived);
   connect();
+  setupButton();  //Buttons, switches
+  pulse.begin();
+
   // More setup code here
   digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
   digitalWrite(LED_2, LOW);        //Make built in LED low at end of setup.
@@ -216,6 +219,28 @@ void loop() {
     display.print("myBPM= ");
     display.print((char)myBPM);
     display.display();
+
+
+    /////// missing code, count BPM
+
+    ////////////////////////////////
+    ////////////////////////////////
+    ////////////////////////////////
+
+
+
+
+    if (messageToPublish) {
+      client.publish(PUBLISHING_TOPIC, messageToPublish);
+
+      display.setCursor(0, 7 * rowHeight);  //Place on sixth row.
+
+      display.print("sent= ");
+      display.print(messageToPublish);
+      display.display();
+
+      messageToPublish = nullptr;  // Reset after publishing
+    }
   }
 
   //   if (messageToPublish && millis() - lastMillis > PUBLISHING_RATE) {
@@ -224,10 +249,6 @@ void loop() {
   //   messageToPublish = nullptr;  // Reset
   // }
 
-  if (messageToPublish) {
-    client.publish(PUBLISHING_TOPIC, messageToPublish);
-    messageToPublish = nullptr;  // Reset after publishing
-  }
 
 
 

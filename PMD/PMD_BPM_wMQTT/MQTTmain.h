@@ -11,11 +11,13 @@ extern MQTTClient client;
 #define BROKER "public.cloud.shiftr.io"
 #define CLIENT_NAME_MQTT "PubInv"
 
-//#define Nagham 
+// #define Nagham 
 #ifdef Nagham
 // LB0005 
-#define SUBSCRIPTION_TOPIC "F024F9F1B880_ACK"
-#define PUBLISHING_TOPIC "F024F9F1B880_ALM"
+#define SUBSCRIPTION_TOPIC "ECC9FF7C8C98_ACK"
+// #define PUBLISHING_TOPIC "F024F9F1B880_ALM"
+#define PUBLISHING_TOPIC "ECC9FF7C8C98_ALM" // publishing to Robert
+
 
 #else  // LEE
 // US0005 
@@ -23,7 +25,7 @@ extern MQTTClient client;
 #define PUBLISHING_TOPIC "ECC9FF7D8EE8_ALM"
 #endif
 
-#define PUBLISHING_RATE 30000
+#define PUBLISHING_RATE 10000
 
 
 // ==== Function Prototypes ====
