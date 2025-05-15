@@ -14,18 +14,20 @@ DailyStruggleButton SW1;
 DailyStruggleButton SW2;
 DailyStruggleButton SW3;
 DailyStruggleButton SW4;
+DailyStruggleButton BOOT;
 
 
 
 void setupButton() {
 
-  myButton.set(GPIO0, buttonEvent, INT_PULL_UP);
+//  myButton.set(GPIO0, buttonEvent, INT_PULL_UP);
   SW1.set(GPIO_SW1, morisCodeEvent, INT_PULL_UP);
   // SW2.set(GPIO_SW2, RepeatCalculation, INT_PULL_UP);
   SW3.set(GPIO_SW3, muteFiveMin, INT_PULL_UP);
   SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
+  BOOT.set(GPIO0_BOOT, SendOK_Message, INT_PULL_UP);
 
-  myButton.enableLongPress(longPressTime);
+//FLE  myButton.enableLongPress(longPressTime);
   // SW1.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
   // SW2.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
   // SW3.enableLongPress(longPressTime);  //Also rotary encoder switch on KRAKE
@@ -42,11 +44,12 @@ void buttonEvent(byte btnStatus) {
 }
 
 void loopButton() {
-  myButton.poll();
+ //FLE myButton.poll();
   SW1.poll();
   //SW2.poll();
   SW3.poll();
   SW4.poll();
+  BOOT.poll();
 }
 
 void handleButtonEvent(const char* buttonName, byte btnStatus) {
@@ -104,3 +107,10 @@ void SendEmergMessage(byte btnStatus) {
   handleButtonEvent("SW4", btnStatus);
   messageToPublish = "a5Send Emergency";
 }
+
+
+void SendOK_Message(byte btnStatus) {
+  handleButtonEvent("BOOT", btnStatus);
+  messageToPublish = "a0 OK, Situation Normal.";
+}
+

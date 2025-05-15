@@ -193,7 +193,7 @@ void loop() {
   // led4.Update();
   // led5.Update();
   // This is needed to pull the button constantly
-  myButton.poll();
+  //FLE myButton.poll();
   loopButton();
   // myBPM = pulse.update();
 
@@ -242,14 +242,6 @@ void loop() {
       messageToPublish = nullptr;  // Reset after publishing
     }
   }
-
-  //   if (messageToPublish && millis() - lastMillis > PUBLISHING_RATE) {
-  //   lastMillis = millis();
-  //   client.publish(PUBLISHING_TOPIC, messageToPublish);
-  //   messageToPublish = nullptr;  // Reset
-  // }
-
-
 
 
 }  //end loop()
