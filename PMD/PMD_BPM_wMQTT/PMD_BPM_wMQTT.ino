@@ -202,7 +202,7 @@ void loop() {
   // display.print((char)myBPM);
   // display.display();
 
-  splashOLED();
+//  splashOLED();
   client.loop();
   delay(10);
 
@@ -215,32 +215,55 @@ void loop() {
     client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
 
 
-    display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-    display.print("myBPM= ");
-    display.print((char)myBPM);
-    display.display();
-
-
     /////// missing code, count BPM
 
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
+    //Syntheic heart rate from bottons on HOMEWORK 2 assembly
+    //Low, Normal, warning and panic heart rates
+    const int THRESHOLD_Bradycardi = 60;
+    const int THRESHOLD_Tachycardia = 100;
 
+    if (0 == syntheticBPM) {
+      Serial.println("No BPM detected.");
+    } else if (syntheticBPM < THRESHOLD_Bradycardi) {
+      //Low bradycardia.
+      Serial.print("Bradycardi, ");
+      Serial.print(syntheticBPM);
+      Serial.println("BPM");
 
+    } else if (syntheticBPM < THRESHOLD_Tachycardia) {
+      //Normal between 60 and 100
+      Serial.print("Normal range, ");
+      Serial.print(syntheticBPM);
+      Serial.println("BPM");
 
+    } else {
+      //Warning heart rate  tachycardia
+      Serial.print("Tachycardia, ");
+      Serial.print(syntheticBPM);
+      Serial.println("BPM");
+    }
 
+    //MQTT message
     if (messageToPublish) {
       client.publish(PUBLISHING_TOPIC, messageToPublish);
 
-      display.setCursor(0, 7 * rowHeight);  //Place on sixth row.
-
-      display.print("sent= ");
-      display.print(messageToPublish);
-      display.display();
-
       messageToPublish = nullptr;  // Reset after publishing
     }
+
+    // Update display
+    display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
+    display.print("myBPM= ");
+    display.print((char)myBPM);
+//    display.display();
+
+
+//Synethtic BPM from switches and BOOT.
+    display.setCursor(0, 7 * rowHeight);  //Place on sixth row.
+//    display.setCursor(40, 40);  //Place near
+    display.print("syntheticBPM= ");
+    display.print(syntheticBPM);
+    display.print("     "); //TO clear possible stale BPM characters.
+    display.display();
   }
 
 

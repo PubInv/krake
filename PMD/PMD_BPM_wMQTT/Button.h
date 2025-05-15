@@ -12,6 +12,7 @@
 #define GPIO0_BOOT 0
 
 extern const char* messageToPublish ;
+extern int syntheticBPM;
 void buttonEvent(byte btnStatus);
 extern unsigned int longPressTime;
 extern byte multiHitTarget;

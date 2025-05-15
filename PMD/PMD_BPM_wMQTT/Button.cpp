@@ -4,6 +4,7 @@
 #include "DailyStruggleButton.h"
 
 const char* messageToPublish = nullptr;
+int syntheticBPM = 0; // Use when there is no BPM hardware
 
 unsigned int longPressTime = 1000;
 byte multiHitTarget = 2;
@@ -83,14 +84,16 @@ void handleButtonEvent(const char* buttonName, byte btnStatus) {
 // }
 
 
-void RepeatCalculation(byte btnStatus) {
-  handleButtonEvent("BOOT", btnStatus);
-  messageToPublish = "a1Booting PMD";
-}
+// void RepeatCalculation(byte btnStatus) {
+//   handleButtonEvent("BOOT", btnStatus);
+//   messageToPublish = "a1Booting PMD";
+//   syntheticBPM = 85; //An OK BPM
+// }
 
 void morisCodeEvent(byte btnStatus) {
   handleButtonEvent("SW1", btnStatus);
   messageToPublish = "a2Check in please.";
+  syntheticBPM = 55; //A low  BPM
 }
 
 // void RepeatCalculation(byte btnStatus) {
@@ -101,16 +104,19 @@ void morisCodeEvent(byte btnStatus) {
 void muteFiveMin(byte btnStatus) {
   handleButtonEvent("SW3", btnStatus);
   messageToPublish = "a4Urgent Support Now.";
+  syntheticBPM = 85; //An g OK BPM
 }
 
 void SendEmergMessage(byte btnStatus) {
   handleButtonEvent("SW4", btnStatus);
   messageToPublish = "a5Send Emergency";
+  syntheticBPM = 125; //A high BPM
 }
 
 
 void SendOK_Message(byte btnStatus) {
   handleButtonEvent("BOOT", btnStatus);
   messageToPublish = "a0 OK, Situation Normal.";
+  syntheticBPM = 75; //An OK BPM
 }
 
