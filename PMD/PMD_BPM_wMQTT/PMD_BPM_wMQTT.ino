@@ -53,6 +53,8 @@ const int LED_5 = 19;
 int WiFiLed = 23;
 
 
+#define potINPUT 32
+
 // Pins for switches and LEDs and more //Krake
 // #define BOOT_BUTTON 0
 // const int LED_BUILTIN = 13;  //Krake
@@ -131,7 +133,51 @@ void splashOLED() {
   display.print((char)myBPM);
 
   display.display();
-}
+}  //end splashOLED
+
+void updateOLED() {
+  int16_t rowPosition = 0;
+  int16_t columnPosition = 0;
+  int16_t rowHeight = 8;  // Just a guess
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+
+  display.setCursor(0, rowPosition);
+  display.print(PROG_NAME);
+  rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.print(VERSION);
+  rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.print(F("Compiled at:"));
+  rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.print(F(__DATE__ " " __TIME__));
+  rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.println("IP: " + WiFi.localIP().toString());
+
+  //Let's read the POT and writ to the display
+  rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);  //Place on sixth row.
+  display.print("Pot Value= ");
+  display.print(analogRead(potINPUT));
+  rowPosition += rowHeight;
+
+  display.setCursor(0, rowPosition);  //Place BMP on sixth row.
+  display.print("myBPM= ");
+  display.print((char)myBPM);
+  rowPosition += rowHeight;
+
+  // with Synethtic BPM from switches and BOOT.
+  display.setCursor(0, rowPosition);  //Place on sixth row.
+  display.print("syntheticBPM= ");
+  display.print(syntheticBPM);
+  display.print("     ");  //TO clear possible stale BPM characters.
+  display.display();
+}  //end updateOLED
 
 void setup() {
 
@@ -158,6 +204,8 @@ void setup() {
   }
 
   splashserial();
+  pinMode(potINPUT, INPUT);  //A potentiometer, 3.3 to GND for user input.
+
   Wire.begin();
   initOLED();
   splashOLED();
@@ -187,22 +235,10 @@ void loop() {
   int16_t rowHeight = 8;  // Just a guess
   static int myBPM = 0;
   wink();  // Heart beat aka activity indicator LED function.
-  // led1.Update();
-  // led2.Update();
-  // led3.Update();
-  // led4.Update();
-  // led5.Update();
-  // This is needed to pull the button constantly
-  //FLE myButton.poll();
-  loopButton();
+  loopButton();// poles all the buttons.
+
   // myBPM = pulse.update();
 
-  // display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-  // display.print("myBPM= ");
-  // display.print((char)myBPM);
-  // display.display();
-
-//  splashOLED();
   client.loop();
   delay(10);
 
@@ -213,7 +249,6 @@ void loop() {
   if (millis() - lastMillis > PUBLISHING_RATE) {
     lastMillis = millis();
     client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
-
 
     /////// missing code, count BPM
 
@@ -249,22 +284,8 @@ void loop() {
 
       messageToPublish = nullptr;  // Reset after publishing
     }
-
-    // Update display
-    display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-    display.print("myBPM= ");
-    display.print((char)myBPM);
-//    display.display();
-
-
-//Synethtic BPM from switches and BOOT.
-    display.setCursor(0, 7 * rowHeight);  //Place on sixth row.
-//    display.setCursor(40, 40);  //Place near
-    display.print("syntheticBPM= ");
-    display.print(syntheticBPM);
-    display.print("     "); //TO clear possible stale BPM characters.
-    display.display();
   }
 
+  updateOLED();
 
 }  //end loop()
