@@ -1,5 +1,6 @@
 # Krake
 Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
+![image](https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07)
 
 Krake is an **annunciator** meant to alert a human to something needing attention.
 
@@ -9,13 +10,35 @@ The Krake has been developed primarily by volunteer Nagham Kheir, with oversight
 It will connect as a station to a Wi-Fi local area network.
 The Krake receives alarm messages from another device, the Controller.
 The Controller may be on the same local area network or the wider internet.
+## MQTT Protocol
+Our first wireless implementation is over the MQTT protocol. Each device subscribes to a topic compose of its MAC address contaminated with "-ALM" and publishes on the same MAC address contaminated with "-ACK". The broker us currently hard coded.
+[Our MQTT publishing test page is here](https://pubinv.github.io/krake/PMD_GPAD_API.html).
+## Other WiFi modes
+Future code development opportunities. The ESP32 controller and therefor with some programing the Krake supports Bluetooth, Bluetooth Low Energy and ?mesh? Networking modes of the ESP32. 
 
-Our [test page is here](https://pubinv.github.io/krake/PMD_GPAD_API.html).
+# COM Port
+The Krake interfaces to controllers on a DB9 Female wired as DCE at RS232 levels.
+
+# Configurable Power Options
+The can be powered by a 2.1mm center positive barrel power jack.
+The can be powred by a USB-C.
+By moving jumpers internal to the Krake, a device can be set up to receive power on the RJ12 SPI interface.
 
 # Arbitrary Sonic Alarms
 These sounds are stored on an SD card and can be voice and can be multilingual.
 The SD card is removable so that the Krake alarms can be customized (localized) for language.
 
+# The Alarm API, GPAD_API
+The API to the Krake is an extention of the API for the General Purpous Alarm device on which the Krake development was based.
+Some details of the API are found at that repository:
+https://github.com/PubInv/general-purpose-alarm-device/tree/main/Firmware/GPAD_API
+Estentions are under development (May 2025) to reflect the additional features and details of the Krake.
+
+# Mute Button
+Pressing the local mute button will toggle silencing of the audio alarms.
+
+# Rotary Encoder Knob
+The knob will allow users to navigate device settings for both frequent use and one time setup.
 
 # About the Name
 
@@ -54,7 +77,7 @@ A Crake is a bird with a distinctive, slighly alarming cry. We changed the spell
 
 
 # MockingKrake (Krake's Prototype)
-
+During development a bread board, prototype akd the MockingKrake was developed to test features and feature ineroperaibility.
 ## Components:
 - ESP32 DevKit V1.  For schematics of DevKit V1 and other information See: https://embedded-systems-design.github.io/overview-of-the-esp32-devkit-doit-v1/
 - DFplayer module.  The DFPlayer Mini MP3 Player For Arduino is a small and low cost MP3 module.  For example wiring diagrams of of DFPlayer module for stand alone and to Arduino UNO and other information See:  https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299
