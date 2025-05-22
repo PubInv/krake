@@ -18,8 +18,22 @@
 #include <WiFi.h>
 #include <MQTT.h>
 
-const char ssid[] = "Home";
-const char pass[] = "adt@1963#";
+//Aley network
+// const char* ssid = "Home";
+// const char* password = "adt@1963#";
+
+//Maryville network
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
+
+//Houstin network
+// const char* ssid = "DOS_WIFI";
+// const char* password = "$Suve07$$";
+
+// Austin network
+// const char* ssid = "readfamilynetwork";
+// const char* password = "magicalsparrow96";
+
 
 WiFiClient net;
 MQTTClient client;
