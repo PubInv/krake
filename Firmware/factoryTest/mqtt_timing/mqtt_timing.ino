@@ -18,6 +18,8 @@
 #include <WiFi.h>
 #include <MQTT.h>
 
+int debugLevel = 0; //Incrase to make more verbose.
+
 //Aley network
 // const char* ssid = "Home";
 // const char* password = "adt@1963#";
@@ -38,6 +40,9 @@
 WiFiClient net;
 MQTTClient client;
 
+String StringreceivedMQTT = "";  // For the call back event
+bool receivedMQTT = false;
+
 unsigned long lastMillis = 0;
 
 void connect() {
@@ -48,31 +53,44 @@ void connect() {
   }
 
   Serial.print("\nconnecting...");
-  while (!client.connect("arduino", "public", "public")) {
+#define ClientName "mqtt_timing"
+//  while (!client.connect("arduino", "public", "public")) {
+//  while (!client.connect("mqtt_timing", "public", "public")) {
+  while (!client.connect(ClientName, "public", "public")) {
     Serial.print(".");
     delay(1000);
   }
 
-  Serial.println("\nconnected!");
-
+if (debugLevel >2)  {
+   Serial.println("\n WiFi connected to " + String(ssid) + ".");
+}
+ 
   // client.subscribe("/hello");
   client.subscribe(PROG_NAME);
 
   // client.unsubscribe("/hello");
 }
 
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
-  Serial.println(millis());
+
+void messageReceived(String& topic, String& payload) {
+  //Serial.println("incoming: " + topic + " - " + payload);
+  Serial.print(payload);
+  Serial.print(", ");
+  Serial.print(millis());
+  Serial.print(", ");
+
+if (debugLevel >2)  {
+  Serial.print(", Difference= "); 
+}
+  unsigned long theLong = strtol(payload.c_str(), NULL, 10);
+  unsigned long theDifference = (millis() - theLong);
+  Serial.println(theDifference);
+
   // Note: Do not use the client in the callback to publish, subscribe or
   // unsubscribe as it may cause deadlocks when other things arrive while
   // sending and receiving acknowledgments. Instead, change a global variable,
   // or push to a queue and handle it in the loop after calling `client.loop()`.
-}
-
-
-
-
+}// end MessageRecevied
 
 void splashserial() {
   Serial.println(F("==================================="));
@@ -89,11 +107,12 @@ void splashserial() {
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(ssid, pass);
   splashserial();
-    // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
-    // by Arduino. You need to set the IP address directly.
-    client.begin("public.cloud.shiftr.io", net);
+
+  WiFi.begin(ssid, password);
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
+  // by Arduino. You need to set the IP address directly.
+  client.begin("public.cloud.shiftr.io", net);
   client.onMessage(messageReceived);
 
   connect();
@@ -111,7 +130,7 @@ void loop() {
   if (millis() - lastMillis > 1000) {
     lastMillis = millis();
     // client.publish(PROG_NAME, "sent time " + String(millis()));
-        client.publish(PROG_NAME, "sent time " );
-
+    // client.publish(PROG_NAME, "sent time " );
+    client.publish(PROG_NAME, String(millis()));
   }
 }
