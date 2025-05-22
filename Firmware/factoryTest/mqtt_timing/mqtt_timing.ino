@@ -1,5 +1,5 @@
 #define PROG_NAME "MQTT_timing"
-#define VERSION " V.0.0.1 "
+#define VERSION " V.0.0.2 "
 #define MODEL_NAME "Model: HW2_WiFiReady_Elegant"
 #define DEVICE_UNDER_TEST "SN: 00001"
 #define LICENSE "GNU Affero General Public License, version 3 "
