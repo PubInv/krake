@@ -1,8 +1,7 @@
 #include "WiFiManagerOTA.h"
 #include <LittleFS.h>
-#include "ID.h"
 
-const char* default_ssid = DEVICE_UNDER_TEST;  // Default AP Name
+extern const char* default_ssid;
 String ssid = "";
 String password = "";
 String ledState = "";
@@ -43,6 +42,7 @@ void WiFiMan() {
     if (!loadCredentials()) {
         if (!wifiManager.autoConnect(default_ssid)) {
             Serial.println("Failed to connect. Restarting...");
+
             ESP.restart();
         }
         ssid = WiFi.SSID();

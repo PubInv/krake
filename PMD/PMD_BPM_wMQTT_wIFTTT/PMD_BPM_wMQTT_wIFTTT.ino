@@ -9,6 +9,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
+#include <WiFiManager.h>
 #include <ElegantOTA.h>
 #include <FS.h>    // File System Support
 #include <Wire.h>  // req for i2c comm
@@ -24,6 +25,7 @@
 #include <MQTT.h>
 #include "ID.h"
 #include <Adafruit_SSD1306.h>
+#include "IFTTTNotifier.h"
 
 
 #define BAUDRATE 115200  //Serial port \
@@ -31,26 +33,22 @@
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
-<<<<<<< HEAD
-bool clearOTA = false;
-=======
-
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 CenteredBarsDisplay WiFIbars(&display);
->>>>>>> resposeTimeEnhance
-
 // ==== MQTT Networking ====
 WiFiClient net;
 MQTTClient client;
+WiFiManager wifiManager;
 // ==== Timers ====
 unsigned long lastMillis = 0;
 
 void notifyClients(const String &message) {
   ws.textAll(message);
 }
+
 
 // Some PMD Hardware
 
@@ -63,8 +61,11 @@ const int LED_3 = 5;
 const int LED_4 = 18;
 const int LED_5 = 19;
 int WiFiLed = 23;
-
+const int SW1_IFTT = 36;
 extern int syntheticBPM;
+
+const char *default_ssid = "ESP32-Setup";  // Default AP Name
+
 #define potINPUT 32
 
 // Pins for switches and LEDs and more //Krake
@@ -113,11 +114,7 @@ void setupOTA() {
   // End of ELegant OTA Setup
 }
 
-<<<<<<< HEAD
-  int16_t rowPosition = 0;
-  int16_t columnPosition = 0;
-  const int16_t rowHeight = 8;  // Just a guess
-=======
+
 void initOLED() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -129,37 +126,7 @@ void initOLED() {
 
 
 void splashOLED() {
-  // int16_t rowPosition = 0;
-  // int16_t columnPosition = 0;
-  // int16_t rowHeight = 8;  // Just a guess
 
-  // display.clearDisplay();
-  // display.setTextSize(1);
-  // display.setTextColor(WHITE);
-
-  // // display.setCursor(0, rowPosition);
-  // // display.println("Hello, I am a PMD!");
-  // // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(PROG_NAME);
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(VERSION);
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(F("Compiled at:"));
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(F(__DATE__ " " __TIME__));
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.println("IP: " + WiFi.localIP().toString());
-  // display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-
-  // display.print("myBPM= ");
-  // display.print((char)myBPM);
-
-  // display.display();
 
   int16_t row = 9, rowHeight = 10;
   display.clearDisplay();
@@ -171,34 +138,11 @@ void splashOLED() {
   display.print("  Invention");
   display.display();
   delay(5000);
->>>>>>> resposeTimeEnhance
 
-void splashOLED() {
-  rowPosition = 0;  //Because we start with the splash at row 0
+ 
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-<<<<<<< HEAD
-  display.setCursor(0, rowPosition);
-  display.print(PROG_NAME);
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.print(VERSION);
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.print(F("Compiled at:"));
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.print(F(__DATE__ " " __TIME__));
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-
-  // display.println("IP: " + WiFi.localIP().toString());
-  // display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-  // display.print("myBPM= ");
-  // display.print((char)myBPM);
- // Moved out of the setup of the display information display.display();  
-=======
   display.setCursor(0, row);
   display.println(PROG_NAME);
   row += rowHeight;
@@ -214,26 +158,26 @@ void splashOLED() {
   display.print("myBPM= ");
   display.print(myBPM);
   display.display();
-  delay(3000);
 
->>>>>>> resposeTimeEnhance
+
+
 }  //end splashOLED
 
 void updateOLED() {
-  int16_t row = 0, rowHeight = 10;
+  int16_t row = 0, rowHeight = 8;
   row += rowHeight;
 
   display.clearDisplay();
-  display.setTextSize(1.2);
+  display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, row);
   display.println(PROG_NAME);
   row += rowHeight;
   // display.println(VERSION);
-  // row += rowHeight;
+  row += rowHeight;
 
   // display.println(F("Compiled at:"));
-  // row += rowHeight;
+  row += rowHeight;
   // display.println(F(__DATE__ " " __TIME__));
   // row += rowHeight;
 
@@ -254,6 +198,15 @@ void updateOLED() {
   WiFIbars.drawCenteredHorizontalBars(110, 25);  // bottom right corner
   display.display();
 
+  // // add conditional format for the wifi icon
+  // if (!wifiManager.autoConnect(default_ssid)) {
+  //   display.drawBitmap(0, 0, wifi_icon, 16, 16, WHITE);
+  // } else {
+  //   display.drawBitmap(0, 0, wifi_disconnected_icon, 16, 16, WHITE);
+  // }
+
+
+  display.display();
 }  //end updateOLED
 
 void setup() {
@@ -275,53 +228,29 @@ void setup() {
   digitalWrite(LED_4, HIGH);        // turn the LED on (HIGH is the voltage level)
   pinMode(LED_5, OUTPUT);           // set the LED pin mode
   digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
- 
+  pinMode(SW1_IFTT, INPUT);         // External pull-up is used
+
+
   Serial.begin(BAUDRATE);
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-  splashserial();
 
+  splashserial();
   pinMode(potINPUT, INPUT);  //A potentiometer, 3.3 to GND for user input.
 
   Wire.begin();
-  initOLED();  //OLED ready!
-
-// WiFi including OTA.
-//Report Start of WiFi setup
+  initOLED();
   splashOLED();
-  display.println("WiFi setup");
-   rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.display();
-
   WiFiMan();
   initWiFi();
   initLittleFS();
   setupOTA();
   server.begin();             // Start web page server
   ElegantOTA.begin(&server);  // Start ElegantOTA
-
-  //Report Start of MQTT client
-  splashOLED();
-  display.println("Connected to MQTT");
-   rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.display();
-
-//MQTT client connection
   client.begin(BROKER, net);
   client.onMessage(messageReceived);
   connect();
-
-  //Report Start of ???
-  splashOLED();
-  display.println("?????");
-   rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.display();
-
-
   setupButton();  //Buttons, switches
   pulse.begin();
 
@@ -350,14 +279,9 @@ void loop() {
     connect();
   }
 
-// Check BPM, or synthetic BPM and publish
   if (millis() - lastMillis > PUBLISHING_RATE) {
     lastMillis = millis();
-//    client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
-    // client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(analogRead(potINPUT)));
-
-    syntheticBPM = map(analogRead(potINPUT), 0, 4095, 35, 210);
-    //client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(syntheticBPM));
+    client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
 
     /////// missing code, count BPM
 
@@ -373,39 +297,29 @@ void loop() {
       Serial.print("Bradycardi, ");
       Serial.print(syntheticBPM);
       Serial.println("BPM");
-      client.publish(PUBLISHING_TOPIC, "a4 Bradycardi, Low mysyntheticBPM= " + String(syntheticBPM));
 
     } else if (syntheticBPM < THRESHOLD_Tachycardia) {
       //Normal between 60 and 100
       Serial.print("Normal range, ");
       Serial.print(syntheticBPM);
       Serial.println("BPM");
-      client.publish(PUBLISHING_TOPIC, "a1 Normal BPM= " + String(syntheticBPM));
+
     } else {
       //Warning heart rate  tachycardia
       Serial.print("Tachycardia, ");
       Serial.print(syntheticBPM);
       Serial.println("BPM");
-      client.publish(PUBLISHING_TOPIC, "a5 Tachycardia, High mysyntheticBPM= " + String(syntheticBPM));
     }
 
-    // //MQTT message
-    // if (messageToPublish) {
-    //   client.publish(PUBLISHING_TOPIC, messageToPublish);
+    //MQTT message
+    if (messageToPublish) {
+      client.publish(PUBLISHING_TOPIC, messageToPublish);
 
-    //   messageToPublish = nullptr;  // Reset after publishing
-    // }
-    // foo client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(analogRead(potINPUT)));
-
-  }// end MQTT publishing
+      messageToPublish = nullptr;  // Reset after publishing
+    }
+  }
 
   updateOLED();
-
-  //Check of clearOTA.
-  if (true == clearOTA){
-    clearOTA = false; // Only call once per press of the button.
-    ElegantOTA.clearAuth();
-    Serial.println("ElegantOTA.clearAuth()");
-  }
+  IFTTTloop();
 
 }  //end loop()
