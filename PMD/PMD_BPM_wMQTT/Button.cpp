@@ -4,7 +4,7 @@
 #include "DailyStruggleButton.h"
 
 const char* messageToPublish = nullptr;
-int syntheticBPM = 0; // Use when there is no BPM hardware
+int syntheticBPM = 0;  // Use when there is no BPM hardware
 
 unsigned int longPressTime = 1000;
 byte multiHitTarget = 2;
@@ -21,14 +21,14 @@ DailyStruggleButton BOOT;
 
 void setupButton() {
 
-//  myButton.set(GPIO0, buttonEvent, INT_PULL_UP);
+  //  myButton.set(GPIO0, buttonEvent, INT_PULL_UP);
   SW1.set(GPIO_SW1, morisCodeEvent, INT_PULL_UP);
   // SW2.set(GPIO_SW2, RepeatCalculation, INT_PULL_UP);
   SW3.set(GPIO_SW3, muteFiveMin, INT_PULL_UP);
   SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
   BOOT.set(GPIO0_BOOT, SendOK_Message, INT_PULL_UP);
 
-//FLE  myButton.enableLongPress(longPressTime);
+  //FLE  myButton.enableLongPress(longPressTime);
   // SW1.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
   // SW2.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
   // SW3.enableLongPress(longPressTime);  //Also rotary encoder switch on KRAKE
@@ -45,12 +45,12 @@ void buttonEvent(byte btnStatus) {
 }
 
 void loopButton() {
- //FLE myButton.poll();
+  //FLE myButton.poll();
   SW1.poll();
   //SW2.poll();
   SW3.poll();
   SW4.poll();
-  BOOT.poll();
+  BOOT.poll();  //Reset WiFi Credentials
 }
 
 void handleButtonEvent(const char* buttonName, byte btnStatus) {
@@ -93,7 +93,7 @@ void handleButtonEvent(const char* buttonName, byte btnStatus) {
 void morisCodeEvent(byte btnStatus) {
   handleButtonEvent("SW1", btnStatus);
   messageToPublish = "a2Check in please.";
-  syntheticBPM = 55; //A low  BPM
+  syntheticBPM = 55;  //A low  BPM
 }
 
 // void RepeatCalculation(byte btnStatus) {
@@ -104,19 +104,25 @@ void morisCodeEvent(byte btnStatus) {
 void muteFiveMin(byte btnStatus) {
   handleButtonEvent("SW3", btnStatus);
   messageToPublish = "a4Urgent Support Now.";
-  syntheticBPM = 85; //An g OK BPM
+  syntheticBPM = 85;  //An g OK BPM
 }
 
 void SendEmergMessage(byte btnStatus) {
   handleButtonEvent("SW4", btnStatus);
   messageToPublish = "a5Send Emergency";
-  syntheticBPM = 125; //A high BPM
+  syntheticBPM = 125;  //A high BPM
 }
 
 
 void SendOK_Message(byte btnStatus) {
-  handleButtonEvent("BOOT", btnStatus);
-  messageToPublish = "a0 OK, Situation Normal.";
-  syntheticBPM = 75; //An OK BPM
-}
+  if (btnStatus == onPress) {
+    //  handleButtonEvent("BOOT", btnStatus);
+    //foo  FLE
+    messageToPublish = "a1 Clearing WiFi Credentials, Situation Normal.";
+    //ElegantOTA.clearAuth();
+    clearOTA = true;
+    Serial.println("Clearing web credentials now.");
 
+    syntheticBPM = 75;  //An OK BPM
+  }
+}
