@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 #define PROG_NAME "PMD_BPM_wMQTT "
-#define VERSION " V.0.1.7 " /// Adding wifi signal connected 
+#define VERSION " V.0.1.5.1 " // Adding connectin to mail telegram and notification 
 //#define MODEL_NAME "Model: BUTTOM"
 #define MODEL_NAME "Model: HW2_WiFiReady_Elegant"
 #define DEVICE_UNDER_TEST "SN: 00001"

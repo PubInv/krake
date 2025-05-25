@@ -9,6 +9,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
+#include <WiFiManager.h>
 #include <ElegantOTA.h>
 #include <FS.h>    // File System Support
 #include <Wire.h>  // req for i2c comm
@@ -24,6 +25,7 @@
 #include <MQTT.h>
 #include "ID.h"
 #include <Adafruit_SSD1306.h>
+#include "IFTTTNotifier.h"
 
 
 #define BAUDRATE 115200  //Serial port \
@@ -31,22 +33,22 @@
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
-
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 CenteredBarsDisplay WiFIbars(&display);
-
 // ==== MQTT Networking ====
 WiFiClient net;
 MQTTClient client;
+WiFiManager wifiManager;
 // ==== Timers ====
 unsigned long lastMillis = 0;
 
 void notifyClients(const String &message) {
   ws.textAll(message);
 }
+
 
 // Some PMD Hardware
 
@@ -59,8 +61,11 @@ const int LED_3 = 5;
 const int LED_4 = 18;
 const int LED_5 = 19;
 int WiFiLed = 23;
-
+const int SW1_IFTT = 36;
 extern int syntheticBPM;
+
+const char *default_ssid = "ESP32-Setup";  // Default AP Name
+
 #define potINPUT 32
 
 // Pins for switches and LEDs and more //Krake
@@ -109,6 +114,7 @@ void setupOTA() {
   // End of ELegant OTA Setup
 }
 
+
 void initOLED() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -120,40 +126,8 @@ void initOLED() {
 
 
 void splashOLED() {
-  // int16_t rowPosition = 0;
-  // int16_t columnPosition = 0;
-  // int16_t rowHeight = 8;  // Just a guess
 
-  // display.clearDisplay();
-  // display.setTextSize(1);
-  // display.setTextColor(WHITE);
-
-  // // display.setCursor(0, rowPosition);
-  // // display.println("Hello, I am a PMD!");
-  // // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(PROG_NAME);
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(VERSION);
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(F("Compiled at:"));
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(F(__DATE__ " " __TIME__));
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.println("IP: " + WiFi.localIP().toString());
-  // display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-
-  // display.print("myBPM= ");
-  // display.print((char)myBPM);
-
-  // display.display();
-
-
-  int16_t row = 0, rowHeight = 10;
+  int16_t row = 0, rowHeight = 8;
 
   display.clearDisplay();
   display.setTextSize(1);
@@ -173,25 +147,26 @@ void splashOLED() {
   display.print("myBPM= ");
   display.print(myBPM);
   display.display();
-delay() = 3000; 
+
+
 
 }  //end splashOLED
 
 void updateOLED() {
-  int16_t row = 0, rowHeight = 10;
+ int16_t row = 0, rowHeight = 8;
   row += rowHeight;
 
   display.clearDisplay();
-  display.setTextSize(1.2);
+  display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, row);
   display.println(PROG_NAME);
   row += rowHeight;
   // display.println(VERSION);
-  // row += rowHeight;
+  row += rowHeight;
 
   // display.println(F("Compiled at:"));
-  // row += rowHeight;
+  row += rowHeight;
   // display.println(F(__DATE__ " " __TIME__));
   // row += rowHeight;
 
@@ -212,6 +187,15 @@ void updateOLED() {
   WiFIbars.drawCenteredHorizontalBars(110, 25);  // bottom right corner
   display.display();
 
+  // // add conditional format for the wifi icon 
+  // if (!wifiManager.autoConnect(default_ssid)) {
+  //   display.drawBitmap(0, 0, wifi_icon, 16, 16, WHITE);
+  // } else {
+  //   display.drawBitmap(0, 0, wifi_disconnected_icon, 16, 16, WHITE);
+  // }
+
+
+  display.display();
 }  //end updateOLED
 
 void setup() {
@@ -233,6 +217,9 @@ void setup() {
   digitalWrite(LED_4, HIGH);        // turn the LED on (HIGH is the voltage level)
   pinMode(LED_5, OUTPUT);           // set the LED pin mode
   digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
+  pinMode(SW1_IFTT, INPUT);         // External pull-up is used
+
+
   Serial.begin(BAUDRATE);
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
@@ -322,5 +309,6 @@ void loop() {
   }
 
   updateOLED();
+  IFTTTloop();
 
 }  //end loop()

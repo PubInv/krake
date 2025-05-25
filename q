@@ -1,0 +1,68 @@
+[1mdiff --git a/PMD/PMD_BPM_wMQTT/BPM.cpp b/PMD/PMD_BPM_wMQTT/BPM.cpp[m
+[1mindex ec83c40..5edabe1 100644[m
+[1m--- a/PMD/PMD_BPM_wMQTT/BPM.cpp[m
+[1m+++ b/PMD/PMD_BPM_wMQTT/BPM.cpp[m
+[36m@@ -9,12 +9,18 @@[m [mvoid PulseCounter::begin() {[m
+   pinMode(_ledPin, OUTPUT);[m
+   //Serial.begin(9600);[m
+   _startTime = millis();[m
+[32m+[m[32m  Serial.println(_sensorPin);[m
+[32m+[m
+ }[m
+ [m
+[32m+[m[41m  [m
+[32m+[m
+ [m
+ /*[m
+ Count 10mS periods at which the signal is above the threshold during the intervale.[m
+ [m
+[32m+[m
+[32m+[m[32mOLD SENDING BPM AS OF 16th may 2025[m
+ */[m
+ int PulseCounter::update() {[m
+   int signal = analogRead(_sensorPin);[m
+[1mdiff --git a/PMD/PMD_BPM_wMQTT/PMD_BPM_wMQTT.ino b/PMD/PMD_BPM_wMQTT/PMD_BPM_wMQTT.ino[m
+[1mindex f1643be..c621496 100644[m
+[1m--- a/PMD/PMD_BPM_wMQTT/PMD_BPM_wMQTT.ino[m
+[1m+++ b/PMD/PMD_BPM_wMQTT/PMD_BPM_wMQTT.ino[m
+[36m@@ -184,6 +184,7 @@[m [mvoid setup() {[m
+ }  //end setup()[m
+ [m
+ void loop() {[m
+[32m+[m[41m [m
+   int16_t rowHeight = 8;  // Just a guess[m
+   static int myBPM = 0;[m
+   wink();  // Heart beat aka activity indicator LED function.[m
+[36m@@ -202,7 +203,7 @@[m [mvoid loop() {[m
+   // display.print((char)myBPM);[m
+   // display.display();[m
+ [m
+[31m-//  splashOLED();[m
+[32m+[m[32m  //  splashOLED();[m
+   client.loop();[m
+   delay(10);[m
+ [m
+[36m@@ -254,17 +255,18 @@[m [mvoid loop() {[m
+     display.setCursor(0, 6 * rowHeight);  //Place on sixth row.[m
+     display.print("myBPM= ");[m
+     display.print((char)myBPM);[m
+[31m-//    display.display();[m
+[32m+[m[32m    //    display.display();[m
+ [m
+ [m
+[31m-//Synethtic BPM from switches and BOOT.[m
+[32m+[m[32m    //Synethtic BPM from switches and BOOT.[m
+     display.setCursor(0, 7 * rowHeight);  //Place on sixth row.[m
+[31m-//    display.setCursor(40, 40);  //Place near[m
+[32m+[m[32m                                          //    display.setCursor(40, 40);  //Place near[m
+     display.print("syntheticBPM= ");[m
+     display.print(syntheticBPM);[m
+[31m-    display.print("     "); //TO clear possible stale BPM characters.[m
+[32m+[m[32m    display.print("     ");  //TO clear possible stale BPM characters.[m
+     display.display();[m
+   }[m
+ [m
+[31m-[m
+[32m+[m[32m  int read32 = analogRead(32);  // Read the state of GPIO pin 32[m
+[32m+[m[32m  Serial.println(read32);        // Print the value (0 or 1) to the Serial Monitor[m
+ }  //end loop()[m
