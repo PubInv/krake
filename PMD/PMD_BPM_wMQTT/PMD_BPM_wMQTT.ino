@@ -275,7 +275,10 @@ void loop() {
   if (millis() - lastMillis > PUBLISHING_RATE) {
     lastMillis = millis();
 //    client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
-    client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(analogRead(potINPUT)));
+    // client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(analogRead(potINPUT)));
+
+    syntheticBPM = map(analogRead(potINPUT), 0, 4095, 35, 210);
+    //client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(syntheticBPM));
 
     /////// missing code, count BPM
 
@@ -291,27 +294,31 @@ void loop() {
       Serial.print("Bradycardi, ");
       Serial.print(syntheticBPM);
       Serial.println("BPM");
+      client.publish(PUBLISHING_TOPIC, "a4 Bradycardi, Low mysyntheticBPM= " + String(syntheticBPM));
 
     } else if (syntheticBPM < THRESHOLD_Tachycardia) {
       //Normal between 60 and 100
       Serial.print("Normal range, ");
       Serial.print(syntheticBPM);
       Serial.println("BPM");
-
+      client.publish(PUBLISHING_TOPIC, "a1 Normal BPM= " + String(syntheticBPM));
     } else {
       //Warning heart rate  tachycardia
       Serial.print("Tachycardia, ");
       Serial.print(syntheticBPM);
       Serial.println("BPM");
+      client.publish(PUBLISHING_TOPIC, "a5 Tachycardia, High mysyntheticBPM= " + String(syntheticBPM));
     }
 
-    //MQTT message
-    if (messageToPublish) {
-      client.publish(PUBLISHING_TOPIC, messageToPublish);
+    // //MQTT message
+    // if (messageToPublish) {
+    //   client.publish(PUBLISHING_TOPIC, messageToPublish);
 
-      messageToPublish = nullptr;  // Reset after publishing
-    }
-  }
+    //   messageToPublish = nullptr;  // Reset after publishing
+    // }
+    // foo client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(analogRead(potINPUT)));
+
+  }// end MQTT publishing
 
   updateOLED();
 
