@@ -25,6 +25,9 @@ extern DailyStruggleButton SW3;
 extern DailyStruggleButton SW4;
 extern DailyStruggleButton BOOT;
 
+// FLE extern ElegantOTA ;
+extern bool clearOTA;
+
 void splashserial();
 void buttonEvent(byte btnStatus);
 void morisCodeEvent(byte btnStatus);

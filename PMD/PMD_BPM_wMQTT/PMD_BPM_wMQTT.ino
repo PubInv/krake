@@ -29,6 +29,8 @@
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
+bool clearOTA = false;
+
 // ==== MQTT Networking ====
 WiFiClient net;
 MQTTClient client;
@@ -101,18 +103,15 @@ void setupOTA() {
   // End of ELegant OTA Setup
 }
 
-void splashOLED() {
   int16_t rowPosition = 0;
   int16_t columnPosition = 0;
-  int16_t rowHeight = 8;  // Just a guess
+  const int16_t rowHeight = 8;  // Just a guess
 
+void splashOLED() {
+  rowPosition = 0;  //Because we start with the splash at row 0
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-
-  // display.setCursor(0, rowPosition);
-  // display.println("Hello, I am a PMD!");
-  // rowPosition += rowHeight;
   display.setCursor(0, rowPosition);
   display.print(PROG_NAME);
   rowPosition += rowHeight;
@@ -126,13 +125,12 @@ void splashOLED() {
   display.print(F(__DATE__ " " __TIME__));
   rowPosition += rowHeight;
   display.setCursor(0, rowPosition);
-  display.println("IP: " + WiFi.localIP().toString());
-  display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
 
-  display.print("myBPM= ");
-  display.print((char)myBPM);
-
-  display.display();
+  // display.println("IP: " + WiFi.localIP().toString());
+  // display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
+  // display.print("myBPM= ");
+  // display.print((char)myBPM);
+ // Moved out of the setup of the display information display.display();  
 }  //end splashOLED
 
 void updateOLED() {
@@ -198,26 +196,53 @@ void setup() {
   digitalWrite(LED_4, HIGH);        // turn the LED on (HIGH is the voltage level)
   pinMode(LED_5, OUTPUT);           // set the LED pin mode
   digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
+ 
   Serial.begin(BAUDRATE);
   while (!Serial) {
     ;  // wait for serial port to connect. Needed for native USB
   }
-
   splashserial();
+
   pinMode(potINPUT, INPUT);  //A potentiometer, 3.3 to GND for user input.
 
   Wire.begin();
-  initOLED();
+  initOLED();  //OLED ready!
+
+// WiFi including OTA.
+//Report Start of WiFi setup
   splashOLED();
+  display.println("WiFi setup");
+   rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.display();
+
   WiFiMan();
   initWiFi();
   initLittleFS();
   setupOTA();
   server.begin();             // Start web page server
   ElegantOTA.begin(&server);  // Start ElegantOTA
+
+  //Report Start of MQTT client
+  splashOLED();
+  display.println("Connected to MQTT");
+   rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.display();
+
+//MQTT client connection
   client.begin(BROKER, net);
   client.onMessage(messageReceived);
   connect();
+
+  //Report Start of ???
+  splashOLED();
+  display.println("?????");
+   rowPosition += rowHeight;
+  display.setCursor(0, rowPosition);
+  display.display();
+
+
   setupButton();  //Buttons, switches
   pulse.begin();
 
@@ -287,5 +312,11 @@ void loop() {
   }
 
   updateOLED();
+
+  //Check of clearOTA.
+  if (true == clearOTA){
+    clearOTA = false; // Only call once per press of the button.
+    ElegantOTA.clearAuth();
+  }
 
 }  //end loop()
