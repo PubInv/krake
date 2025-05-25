@@ -271,9 +271,11 @@ void loop() {
     connect();
   }
 
+// Check BPM, or synthetic BPM and publish
   if (millis() - lastMillis > PUBLISHING_RATE) {
     lastMillis = millis();
-    client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
+//    client.publish(PUBLISHING_TOPIC, "myBPM= " + (char)myBPM);
+    client.publish(PUBLISHING_TOPIC, "a1mysyntheticBPM= " + String(analogRead(potINPUT)));
 
     /////// missing code, count BPM
 
@@ -317,6 +319,7 @@ void loop() {
   if (true == clearOTA){
     clearOTA = false; // Only call once per press of the button.
     ElegantOTA.clearAuth();
+    Serial.println("ElegantOTA.clearAuth()");
   }
 
 }  //end loop()
