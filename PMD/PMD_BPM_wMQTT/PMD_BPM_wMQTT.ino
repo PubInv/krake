@@ -152,8 +152,16 @@ void splashOLED() {
 
   // display.display();
 
-
-  int16_t row = 0, rowHeight = 10;
+  int16_t row = 9, rowHeight = 10;
+  display.clearDisplay();
+  display.setTextSize(2.5);
+  display.setTextColor(WHITE);
+  display.setCursor(0, row);
+  display.print("Public  ");
+  row += rowHeight;
+  display.print("  Invention");
+  display.display();
+  delay(5000);
 
   display.clearDisplay();
   display.setTextSize(1);
@@ -173,7 +181,7 @@ void splashOLED() {
   display.print("myBPM= ");
   display.print(myBPM);
   display.display();
-delay() = 3000; 
+  delay(3000);
 
 }  //end splashOLED
 

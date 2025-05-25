@@ -127,8 +127,19 @@ void initOLED() {
 
 void splashOLED() {
 
-  int16_t row = 0, rowHeight = 8;
 
+  int16_t row = 9, rowHeight = 10;
+  display.clearDisplay();
+  display.setTextSize(2.5);
+  display.setTextColor(WHITE);
+  display.setCursor(0, row);
+  display.print("Public  ");
+  row += rowHeight;
+  display.print("  Invention");
+  display.display();
+  delay(5000);
+
+ 
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
@@ -153,7 +164,7 @@ void splashOLED() {
 }  //end splashOLED
 
 void updateOLED() {
- int16_t row = 0, rowHeight = 8;
+  int16_t row = 0, rowHeight = 8;
   row += rowHeight;
 
   display.clearDisplay();
@@ -187,7 +198,7 @@ void updateOLED() {
   WiFIbars.drawCenteredHorizontalBars(110, 25);  // bottom right corner
   display.display();
 
-  // // add conditional format for the wifi icon 
+  // // add conditional format for the wifi icon
   // if (!wifiManager.autoConnect(default_ssid)) {
   //   display.drawBitmap(0, 0, wifi_icon, 16, 16, WHITE);
   // } else {
