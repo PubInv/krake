@@ -31,16 +31,15 @@
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
-<<<<<<< HEAD
 bool clearOTA = false;
-=======
+
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 CenteredBarsDisplay WiFIbars(&display);
->>>>>>> resposeTimeEnhance
+
 
 // ==== MQTT Networking ====
 WiFiClient net;
@@ -113,11 +112,9 @@ void setupOTA() {
   // End of ELegant OTA Setup
 }
 
-<<<<<<< HEAD
   int16_t rowPosition = 0;
   int16_t columnPosition = 0;
   const int16_t rowHeight = 8;  // Just a guess
-=======
 void initOLED() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -128,7 +125,7 @@ void initOLED() {
 }
 
 
-void splashOLED() {
+// void splashOLED() {
   // int16_t rowPosition = 0;
   // int16_t columnPosition = 0;
   // int16_t rowHeight = 8;  // Just a guess
@@ -161,6 +158,11 @@ void splashOLED() {
 
   // display.display();
 
+
+// }
+
+void splashOLED() {
+ 
   int16_t row = 9, rowHeight = 10;
   display.clearDisplay();
   display.setTextSize(2.5);
@@ -171,14 +173,11 @@ void splashOLED() {
   display.print("  Invention");
   display.display();
   delay(5000);
->>>>>>> resposeTimeEnhance
-
-void splashOLED() {
+ 
   rowPosition = 0;  //Because we start with the splash at row 0
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-<<<<<<< HEAD
   display.setCursor(0, rowPosition);
   display.print(PROG_NAME);
   rowPosition += rowHeight;
@@ -198,7 +197,7 @@ void splashOLED() {
   // display.print("myBPM= ");
   // display.print((char)myBPM);
  // Moved out of the setup of the display information display.display();  
-=======
+
   display.setCursor(0, row);
   display.println(PROG_NAME);
   row += rowHeight;
@@ -216,7 +215,7 @@ void splashOLED() {
   display.display();
   delay(3000);
 
->>>>>>> resposeTimeEnhance
+
 }  //end splashOLED
 
 void updateOLED() {
