@@ -11,7 +11,7 @@ extern MQTTClient client;
 #define BROKER "public.cloud.shiftr.io"
 #define CLIENT_NAME_MQTT "PubInv"
 
-#define Nagham
+//#define Nagham
 //#define LEE
 //#define Robert
 
@@ -27,7 +27,7 @@ extern MQTTClient client;
 #define PUBLISHING_TOPIC "ECC9FF7C8C98_ALM"
 #endif
 
-//#define LEE
+#define LEE
 #ifdef LEE  
 // US0005
 #define SUBSCRIPTION_TOPIC "ECC9FF7D8EE8_ACK"
