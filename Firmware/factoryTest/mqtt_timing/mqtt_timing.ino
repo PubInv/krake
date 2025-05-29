@@ -18,8 +18,7 @@
 #include <WiFi.h>
 #include <MQTT.h>
 
-int debugLevel = 0; //Incrase to make more verbose.
-
+int debugLevel = 0;
 //Aley network
 // const char* ssid = "Home";
 // const char* password = "adt@1963#";
@@ -33,8 +32,8 @@ int debugLevel = 0; //Incrase to make more verbose.
 // const char* password = "$Suve07$$";
 
 // Austin network
-// const char* ssid = "readfamilynetwork";
-// const char* password = "magicalsparrow96";
+const char* ssid = "readfamilynetwork";
+const char* password = "magicalsparrow96";
 
 
 WiFiClient net;
