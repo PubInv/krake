@@ -112,6 +112,8 @@ PubSubClient client(espClient);
 
 #define GPAD_VERSION1
 
+#define LIMIT_POWER_DRAW 1
+
 #define DEBUG_SPI 0
 
 //#define DEBUG 0
@@ -421,8 +423,24 @@ void setup() {
   Serial.println("Starting WiFi as STA");
 #endif
 
+
+// Note: On Krake SN#3 only, performing this 
+// while the Splash is on causes a reset, presumably
+// because too much power is drawn. I am using a conditional
+// to isolate this as much as possible, while
+// still allowing us to use a single code base for all hardware 
+// devices -- rlr
+
+#if (LIMIT_POWER_DRAW)
+  clearLCD();
+#endif
+
   WiFi.mode(WIFI_STA);
   WiFi.STA.begin();
+
+#if (LIMIT_POWER_DRAW)
+    splashLCD();
+#endif
 
   // setup_spi();
 
