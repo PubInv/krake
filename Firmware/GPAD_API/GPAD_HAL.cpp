@@ -548,6 +548,8 @@ void splashLCD(void) {
   // Print a message to the LCD.
 #if (!LIMIT_POWER_DRAW)
   lcd.backlight();
+#else 
+  lcd.noBacklight();
 #endif
 
   //Line 0
@@ -572,7 +574,7 @@ void splashLCD(void) {
   lcd.print(macAddressString);
 }
 bool printable(char c) {
-  return isAlphaNumeric(c) || (c == ' ');
+  return isPrintable(c) || (c == ' ');
 }
 // Remove unwanted characters....
 void filter_control_chars(char *msg) {
