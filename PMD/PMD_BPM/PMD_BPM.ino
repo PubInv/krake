@@ -58,7 +58,7 @@ const int LED_PINS[] = { LED_1, LED_2, LED_3, LED_4, LED_5 };
 // const int SWITCH_PINS[] = { SW1, SW2, SW3, SW4 };  // SW1, SW2, SW3, SW4
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
-PulseCounter pulse(39, 15, 2041, 60000);  // (sensorPin, ledPin, threshold, interval)
+PulseCounter pulse(33, 15, 2041, 60000);  // (sensorPin, ledPin, threshold, interval)
 
 // //Claases defined below
 // class Flasher {
