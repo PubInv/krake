@@ -7,8 +7,8 @@
 
 // GPIO definitions for ESP32
 #if defined(ESP32)
-constexpr int CLK = 39;  // Rotary encoder CLK pin
-constexpr int DT  = 36;  // Rotary encoder DT pin
+constexpr int CLK = 36;  // Rotary encoder CLK pin
+constexpr int DT  = 39;  // Rotary encoder DT pin
 constexpr int SW  = 34;  // Rotary encoder Switch pin
 #define PIN_IN1 CLK
 #define PIN_IN2 DT

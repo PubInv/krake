@@ -424,12 +424,12 @@ void setup() {
 #endif
 
 
-// Note: On Krake SN#3 only, performing this 
-// while the Splash is on causes a reset, presumably
-// because too much power is drawn. I am using a conditional
-// to isolate this as much as possible, while
-// still allowing us to use a single code base for all hardware 
-// devices -- rlr
+  // Note: On Krake SN#3 only, performing this
+  // while the Splash is on causes a reset, presumably
+  // because too much power is drawn. I am using a conditional
+  // to isolate this as much as possible, while
+  // still allowing us to use a single code base for all hardware
+  // devices -- rlr
 
 #if (LIMIT_POWER_DRAW)
   clearLCD();
@@ -439,7 +439,7 @@ void setup() {
   WiFi.STA.begin();
 
 #if (LIMIT_POWER_DRAW)
-    splashLCD();
+  splashLCD();
 #endif
 
   // setup_spi();
@@ -473,7 +473,6 @@ void setup() {
 
   // We call this a second time to get the MAC on the screen
   //  clearLCD();
-  splashLCD();
   // req for Wifi Man and OTA
   WiFiMan();
   initLittleFS();
@@ -486,10 +485,11 @@ void setup() {
   turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
 
- initRotator();
+  initRotator();
+  splashLCD();
 
 
- setupDFPlayer();
+  setupDFPlayer();
 }  // end of setup()
 
 unsigned long last_ms = 0;

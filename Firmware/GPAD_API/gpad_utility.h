@@ -23,7 +23,7 @@
 #include <Stream.h>
 #define COMPANY_NAME "PubInv "  // For the Broker ID for MQTT 
 #define PROG_NAME "GPAD_API "   // This program
-#define FIRMWARE_VERSION "0.40 " // Fixes issues #53 and #166
+#define FIRMWARE_VERSION "0.41 " // Fixes encoder detent issue and added IPaddress 
 //#define HARDWARE_VERSION "V0.0.1 "
 #define MODEL_NAME "KRAKE_"
 #define LICENSE "GNU Affero General Public License, version 3 "
