@@ -7,7 +7,7 @@ void initRotator() {
    // while (!Serial);
     Serial.println("InterruptRotator example for the RotaryEncoder library.");
 
-    encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::FOUR0);
+    encoder = new RotaryEncoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
     attachInterrupt(digitalPinToInterrupt(PIN_IN1), checkPositionISR, CHANGE);
     attachInterrupt(digitalPinToInterrupt(PIN_IN2), checkPositionISR, CHANGE);
