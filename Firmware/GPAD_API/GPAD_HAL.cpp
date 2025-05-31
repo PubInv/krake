@@ -327,7 +327,10 @@ void GPAD_HAL_setup(Stream *serialport) {
 #if (DEBUG > 0)
   serialport->println(F("Start LCD splash"));
 #endif
+
   splashLCD();
+
+
 #if (DEBUG > 0)
   serialport->println(F("EndLCD splash"));
 #endif
@@ -543,7 +546,11 @@ void clearLCD(void) {
 void splashLCD(void) {
   lcd.init();  // initialize the lcd
   // Print a message to the LCD.
+#if (!LIMIT_POWER_DRAW)
   lcd.backlight();
+#else 
+  lcd.noBacklight();
+#endif
 
   //Line 0
   lcd.setCursor(0, 0);
@@ -567,7 +574,7 @@ void splashLCD(void) {
   lcd.print(macAddressString);
 }
 bool printable(char c) {
-  return isAlphaNumeric(c) || (c == ' ');
+  return isPrintable(c) || (c == ' ');
 }
 // Remove unwanted characters....
 void filter_control_chars(char *msg) {
@@ -591,7 +598,9 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
   lcd.clear();
   // Possibly we don't need the backlight if the level is zero!
   if (level != 0) {
+#if (!LIMIT_POWER_DRAW)
     lcd.backlight();
+#endif
   } else {
     lcd.noBacklight();
   }
@@ -662,9 +671,7 @@ void unchanged_anunicateAlarmLevel(Stream *serialport) {
 
     //   serialport->print("note lvl");
     //   serialport->println(note_lvl);
-
     tone(TONE_PIN, BUZZER_LVL_FREQ_HZ[note_lvl], INF_DURATION);
-
 
   } else {
     noTone(TONE_PIN);
@@ -679,5 +686,7 @@ void annunciateAlarmLevel(Stream *serialport) {
   // here is the new call
   serialport->println("dfPlayer.play");
   serialport->println(currentLevel);
-  playNotBusyLevel(currentLevel);
+  if (!currentlyMuted) {
+    playNotBusyLevel(currentLevel);
+  }
 }
