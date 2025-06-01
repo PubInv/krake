@@ -23,6 +23,8 @@
 #include "alarm_api.h"
 #include "gpad_utility.h"
 #include <SPI.h>
+#include "WiFiManagerOTA.h"
+#include "GPAD_menu.h"
 
 extern IPAddress myIP;
 
@@ -108,6 +110,8 @@ int LIGHT[] = { LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4 };
 int NUM_LIGHTS = sizeof(LIGHT) / sizeof(LIGHT[0]);
 
 Stream *local_ptr_to_serial;
+
+#define LIMIT_POWER_DRAW 0
 
 
 volatile boolean isReceived_SPI;
@@ -233,6 +237,8 @@ void encoderSwitchCallback(byte buttonEvent) {
       // start_of_song = millis();
       // annunciateAlarmLevel(local_ptr_to_serial);
       // printAlarmState(local_ptr_to_serial);
+
+      registerRotaryEncoderPress();
       break;
     case onRelease:
       // Do nothing...
@@ -345,6 +351,9 @@ void GPAD_HAL_setup(Stream *serialport) {
     serialport->print(", ");
 #endif
     pinMode(LIGHT[i], OUTPUT);
+    // Rob trying to prevent resets
+    // This is necessary on SN#3
+    digitalWrite(LIGHT[i],LOW);
   }
   serialport->println("");
 
@@ -492,13 +501,13 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         serialport->println(onInfoMsg);
 
         //IP Address
-        //Serial.println(WiFi.localIP()); 
+        //Serial.println(WiFi.localIP());
 
         onInfoMsg[0] = '\0';
         strcat(onInfoMsg, "IP Address: ");
         // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
 
-        char ipString[] = "(0,0,0,0)";        
+        char ipString[] = "(0,0,0,0)";
         // // sprintf(ipString, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
         // sprintf(ipString, "%d.%d.%d.%d",  myIP[0], myIP[1], myIP[2], myIP[3]);
 
@@ -509,8 +518,8 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
         // serialport->print("myIP =");
         // serialport->println(myIP);   // Caused Error Multiple libraries were found for "WiFiManager.h"
-        
-        break; //end of 'i'
+
+        break;  //end of 'i'
       }
     default:
       serialport->println(F("Unknown Command"));
@@ -548,7 +557,7 @@ void splashLCD(void) {
   // Print a message to the LCD.
 #if (!LIMIT_POWER_DRAW)
   lcd.backlight();
-#else 
+#else
   lcd.noBacklight();
 #endif
 
@@ -557,12 +566,13 @@ void splashLCD(void) {
   lcd.print(MODEL_NAME);
   // lcd.print(DEVICE_UNDER_TEST);
   //  lcd.setCursor(3, 1);
-
-  //Line 1
-  lcd.setCursor(0, 1);
   lcd.print(PROG_NAME);
   lcd.print(" ");
   lcd.print(FIRMWARE_VERSION);
+
+  //Line 1
+  lcd.setCursor(0, 1);
+  lcd.print("IP: " + WiFi.localIP().toString());
 
   //Line 2
   lcd.setCursor(0, 2);
@@ -677,7 +687,6 @@ void unchanged_anunicateAlarmLevel(Stream *serialport) {
     noTone(TONE_PIN);
   }
 #endif
-
 }
 void annunciateAlarmLevel(Stream *serialport) {
   start_of_song = millis();

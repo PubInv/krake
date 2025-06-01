@@ -114,6 +114,7 @@ class Adapter implements MQTTListener {
 
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_MAC.length; i++) {
+      //client.subscribe("F024F9F1B880_ALM");// LB0005  Used to check LWT development.
       client.subscribe(KRAKE_MAC[i]+"_ACK");
       //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
       //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
