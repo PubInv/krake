@@ -1,48 +1,45 @@
 #include "BPM.h"
-#include "OLEDDisplay.h"
 
-PulseCounter::PulseCounter(int sensorPin, int ledPin, int threshold, unsigned long intervalMs)
-  : _sensorPin(sensorPin), _ledPin(ledPin), _threshold(threshold), _interval(intervalMs),
-    _startTime(0), _count(0) {}
+PulseCounter::PulseCounter(int sensorPin, int ledPin, int threshold, Adafruit_SSD1306* oled)
+  : _sensorPin(sensorPin), _ledPin(ledPin), _threshold(threshold), _display(oled), _lastBPM(0) {}
 
 void PulseCounter::begin() {
-  pinMode(_ledPin, OUTPUT);
-  //Serial.begin(9600);
-  _startTime = millis();
+  _pulseSensor.analogInput(_sensorPin);
+  _pulseSensor.blinkOnPulse(_ledPin);
+  _pulseSensor.setThreshold(_threshold);
+  _pulseSensor.begin();
+
+  // _display->clearDisplay();
+  // _display->setTextSize(2);
+  // _display->setTextColor(SSD1306_WHITE);
+  // _display->setCursor(0, 0);
+  // _display->println("BPM: --");
+  // _display->display();
 }
 
-
-/*
-Count 10mS periods at which the signal is above the threshold during the intervale.
-
-*/
 int PulseCounter::update() {
-  int signal = analogRead(_sensorPin);
+  if (_pulseSensor.sawStartOfBeat()) {
+    int bpm = _pulseSensor.getBeatsPerMinute();
+    if (bpm != _lastBPM) {
+      _lastBPM = bpm;
+      Serial.print("Analog: ");
+      Serial.print(analogRead(_sensorPin));
+      Serial.print("  BPM: ");
+      Serial.println(bpm);
 
-  if (signal > _threshold) {
-    digitalWrite(_ledPin, HIGH);
-    _count++;
-    //    _count = _count;
 
-    if (millis() - _startTime >= _interval) {
-      Serial.print(_count / 10);  // rough BPM estimation if sampling every 10ms
-      Serial.println(" BPM");
-      // int16_t rowPosition = 7;
-      // display.setCursor(0, rowPosition);
-      // display.print(_count  / 10);  // rough BPM estimation if sampling every 10ms
-      // display.println(" BPM");
-      // Reset for the next minute
-      _count = 0;
-      _startTime = millis();
+      // _display->clearDisplay();
+      // _display->setCursor(0, 0);
+      // _display->print("BPM: ");
+      // _display->println(bpm);
+      // _display->display();
     }
-  } else {
-    digitalWrite(_ledPin, LOW);
+    return bpm;
   }
 
-  if ((_count / 10) < 1) {
-    Serial.println("No signal");
-  }
+  // return -1;  // No new BPM yet
+}
 
-  delay(10);  // Sampling interval
-  return (_count / 10);
+int PulseCounter::getLastBPM() {
+  return _lastBPM;
 }

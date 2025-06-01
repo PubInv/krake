@@ -10,51 +10,22 @@ h1 {
   overflow: hidden;
   background-color: #0A1128;
 }
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+.topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+}
 body {
   margin: 0;
-}
-.content { 
-  padding: 50px;
-}
-.card-grid {
-  max-width: 800px;
-  margin: 0 auto;
-  display: grid;
-  grid-gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-.card {
-  background-color: white;
-  box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
-}
-.card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #034078
-}
-.state {
-  font-size: 1.2rem;
-  color:#1282A2;
-}
-button {
-  border: none;
-  color: #FEFCFB;
-  padding: 15px 32px;
-  text-align: center;
-  font-size: 16px;
-  width: 100px;
-  border-radius: 4px;
-  transition-duration: 0.4s;
-}
-.button-on {
-  background-color:#034078;
-}
-.button-on:hover {
-  background-color: #1282A2;
-}
-.button-off {
-  background-color:#858585;
-}
-.button-off:hover {
-  background-color: #252524;
 }
