@@ -244,6 +244,8 @@ void publishOnLineMsg(void) {
   }
 }
 
+
+
 bool connect_to_wifi() {
   if (WiFi.status() != WL_CONNECTED) {
     delay(10);

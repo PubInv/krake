@@ -5,41 +5,57 @@
 #include <menuIO/rotaryEventIn.h>
 #include "GPAD_hal.h"
 #include "RickmanLiquidCrystal_I2C.h"
+#include "DFPlayer.h"
 
 using namespace Menu;
 
 #define LEDPIN 12
 #define MAX_DEPTH 1
 
+// This needs to be cleaned up; the PubSublcient and WiFi stuff needs to put into a 
+// a module that is not in GPAD_API.ino
+extern PubSubClient client;
+extern char publish_Ack_Topic[17];
 
 result action1(eventMask e) {
   if (e == eventMask::enterEvent) {
       Serial.println(F("Yes, I will take that action #1 !"));
   }
-    // I don't know what this does.
+  char onLineMsg[32] = "Acknowledging!";
+  client.publish(publish_Ack_Topic, onLineMsg);
+  Serial.print("Messgage sent to topic: ");
+  Serial.println(publish_Ack_Topic);
   return proceed;
 }
 result action2(eventMask e) {
   if (e == eventMask::enterEvent) {
       Serial.println(F("Yes, I will take that action #2 !"));
   }
-    // I don't know what this does.
   return proceed;
 }
 result action3(eventMask e) {
   if (e == eventMask::enterEvent) {
       Serial.println(F("Yes, I will take that action #3 !"));
   }
-  // I don't know what this does.
+  return proceed;
+}
+result action4(eventMask e) {
+  if (e == eventMask::enterEvent) {
+      Serial.println(F("Yes, I will take that action #3 !"));
+  }
+  Serial.print(F("volume value: "));
+  Serial.println(volumeDFPlayer);
+  setVolume(volumeDFPlayer);
   return proceed;
 }
 
+
 MENU(mainMenu, "Blink menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-  ,OP("Op1",action1,anyEvent)
-  ,OP("Op2",action2,anyEvent)
-  ,OP("Op3",action3,anyEvent)
-  ,EXIT("<Back")
-);
+  ,OP("Acknowledge",action1,anyEvent)
+  ,OP("Dismiss",action2,anyEvent)
+  ,OP("Shelve",action3,anyEvent)
+  ,FIELD(volumeDFPlayer,"Volume","%",0,30,10,1,action4,anyEvent,wrapStyle)
+  );
 
 
 
@@ -69,8 +85,11 @@ NAVROOT(nav,mainMenu,MAX_DEPTH,in,out);
 void registerRotationEvent(bool CW) {
   Serial.print("CW: ");
   Serial.println(CW);
-  reIn.registerEvent(CW ? RotaryEventIn::EventType::ROTARY_CW 
-                        : RotaryEventIn::EventType::ROTARY_CCW); 
+  // Note: Rob believes it is more "natural" for clockwise to mean "up".
+  // Apparently, whoever wrote the "MENU_INPUTS" believes the opposite,
+  // so I am changing this hear to reverse the sense.
+  reIn.registerEvent(CW ? RotaryEventIn::EventType::ROTARY_CCW 
+                        : RotaryEventIn::EventType::ROTARY_CW); 
 }
 
 void registerRotaryEncoderPress() {
