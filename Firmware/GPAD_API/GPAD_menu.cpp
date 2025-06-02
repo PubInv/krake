@@ -50,7 +50,7 @@ result action4(eventMask e) {
 }
 
 
-MENU(mainMenu, "Blink menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
+MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
   ,OP("Acknowledge",action1,anyEvent)
   ,OP("Dismiss",action2,anyEvent)
   ,OP("Shelve",action3,anyEvent)
