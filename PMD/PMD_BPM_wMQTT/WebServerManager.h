@@ -7,6 +7,9 @@ extern AsyncWebServer server;
 extern AsyncWebSocket ws;
 
 void setupWebServer();
+void setupStaticRoutes();
+void setupAPIHandlers();
+void loadMQTTConfig();
 
 extern String mqttBroker;
 extern String mqttTopic;

@@ -44,7 +44,6 @@ CenteredBarsDisplay WiFIbars(&display);
 PulseCounter pulse(SENSOR_PIN, LED_PIN, BPM_THRESHOLD, &display);
 
 
-
 bool clearOTA = false;
 unsigned long lastMillis = 0;
 int myBPM = 0;
@@ -140,6 +139,14 @@ void BPMLogger_loop() {
 }
 
 
+void publishDeviceURL() {
+  String mac = WiFi.macAddress();
+  mac.replace(":", "");
+  String url = "http://" + WiFi.localIP().toString();
+  client.publish(("url/" + mac).c_str(), url.c_str(), true);
+}
+
+
 void setup() {
 
   const int LED_PINS[] = { LED_1, LED_2, LED_3, LED_4, LED_5 };
@@ -186,7 +193,7 @@ void setup() {
   client.begin(BROKER, net);
   client.onMessage(messageReceived);
   connect();
-
+  publishDeviceURL();
   setupButton();
   pulse.begin();
   splashOLED();

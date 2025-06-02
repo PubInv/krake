@@ -19,7 +19,12 @@ void connect() {
     // client.setWill(PUBLISHING_TOPIC, "a5 PMD device is disconnected from the broker. STALE DATA.", false, 2);
 
     // client.setKeepAlive(60);
+    String mac = WiFi.macAddress();  // e.g., "F0:24:F9:F1:B8:80"
+    mac.replace(":", "");            // Remove colons for safe topic
 
+    String topic = "url/" + mac;
+    String url = "http://" + WiFi.localIP().toString();
+    client.publish(topic.c_str(), url.c_str(), true);  // Retain message
 
     Serial.print(".");
     delay(1000);

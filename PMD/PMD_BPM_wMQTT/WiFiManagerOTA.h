@@ -12,6 +12,8 @@ extern String ssid;
 extern String password;
 extern String ledState;
 extern int WiFiLed;
+extern String mqttBroker;
+extern String mqttTopic;
 
 void saveCredentials(const char* ssid, const char* password);
 bool loadCredentials();
