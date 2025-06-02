@@ -60,8 +60,9 @@ extern char publish_Ack_Topic[17];
 extern PubSubClient client;
 
 //For LCD
-#include <LiquidCrystal_I2C.h>
+// #include <LiquidCrystal_I2C.h>
 
+// https://github.com/johnrickman/LiquidCrystal_I2C
 LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
 
 #include "DFPlayer.h"

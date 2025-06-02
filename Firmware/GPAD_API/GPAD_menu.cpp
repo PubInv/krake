@@ -3,6 +3,8 @@
 #include <menuIO/chainStream.h>
 #include <menuIO/serialIn.h>
 #include <menuIO/rotaryEventIn.h>
+#include "GPAD_hal.h"
+#include "RickmanLiquidCrystal_I2C.h"
 
 using namespace Menu;
 
@@ -54,8 +56,10 @@ MENU_INPUTS(in,&reIn);
 // serialIn serial(Serial);
 // MENU_INPUTS(in,&serial);
 
+
 MENU_OUTPUTS(out,MAX_DEPTH
-  ,SERIAL_OUT(Serial)
+//  ,SERIAL_OUT(Serial)
+  ,LCD_OUT(lcd,{0,0,20,4})
   ,NONE//must have 2 items at least
 );
 
