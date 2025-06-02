@@ -128,145 +128,54 @@ void initOLED() {
 }
 
 
-// void splashOLED() {
-// int16_t rowPosition = 0;
-// int16_t columnPosition = 0;
-// int16_t rowHeight = 8;  // Just a guess
-
-// display.clearDisplay();
-// display.setTextSize(1);
-// display.setTextColor(WHITE);
-
-// // display.setCursor(0, rowPosition);
-// // display.println("Hello, I am a PMD!");
-// // rowPosition += rowHeight;
-// display.setCursor(0, rowPosition);
-// display.print(PROG_NAME);
-// rowPosition += rowHeight;
-// display.setCursor(0, rowPosition);
-// display.print(VERSION);
-// rowPosition += rowHeight;
-// display.setCursor(0, rowPosition);
-// display.print(F("Compiled at:"));
-// rowPosition += rowHeight;
-// display.setCursor(0, rowPosition);
-// display.print(F(__DATE__ " " __TIME__));
-// rowPosition += rowHeight;
-// display.setCursor(0, rowPosition);
-// display.println("IP: " + WiFi.localIP().toString());
-// display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-
-// display.print("myBPM= ");
-// display.print((char)myBPM);
-
-// display.display();
-
-
-// }
-
-void splashOLED() {
-
-  int16_t row = 9, rowHeight = 10;
-  display.clearDisplay();
-  display.setTextSize(2.5);
-  display.setTextColor(WHITE);
-  display.setCursor(0, row);
-  display.print("Public  ");
-  row += rowHeight;
-  display.print("  Invention");
-  display.display();
-  delay(1000);
-
-  // rowPosition = 0;  //Because we start with the splash at row 0
-  // display.clearDisplay();
-  // display.setTextSize(1);
-  // display.setTextColor(WHITE);
-  // display.setCursor(0, rowPosition);
-  // display.print(PROG_NAME);
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(VERSION);
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(F("Compiled at:"));
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-  // display.print(F(__DATE__ " " __TIME__));
-  // rowPosition += rowHeight;
-  // display.setCursor(0, rowPosition);
-
-  // display.println("IP: " + WiFi.localIP().toString());
-  // display.setCursor(0, 6 * rowHeight);  //Place on sixth row.
-  // display.print("myBPM= ");
-  // display.print((char)myBPM);
-  // Moved out of the setup of the display information display.display();
-
-
-  display.clearDisplay();
-
-  display.setTextSize(1.4);
-
-  display.setCursor(0, row);
-  display.println(PROG_NAME);
-  row += rowHeight;
-  display.println(VERSION);
-  row += rowHeight;
-  display.println(F("Compiled at:"));
-  row += rowHeight;
-  display.println(F(__DATE__ " " __TIME__));
-  row += rowHeight;
-  // delay(3000);
-
-  // display.clearDisplay();
-  // display.setTextSize(1.5);
-  // display.setTextColor(WHITE);
-  // display.setCursor(0, row);
-
-  display.println("IP: " + WiFi.localIP().toString());
-  row += rowHeight;
-  // display.print("myBPM= ");
-  // display.print(myBPM);
-  display.display();
-
-
-}  //end splashOLED
-
-void updateOLED() {
-  int16_t row = 8, rowHeight = 10;
-  row += rowHeight;
-
+void splashOLED_P1() {
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE);
+  int row = 10;
   display.setCursor(0, row);
-  // display.println(PROG_NAME);
-  // row += rowHeight;
-  // display.println(VERSION);
-  // row += rowHeight;
+  display.println("Public");
+  row += 20;
+  display.setCursor(0, row);
+  display.println("Invention");
+  display.display();
+  delay(2000);
+}
 
-  // display.println(F("Compiled at:"));
-  // row += rowHeight;
-  // display.println(F(__DATE__ " " __TIME__));
-  // row += rowHeight;
 
-  // display.println("IP: " + WiFi.localIP().toString());
-  // row += rowHeight;
-  // display.print("Pot Value= ");
-  // display.println(analogRead(potINPUT));
-  // row += rowHeight;
+void splashOLED() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  int row = 0, rowHeight = 10;
+  display.setCursor(0, row);
+  display.println(PROG_NAME);
+  row += rowHeight;
+  display.setCursor(0, row);
+  display.println(VERSION);
+  row += rowHeight;
+  display.setCursor(0, row);
+  display.println(F("Compiled at:"));
+  row += rowHeight;
+  display.setCursor(0, row);
+  display.println(F(__DATE__ " " __TIME__));
+  row += rowHeight;
+  display.setCursor(0, row);
+  display.println("IP: " + WiFi.localIP().toString());
+  display.display();
+  delay(3000);
+}
 
+void updateOLED() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 10);
   display.print("BPM= ");
   display.println(myBPM);
-  row += rowHeight;
-
-  // display.print("syn_BPM= ");
-  // display.print(syntheticBPM);
-  // display.println("     ");  // Clear leftovers
-
-  WiFIbars.drawCenteredHorizontalBars(110, 23);  // bottom right corner
+  WiFIbars.drawCenteredHorizontalBars(110, 23);
   display.display();
-
-}  //end updateOLED
+}
 
 void setup() {
 
@@ -298,14 +207,13 @@ void setup() {
 
   Wire.begin();
   initOLED();  //OLED ready!
-
+  splashOLED_P1();
   // // WiFi including OTA.
   // //Report Start of WiFi setup
-  splashOLED();
-  display.println("WiFi setup");
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.display();
+  // display.println("WiFi setup");
+  // rowPosition += rowHeight;
+  // display.setCursor(0, rowPosition);
+  // display.display();
 
   WiFiMan();
   initWiFi();
@@ -316,10 +224,10 @@ void setup() {
 
   //   //Report Start of MQTT client
   //   splashOLED();
-  display.println("Connected to MQTT");
-  rowPosition += rowHeight;
-  display.setCursor(0, rowPosition);
-  display.display();
+  // display.println("Connected to MQTT");
+  // rowPosition += rowHeight;
+  // display.setCursor(0, rowPosition);
+  // display.display();
 
   client.setWill(PUBLISHING_TOPIC, "a5 PMD device is disconnected from the broker. STALE DATA.", false, 2);
 
@@ -341,6 +249,7 @@ void setup() {
 
   setupButton();  //Buttons, switches
   pulse.begin();
+  splashOLED();
 
   // More setup code here
   digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
