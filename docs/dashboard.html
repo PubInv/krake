@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PMD Central Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    .device {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px auto;
+      max-width: 500px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .device h2 { margin-top: 0; }
+    .value { font-size: 1.2em; color: green; }
+    .topics { font-size: 0.9em; color: #555; }
+    .links a {
+      margin-right: 10px;
+      text-decoration: none;
+      color: #337ab7;
+    }
+  </style>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <h1>PMD Central Dashboard</h1>
+  <div id="devices"></div>
+
+  <script>
+    const broker = 'wss://public.cloud.shiftr.io';
+    const options = {
+      username: 'public',
+      password: 'public'
+    };
+    const client = mqtt.connect(broker, options);
+    const devices = {};
+
+    const container = document.getElementById("devices");
+
+    client.on('connect', () => {
+      console.log('Connected to broker');
+      client.subscribe('bpm/#');
+      client.subscribe('rssi/#');
+      client.subscribe('url/#');
+    });
+
+    client.on('message', (topic, message) => {
+      const [type, mac] = topic.split('/');
+      const value = message.toString();
+
+      if (!devices[mac]) {
+        const card = document.createElement('div');
+        card.className = 'device';
+        card.id = mac;
+        card.innerHTML = `
+          <h2>Device: ${mac}</h2>
+          <p>BPM: <span class="value" id="bpm-${mac}">--</span></p>
+          <p>RSSI: <span class="value" id="rssi-${mac}">--</span></p>
+          <p class="topics" id="topics-${mac}">Topics: </p>
+          <div class="links" id="links-${mac}"></div>
+        `;
+        container.appendChild(card);
+        devices[mac] = { url: null };
+      }
+
+      if (type === 'bpm') {
+        document.getElementById(`bpm-${mac}`).textContent = value;
+        appendTopic(mac, topic);
+      } else if (type === 'rssi') {
+        document.getElementById(`rssi-${mac}`).textContent = value + " dBm";
+        appendTopic(mac, topic);
+      } else if (type === 'url') {
+        devices[mac].url = value;
+        const linkDiv = document.getElementById(`links-${mac}`);
+        linkDiv.innerHTML = `
+          <a href="${value}/monitor.html" target="_blank">Monitor</a>
+          <a href="${value}/control.html" target="_blank">Control</a>
+          <a href="${value}/setup.html" target="_blank">Setup</a>
+        `;
+        appendTopic(mac, topic);
+      }
+    });
+
+    function appendTopic(mac, topic) {
+      const topicEl = document.getElementById(`topics-${mac}`);
+      if (topicEl && !topicEl.textContent.includes(topic)) {
+        topicEl.textContent += (topicEl.textContent.endsWith(': ') ? '' : ', ') + topic;
+      }
+    }
+  </script>
+</body>
+</html>
