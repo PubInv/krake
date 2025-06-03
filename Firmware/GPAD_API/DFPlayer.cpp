@@ -167,7 +167,7 @@ void setupDFPlayer() {
 
 
 void setVolume(int zeroToThirty) {
-  dfPlayer.volume(volumeDFPlayer);
+  dfPlayer.volume(zeroToThirty);
 }
 
 
