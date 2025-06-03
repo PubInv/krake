@@ -11,10 +11,9 @@ void connect() {
     Serial.print(".");
     delay(1000);
   }
+  Serial.print("\nconnecting to WiFi...");
 
-  Serial.print("\nconnecting...");
   while (!client.connect(CLIENT_NAME_MQTT, "public", "public")) {
-
 
     // client.setWill(PUBLISHING_TOPIC, "a5 PMD device is disconnected from the broker. STALE DATA.", false, 2);
 
@@ -30,22 +29,27 @@ void connect() {
     delay(1000);
   }
 
-
-
-
-
   Serial.println("\nconnected!");
   client.subscribe(SUBSCRIPTION_TOPIC);
 }
 
 void messageReceived(String& topic, String& payload) {
   Serial.println("incoming: " + topic + " - " + payload);
+
+    if (topic.startsWith("bpm/")) {
+    String deviceID = topic.substring(4);  // extract mac or ID
+    int bpmValue = payload.toInt();
+
+    Serial.printf("Got BPM from %s: %d\n", deviceID.c_str(), bpmValue);
+
+    // You can store it in a map or array if tracking multiple devices
+    // deviceBPMs[deviceID] = bpmValue;
+  }
 }
 
 
 
-
-
+ 
 
 // const char payload[]= "LastWillMessage: a5 PMD device is disconnected from the broker. STALE DATA."
 // bool retained= false ;

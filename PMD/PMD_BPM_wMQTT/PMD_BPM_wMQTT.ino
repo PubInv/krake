@@ -56,6 +56,8 @@ int WiFiLed = 23;
 
 unsigned long lastBPMLogTime = 0;
 const unsigned long BPMlogInterval = 10000;  // 10 seconds
+unsigned long lastBpmSend = 0;
+const unsigned long bpmInterval = 5000;
 
 void notifyClients(const String &message) {
   ws.textAll(message);
@@ -135,6 +137,7 @@ void BPMLogger_loop() {
     lastBPMLogTime = now;
 
     logBPM(myBPM);
+  
   }
 }
 
@@ -237,4 +240,20 @@ void loop() {
     ElegantOTA.clearAuth();
     Serial.println("ElegantOTA.clearAuth()");
   }
+
+  if (millis() - lastBpmSend > bpmInterval) {
+    lastBpmSend = millis();
+
+    String topic = "bpm/" + WiFi.macAddress();  // or use an alias/device ID
+    String payload = String(myBPM);  
+
+    if (client.connected()) {   // handle this from the Krake side to display the bpm level wherever is needed 
+      client.publish(topic.c_str(), payload.c_str(), true);  // retain BPM
+    }
+  }
+
+
+
+
+
 }  // end loop

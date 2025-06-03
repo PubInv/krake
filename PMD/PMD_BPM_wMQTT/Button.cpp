@@ -111,7 +111,7 @@ void SendEmergMessage(byte btnStatus) {
   handleButtonEvent("SW4", btnStatus);
   messageToPublish = "a5Send Emergency";
   syntheticBPM = 125;  //A high BPM
-}
+} 
 
 
 void SendOK_Message(byte btnStatus) {
