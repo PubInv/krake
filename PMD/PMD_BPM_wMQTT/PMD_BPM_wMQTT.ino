@@ -22,7 +22,7 @@
 #include <MQTT.h>
 #include "ID.h"
 #include "WebServerManager.h"
-#include "BPMLogger.h"
+// #include "BPMLogger.h"
 #define BAUDRATE 115200
 
 #define SCREEN_WIDTH 128
@@ -130,16 +130,16 @@ void setupOTA() {
 }
 
 
-void BPMLogger_loop() {
-  unsigned long now = millis();
+// void BPMLogger_loop() {
+//   unsigned long now = millis();
 
-  if (now - lastBPMLogTime >= BPMlogInterval) {
-    lastBPMLogTime = now;
+//   if (now - lastBPMLogTime >= BPMlogInterval) {
+//     lastBPMLogTime = now;
 
-    logBPM(myBPM);
+//     logBPM(myBPM);
   
-  }
-}
+//   }
+// }
 
 
 void publishDeviceURL() {
@@ -171,7 +171,7 @@ void setup() {
   digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
 
   Serial.begin(BAUDRATE);
-  initBPMLogger();
+  // initBPMLogger();
   Wire.begin();
   initOLED();
   splashOLED_P1();
@@ -234,12 +234,12 @@ void loop() {
   if (myBPM > 50 && myBPM <= 120) {
     updateOLED();
   }
-  BPMLogger_loop();
-  if (clearOTA) {
-    clearOTA = false;
-    ElegantOTA.clearAuth();
-    Serial.println("ElegantOTA.clearAuth()");
-  }
+  // BPMLogger_loop();
+  // if (clearOTA) {
+  //   clearOTA = false;
+  //   ElegantOTA.clearAuth();
+  //   Serial.println("ElegantOTA.clearAuth()");
+  // }
 
   if (millis() - lastBpmSend > bpmInterval) {
     lastBpmSend = millis();
