@@ -24,6 +24,7 @@
 #include <stream.h>
 //#include <Arduino.h>
 #include <PubSubClient.h> 
+#include <LiquidCrystal_I2C.h>
 
 // On Nov. 5th, 2024, we image 3 different hardware platforms.
 // The GPAD exists, and is working: https://www.hardware-x.com/article/S2468-0672(24)00084-1/fulltext
@@ -139,4 +140,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 // This module has to be initialized and called each time through the superloop
 void GPAD_HAL_setup(Stream *serialport);
 void GPAD_HAL_loop();
+
+
+extern LiquidCrystal_I2C lcd;
 #endif

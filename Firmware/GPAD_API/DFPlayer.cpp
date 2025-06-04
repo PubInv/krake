@@ -165,6 +165,12 @@ void setupDFPlayer() {
 
 }  //setupDFPLayer
 
+
+void setVolume(int zeroToThirty) {
+  dfPlayer.volume(zeroToThirty);
+}
+
+
 void displayDFPlayerStats() {
   Serial.print("=================");
   Serial.print("dfPlayer State: ");

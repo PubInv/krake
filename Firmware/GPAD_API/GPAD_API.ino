@@ -74,6 +74,7 @@
 #include "InterruptRotator.h"
 
 #include "DFPlayer.h"
+#include "GPAD_menu.h"
 
 
 AsyncWebServer server(80);
@@ -242,6 +243,8 @@ void publishOnLineMsg(void) {
 #endif
   }
 }
+
+
 
 bool connect_to_wifi() {
   if (WiFi.status() != WL_CONNECTED) {
@@ -489,7 +492,9 @@ void setup() {
   splashLCD();
 
 
-  setupDFPlayer();
+ setupDFPlayer();
+ setup_GPAD_menu();
+
 }  // end of setup()
 
 unsigned long last_ms = 0;
@@ -502,6 +507,8 @@ unsigned long time_since_LOW_FREQ_ms = 0;
 
 //IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
 IPAddress myIP();  // declare for global
+
+int cnt_actions = 0;
 
 void loop() {
 
@@ -558,4 +565,11 @@ void loop() {
 #endif
 
   updateRotator();
+
+  poll_GPAD_menu();
+
+  // if ((millis() / 10000) > cnt_actions) {
+  //   cnt_actions++;
+  //   navigate_to_n_and_execute(cnt_actions % 3);
+  // }
 }

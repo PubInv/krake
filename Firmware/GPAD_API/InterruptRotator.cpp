@@ -1,4 +1,5 @@
 #include "InterruptRotator.h"
+#include "GPAD_menu.h"
 
 static RotaryEncoder* encoder = nullptr;
 
@@ -20,10 +21,24 @@ void updateRotator() {
     int newPos = encoder->getPosition();
 
     if (pos != newPos) {
+
+
         Serial.print("pos: ");
         Serial.print(newPos);
         Serial.print(" dir: ");
-        Serial.println((int)(encoder->getDirection()));
+        int d = (int)(encoder->getDirection());
+  //      Serial.println(d);
+
+   //     int d = (int)(encoder->getDirection());
+        bool CW;
+        if (d == (int) RotaryEncoder::Direction::CLOCKWISE) CW = true;
+        else CW = false;
+        // Serial.print("d : ");
+        // Serial.println(d);
+        // Serial.println((int) RotaryEncoder::Direction::CLOCKWISE);
+        // Serial.println((int) RotaryEncoder::Direction::COUNTERCLOCKWISE);
+        // Serial.println(CW);
+        registerRotationEvent(CW);
         pos = newPos;
     }
 }

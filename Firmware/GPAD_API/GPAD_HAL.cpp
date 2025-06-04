@@ -24,6 +24,7 @@
 #include "gpad_utility.h"
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
+#include "GPAD_menu.h"
 
 extern IPAddress myIP;
 
@@ -59,8 +60,9 @@ extern char publish_Ack_Topic[17];
 extern PubSubClient client;
 
 //For LCD
-#include <LiquidCrystal_I2C.h>
+// #include <LiquidCrystal_I2C.h>
 
+// https://github.com/johnrickman/LiquidCrystal_I2C
 LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
 
 #include "DFPlayer.h"
@@ -109,6 +111,8 @@ int LIGHT[] = { LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4 };
 int NUM_LIGHTS = sizeof(LIGHT) / sizeof(LIGHT[0]);
 
 Stream *local_ptr_to_serial;
+
+#define LIMIT_POWER_DRAW 0
 
 
 volatile boolean isReceived_SPI;
@@ -234,6 +238,8 @@ void encoderSwitchCallback(byte buttonEvent) {
       // start_of_song = millis();
       // annunciateAlarmLevel(local_ptr_to_serial);
       // printAlarmState(local_ptr_to_serial);
+
+      registerRotaryEncoderPress();
       break;
     case onRelease:
       // Do nothing...
@@ -346,6 +352,9 @@ void GPAD_HAL_setup(Stream *serialport) {
     serialport->print(", ");
 #endif
     pinMode(LIGHT[i], OUTPUT);
+    // Rob trying to prevent resets
+    // This is necessary on SN#3
+    digitalWrite(LIGHT[i],LOW);
   }
   serialport->println("");
 

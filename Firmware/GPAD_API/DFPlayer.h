@@ -23,6 +23,10 @@ void checkSerial(void);
 void menu_opcoes();
 void serialSplashDFP();
 
+void setVolume(int zeroToThirty);
+
+extern int volumeDFPlayer;
+
 // void setupDFP();
 
 #endif
