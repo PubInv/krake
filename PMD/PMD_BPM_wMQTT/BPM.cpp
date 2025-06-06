@@ -5,14 +5,36 @@ void PulseCounter::setPotentiometerPin(int potPin) {
 }
 
 void PulseCounter::updateThresholdFromPot() {
+  static int smoothed = 0;
   int raw = analogRead(_potPin);
-  int threshold = map(raw, 0, 4095, 1524, 2524);  // Map to suitable threshold range
-  _pulseSensor.setThreshold(threshold);
 
-  Serial.print("Potentiometer: ");
+  // Smooth the value (simple low-pass filter)
+  smoothed = (smoothed * 7 + raw) / 8;
+
+  // Map to PulseSensor threshold range (example range: 300–700)
+  int threshold = map(smoothed, 0, 4095, 1500, 2500);
+  threshold = constrain(threshold, 1500, 2500);
+  _pulseSensor.setThreshold(threshold);
+ _currentThreshold = threshold; 
+  // Optional: print to Serial
+  Serial.print("Pot raw: ");
   Serial.print(raw);
-  Serial.print(" -> Mapped threshold: ");
+  Serial.print(" | Smoothed: ");
+  Serial.print(smoothed);
+  Serial.print(" | Threshold: ");
   Serial.println(threshold);
+
+  // // Optional: display on OLED
+  // if (_display) {
+  //   _display->setCursor(0, 48);
+  //   _display->print("Threshold: ");
+  //   _display->println(threshold);
+  //   _display->display();
+  // }
+}
+
+int PulseCounter::getThreshold() {
+  return _currentThreshold;
 }
 
 PulseCounter::PulseCounter(int sensorPin, int ledPin, Adafruit_SSD1306* oled)

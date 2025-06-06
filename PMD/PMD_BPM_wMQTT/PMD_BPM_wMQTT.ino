@@ -49,7 +49,7 @@ bool clearOTA = false;
 unsigned long lastMillis = 0;
 int myBPM = 0;
 extern int syntheticBPM;
-
+// int threshold();
 const int LED_1 = 15, LED_2 = 4, LED_3 = 5, LED_4 = 18, LED_5 = 19;
 const int LED_PINS[] = { LED_1, LED_2, LED_3, LED_4, LED_5 };
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
@@ -112,16 +112,35 @@ void splashOLED() {
   delay(3000);
 }
 
-void updateOLED() {
+// void updateOLED() {
+//   display.clearDisplay();
+//   display.setTextSize(2);
+//   display.setTextColor(WHITE);
+//   display.setCursor(0, 10);
+//   display.print("BPM= ");
+//   display.println(myBPM);
+//   WiFIbars.drawCenteredHorizontalBars(110, 23);
+
+
+//   display.display();
+// }
+
+void displayBPMandThreshold(int bpm, int threshold) {
   display.clearDisplay();
   display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  display.print("BPM= ");
-  display.println(myBPM);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 18);
+  display.print("BPM: ");
+  display.println(bpm);
   WiFIbars.drawCenteredHorizontalBars(110, 23);
+  display.setTextSize(1.2);
+  display.setCursor(0, 48);
+  display.print("Threshold: ");
+  display.println(threshold);
+
   display.display();
 }
+
 
 void setupOTA() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -149,6 +168,7 @@ void publishDeviceURL() {
   String url = "http://" + WiFi.localIP().toString();
   client.publish(("url/" + mac).c_str(), url.c_str(), true);
 }
+
 
 
 void setup() {
@@ -242,9 +262,11 @@ void loop() {
   pulse.updateThresholdFromPot();  // Update threshold from potentiometer
   int bpm = pulse.update();        // Update BPM if new beat detected
 
-  if (myBPM > 50 && myBPM <= 120) {
-    updateOLED();
-  }
+  // if (myBPM > 50 && myBPM <= 120) {
+  //   updateOLED();
+  // }
+  displayBPMandThreshold(pulse.getLastBPM(), pulse.getThreshold() );
+
   // BPMLogger_loop();
   // if (clearOTA) {
   //   clearOTA = false;

@@ -5,23 +5,27 @@
 #include <PulseSensorPlayground.h>
 
 class PulseCounter {
-  public:
-    PulseCounter(int sensorPin, int ledPin, Adafruit_SSD1306* oled);
-    void begin();
-    int update();
-    int getLastBPM();
-    void setPotentiometerPin(int potPin);
-    void updateThresholdFromPot();
+public:
+  PulseCounter(int sensorPin, int ledPin, Adafruit_SSD1306* oled);
+  void begin();
+  int update();
+  int getLastBPM();
+  int getThreshold();
+  void setPotentiometerPin(int potPin);
+  void updateThresholdFromPot();
 
-  private:
-    int _sensorPin;
-    int _ledPin;
-    int _potPin;
-    int _threshold;
-    int _lastBPM;
+private:
+  int _sensorPin;
+  int _ledPin;
+  int _potPin;
+  int _threshold;
+  int _lastBPM;
+  int _currentThreshold;
 
-    Adafruit_SSD1306* _display;
-    PulseSensorPlayground _pulseSensor;
+  Adafruit_SSD1306* _display;
+  PulseSensorPlayground _pulseSensor;
 };
+
+int getThreshold();
 
 #endif
