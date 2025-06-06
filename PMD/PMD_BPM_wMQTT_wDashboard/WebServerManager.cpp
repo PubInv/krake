@@ -1,0 +1,114 @@
+#include "WebServerManager.h"
+#include <LittleFS.h>
+#include <WiFi.h>
+#include <ArduinoJson.h>
+#include <ArduinoJson.h>
+#include "WebServerManager.h"
+#include "ID.h"
+
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
+String mqttBroker = "public.cloud.shiftr.io";
+String mqttTopic = "default/topic";
+String messageS1 = "a2Check in please.";
+String messageS2 = "Message from SW2";
+String messageS3 = "a4Urgent Support Now.";
+String messageS4 = "a5Send Emergency";
+extern int myBPM;
+void saveMQTTConfig();
+
+void setupWebServer() {
+  if (!LittleFS.begin(true)) {
+    Serial.println("LittleFS Mount Failed");
+    return;
+  }
+
+  setupStaticRoutes();
+  setupAPIHandlers();
+
+  ws.onEvent([](AsyncWebSocket *server, AsyncWebSocketClient *client,
+                AwsEventType type, void *arg, uint8_t *data, size_t len) {
+    if (type == WS_EVT_CONNECT) {
+      Serial.println("WebSocket client connected");
+    }
+  });
+  server.addHandler(&ws);
+
+  server.begin();
+  Serial.println("Web server started.");
+}
+
+void setupStaticRoutes() {
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("monitor.html");
+
+  server.serveStatic("/setup.html", LittleFS, "/setup.html");
+  server.serveStatic("/monitor.html", LittleFS, "/monitor.html");
+  server.serveStatic("/control.html", LittleFS, "/control.html");
+  server.serveStatic("/update.html", LittleFS, "/update.html");
+  server.serveStatic("/dashboard.html", LittleFS, "/dashboard.html");
+  server.onNotFound([](AsyncWebServerRequest *request) {
+    request->redirect("/monitor.html");
+  });
+
+  server.serveStatic("/style.css", LittleFS, "/style.css");
+}
+
+void setupAPIHandlers() {
+  server.on("/deviceinfo", HTTP_GET, [](AsyncWebServerRequest *request) {
+    StaticJsonDocument<256> doc;
+    doc["version"] = VERSION;
+    doc["name"] = "HW2_WiFiReady_Elegant";
+    doc["mac"] = WiFi.macAddress();
+    String json;
+    serializeJson(doc, json);
+    request->send(200, "application/json", json);
+  });
+
+  server.on("/bpm", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", String(myBPM));
+  });
+
+  server.on(
+    "/config", HTTP_POST, [](AsyncWebServerRequest *request) {},
+    NULL,
+    [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t, size_t) {
+      StaticJsonDocument<256> doc;
+      DeserializationError error = deserializeJson(doc, data);
+
+      if (error) {
+        request->send(400, "text/plain", "Invalid JSON");
+        return;
+      }
+
+      mqttBroker = doc["broker"].as<String>();
+      mqttTopic = doc["topic"].as<String>();
+
+      saveMQTTConfig();
+
+      request->send(200, "text/plain", "MQTT settings saved");
+    });
+
+  server.on(
+    "/messages", HTTP_POST, [](AsyncWebServerRequest *request) {},
+    NULL,
+    [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t, size_t) {
+      StaticJsonDocument<512> doc;
+      deserializeJson(doc, data);
+      messageS1 = doc["S1"].as<String>();
+      messageS2 = doc["S2"].as<String>();
+      messageS3 = doc["S3"].as<String>();
+      messageS4 = doc["S4"].as<String>();
+      request->send(200, "text/plain", "Messages saved");
+    });
+
+  server.on("/rssi", HTTP_GET, [](AsyncWebServerRequest *request) {
+    int rssi = WiFi.RSSI();
+    request->send(200, "text/plain", String(rssi));
+  });
+
+  server.on("/url", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String url = "http://" + WiFi.localIP().toString();
+    request->send(200, "text/plain", url);
+  });
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Control</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" crossorigin="anonymous">
+</head>
+<body>
+  <div class="topnav">
+    <a href="/setup.html">Setup</a>
+    <a href="/monitor.html">Monitor</a>
+    <a class="active" href="/control.html">Control</a>
+    <a href="/update.html">Update</a>
+  </div>
+
+  <h1>Control Panel</h1>
+
+  <div class="content">
+    <div class="card-grid" id="led-container"></div>
+  </div>
+
+  <hr>
+  <h3>Switch Status:</h3>
+  <p id="switchStatus">Waiting for switch press...</p>
+
+  <hr>
+  <h2>Assign Messages to Buttons</h2>
+  <label>S1: <input id="msgS1" type="text"></label><br>
+  <label>S2: <input id="msgS2" type="text"></label><br>
+  <label>S3: <input id="msgS3" type="text"></label><br>
+  <label>S4: <input id="msgS4" type="text"></label><br>
+  <button onclick="saveMessages()">Save</button>
+
+  <hr>
+  <h6>2025 March 21</h6>
+
+  <script>
+    const ledCount = 5;
+    const container = document.getElementById("led-container");
+    const switchStatus = document.getElementById("switchStatus");
+
+    function toggleLED(led, state) {
+      fetch(`/control?led=${led}&state=${state}`)
+        .then(response => {
+          if (!response.ok) throw new Error("Request failed");
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    // for (let i = 1; i <= ledCount; i++) {
+    //   const card = document.createElement("div");
+    //   card.className = "card";
+    //   card.innerHTML = `
+    //     <p class="card-title"><i class="fas fa-lightbulb"></i> LED ${i}</p>
+    //     <p>
+    //       <button class="button-on" onclick="toggleLED(${i}, 'on')">ON</button>
+    //       <button class="button-off" onclick="toggleLED(${i}, 'off')">OFF</button>
+    //     </p>
+    //   `;
+    //   container.appendChild(card);
+    // }
+
+    const ws = new WebSocket(`ws://${window.location.host}/ws`);
+    ws.onmessage = function(event) {
+      switchStatus.innerText = event.data;
+    };
+    ws.onclose = function() {
+      switchStatus.innerText = "Connection lost. Reconnecting...";
+      setTimeout(() => location.reload(), 5000);
+    };
+
+    function saveMessages() {
+      const messages = {
+        S1: document.getElementById("msgS1").value,
+        S2: document.getElementById("msgS2").value,
+        S3: document.getElementById("msgS3").value,
+        S4: document.getElementById("msgS4").value
+      };
+      fetch('/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(messages)
+      });
+    }
+  </script>
+</body>
+</html>

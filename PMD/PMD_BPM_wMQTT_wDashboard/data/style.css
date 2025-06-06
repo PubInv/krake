@@ -1,0 +1,104 @@
+html {
+  font-family: "Source Sans Pro", sans-serif;
+  text-align: center;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #064542;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #235352;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.topnav a {
+  color: #ffffff;
+  padding: 14px 20px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.topnav a:hover {
+  background-color: #064542;
+  color: white;
+}
+
+.topnav a.active {
+  background-color: #064542;
+  color: white;
+}
+
+.content {
+  padding: 2rem;
+}
+
+.card-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #064542;
+}
+
+.state {
+  font-size: 1.1rem;
+  color: #144240;
+}
+
+button {
+  border: none;
+  color: #ffffff;
+  padding: 12px 24px;
+  text-align: center;
+  font-size: 16px;
+  width: 100px;
+  margin: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.button-on {
+  background-color: #357470;
+}
+
+.button-on:hover {
+  background-color: #0f524a;
+}
+
+.button-off {
+  background-color: #6c757d;
+}
+
+.button-off:hover {
+  background-color: #343a40;
+}

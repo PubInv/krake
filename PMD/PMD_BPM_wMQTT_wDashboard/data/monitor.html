@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topnav">
+    <a href="/setup.html">Setup</a>
+    <a class="active" href="/monitor.html">Monitor</a>
+    <a href="/control.html">Control</a>
+    <a href="/update.html">Update</a>
+  </div>
+  <h1>Live Sensor Monitor</h1>
+  <p><strong>Current BPM:</strong> <span id="bpm">--</span></p>
+  <canvas id="bpmChart" width="400" height="150"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('bpmChart').getContext('2d');
+    const bpmData = {
+      labels: [],
+      datasets: [{
+        label: 'BPM',
+        data: [],
+        borderColor: 'green',
+        tension: 0.2
+      }]
+    };
+    const bpmChart = new Chart(ctx, {
+      type: 'line',
+      data: bpmData,
+      options: { scales: { x: { display: false }, y: { min: 40, max: 140 } } }
+    });
+
+    const bpmDisplay = document.getElementById('bpm');
+
+    setInterval(() => {
+      fetch('/bpm')
+        .then(res => res.text())
+        .then(val => {
+          bpmDisplay.textContent = val;
+          bpmData.labels.push('');
+          bpmData.datasets[0].data.push(Number(val));
+          if (bpmData.labels.length > 30) {
+            bpmData.labels.shift();
+            bpmData.datasets[0].data.shift();
+          }
+          bpmChart.update();
+        });
+    }, 2000);
+  </script>
+</body>
+</html>

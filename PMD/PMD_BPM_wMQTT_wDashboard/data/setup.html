@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Setup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topnav">
+    <a class="active" href="/setup.html">Setup</a>
+    <a href="/monitor.html">Monitor</a>
+    <a href="/control.html">Control</a>
+    <a href="/update.html">Update</a>
+  </div>
+  <h1>Device Setup</h1>
+  <h2>WiFi & MQTT Configuration</h2>
+  <label>SSID: <input id="ssid" type="text"></label><br>
+  <label>Password: <input id="password" type="password"></label><br>
+  <label>MQTT Broker: <input id="mqttBroker" type="text"></label><br>
+  <label>MQTT Topic: <input id="mqttTopic" type="text"></label><br>
+  <button onclick="saveSettings()">Save</button>
+  <script>
+    function saveSettings() {
+      const settings = {
+        ssid: document.getElementById("ssid").value,
+        password: document.getElementById("password").value,
+        broker: document.getElementById("mqttBroker").value,
+        topic: document.getElementById("mqttTopic").value
+      };
+      fetch('/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+    }
+  </script>
+</body>
+</html>
