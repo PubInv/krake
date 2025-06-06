@@ -348,8 +348,10 @@ module m4_stud(x,y,sh,off=0) {
     // ROB says this controls the hole
 	ophs = 5.28;        				//Optimum Pilot Hole Size
 	oshd = 5.94;        				//Optimum Surface Hole Diameter
-	rmwt = maxid*0.53;  				//Recommended Min Wall Thickness
-	ahd = 0.76;         				//Added Hole Depth for Blind Holes
+//	rmwt = maxid*0.53;  				//Recommended Min Wall Thickness
+	rmwt = maxid*0.33; //FLE changed for Krake.//Recommended Min Wall Thickness
+//	ahd = 0.76;         				//Added Hole Depth for Blind Holes
+	ahd = 0.0; //FLE for Krake. 	//Added Hole Depth for Blind Holes
 	th = 2.35;          				//Height of 8° Taper
 	cham = 0.5;							//Chamfer at top of stud
 	stud_top = maxid+(rmwt*2); 			//Top of Stud Diameter

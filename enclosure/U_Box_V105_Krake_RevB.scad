@@ -718,7 +718,8 @@ module VESAmount75(stud_height_mm,h_offset_mm) {
         }
 }
 module VESApunch75(stud_height_mm,h_offset_mm) {
-    sh = stud_height_mm +2; // addin length for cutting
+//    sh = stud_height_mm +2; // addin length for cutting
+    sh = stud_height_mm + -2; // addin length for cutting
     radius = 4.5; // just a guess!
     
     stud_distance_mm = 75;
@@ -743,7 +744,8 @@ module VESApunch75(stud_height_mm,h_offset_mm) {
 }
 module TShellWithVESA() {
     stud_height_mm = 7.8;
-    h_offset_mm = 1;
+//    h_offset_mm = 1;
+    h_offset_mm = 7.8;  //Set flush with Top.
         // Coque haut - Top Shell
     difference() {
         translate([0,Width,Height+0.2]){
@@ -753,7 +755,8 @@ module TShellWithVESA() {
                 }
             }
         }
-        translate([Length/2,Width/2,Height+0.2]) 
+//        translate([Length/2,Width/2,Height+0.2]) 
+        translate([Length/2,Width/2,Height+12.2]) 
         VESApunch75(stud_height_mm,h_offset_mm);
     }
 
@@ -789,7 +792,7 @@ module centeredHeatSetInsert() {
 
 if(HEAT_SET_INSERTS==1){
 
-     stud_distance_mm = 75;
+    stud_distance_mm = 75;
     sd = stud_distance_mm;
     half_stud_distance_mm = sd/2;
     hsd = half_stud_distance_mm;
