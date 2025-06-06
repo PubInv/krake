@@ -40,7 +40,7 @@ LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
-HEAT_SET_INSERTS     = 1;
+HEAT_SET_INSERTS     = 0;
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -744,6 +744,7 @@ module VESApunch75(stud_height_mm,h_offset_mm) {
 }
 module TShellWithVESA() {
     stud_height_mm = 7.8;
+
 //    h_offset_mm = 1;
     h_offset_mm = 7.8;  //Set flush with Top.
         // Coque haut - Top Shell
@@ -756,14 +757,14 @@ module TShellWithVESA() {
             }
         }
 //        translate([Length/2,Width/2,Height+0.2]) 
-        translate([Length/2,Width/2,Height+12.2]) 
-        VESApunch75(stud_height_mm,h_offset_mm);
+        translate([Length/2,Width/2,35]) 
+        VESApunch75(stud_height_mm+15,h_offset_mm);
     }
 
     // Note: The Coque is not centered on the origin,
     // so we have to do some math for that....
     translate([Length/2,Width/2,Height+0.2]) 
-    color("green"){
+    color("blue"){
         VESAmount75(stud_height_mm,h_offset_mm);
     }
     
@@ -799,7 +800,8 @@ if(HEAT_SET_INSERTS==1){
     insert_height = 6;
     #color("gray")
     translate([Length/2,Width/2,Height+0.2]) 
-    translate([0,0,insert_height/2+1])
+//    translate([0,0,insert_height/2+1])
+    translate([0,0, 0+1])
     union() {
         rotate([180,0,0])
         translate([hsd,hsd,0])
