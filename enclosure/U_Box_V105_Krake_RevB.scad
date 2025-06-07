@@ -1,3 +1,8 @@
+//File: U_Box_V105_Krake_RevB.scad
+//Modified by Public Invention to make enclosures for:
+// GPAD
+// KRAKE (TM)
+
 ////////////////////////////////////////////////////////////////////
 //  Heartman/Hearty OpenSCAD Parametric Box - MODIFIED BY NAGHAM //
 //  Krake & GPAD Configurable Enclosure Generator                //
