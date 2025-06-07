@@ -2,8 +2,11 @@
 #include <WiFi.h>
 #include <MQTT.h>
 #include <WiFiClient.h>
-#include "MQTTClient.h"
+#include <ArduinoJson.h>
 
+
+String PUBLISHING_TOPIC = "/default/pub";
+String SUBSCRIPTION_TOPIC = "/default/sub";
 
 void connect() {
   Serial.print("checking wifi...");
@@ -11,60 +14,66 @@ void connect() {
     Serial.print(".");
     delay(1000);
   }
-  Serial.print("\nconnecting to WiFi...");
 
+  Serial.print("\nconnecting...");
+
+  String mac = WiFi.macAddress();
+  mac.replace(":", "");
+
+  // Set Last Will
+  String statusTopic = "/PMD/" + mac + "/status";
+  String willPayload = "{\"online\": false}";
+  client.setWill(statusTopic.c_str(), willPayload.c_str(), true, 1);
+
+  int attempts = 0;
   while (!client.connect(CLIENT_NAME_MQTT, "public", "public")) {
-
-    // client.setWill(PUBLISHING_TOPIC, "a5 PMD device is disconnected from the broker. STALE DATA.", false, 2);
-
-    // client.setKeepAlive(60);
-    String mac = WiFi.macAddress();  // e.g., "F0:24:F9:F1:B8:80"
-    mac.replace(":", "");            // Remove colons for safe topic
-
-    String topic = "url/" + mac;
-    String url = "http://" + WiFi.localIP().toString();
-    client.publish(topic.c_str(), url.c_str(), true);  // Retain message
-
+    if (++attempts > 10) {
+      Serial.println("🚫 MQTT connection failed too many times. Restarting...");
+      ESP.restart();
+    }
     Serial.print(".");
     delay(1000);
   }
 
-  Serial.println("\nconnected!");
+  Serial.println("\n✅ MQTT connected!");
+
+  // Publish device URL to unique topic
+  String urlTopic = "url/" + mac;
+  String url = "http://" + WiFi.localIP().toString();
+  client.publish(urlTopic.c_str(), url.c_str(), true);
+
+  // Subscribe to your topic
   client.subscribe(SUBSCRIPTION_TOPIC);
 }
 
 void messageReceived(String& topic, String& payload) {
   Serial.println("incoming: " + topic + " - " + payload);
 
-    if (topic.startsWith("bpm/")) {
-    String deviceID = topic.substring(4);  // extract mac or ID
+  if (topic.startsWith("bpm/")) {
+    String deviceID = topic.substring(4);
     int bpmValue = payload.toInt();
-
     Serial.printf("Got BPM from %s: %d\n", deviceID.c_str(), bpmValue);
-
-    // You can store it in a map or array if tracking multiple devices
-    // deviceBPMs[deviceID] = bpmValue;
   }
 }
 
+void publishDevicePresence() {
+  if (WiFi.status() != WL_CONNECTED || !client.connected()) return;
 
+  String mac = WiFi.macAddress();
+  mac.replace(":", "");
 
- 
+  String topic = "/PMD/" + mac + "/status";
 
-// const char payload[]= "LastWillMessage: a5 PMD device is disconnected from the broker. STALE DATA."
-// bool retained= false ;
-// int qos= 2 ;
-// int keepAlive = 60 ;
-// // void setWill(const char topic[], const char payload[], bool retained, int qos);
-// void setWill(const char topic[], const char payload[], bool retained, int qos);
+  StaticJsonDocument<256> doc;
+  doc["ip"] = WiFi.localIP().toString();
+  doc["mac"] = mac;
+  doc["type"] = "PMD";
+  doc["online"] = true;
 
-// void setKeepAlive(int keepAlive);
+  char payload[256];
+  serializeJson(doc, payload);
 
-
-
-
-//  setWill(PUBLISHING_TOPIC, "LastWillMessage: a5 PMD device is disconnected from the broker. STALE DATA.", false, 2);
-
-// CleanSession= true ;
-
-//  setKeepAlive(60);
+  client.publish(topic.c_str(), payload, true);
+  Serial.printf("📡 MQTT presence to topic: %s\n", topic.c_str());
+  Serial.println("📡 MQTT presence sent: " + String(payload));
+}

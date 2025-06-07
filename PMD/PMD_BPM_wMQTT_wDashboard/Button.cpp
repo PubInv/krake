@@ -29,9 +29,9 @@ void setupButton() {
   BOOT.set(GPIO0_BOOT, SendOK_Message, INT_PULL_UP);
 
   //FLE  myButton.enableLongPress(longPressTime);
-  // SW1.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
-  // SW2.enableLongPress(longPressTime);  //Also rotary encoder on KRAKE
-  // SW3.enableLongPress(longPressTime);  //Also rotary encoder switch on KRAKE
+  // SW1.enableLongPress(longPressTime);  //Also rotary encoder on PMD
+  // SW2.enableLongPress(longPressTime);  //Also rotary encoder on PMD
+  // SW3.enableLongPress(longPressTime);  //Also rotary encoder switch on PMD
   SW4.enableLongPress(longPressTime);
 
   // SW1.enableMultiHit(multiHitTime, multiHitTarget);

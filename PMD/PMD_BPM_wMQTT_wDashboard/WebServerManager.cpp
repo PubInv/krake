@@ -1,9 +1,8 @@
+
 #include "WebServerManager.h"
 #include <LittleFS.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
-#include <ArduinoJson.h>
-#include "WebServerManager.h"
 #include "ID.h"
 
 AsyncWebServer server(80);
@@ -16,7 +15,28 @@ String messageS2 = "Message from SW2";
 String messageS3 = "a4Urgent Support Now.";
 String messageS4 = "a5Send Emergency";
 extern int myBPM;
-void saveMQTTConfig();
+
+void saveMQTTConfig(const String& broker, const String& pub, const String& sub, const String& role) {
+  StaticJsonDocument<512> doc;
+  doc["broker"] = broker;
+  doc["pub"] = pub;
+  doc["sub"] = sub;
+  doc["role"] = role;
+
+  File configFile = LittleFS.open("/mqtt.json", "w");
+  if (!configFile) {
+    Serial.println("❌ Failed to open /mqtt.json for writing");
+    return;
+  }
+
+  if (serializeJson(doc, configFile) == 0) {
+    Serial.println("❌ Failed to write JSON to /mqtt.json");
+  } else {
+    Serial.println("✅ MQTT config saved to /mqtt.json");
+  }
+
+  configFile.close();
+}
 
 void setupWebServer() {
   if (!LittleFS.begin(true)) {
@@ -83,9 +103,11 @@ void setupAPIHandlers() {
 
       mqttBroker = doc["broker"].as<String>();
       mqttTopic = doc["topic"].as<String>();
+      String pub = doc["pub"] | "default/pub";
+      String sub = doc["sub"] | "default/sub";
+      String role = doc["role"] | "PMD";
 
-      saveMQTTConfig();
-
+      saveMQTTConfig(mqttBroker, pub, sub, role);
       request->send(200, "text/plain", "MQTT settings saved");
     });
 

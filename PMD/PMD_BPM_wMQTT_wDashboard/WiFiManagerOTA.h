@@ -15,7 +15,7 @@ extern int WiFiLed;
 extern String mqttBroker;
 extern String mqttTopic;
 
-void saveCredentials(const char* ssid, const char* password);
+// void saveCredentials(const char* ssid, const char* password);
 bool loadCredentials();
 void WiFiMan();
 void initLittleFS();

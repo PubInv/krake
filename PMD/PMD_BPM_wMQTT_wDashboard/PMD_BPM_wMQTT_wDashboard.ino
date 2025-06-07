@@ -160,16 +160,10 @@ void setup() {
   digitalWrite(WiFiLed, HIGH);      // turn the LED on (HIGH is the voltage level)
   pinMode(LED_BUILTIN, OUTPUT);     // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  pinMode(LED_1, OUTPUT);           // set the LED pin mode
-  digitalWrite(LED_1, HIGH);        // turn the LED on (HIGH is the voltage level)
-  pinMode(LED_2, OUTPUT);           // set the LED pin mode
-  digitalWrite(LED_2, HIGH);        // turn the LED on (HIGH is the voltage level)
-  pinMode(LED_3, OUTPUT);           // set the LED pin mode
-  digitalWrite(LED_3, HIGH);        // turn the LED on (HIGH is the voltage level)
-  pinMode(LED_4, OUTPUT);           // set the LED pin mode
-  digitalWrite(LED_4, HIGH);        // turn the LED on (HIGH is the voltage level)
-  pinMode(LED_5, OUTPUT);           // set the LED pin mode
-  digitalWrite(LED_5, HIGH);        // turn the LED on (HIGH is the voltage level)
+  for (int i = 0; i < LED_COUNT; ++i) {
+    pinMode(LED_PINS[i], OUTPUT);
+    digitalWrite(LED_PINS[i], HIGH);
+  }
 
   Serial.begin(BAUDRATE);
   // initBPMLogger();
@@ -192,27 +186,26 @@ void setup() {
   setupOTA();
   server.begin();
   ElegantOTA.begin(&server);
-  client.setWill(PUBLISHING_TOPIC, "a5 PMD disconnected", false, 2);
+  client.setWill(PUBLISHING_TOPIC.c_str(), "a5 PMD disconnected", false, 2);
   client.setKeepAlive(60);
-  client.begin(BROKER, net);
+  client.begin(mqttBroker.c_str(), net);
   client.onMessage(messageReceived);
   connect();
+  loadMQTTConfig();
   publishDeviceURL();
   setupButton();
   pulse.begin();
   splashOLED();
   setupWebServer();
   String mac = WiFi.macAddress();
-  mac.replace(":", "");  // Optional, for prettier IDs like Krake_F024F9F1B880
+  mac.replace(":", "");  // Optional, for prettier IDs like PMD_F024F9F1B880
   initDeviceDiscovery(mac.c_str(), "PMD");
 
 
   // updateOLED();
-  digitalWrite(LED_1, LOW);        //Make built in LED low at end of setup.
-  digitalWrite(LED_2, LOW);        //Make built in LED low at end of setup.
-  digitalWrite(LED_3, LOW);        //Make built in LED low at end of setup.
-  digitalWrite(LED_4, LOW);        //Make built in LED low at end of setup.
-  digitalWrite(LED_5, LOW);        //Make built in LED low at end of setup.
+  for (int i = 0; i < LED_COUNT; ++i) {
+    digitalWrite(LED_PINS[i], LOW);
+  }
   digitalWrite(LED_BUILTIN, LOW);  //Make built in LED low at end of setup.
 }  //end setup()
 
@@ -237,9 +230,12 @@ void loop() {
   //   }
   // }
 
-  if (myBPM > 50 && myBPM <= 120) {
-    updateOLED();
-  }
+
+  // if (myBPM > 50 && myBPM <= 120) {
+  updateOLED();
+  // }
+
+
   // BPMLogger_loop();
   // if (clearOTA) {
   //   clearOTA = false;
@@ -253,7 +249,7 @@ void loop() {
     String topic = "bpm/" + WiFi.macAddress();  // or use an alias/device ID
     String payload = String(myBPM);
 
-    if (client.connected()) {                                // handle this from the Krake side to display the bpm level wherever is needed
+    if (client.connected()) {                                // handle this from the PMD side to display the bpm level wherever is needed
       client.publish(topic.c_str(), payload.c_str(), true);  // retain BPM
     }
   }
@@ -265,6 +261,11 @@ void loop() {
     lastBeacon = millis();
   }
 
+  static unsigned long lastPresence = 0;
+  if (millis() - lastPresence > 10000) {  // every 10 seconds
+    publishDevicePresence();
+    lastPresence = millis();
+  }
 
 
 }  // end loop

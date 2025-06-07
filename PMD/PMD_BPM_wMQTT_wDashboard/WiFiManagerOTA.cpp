@@ -10,6 +10,10 @@ String password = "";
 String ledState = "";
 // const int WiFiLed = 2;  // Modify based on actual LED pin
 
+extern String mqttBroker;
+String mqttPubTopic = "default/pub";
+String mqttSubTopic = "default/sub";
+String deviceRole = "PMD";  // Default
 
 void saveCredentials(const char* ssid, const char* password) {
   File file = LittleFS.open("/wifi.txt", "w");
@@ -75,31 +79,54 @@ void initWiFi() {
   Serial.println("\nConnected. IP Address: " + WiFi.localIP().toString());
 }
 
-void saveMQTTConfig() {
+// void saveMQTTConfig(const String& broker, const String& pub, const String& sub, const String& role) {
+//   StaticJsonDocument<256> doc;
+//   doc["broker"] = broker;
+//   doc["pub"] = pub;
+//   doc["sub"] = sub;
+//   doc["role"] = role;
+
+//   File file = LittleFS.open("/mqtt.json", "w");
+//   if (file) {
+//     serializeJson(doc, file);
+//     file.close();
+//     Serial.println("✅ MQTT config saved.");
+//   } else {
+//     Serial.println("❌ Failed to save MQTT config.");
+//   }
+// }
+
+bool loadMQTTConfig() {
+  if (!LittleFS.exists("/mqtt.json")) {
+    Serial.println("⚠️ No /mqtt.json file found.");
+    return false;
+  }
+
+  File file = LittleFS.open("/mqtt.json", "r");
+  if (!file) {
+    Serial.println("❌ Failed to open /mqtt.json for reading.");
+    return false;
+  }
+
   StaticJsonDocument<256> doc;
-  doc["broker"] = mqttBroker;
-  doc["topic"] = mqttTopic;
-
-  File file = LittleFS.open("/config.json", "w");
-  if (file) {
-    serializeJson(doc, file);
-    file.close();
-  } else {
-    Serial.println("Failed to save MQTT config");
+  DeserializationError error = deserializeJson(doc, file);
+  if (error) {
+    Serial.println("❌ Failed to parse /mqtt.json.");
+    return false;
   }
-}
 
-void loadMQTTConfig() {
-  File file = LittleFS.open("/config.json", "r");
-  if (file) {
-    StaticJsonDocument<256> doc;
-    DeserializationError error = deserializeJson(doc, file);
-    if (!error) {
-      mqttBroker = doc["broker"].as<String>();
-      mqttTopic = doc["topic"].as<String>();
-    }
-    file.close();
-  }
+  mqttBroker = doc["broker"] | mqttBroker;
+  mqttPubTopic = doc["pub"] | mqttPubTopic;
+  mqttSubTopic = doc["sub"] | mqttSubTopic;
+  deviceRole = doc["role"] | deviceRole;
+
+  Serial.println("✅ MQTT config loaded:");
+  Serial.println(" Broker: " + mqttBroker);
+  Serial.println(" Pub: " + mqttPubTopic);
+  Serial.println(" Sub: " + mqttSubTopic);
+  Serial.println(" Role: " + deviceRole);
+
+  return true;
 }
 
 
