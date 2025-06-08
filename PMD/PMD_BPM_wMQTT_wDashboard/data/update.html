@@ -1,6 +1,9 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width">
+<html lang="en">
 <html>
 <head>
+     <meta charset="utf-8">
   <title>Firmware Update</title>
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -17,12 +20,18 @@
     <h1>OTA Firmware Update</h1>
 
     <p>Use this page to upload new firmware to your device.</p>
-    <form method="POST" action="/update" enctype="multipart/form-data">
-      <input type="file" name="update" accept=".bin"><br><br>
-      <button type="submit">Upload</button>
-    </form>
+   <form method="POST" action="/update" enctype="multipart/form-data">
+  <input type="file" name="update" accept=".bin" required><br><br>
+  <button type="submit">Upload Firmware</button>
+</form>
 
+<script>
+  document.querySelector("form").addEventListener("submit", () => {
+    alert("Uploading... Device will reboot after flashing.");
+  });
+</script>
     <p><strong>Tip:</strong> Use a compiled `.bin` file built for ESP32 and ensure the device has enough free space.</p>
   </div>
+
 </body>
 </html>

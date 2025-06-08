@@ -5,6 +5,7 @@
 #include <ArduinoJson.h>
 #include "ID.h"
 #include "MQTTmain.h"
+
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
@@ -175,7 +176,7 @@ void setupAPIHandlers() {
       String newPass = doc["password"];
 
       StaticJsonDocument<256> wifiDoc;
-      wifiDoc["ssid"] = newSSID
+      wifiDoc["ssid"] = newSSID;
       wifiDoc["password"] = newPass;
 
       File wifiFile = LittleFS.open("/wifi.json", "w");
