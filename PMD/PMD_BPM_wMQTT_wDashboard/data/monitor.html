@@ -1,53 +1,165 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Monitor</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="topnav">
-    <a href="/setup.html">Setup</a>
+     <div class="topnav">
+     <a  href="/dashboard.html">Dashboard</a>
     <a class="active" href="/monitor.html">Monitor</a>
     <a href="/control.html">Control</a>
+    <a href="/setup.html">Setup</a>
     <a href="/update.html">Update</a>
   </div>
-  <h1>Live Sensor Monitor</h1>
-  <p><strong>Current BPM:</strong> <span id="bpm">--</span></p>
-  <canvas id="bpmChart" width="400" height="150"></canvas>
+  <title>Monitor</title>
+  <link rel="stylesheet" href="/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Live Monitor</h1>
+
+    <div class="status-box">
+      <h2>Device Info</h2>
+      <pre id="device-info">--</pre>
+    </div>
+  </div>
+
+    <div class="status-box">
+      <h2>MQTT</h2>
+      <div id="mqtt-status" class="status-indicator">--</div>
+    </div>
+
+    <div class="status-box">
+      <h2>WiFi RSSI</h2>
+      <div id="wifi-rssi" class="status-indicator">--</div>
+    </div>
+ 
+  <div class="status-box">
+        <h2>Current BPM:</h2>
+      <div id="bpm-value" class="highlight">--</div>
+      <canvas id="bpmChart" width="400" height="150"></canvas>
+
+      <div class="controls">
+        <label>Y-Min: <input id="ymin" type="number" value="40"></label>
+        <label>Y-Max: <input id="ymax" type="number" value="140"></label>
+        <button onclick="updateScale()">Update Scale</button>
+      </div>
+    </div>
+
   <script>
-    const ctx = document.getElementById('bpmChart').getContext('2d');
-    const bpmData = {
-      labels: [],
-      datasets: [{
-        label: 'BPM',
-        data: [],
-        borderColor: 'green',
-        tension: 0.2
-      }]
-    };
-    const bpmChart = new Chart(ctx, {
-      type: 'line',
-      data: bpmData,
-      options: { scales: { x: { display: false }, y: { min: 40, max: 140 } } }
-    });
+    async function updateMonitor() {
+      try {
+        const bpm = await fetch('/bpm').then(res => res.text());
+        document.getElementById('bpm-value').textContent = bpm;
+      } catch {
+        document.getElementById('bpm-value').textContent = "❌";
+      }
 
-    const bpmDisplay = document.getElementById('bpm');
+      try {
+        const rssi = await fetch('/rssi').then(res => res.text());
+        document.getElementById('wifi-rssi').textContent = rssi + " dBm";
+      } catch {
+        document.getElementById('wifi-rssi').textContent = "❌";
+      }
 
-    setInterval(() => {
-      fetch('/bpm')
-        .then(res => res.text())
-        .then(val => {
-          bpmDisplay.textContent = val;
-          bpmData.labels.push('');
-          bpmData.datasets[0].data.push(Number(val));
-          if (bpmData.labels.length > 30) {
-            bpmData.labels.shift();
-            bpmData.datasets[0].data.shift();
+      try {
+        const info = await fetch('/deviceinfo').then(res => res.json());
+        document.getElementById('device-info').textContent =
+          `MAC: ${info.mac}\nVersion: ${info.version}\nName: ${info.name}`;
+      } catch {
+        document.getElementById('device-info').textContent = "❌ Failed to load";
+      }
+
+      try {
+        const mqttStatus = await fetch('/mqtt-status').then(res => res.text());
+        document.getElementById('mqtt-status').textContent = mqttStatus;
+      } catch {
+        document.getElementById('mqtt-status').textContent = "❌";
+      }
+
+        updateMonitor();
+    }
+
+     const bpmDisplay = document.getElementById('bpm-value');
+     const ctx = document.getElementById('bpmChart').getContext('2d');
+
+     const bpmData = {
+        labels: [],
+        datasets: [{
+          label: 'BPM',
+          data: [],
+          borderColor: 'green',
+          tension: 0.2
+        }]
+      };
+
+      const bpmChart = new Chart(ctx, {
+        type: 'line',
+        data: bpmData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { display: false },
+            y: {
+              min: 0,
+              max: 25,
+              ticks: {
+              stepSize: 1,
+              // callback: function(value) {
+              //   return value.toFixed(0);  // no decimals
+              // }
+              }
+            }
+          },
+          plugins: {
+            annotation: {
+              annotations: {
+                normalZone: {
+                  type: 'box',
+                  yMin: 60,
+                  yMax: 100,
+                  backgroundColor: 'rgba(0,255,0,0.1)',
+                },
+                warningLow: {
+                  type: 'box',
+                  yMin: 40,
+                  yMax: 59,
+                  backgroundColor: 'rgba(255,255,0,0.1)',
+                },
+                warningHigh: {
+                  type: 'box',
+                  yMin: 101,
+                  yMax: 120,
+                  backgroundColor: 'rgba(255,255,0,0.1)',
+                },
+                dangerHigh: {
+                  type: 'box',
+                  yMin: 121,
+                  yMax: 140,
+                  backgroundColor: 'rgba(255,0,0,0.1)',
+                }
+              }
+            }
           }
-          bpmChart.update();
-        });
-    }, 2000);
+        },
+        plugins: [Chart.registry.getPlugin('annotation')]
+      });
+
+//       function updateScale() {
+//         const ymin = parseInt(document.getElementById('ymin').value);
+//         const ymax = parseInt(document.getElementById('ymax').value);
+//         if (!isNaN(ymin) && !isNaN(ymax) && ymin < ymax) {
+//         bpmChart.options.scales.y.min = ymin;
+//         bpmChart.options.scales.y.max = ymax;
+//         bpmChart.update();
+// }
+
+  //  }
+
+     updateMonitor();
+   
+
+   
   </script>
 </body>
 </html>

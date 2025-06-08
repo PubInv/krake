@@ -1,87 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Control</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" crossorigin="anonymous">
+ 
+  <title>Device Control</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="topnav">
-    <a href="/setup.html">Setup</a>
+     <div class="topnav">
+     <a href="/dashboard.html">Dashboard</a>
     <a href="/monitor.html">Monitor</a>
     <a class="active" href="/control.html">Control</a>
+    <a href="/setup.html">Setup</a>
     <a href="/update.html">Update</a>
   </div>
+  <div class="container">
+    <h1>Control Panel</h1>
 
-  <h1>Control Panel</h1>
+    <h2>Send Message</h2>
+    <button onclick="sendMessage('S1')">📨 Message S1</button>
+    <button onclick="sendMessage('S2')">📨 Message S2</button>
+    <button onclick="sendMessage('S3')">🚨 Message S3</button>
+    <button onclick="sendMessage('S4')">🆘 Message S4</button>
 
-  <div class="content">
-    <div class="card-grid" id="led-container"></div>
+    <h2>Utilities</h2>
+    <button onclick="restartDevice()">🔁 Restart Device</button>
+
+    <!-- Expandable control section -->
+    <h2>Test Outputs</h2>
+    <button onclick="triggerTest('led')">💡 Toggle LED</button>
+    <button onclick="triggerTest('sound')">🔊 Test Sound</button>
   </div>
 
-  <hr>
-  <h3>Switch Status:</h3>
-  <p id="switchStatus">Waiting for switch press...</p>
-
-  <hr>
-  <h2>Assign Messages to Buttons</h2>
-  <label>S1: <input id="msgS1" type="text"></label><br>
-  <label>S2: <input id="msgS2" type="text"></label><br>
-  <label>S3: <input id="msgS3" type="text"></label><br>
-  <label>S4: <input id="msgS4" type="text"></label><br>
-  <button onclick="saveMessages()">Save</button>
-
-  <hr>
-  <h6>2025 March 21</h6>
-
   <script>
-    const ledCount = 5;
-    const container = document.getElementById("led-container");
-    const switchStatus = document.getElementById("switchStatus");
-
-    function toggleLED(led, state) {
-      fetch(`/control?led=${led}&state=${state}`)
-        .then(response => {
-          if (!response.ok) throw new Error("Request failed");
-        })
-        .catch(error => console.error("Error:", error));
+    async function sendMessage(slot) {
+      try {
+        const res = await fetch(`/trigger/${slot}`);
+        const result = await res.text();
+        alert(`Message ${slot} sent: ${result}`);
+      } catch (e) {
+        alert(`Failed to send ${slot}: ${e}`);
+      }
     }
 
-    // for (let i = 1; i <= ledCount; i++) {
-    //   const card = document.createElement("div");
-    //   card.className = "card";
-    //   card.innerHTML = `
-    //     <p class="card-title"><i class="fas fa-lightbulb"></i> LED ${i}</p>
-    //     <p>
-    //       <button class="button-on" onclick="toggleLED(${i}, 'on')">ON</button>
-    //       <button class="button-off" onclick="toggleLED(${i}, 'off')">OFF</button>
-    //     </p>
-    //   `;
-    //   container.appendChild(card);
-    // }
-
-    const ws = new WebSocket(`ws://${window.location.host}/ws`);
-    ws.onmessage = function(event) {
-      switchStatus.innerText = event.data;
-    };
-    ws.onclose = function() {
-      switchStatus.innerText = "Connection lost. Reconnecting...";
-      setTimeout(() => location.reload(), 5000);
-    };
-
-    function saveMessages() {
-      const messages = {
-        S1: document.getElementById("msgS1").value,
-        S2: document.getElementById("msgS2").value,
-        S3: document.getElementById("msgS3").value,
-        S4: document.getElementById("msgS4").value
-      };
-      fetch('/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(messages)
-      });
+    async function restartDevice() {
+      if (confirm("Are you sure you want to restart the device?")) {
+        await fetch('/restart');
+        alert("Device restarting...");
+      }
     }
+
+    async function triggerTest(type) {
+      try {
+        const res = await fetch(`/test/${type}`);
+        const result = await res.text();
+        alert(`${type} test triggered: ${result}`);
+      } catch (e) {
+        alert(`Failed to trigger ${type}: ${e}`);
+      }
+    }
+
   </script>
 </body>
 </html>

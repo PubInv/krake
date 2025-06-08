@@ -2,36 +2,63 @@
 <html>
 <head>
   <title>Setup</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="topnav">
-    <a class="active" href="/setup.html">Setup</a>
-    <a href="/monitor.html">Monitor</a>
+   <div class="topnav">
+     <a href="/dashboard.html">Dashboard</a>
+    <a  href="/monitor.html">Monitor</a>
     <a href="/control.html">Control</a>
+    <a class="active" href="/setup.html">Setup</a>
     <a href="/update.html">Update</a>
   </div>
-  <h1>Device Setup</h1>
-  <h2>WiFi & MQTT Configuration</h2>
-  <label>SSID: <input id="ssid" type="text"></label><br>
-  <label>Password: <input id="password" type="password"></label><br>
-  <label>MQTT Broker: <input id="mqttBroker" type="text"></label><br>
-  <label>MQTT Topic: <input id="mqttTopic" type="text"></label><br>
-  <button onclick="saveSettings()">Save</button>
-  <script>
-    function saveSettings() {
-      const settings = {
-        ssid: document.getElementById("ssid").value,
-        password: document.getElementById("password").value,
-        broker: document.getElementById("mqttBroker").value,
-        topic: document.getElementById("mqttTopic").value
-      };
-      fetch('/config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings)
-      });
-    }
-  </script>
+  <div class="container">
+    <h1>Device Setup</h1>
+
+    <h2>WiFi Configuration</h2>
+    <form id="wifi-form">
+      <label for="ssid">SSID:</label>
+      <input type="text" id="ssid" name="ssid"><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password"><br>
+      <button type="submit">Save WiFi</button>
+    </form>
+
+      <h2>MQTT Configuration</h2>
+    <form id="mqtt-form">
+      <label for="broker">Broker:</label>
+      <input type="text" id="broker" name="broker"><br>
+      <label for="pub">Publish Topic:</label>
+      <input type="text" id="pub" name="pub"><br>
+      <label for="sub">Subscribe Topic:</label>
+      <input type="text" id="sub" name="sub"><br>
+      <label for="role">Device Role:</label>
+      <select id="role" name="role">
+        <option value="PMD">PMD</option>
+        <option value="Krake">Krake</option>
+      </select><br>
+      <button type="submit">Save MQTT</button>
+    </form>
+
+<h2>Message Customization</h2>
+<form id="message-form">
+  <label for="S1">Message S1:</label>
+  <input type="text" id="S1" name="S1"><br>
+  <label for="S2">Message S2:</label>
+  <input type="text" id="S2" name="S2"><br>
+  <label for="S3">Message S3:</label>
+  <input type="text" id="S3" name="S3"><br>
+  <label for="S4">Message S4:</label>
+  <input type="text" id="S4" name="S4"><br>
+  <button type="submit">Save Messages</button>
+</form>
+ 
+<script src="setup.js">
+
+
+</script>
+
+
+ 
 </body>
 </html>

@@ -2,16 +2,27 @@
 <html>
 <head>
   <title>Firmware Update</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div class="topnav">
-    <a href="/setup.html">Setup</a>
-    <a href="/monitor.html">Monitor</a>
+   <div class="topnav">
+     <a href="/dashboard.html">Dashboard</a>
+    <a  href="/monitor.html">Monitor</a>
     <a href="/control.html">Control</a>
+    <a href="/setup.html">Setup</a>
     <a class="active" href="/update.html">Update</a>
   </div>
-  <h1>Firmware Update</h1>
-  <p>Go to <a href="/update">/update</a> to upload a new firmware.</p>
+   <body>
+  <div class="container">
+    <h1>OTA Firmware Update</h1>
+
+    <p>Use this page to upload new firmware to your device.</p>
+    <form method="POST" action="/update" enctype="multipart/form-data">
+      <input type="file" name="update" accept=".bin"><br><br>
+      <button type="submit">Upload</button>
+    </form>
+
+    <p><strong>Tip:</strong> Use a compiled `.bin` file built for ESP32 and ensure the device has enough free space.</p>
+  </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include "ID.h"
-
+#include "MQTTmain.h"
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
@@ -16,7 +16,7 @@ String messageS3 = "a4Urgent Support Now.";
 String messageS4 = "a5Send Emergency";
 extern int myBPM;
 
-void saveMQTTConfig(const String& broker, const String& pub, const String& sub, const String& role) {
+void saveMQTTConfig(const String &broker, const String &pub, const String &sub, const String &role) {
   StaticJsonDocument<512> doc;
   doc["broker"] = broker;
   doc["pub"] = pub;
@@ -85,6 +85,24 @@ void setupAPIHandlers() {
     request->send(200, "application/json", json);
   });
 
+  server.on("/devices", HTTP_GET, [](AsyncWebServerRequest *request) {
+    StaticJsonDocument<1024> doc;
+    String deviceRole = "PMD"; // Default fallback
+    JsonArray arr = doc.to<JsonArray>();
+    JsonObject dev = arr.createNestedObject();
+    dev["mac"] = WiFi.macAddress();
+    dev["ip"] = WiFi.localIP().toString();
+    dev["type"] = deviceRole;
+    dev["online"] = true;
+    dev["rssi"] = WiFi.RSSI();
+    dev["lastSeen"] = millis() / 1000;  // seconds since boot
+    deviceRole = doc["role"].as<String>();
+    String result;
+    serializeJson(doc, result);
+    request->send(200, "application/json", result);
+  });
+
+
   server.on("/bpm", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", String(myBPM));
   });
@@ -111,6 +129,11 @@ void setupAPIHandlers() {
       request->send(200, "text/plain", "MQTT settings saved");
     });
 
+  server.on("/mqtt-status", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String status = client.connected() ? "🟢 Connected" : "🔴 Disconnected";
+    request->send(200, "text/plain", status);
+  });
+
   server.on(
     "/messages", HTTP_POST, [](AsyncWebServerRequest *request) {},
     NULL,
@@ -132,5 +155,55 @@ void setupAPIHandlers() {
   server.on("/url", HTTP_GET, [](AsyncWebServerRequest *request) {
     String url = "http://" + WiFi.localIP().toString();
     request->send(200, "text/plain", url);
+  });
+
+
+
+  server.on(
+    "/wifi", HTTP_POST, [](AsyncWebServerRequest *request) {},
+    NULL,
+    [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t, size_t) {
+      StaticJsonDocument<256> doc;
+      DeserializationError error = deserializeJson(doc, data);
+
+      if (error) {
+        request->send(400, "text/plain", "Invalid JSON");
+        return;
+      }
+
+      String newSSID = doc["ssid"];
+      String newPass = doc["password"];
+
+      StaticJsonDocument<256> wifiDoc;
+      wifiDoc["ssid"] = newSSID
+      wifiDoc["password"] = newPass;
+
+      File wifiFile = LittleFS.open("/wifi.json", "w");
+      if (!wifiFile) {
+        request->send(500, "text/plain", "Failed to open file");
+        return;
+      }
+
+      serializeJson(wifiDoc, wifiFile);
+      wifiFile.close();
+
+      request->send(200, "text/plain", "WiFi credentials saved. Please reboot to apply.");
+    });
+
+  server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request) {
+    int n = WiFi.scanNetworks();
+    StaticJsonDocument<1024> doc;
+    JsonArray arr = doc.createNestedArray("networks");
+
+    for (int i = 0; i < n; i++) {
+      JsonObject net = arr.createNestedObject();
+      net["ssid"] = WiFi.SSID(i);
+      net["rssi"] = WiFi.RSSI(i);
+      net["secure"] = (WiFi.encryptionType(i) != WIFI_AUTH_OPEN);
+    }
+
+    String result;
+    serializeJson(doc, result);
+    request->send(200, "application/json", result);
   });
 }

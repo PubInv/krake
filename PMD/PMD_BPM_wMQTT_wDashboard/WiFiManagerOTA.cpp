@@ -45,20 +45,60 @@ bool loadCredentials() {
 }
 
 void WiFiMan() {
-  WiFiManager wifiManager;
+  if (LittleFS.exists("/wifi.json")) {
+    File file = LittleFS.open("/wifi.json", "r");
+    if (file) {
+      StaticJsonDocument<256> doc;
+      DeserializationError error = deserializeJson(doc, file);
+      if (!error) {
+        ssid = doc["ssid"].as<String>();
+        password = doc["password"].as<String>();
+        file.close();
 
-  if (!loadCredentials()) {
-    if (!wifiManager.autoConnect(default_ssid)) {
-      Serial.println("Failed to connect. Restarting...");
-      ESP.restart();
+        WiFi.begin(ssid.c_str(), password.c_str());
+        Serial.println("Connecting using saved /wifi.json ...");
+        unsigned long startAttemptTime = millis();
+        while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+          Serial.print(".");
+          delay(500);
+        }
+
+        if (WiFi.status() == WL_CONNECTED) {
+          Serial.println("\n✅ Connected using /wifi.json");
+          return;
+        }
+        Serial.println("\n⚠️ Failed to connect with saved WiFi. Falling back to WiFiManager.");
+      } else {
+        Serial.println("❌ Failed to parse /wifi.json");
+      }
+    } else {
+      Serial.println("❌ Failed to open /wifi.json");
     }
-    ssid = WiFi.SSID();
-    password = WiFi.psk();
-    saveCredentials(ssid.c_str(), password.c_str());
   }
 
-  Serial.println("Connected to WiFi!");
+  // Fallback to WiFiManager AP Mode
+  WiFiManager wifiManager;
+  if (!wifiManager.autoConnect(default_ssid)) {
+    Serial.println("Failed to connect. Restarting...");
+    delay(2000);
+    ESP.restart();
+  }
+
+  ssid = WiFi.SSID();
+  password = WiFi.psk();
+
+  // Save to /wifi.json
+  StaticJsonDocument<256> doc;
+  doc["ssid"] = ssid;
+  doc["password"] = password;
+  File file = LittleFS.open("/wifi.json", "w");
+  if (file) {
+    serializeJson(doc, file);
+    file.close();
+    Serial.println("✅ WiFi credentials saved to /wifi.json");
+  }
 }
+
 
 void initLittleFS() {
   if (!LittleFS.begin(true)) {
@@ -69,14 +109,41 @@ void initLittleFS() {
 }
 
 void initWiFi() {
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid.c_str(), password.c_str());
-  Serial.print("Connecting to WiFi ..");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print('.');
-    delay(1000);
+  if (LittleFS.exists("/wifi.json")) {
+    File file = LittleFS.open("/wifi.json", "r");
+    if (file) {
+      StaticJsonDocument<256> doc;
+      DeserializationError error = deserializeJson(doc, file);
+      if (!error) {
+        String savedSSID = doc["ssid"].as<String>();
+        String savedPass = doc["password"].as<String>();
+        Serial.printf("📡 Connecting to saved SSID: %s\n", savedSSID.c_str());
+        WiFi.begin(savedSSID.c_str(), savedPass.c_str());
+
+        unsigned long startTime = millis();
+        while (WiFi.status() != WL_CONNECTED && millis() - startTime < 10000) {
+          delay(500);
+          Serial.print(".");
+        }
+
+        if (WiFi.status() == WL_CONNECTED) {
+          Serial.println("\n✅ WiFi connected from /wifi.json");
+          return;
+        } else {
+          Serial.println("\n⚠️ Failed to connect from /wifi.json. You may need to reboot into config mode.");
+        }
+      } else {
+        Serial.println("❌ Failed to parse /wifi.json");
+      }
+      file.close();
+    } else {
+      Serial.println("❌ Could not open /wifi.json");
+    }
+  } else {
+    Serial.println("📁 No /wifi.json found");
   }
-  Serial.println("\nConnected. IP Address: " + WiFi.localIP().toString());
+
+  // Do not start AP here — this is only a passive connection attempt.
 }
 
 // void saveMQTTConfig(const String& broker, const String& pub, const String& sub, const String& role) {

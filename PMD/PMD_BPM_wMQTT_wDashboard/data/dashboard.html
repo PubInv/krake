@@ -1,96 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PMD Central Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PMD Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { text-align: center; }
-    .device {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 15px;
-      margin: 10px auto;
-      max-width: 500px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
     }
-    .device h2 { margin-top: 0; }
-    .value { font-size: 1.2em; color: green; }
-    .topics { font-size: 0.9em; color: #555; }
-    .links a {
-      margin-right: 10px;
-      text-decoration: none;
-      color: #337ab7;
+    table th, table td {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+    }
+    table th {
+      background-color: #e6f0ee;
+      color: #064542;
+      font-weight: 600;
     }
   </style>
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
-  <h1>PMD Central Dashboard</h1>
-  <div id="devices"></div>
+     <div class="topnav">
+     <a class="active" href="/dashboard.html">Dashboard</a>
+    <a href="/monitor.html">Monitor</a>
+    <a href="/control.html">Control</a>
+    <a href="/setup.html">Setup</a>
+    <a href="/update.html">Update</a>
+  </div>
+
+  <div class="container">
+    <h1>Krake and PMD Device Dashboard</h1>
+    <p>Online PMD Devices</p>
+    <button onclick="loadDevices()">🔄 Refresh</button>
+
+    <table id="device-table">
+      <thead>
+        <tr>
+          <th>MAC</th>
+          <th>IP</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>RSSI</th>
+          <th>Last Ping (s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
 
   <script>
-    const broker = 'wss://public.cloud.shiftr.io';
-    const options = {
-      username: 'public',
-      password: 'public'
-    };
-    const client = mqtt.connect(broker, options);
-    const devices = {};
+    async function loadDevices() {
+      const tbody = document.querySelector("#device-table tbody");
+      tbody.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
 
-    const container = document.getElementById("devices");
+      try {
+        const res = await fetch("/devices");
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const devices = await res.json();
 
-    client.on('connect', () => {
-      console.log('Connected to broker');
-      client.subscribe('bpm/#');
-      client.subscribe('rssi/#');
-      client.subscribe('url/#');
-    });
+        if (!Array.isArray(devices) || devices.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='6'>No devices online</td></tr>";
+          return;
+        }
 
-    client.on('message', (topic, message) => {
-      const [type, mac] = topic.split('/');
-      const value = message.toString();
-
-      if (!devices[mac]) {
-        const card = document.createElement('div');
-        card.className = 'device';
-        card.id = mac;
-        card.innerHTML = `
-          <h2>Device: ${mac}</h2>
-          <p>BPM: <span class="value" id="bpm-${mac}">--</span></p>
-          <p>RSSI: <span class="value" id="rssi-${mac}">--</span></p>
-          <p class="topics" id="topics-${mac}">Topics: </p>
-          <div class="links" id="links-${mac}"></div>
-        `;
-        container.appendChild(card);
-        devices[mac] = { url: null };
-      }
-
-      if (type === 'bpm') {
-        document.getElementById(`bpm-${mac}`).textContent = value;
-        appendTopic(mac, topic);
-      } else if (type === 'rssi') {
-        document.getElementById(`rssi-${mac}`).textContent = value + " dBm";
-        appendTopic(mac, topic);
-      } else if (type === 'url') {
-        devices[mac].url = value;
-        const linkDiv = document.getElementById(`links-${mac}`);
-        linkDiv.innerHTML = `
-          <a href="${value}/monitor.html" target="_blank">Monitor</a>
-          <a href="${value}/control.html" target="_blank">Control</a>
-          <a href="${value}/setup.html" target="_blank">Setup</a>
-        `;
-        appendTopic(mac, topic);
-      }
-    });
-
-    function appendTopic(mac, topic) {
-      const topicEl = document.getElementById(`topics-${mac}`);
-      if (topicEl && !topicEl.textContent.includes(topic)) {
-        topicEl.textContent += (topicEl.textContent.endsWith(': ') ? '' : ', ') + topic;
+        tbody.innerHTML = "";
+        devices.forEach(d => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${d.mac}</td>
+            <td><a href="http://${d.ip}" target="_blank">${d.ip}</a></td>
+            <td>${d.type}</td>
+            <td>${d.online ? "✅ Online" : "❌ Offline"}</td>
+            <td>${d.rssi ?? "—"} dBm</td>
+            <td>${d.lastSeen ?? "—"}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6">Error loading devices: ${err.message}</td></tr>`;
       }
     }
+
+    loadDevices();
+    setInterval(loadDevices, 10000); // refresh every 10s
   </script>
 </body>
 </html>
