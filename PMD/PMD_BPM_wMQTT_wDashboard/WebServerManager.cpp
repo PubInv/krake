@@ -206,5 +206,6 @@ void setupAPIHandlers() {
     String result;
     serializeJson(doc, result);
     request->send(200, "application/json", result);
-  });
+  }); 
+  
 }
