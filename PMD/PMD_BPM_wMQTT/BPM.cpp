@@ -13,9 +13,9 @@ void PulseCounter::updateThresholdFromPot() {
 
   // Map to PulseSensor threshold range (example range: 300–700)
   int threshold = map(smoothed, 0, 4095, 1500, 2500);
-  threshold = constrain(threshold, 1500, 2500);
+  threshold = constrain(threshold, 1845, 2500);
   _pulseSensor.setThreshold(threshold);
- _currentThreshold = threshold; 
+  _currentThreshold = threshold;
   // Optional: print to Serial
   Serial.print("Pot raw: ");
   Serial.print(raw);
@@ -39,11 +39,13 @@ int PulseCounter::getThreshold() {
 
 PulseCounter::PulseCounter(int sensorPin, int ledPin, Adafruit_SSD1306* oled)
   : _sensorPin(sensorPin), _ledPin(ledPin), _display(oled), _lastBPM(0) {}
-
+const int 
+const int threshold 
 void PulseCounter::begin() {
   _pulseSensor.analogInput(_sensorPin);
   _pulseSensor.blinkOnPulse(_ledPin);
   _pulseSensor.begin();
+
 }
 
 int PulseCounter::update() {

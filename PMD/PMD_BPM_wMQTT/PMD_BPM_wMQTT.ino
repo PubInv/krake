@@ -32,7 +32,7 @@
 #define SENSOR_PIN 33  // Analog input for pulse sensor
 #define LED_PIN 15
 #define BPM_THRESHOLD 1700
-// #define potINPUT 32
+#define potINPUT 32
 #define LED_BUILTIN 2
 #define PIN_POT 32  // Analog input for potentiometer
 // AsyncWebServer server(80);
@@ -59,7 +59,6 @@ unsigned long lastBPMLogTime = 0;
 const unsigned long BPMlogInterval = 10000;  // 10 seconds
 unsigned long lastBpmSend = 0;
 const unsigned long bpmInterval = 5000;
-
 void notifyClients(const String &message) {
   ws.textAll(message);
 }
@@ -87,7 +86,6 @@ void splashOLED_P1() {
   display.display();
   delay(2000);
 }
-
 
 void splashOLED() {
   display.clearDisplay();
@@ -134,9 +132,14 @@ void displayBPMandThreshold(int bpm, int threshold) {
   display.println(bpm);
   WiFIbars.drawCenteredHorizontalBars(110, 23);
   display.setTextSize(1.2);
-  display.setCursor(0, 48);
+  display.setCursor(0, 42);
   display.print("Threshold: ");
   display.println(threshold);
+
+
+  display.setCursor(0, 52);
+  display.print("Analog: ");
+  display.println(analogRead(33));
 
   display.display();
 }
@@ -199,7 +202,7 @@ void setup() {
 
   splashOLED_P1();
   splashserial();
-  // pinMode(potINPUT, INPUT);
+  pinMode(potINPUT, INPUT);
 
   for (int i = 0; i < LED_COUNT; ++i) {
     pinMode(LED_PINS[i], OUTPUT);
@@ -247,17 +250,17 @@ void loop() {
 
   if (!client.connected()) connect();
 
-  // if (millis() - lastMillis > PUBLISHING_RATE) {
-  //   lastMillis = millis();
-  //   syntheticBPM = map(analogRead(potINPUT), 0, 4095, 35, 210);
-  //   if (syntheticBPM < 60) {
-  //     client.publish(PUBLISHING_TOPIC, "a4 Bradycardia: " + String(syntheticBPM));
-  //   } else if (syntheticBPM < 100) {
-  //     client.publish(PUBLISHING_TOPIC, "a1 Normal BPM: " + String(syntheticBPM));
-  //   } else {
-  //     client.publish(PUBLISHING_TOPIC, "a5 Tachycardia: " + String(syntheticBPM));
-  //   }
-  // }
+  if (millis() - lastMillis > PUBLISHING_RATE) {
+    lastMillis = millis();
+    syntheticBPM = map(analogRead(potINPUT), 0, 4095, 35, 210);
+    if (syntheticBPM < 60) {
+      client.publish(PUBLISHING_TOPIC, "a4 Bradycardia: " + String(syntheticBPM));
+    } else if (syntheticBPM < 100) {
+      client.publish(PUBLISHING_TOPIC, "a1 Normal BPM: " + String(syntheticBPM));
+    } else {
+      client.publish(PUBLISHING_TOPIC, "a5 Tachycardia: " + String(syntheticBPM));
+    }
+  }
 
   pulse.updateThresholdFromPot();  // Update threshold from potentiometer
   int bpm = pulse.update();        // Update BPM if new beat detected
@@ -265,7 +268,7 @@ void loop() {
   // if (myBPM > 50 && myBPM <= 120) {
   //   updateOLED();
   // }
-  displayBPMandThreshold(pulse.getLastBPM(), pulse.getThreshold() );
+  displayBPMandThreshold(pulse.getLastBPM(), pulse.getThreshold());
 
   // BPMLogger_loop();
   // if (clearOTA) {
