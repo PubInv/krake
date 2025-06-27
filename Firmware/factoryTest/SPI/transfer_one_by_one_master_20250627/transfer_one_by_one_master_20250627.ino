@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include "helper.h"
 
-SPIClass master(HSPI);
+SPIClass master(VSPI);
 #ifdef CONFIG_IDF_TARGET_ESP32
 static constexpr uint8_t PIN_SS = 15;
 #else
