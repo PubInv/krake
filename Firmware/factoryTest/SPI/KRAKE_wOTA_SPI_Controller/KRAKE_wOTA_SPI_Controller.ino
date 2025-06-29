@@ -1,4 +1,4 @@
-#define PROG_NAME "KRAKE_wOTA_SPI_Peripheral"
+#define PROG_NAME "KRAKE_wOTA_SPI_Controller"
 // Author: Nagham Kheir
 // Date: 20250316
 // A PMD BootUp, Similar to Do Nothing but Serial Splash, LCD Test, LCD Splash, DFPlayer Test, DFPlayer Splash, BootButton Test for stuck key. Loop() has only non blocking code.
@@ -20,8 +20,8 @@
 
 // Customized this by changing these defines
 #define VERSION " V0.0.1 "
-#define MODEL_NAME "Model: KRAKE"
-#define DEVICE_UNDER_TEST "SN: 00001"  //A Serial Number
+#define MODEL_NAME " KRAKE"
+#define DEVICE_UNDER_TEST " US0004"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
 #define BAUDRATE 115200  //Serial port
