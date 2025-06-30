@@ -1,4 +1,4 @@
-# Krake
+# Krake™   
 Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
 ![image](https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07)
 
@@ -211,3 +211,4 @@ Multi-tasking the Arduino, three parts the first of which is at: https://learn.a
 
 * [Firmware: Affero GPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html#license-text)
 * [CERN Open Hardware Licence Version 2 - Strongly Reciprocal](https://ohwr.org/cern_ohl_s_v2.txt)
+* Krake™ is a trade mark for this device designed by Public Invention.
