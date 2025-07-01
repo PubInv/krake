@@ -32,7 +32,7 @@ void setup() {
   // initOLED();
   // splashOLED();
   initDFP();
-  splashDFPlayer();
+  // FLE splashDFPlayer(); 
   SPIsetup();
   LCD_setup();
   // More setup code here

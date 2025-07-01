@@ -19,9 +19,9 @@
 #include <DailyStruggleButton.h>
 
 // Customized this by changing these defines
-#define VERSION " V0.0.1 "
+#define VERSION " V0.0.2 " //Comment out 
 #define MODEL_NAME "KRAKE"
-#define DEVICE_UNDER_TEST "US0005"  //A Serial Number
+#define DEVICE_UNDER_TEST "LB0005"  //A Serial Number
 #define LICENSE "GNU Affero General Public License, version 3 "
 #define ORIGIN "LB"
 #define BAUDRATE 115200  //Serial port

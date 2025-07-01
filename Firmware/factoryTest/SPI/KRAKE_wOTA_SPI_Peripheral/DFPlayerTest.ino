@@ -40,7 +40,7 @@ void splashDFPlayer(void) {
   if (!availableDFPLAYER) {
     return;
   }
-  Serial.println("MAde it through");
+  Serial.println("Made it through");
 
   //  // Set volume (0 to 30)
   //  dfPlayer.volume(30);       // Set initial volume max
@@ -48,8 +48,8 @@ void splashDFPlayer(void) {
   delay(3000);
   Serial.print("Volume is set to: ");
   // digitalWrite(LED_D6, HIGH);             //Start of volume read.
-  Serial.println(dfPlayer.readVolume());  //Causes program lock up
+  // Serial.println(dfPlayer.readVolume());  //FLE Causes program lock up
   // digitalWrite(LED_D6, LOW);              //End of volume read.
   Serial.println("Play a track");
-  dfPlayer.play(4);
+  //dfPlayer.play(4);  //FLE
 }
