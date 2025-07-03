@@ -14,6 +14,19 @@ extern MQTTClient client;
 //#define Nagham
 //#define LEE
 //#define Robert
+#define JuneEvent
+
+#ifdef JuneEvent
+#define SUBSCRIPTION_TOPIC "F024F9F1B880_ACK"  // LB0005 : mac
+#define PUBLISHING_TOPIC "F024F9F1B880_ALM"    // LB0005
+#define SUBSCRIPTION_TOPIC "ECC9FF7D8EF4_ACK"  // US0004
+#define PUBLISHING_TOPIC "ECC9FF7D8EF4_ALM"    // US0004
+#define SUBSCRIPTION_TOPIC "ECC9FF7D8F00_ACK"  // US0002
+#define PUBLISHING_TOPIC "ECC9FF7D8F00_ALM"    // US0002
+#define SUBSCRIPTION_TOPIC "ECC9FF7D8EE8_ACK"  // US0005
+#define PUBLISHING_TOPIC "ECC9FF7D8EE8_ALM"    // US0005
+#endif
+
 
 #ifdef Nagham
 // LB0005
@@ -28,7 +41,7 @@ extern MQTTClient client;
 #endif
 
 #define LEE
-#ifdef LEE  
+#ifdef LEE
 // US0005
 #define SUBSCRIPTION_TOPIC "ECC9FF7D8EE8_ACK"
 #define PUBLISHING_TOPIC "ECC9FF7D8EE8_ALM"

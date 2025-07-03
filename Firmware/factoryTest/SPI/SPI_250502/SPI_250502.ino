@@ -84,7 +84,7 @@ void setup() {
 void loop() {
   //use the SPI buses
   spiCommand(vspi, 0b01010101);  // junk data to illustrate usage
-  spiCommand(hspi, 0b11001100);
+  // spiCommand(hspi, 0b11001100);
   delay(100);
 }
 
