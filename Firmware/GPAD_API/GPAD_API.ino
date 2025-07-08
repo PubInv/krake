@@ -113,7 +113,6 @@ PubSubClient client(espClient);
 
 #define GPAD_VERSION1
 
-#define LIMIT_POWER_DRAW 1
 
 #define DEBUG_SPI 0
 

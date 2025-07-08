@@ -112,9 +112,6 @@ int NUM_LIGHTS = sizeof(LIGHT) / sizeof(LIGHT[0]);
 
 Stream *local_ptr_to_serial;
 
-#define LIMIT_POWER_DRAW 0
-
-
 volatile boolean isReceived_SPI;
 volatile byte peripheralReceived;
 
