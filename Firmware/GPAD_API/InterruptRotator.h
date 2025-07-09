@@ -19,4 +19,6 @@ void initRotator();
 void updateRotator();
 void IRAM_ATTR checkPositionISR();
 
+
+
 #endif // INTERRUPT_ROTATOR_H

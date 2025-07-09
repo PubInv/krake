@@ -130,6 +130,7 @@ void setup_spi();
 void receive_byte(byte c);
 void updateFromSPI();
 
+void restoreAlarmLevel(Stream *serialport);
 void unchanged_anunicateAlarmLevel(Stream *serialport);
 void annunciateAlarmLevel(Stream *serialport);
 void clearLCD(void);

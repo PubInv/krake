@@ -113,7 +113,6 @@ PubSubClient client(espClient);
 
 #define GPAD_VERSION1
 
-#define LIMIT_POWER_DRAW 1
 
 #define DEBUG_SPI 0
 
@@ -510,6 +509,9 @@ IPAddress myIP();  // declare for global
 
 int cnt_actions = 0;
 
+bool running_menu = false;
+bool menu_just_exited = false;
+
 void loop() {
 
   bool is_WIFIconnected = false;
@@ -566,7 +568,16 @@ void loop() {
 
   updateRotator();
 
-  poll_GPAD_menu();
+  if (menu_just_exited) {
+    lcd.clear();
+    lcd.noBacklight();
+    restoreAlarmLevel(&Serial);
+    menu_just_exited = false;
+  }
+  if (running_menu) {
+    lcd.backlight();
+    poll_GPAD_menu();
+  }
 
   // if ((millis() / 10000) > cnt_actions) {
   //   cnt_actions++;

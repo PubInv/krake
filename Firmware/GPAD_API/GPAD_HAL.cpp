@@ -112,9 +112,6 @@ int NUM_LIGHTS = sizeof(LIGHT) / sizeof(LIGHT[0]);
 
 Stream *local_ptr_to_serial;
 
-#define LIMIT_POWER_DRAW 0
-
-
 volatile boolean isReceived_SPI;
 volatile byte peripheralReceived;
 
@@ -556,11 +553,11 @@ void clearLCD(void) {
 void splashLCD(void) {
   lcd.init();  // initialize the lcd
   // Print a message to the LCD.
-#if (!LIMIT_POWER_DRAW)
+//#if (!LIMIT_POWER_DRAW)
   lcd.backlight();
-#else
-  lcd.noBacklight();
-#endif
+//#else
+//  lcd.noBacklight();
+//#endif
 
   //Line 0
   lcd.setCursor(0, 0);
@@ -609,9 +606,9 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg) {
   lcd.clear();
   // Possibly we don't need the backlight if the level is zero!
   if (level != 0) {
-#if (!LIMIT_POWER_DRAW)
+// #if (!LIMIT_POWER_DRAW)
     lcd.backlight();
-#endif
+// #endif
   } else {
     lcd.noBacklight();
   }
@@ -689,6 +686,10 @@ void unchanged_anunicateAlarmLevel(Stream *serialport) {
   }
 #endif
 }
+void restoreAlarmLevel(Stream *serialport) {
+    showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
+}
+
 void annunciateAlarmLevel(Stream *serialport) {
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
