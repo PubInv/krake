@@ -3,6 +3,11 @@
 
 static RotaryEncoder* encoder = nullptr;
 
+// This global variable represents the state of the menu;
+// we are either running the menu (true) or displaying other 
+// information (false)
+extern bool running_menu;
+
 void initRotator() {
   //  Serial.begin(115200);
    // while (!Serial);
@@ -26,6 +31,10 @@ void updateRotator() {
         Serial.print("pos: ");
         Serial.print(newPos);
         Serial.print(" dir: ");
+        // If we have rotated the encoder, then we enter the menu...
+        if (!running_menu)
+            reset_menu_navigation();        
+
         int d = (int)(encoder->getDirection());
   //      Serial.println(d);
 

@@ -9,6 +9,9 @@
 
 using namespace Menu;
 
+extern bool running_menu;
+extern bool menu_just_exited;
+
 #define LEDPIN 12
 #define MAX_DEPTH 1
 
@@ -48,6 +51,13 @@ result action4(eventMask e) {
   setVolume(volumeDFPlayer);
   return proceed;
 }
+result action5(eventMask e) {
+  Serial.println("exiting menu");
+  running_menu = false;
+  menu_just_exited = true;
+  Menu::doExit();
+  return proceed;
+}
 
 
 MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
@@ -55,10 +65,8 @@ MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
   ,OP("Dismiss",action2,anyEvent)
   ,OP("Shelve",action3,anyEvent)
   ,FIELD(volumeDFPlayer,"Volume","%",0,30,10,1,action4,anyEvent,wrapStyle)
+  ,OP("Exit Menu", action5, enterEvent)
   );
-
-
-
 
 RotaryEventIn reIn(
   RotaryEventIn::EventType::BUTTON_CLICKED | // select
@@ -111,3 +119,8 @@ void navigate_to_n_and_execute(int n) {
   nav.doNav(navCmd(idxCmd,n)); //hilite second option
   //nav.doNav(navCmd(enterCmd)); //execute option
 }
+
+void reset_menu_navigation() {
+  running_menu = true;
+  nav.reset();
+ }
