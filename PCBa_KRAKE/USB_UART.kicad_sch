@@ -1213,7 +1213,7 @@
     (uuid ffed6893-60d8-4fa2-a352-5d318dbe77bd)
   )
 
-  (image (at 243.84 180.34) (scale 0.75)
+  (image (at 251.46 173.99) (scale 0.75)
     (uuid 1e30b73f-0a9f-493c-ad6d-e703f38be3c8)
     (data
       iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAYAAAAUg66AAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
@@ -1590,6 +1590,11 @@
   (text "Place R503 near uControler TX pin." (at 177.8 93.98 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid b57351e4-41ae-45ff-a37e-f2035559407f)
+  )
+  (text "Caution: the USB to UART does not work,\nU501 is missing a crystal and two capacitors \nQ207 emitter and collector are interchanged. "
+    (at 58.42 57.15 0)
+    (effects (font (face "Arial") (size 5.08 5.08) (thickness 1.016) bold (color 255 24 53 1)) (justify left bottom))
+    (uuid eec3445a-177b-44f0-a18e-b21aabe00dc5)
   )
 
   (hierarchical_label "nRESET" (shape passive) (at 214.63 118.11 0) (fields_autoplaced)
