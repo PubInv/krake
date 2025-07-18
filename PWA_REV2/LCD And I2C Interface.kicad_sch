@@ -4041,7 +4041,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x16") (at 252.73 81.28 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board no) (dnp no) (fields_autoplaced)
     (uuid 64bef9a2-6017-4149-bf8d-80701c5a4983)
     (property "Reference" "U303" (at 255.27 81.28 0)
       (effects (font (size 1.27 1.27)) (justify left))
