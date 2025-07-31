@@ -226,7 +226,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "MF102") (unit 1)
         )
@@ -277,7 +277,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "MF101") (unit 1)
         )

@@ -1259,7 +1259,7 @@
     )
     (pin "1" (uuid 5fe67ead-1be3-4733-a1af-758c9bd4eae8))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#PWR028") (unit 1)
         )
@@ -1315,7 +1315,7 @@
     (pin "1" (uuid ef6b5a25-f81f-4f01-87d5-8e9323f8042b))
     (pin "2" (uuid 2bda796f-e46d-4cb3-a135-3336fecc61e7))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -1382,7 +1382,7 @@
     (pin "8" (uuid 4f8d6373-2b4e-4498-8a22-22bb6caffd10))
     (pin "9" (uuid fb73dc95-055d-4184-a0c4-4d0549cdc92f))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "J?") (unit 1)
         )
@@ -1410,7 +1410,7 @@
     )
     (pin "1" (uuid d4a124f4-3399-4cd9-b47a-0d095a816819))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#PWR031") (unit 1)
         )
@@ -1480,7 +1480,7 @@
     (pin "8" (uuid 82cc1b37-1e14-46e5-9798-85f19cf66504))
     (pin "9" (uuid ac050ef9-2f7e-4de5-bd7f-59e05ed75568))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "U?") (unit 1)
         )
@@ -1536,7 +1536,7 @@
     (pin "1" (uuid bd180c73-fdd8-47d1-95f2-405984eb8b4a))
     (pin "2" (uuid 1af08d11-cbfd-49c1-86d2-f93881edc973))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -1567,7 +1567,7 @@
     )
     (pin "1" (uuid 2961e06f-4c75-4dcb-b4b5-375b71197d7f))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#PWR032") (unit 1)
         )
@@ -1623,7 +1623,7 @@
     (pin "1" (uuid fe7474a5-cb20-466d-a575-71d4afc25598))
     (pin "2" (uuid 55adf2ac-0695-4e0b-9b4e-747ccfb5d1ed))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C?") (unit 1)
         )
@@ -1651,7 +1651,7 @@
     )
     (pin "1" (uuid 332d15bc-627c-473d-b670-f84ce7cde69e))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#FLG03") (unit 1)
         )
@@ -1707,7 +1707,7 @@
     (pin "1" (uuid da10081e-5d40-4d2a-83ed-2731f4e1fbc2))
     (pin "2" (uuid 952e52bb-b692-4eea-bdc0-12083ec55fa2))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -1766,7 +1766,7 @@
     (pin "1" (uuid a56c5b34-888f-468f-84cf-d97bb02755c9))
     (pin "2" (uuid 5f0e599e-f3a6-41c9-8beb-615bd7c475d0))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C?") (unit 1)
         )
@@ -1822,7 +1822,7 @@
     (pin "1" (uuid f6dbe609-dca5-4c1d-8ebb-9a6cb79d1f38))
     (pin "2" (uuid 83f2c0b6-598f-46dc-a71d-270b4aac471a))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -1881,7 +1881,7 @@
     (pin "1" (uuid f378f3f1-fe86-44cf-8b54-9580c8b28a8d))
     (pin "2" (uuid 2be670f3-b51f-475b-8188-0b0ea3218e55))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C?") (unit 1)
         )
@@ -1937,7 +1937,7 @@
     (pin "1" (uuid 94a03cdd-31f3-4ebd-9747-1967eec40b1f))
     (pin "2" (uuid 4a210d18-5353-4e39-b204-6774f8d91528))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C?") (unit 1)
         )
@@ -1993,7 +1993,7 @@
     (pin "1" (uuid d50fc2ed-1490-4fea-91c9-68ed1b38d804))
     (pin "2" (uuid b6ff05a3-74f5-4a19-adc8-91f47fe748b0))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -2052,7 +2052,7 @@
     (pin "1" (uuid bd922053-4cf1-45ee-9f64-0a356bd8bf65))
     (pin "2" (uuid 63f1c730-7ff2-40d7-b02c-ef4a97a2c829))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -2111,7 +2111,7 @@
     (pin "1" (uuid e44a732e-1ffc-4bf5-961f-b7c69253aeea))
     (pin "2" (uuid 2748bd7e-5600-4ae6-bc5d-5fe64a82696f))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "R?") (unit 1)
         )
@@ -2167,7 +2167,7 @@
     (pin "1" (uuid 54c5e885-a9cf-4f69-9ae6-19de54d06961))
     (pin "2" (uuid 4da5b6e4-8980-4baa-9e6b-ab3b3b98de8f))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -2226,7 +2226,7 @@
     (pin "1" (uuid 00b2e776-e944-4a34-a05f-3acae7650023))
     (pin "2" (uuid fcfdbc3e-abcb-4c4d-ba1c-18c5820284bb))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -2257,7 +2257,7 @@
     )
     (pin "1" (uuid e2c8de92-7f7f-41e3-bc0a-aa8da1af803e))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#PWR030") (unit 1)
         )
@@ -2285,7 +2285,7 @@
     )
     (pin "1" (uuid e5917881-045a-43ef-97c1-007cd5351eee))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#PWR026") (unit 1)
         )
@@ -2341,7 +2341,7 @@
     (pin "1" (uuid 7027d8d0-3b77-4660-9c0b-c66947ed2b1a))
     (pin "2" (uuid de433b44-20f2-4467-9510-2096b3629127))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C?") (unit 1)
         )
@@ -2397,7 +2397,7 @@
     (pin "1" (uuid 58647e9d-71b0-4184-b0ae-4ade8db7dea0))
     (pin "2" (uuid ef07ec00-7004-4d95-8580-014d57a04922))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -2428,7 +2428,7 @@
     )
     (pin "1" (uuid fa5d3f93-0e6f-40fa-8842-c75e8c62918e))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "#PWR027") (unit 1)
         )
@@ -2484,7 +2484,7 @@
     (pin "1" (uuid d099bfa6-577d-415e-bab6-3383ea43d85d))
     (pin "2" (uuid 90dfab4d-3828-4e21-8bd4-08b610dcda5b))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062bc4e7e"
           (reference "R503") (unit 1)
         )
@@ -2543,7 +2543,7 @@
     (pin "1" (uuid c79c84f6-2b92-4e38-b5c9-edd6ab3f702e))
     (pin "2" (uuid 8681f4c7-33a9-4bc3-a1f5-09662c576ca5))
     (instances
-      (project "PCBa_KRAKE"
+      (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
           (reference "C?") (unit 1)
         )
