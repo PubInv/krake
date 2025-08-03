@@ -6936,7 +6936,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 33.02 80.01 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6d3fefdf-595c-41a4-8deb-dbdb5acf7deb)
-    (property "Reference" "TP?" (at 22.86 72.39 0)
+    (property "Reference" "TP109" (at 22.86 72.39 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "3v3Controller" (at 22.86 74.93 0)
@@ -6979,7 +6979,7 @@
     (instances
       (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
-          (reference "TP?") (unit 1)
+          (reference "TP109") (unit 1)
         )
       )
     )
