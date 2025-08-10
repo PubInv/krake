@@ -2195,7 +2195,7 @@
   (symbol (lib_id "GPAD_SCH_LIB:22-23-2021") (at 190.5 133.35 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 94b7c89b-9bb2-47cd-addc-557d34dd892d)
-    (property "Reference" "J603" (at 194.31 130.81 90)
+    (property "Reference" "J604" (at 194.31 130.81 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "2mm_2Pin" (at 186.69 139.7 90)
@@ -2245,7 +2245,7 @@
     (instances
       (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062dd8e5f"
-          (reference "J603") (unit 1)
+          (reference "J604") (unit 1)
         )
       )
     )
