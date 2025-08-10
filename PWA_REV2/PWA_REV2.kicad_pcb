@@ -2004,7 +2004,7 @@
     (property "ki_keywords" "USB UART Serial Converter Interface")
     (path "/00000000-0000-0000-0000-000062bc4e7e/ac3455b6-5c9d-4481-b668-6a23b36359b9")
     (attr smd)
-    (fp_text reference "U501" (at 0 -4.55 90) (layer "F.SilkS")
+    (fp_text reference "U501" (at -5.334 -2.2745 180) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 8b356d55-2c3f-4e8e-b17b-fcd0b75f43af)
     )
