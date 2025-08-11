@@ -6,13 +6,14 @@
 
   (paper "USLetter")
   (title_block
-    (title "GeneralPurposeAlarmDevicePCB")
-    (date "2022-07-26")
-    (rev "0.0.1")
+    (title "KRAKE_PCB")
+    (date "2025-07-18")
+    (rev "2.0")
     (company "PublicInvention")
     (comment 1 "GNU Affero General Public License v3.0")
-    (comment 2 "DrawnBy: (Forrest) Lee Erickson")
-    (comment 3 "Prototype#1")
+    (comment 2 "DrawnBy: (Forrest) Lee Erickson, Nagham Kheir")
+    (comment 3 "https://github.com/PubInv/krake")
+    (comment 4 "Inherited from the GPAD")
   )
 
   (layers
@@ -16282,7 +16283,7 @@
   (gr_text "MP3 Player" (at 104.648 53.594) (layer "F.SilkS") (tstamp cccfce1c-329e-4066-b9cc-01364c2cd548)
     (effects (font (size 1 1) (thickness 0.15)))
   )
-  (gr_text "Public Invention, Krake Rev 1.0 20250111" (at 57.404 50.8 90) (layer "F.SilkS") (tstamp d7f1e016-6ef1-425a-9360-806b7b474958)
+  (gr_text "Public Invention, Krake Rev 2.0 20250718" (at 57.404 50.8 90) (layer "F.SilkS") (tstamp d7f1e016-6ef1-425a-9360-806b7b474958)
     (effects (font (size 1.27 1.27) (thickness 0.254)))
   )
   (gr_text "CERN Open Hardware License Version 2 - Strongly Reciprocal" (at 59.182 53.34 90) (layer "F.SilkS") (tstamp e5cb1761-afce-417a-bbed-ba91931bc1ce)
