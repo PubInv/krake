@@ -2603,7 +2603,7 @@
     (property "Value" "5VDFP" (at 208.28 53.34 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded" (at 223.52 58.42 0)
+    (property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded" (at 223.52 58.42 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 223.52 58.42 0)

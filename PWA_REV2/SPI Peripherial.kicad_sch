@@ -2200,7 +2200,7 @@
     (property "Value" "5VRaw" (at 226.06 16.51 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "TestPoint:TestPoint_Loop_D2.54mm_Drill1.5mm_Beaded" (at 236.22 21.59 0)
+    (property "Footprint" "TestPoint:TestPoint_Loop_D1.80mm_Drill1.0mm_Beaded" (at 236.22 21.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 236.22 21.59 0)
