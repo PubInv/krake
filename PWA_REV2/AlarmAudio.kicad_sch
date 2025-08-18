@@ -2636,7 +2636,7 @@
     (property "Manufacturer 2" "" (at 218.44 58.42 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 98f6221b-a5f2-4197-98cb-eeadb01ac773))
+    (pin "1" (uuid 48fe15b4-40d0-45e5-8b42-0c091ce9b28e))
     (instances
       (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
