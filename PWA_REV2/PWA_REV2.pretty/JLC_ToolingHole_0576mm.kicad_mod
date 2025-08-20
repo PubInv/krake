@@ -14,4 +14,6 @@
   )
   (fp_circle (center 0 0) (end 0.576 0)
     (stroke (width 0.12) (type solid)) (fill none) (layer "Edge.Cuts") (tstamp a3948239-f095-41ab-904b-e24cf3c0f325))
+  (fp_circle (center 0 0) (end 0.726 0)
+    (stroke (width 0.05) (type default)) (fill none) (layer "F.CrtYd") (tstamp aec9160d-17ac-42c2-8fba-95c22740e0e5))
 )
