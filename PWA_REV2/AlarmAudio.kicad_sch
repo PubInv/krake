@@ -1503,6 +1503,10 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 7a434bb3-17be-476e-b2d0-4478b55aa596)
   )
+  (text "MUTE" (at 86.36 91.44 0)
+    (effects (font (size 2.54 2.54)) (justify left bottom))
+    (uuid 98ad732f-a113-4f23-81d6-204e4652a3fc)
+  )
   (text "Place R503 near uControler TX pin." (at 128.905 108.585 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid a7261e35-bea3-49c3-96d8-85d78d705960)
@@ -2117,7 +2121,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:SWITCH_TACTILE_12mmx12mm_SPST-NO_0.05A_24V") (at 92.71 83.82 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 9067c4e2-60cf-4adf-b453-c9067dba73e5)
     (property "Reference" "S601" (at 92.71 74.93 0)
       (effects (font (size 1.524 1.524)))
@@ -2179,10 +2183,10 @@
     (property "Manufacturer 2" "" (at 92.71 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid b5af1a4d-4d50-4b37-ab9d-005abe2fae9e))
-    (pin "2" (uuid cf55872c-dabd-4494-99c3-ad6cedac7fc0))
-    (pin "3" (uuid 69a44876-168a-4418-8f0b-b626f8793280))
-    (pin "4" (uuid f575c7aa-7551-443e-971f-eceb29c21a07))
+    (pin "1" (uuid 8b7f468e-b23b-47b2-93ec-a070ca85d857))
+    (pin "2" (uuid c22f7db2-68dc-4e70-818e-2b99fa3b0920))
+    (pin "3" (uuid ffce9277-6ec0-4786-961f-d0078bc791a0))
+    (pin "4" (uuid cdfb072e-2e6f-4323-a163-cbed8053e8a2))
     (instances
       (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf/00000000-0000-0000-0000-000062dd8e5f"
