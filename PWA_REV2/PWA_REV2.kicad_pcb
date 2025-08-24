@@ -17447,6 +17447,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "${KIPRJMOD}/Parts/EC11E-05SW.STEP"
+      (offset (xyz 7.493 -2.159 -12.065))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "GeneralPurposeAlarmDevicePCB:U_Box_V104_General_Alarm_Device_LED_Standoff" locked (layer "B.Cu")
