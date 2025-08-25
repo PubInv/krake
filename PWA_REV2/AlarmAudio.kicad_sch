@@ -1719,7 +1719,7 @@
     (property "Value" "1X2P 1.25 mm Header" (at 181.61 124.46 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_Molex:Molex_PicoBlade_53047-0210_1x02_P1.25mm_Vertical" (at 182.88 125.73 0)
+    (property "Footprint" "GeneralPurposeAlarmDevicePCB:Molex_PicoBlade_53047-0210_1x02_P1.25mm_Vertical" (at 182.88 125.73 0)
       (effects (font (size 1.524 1.524)) (justify left) hide)
     )
     (property "Datasheet" " " (at 185.42 125.73 0)
