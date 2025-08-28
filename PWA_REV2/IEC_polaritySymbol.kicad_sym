@@ -1,0 +1,107 @@
+(kicad_symbol_lib (version 20211014) (generator "KiCad IEC Polarity Helper")
+
+  (symbol "AIBE_Conn:Barrel_Jack_CenterPositive"
+    (pin_names (offset 1.27))
+    (in_bom yes) (on_board yes)
+
+    (property "Reference" "J" (id 0) (at 0 7 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "Barrel_Jack_CenterPositive" (id 1) (at 0 -7 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Footprint" "" (id 2) (at 0 -9 0) (effects (font (size 1.27 1.27))) (hide yes))
+    (property "Datasheet" "" (id 3) (at 0 -11 0) (effects (font (size 1.27 1.27))) (hide yes))
+
+    (symbol "body"
+      ; body box
+      (rectangle (start -7 5) (end 7 -5)
+        (stroke (width 0.25) (type default)) (fill (type none)))
+
+      ; pin labels inside body (optional)
+      (text "CENTER" (at 2 -1 0) (effects (font (size 1 1))))
+      (text "SLEEVE" (at 2 3 0) (effects (font (size 1 1))))
+
+      ; IEC polarity graphic (center-positive)
+      ; small dot (center contact = +)
+      (circle (center -4 -2.5) (radius 0.6)
+        (stroke (width 0.25) (type default)) (fill (type none)))
+      (text "+" (at -4 -4 0) (effects (font (size 1 1))))
+      ; outer arc (sleeve = -)
+      (arc (start -6 2.5) (mid -4 4.5) (end -2 2.5)
+        (stroke (width 0.25) (type default)))
+      (text "−" (at -6.8 2.5 0) (effects (font (size 1 1))))
+      ; link line between + dot and − arc
+      (polyline
+        (pts (xy -4 -1.8) (xy -4 1.8))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+
+      ; pins
+      ; Pin 1 = Center (usually +V)
+      (pin passive line (at -10 -2 0) (length 3)
+        (name "1" (effects (font (size 1 1))))
+        (number "1" (effects (font (size 1 1)))))
+      ; Pin 2 = Sleeve (usually GND)
+      (pin passive line (at -10 2 0) (length 3)
+        (name "2" (effects (font (size 1 1))))
+        (number "2" (effects (font (size 1 1)))))
+
+      ; internal guides from pins into body (purely cosmetic)
+      (polyline (pts (xy -7 -2) (xy -5 -2))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+      (polyline (pts (xy -7 2) (xy -5 2))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+    )
+  )
+
+  (symbol "AIBE_Conn:Barrel_Jack_CenterPositive_Switch"
+    (pin_names (offset 1.27))
+    (in_bom yes) (on_board yes)
+
+    (property "Reference" "J" (id 0) (at 0 8 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "Barrel_Jack_CenterPositive_Switch" (id 1) (at 0 -8 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Footprint" "" (id 2) (at 0 -10 0) (effects (font (size 1.27 1.27))) (hide yes))
+    (property "Datasheet" "" (id 3) (at 0 -12 0) (effects (font (size 1.27 1.27))) (hide yes))
+
+    (symbol "body"
+      ; body box
+      (rectangle (start -7 6) (end 9 -6)
+        (stroke (width 0.25) (type default)) (fill (type none)))
+
+      (text "CENTER" (at 2 -1 0) (effects (font (size 1 1))))
+      (text "SLEEVE" (at 2 3 0) (effects (font (size 1 1))))
+      (text "SW" (at 4.8 -3.8 0) (effects (font (size 1 1))))
+
+      ; IEC polarity graphic (center-positive)
+      (circle (center -4 -3) (radius 0.6)
+        (stroke (width 0.25) (type default)) (fill (type none)))
+      (text "+" (at -4 -4.5 0) (effects (font (size 1 1))))
+      (arc (start -6 3) (mid -4 5) (end -2 3)
+        (stroke (width 0.25) (type default)))
+      (text "−" (at -6.8 3 0) (effects (font (size 1 1))))
+      (polyline
+        (pts (xy -4 -2.2) (xy -4 2.2))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+
+      ; pins
+      ; 1 = Center (V+), 2 = Sleeve (GND), 3 = Switch (normally connected to sleeve or center per footprint/datasheet)
+      (pin passive line (at -10 -2 0) (length 3)
+        (name "1" (effects (font (size 1 1))))
+        (number "1" (effects (font (size 1 1)))))
+      (pin passive line (at -10 2 0) (length 3)
+        (name "2" (effects (font (size 1 1))))
+        (number "2" (effects (font (size 1 1)))))
+      (pin passive line (at 12 -4 180) (length 3)
+        (name "3" (effects (font (size 1 1))))
+        (number "3" (effects (font (size 1 1)))))
+
+      ; guide lines to show switch behavior (schematic-only visual)
+      (polyline (pts (xy 7 -4) (xy 5 -4))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+      (polyline (pts (xy 5 -4) (xy 5 2))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+      (polyline (pts (xy 5 2) (xy -5 2))
+        (stroke (width 0.25) (type default)) (fill (type none)))
+    )
+  )
+)
