@@ -1100,10 +1100,6 @@
           (stroke (width 0.254) (type default))
           (fill (type none))
         )
-        (circle (center 0 0) (radius 0.762)
-          (stroke (width 0) (type default))
-          (fill (type outline))
-        )
         (polyline
           (pts
             (xy -8.382 0)
@@ -1143,6 +1139,10 @@
           )
           (stroke (width 0) (type default))
           (fill (type none))
+        )
+        (circle (center 0 0) (radius 0.762)
+          (stroke (width 0) (type default))
+          (fill (type outline))
         )
         (arc (start 1.524 1.0433) (mid 0 1.8469) (end -1.524 1.0433)
           (stroke (width 0.254) (type default))
