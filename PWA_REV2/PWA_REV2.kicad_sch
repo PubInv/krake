@@ -8176,6 +8176,9 @@
     (property "Sim.Enable" "0" (at 26.67 22.86 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "AssemblyType" "NA" (at 26.67 20.32 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (instances
       (project "PWA_REV2"
         (path "/412a327d-1ee3-473e-bc00-1545004b7edf"
@@ -9038,6 +9041,9 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 266.7 173.99 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "AssemblyType" "NA" (at 266.7 173.99 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (instances

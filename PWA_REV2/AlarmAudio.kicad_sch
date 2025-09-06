@@ -2290,6 +2290,9 @@
     (property "Manufacturer 2" "" (at 190.5 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "AssemblyType" "HAND" (at 190.5 133.35 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid 6ec1e884-925d-4d56-8017-cb1985fe724d))
     (pin "2" (uuid 95b5a1f2-9631-422b-a99c-eda7811066e7))
     (instances
