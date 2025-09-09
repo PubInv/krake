@@ -31,9 +31,9 @@ GPAD  = 0;      // [0:Off, 1:On]
 
 GPAD_TShell          = 0;
 GPAD_TShellWithVESA  = 1;
-GPAD_BShell          = 0;
-GPAD_FPanL           = 0;
-GPAD_BPanL           = 0;
+GPAD_BShell          = 1;
+GPAD_FPanL           = 1;
+GPAD_BPanL           = 1;
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
 T_BShellScrew        = 0;
