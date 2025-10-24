@@ -18,12 +18,11 @@
 
 */
 
-
 #ifndef GPAD_HAL
 #define GPAD_HAL 1
-#include <stream.h>
-//#include <Arduino.h>
-#include <PubSubClient.h> 
+#include <Stream.h>
+// #include <Arduino.h>
+#include <PubSubClient.h>
 #include <LiquidCrystal_I2C.h>
 
 // On Nov. 5th, 2024, we image 3 different hardware platforms.
@@ -34,32 +33,32 @@
 
 // Define only ONE of these hardware options.
 // #define GPAD 1
-//#define HMWK 1
+// #define HMWK 1
 #define KRAKE 1
 
 // Use these to choose the I2C address of LCD
 // GPAD device (earlier version of the Krake)
-#define LCD_ADDRESS 0x38 
+#define LCD_ADDRESS 0x38
 // Maryville version and Austin version
-// #define LCD_ADDRESS 0x27 
+// #define LCD_ADDRESS 0x27
 // General (Lebanon) Version
-// #define LCD_ADDRESS 0x3F 
+// #define LCD_ADDRESS 0x3F
 
-//Pin definitions.  Assign symbolic constant to Arduino pin numbers.
-//For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
-// This should be done with an "#elif", but I can't get it to work
+// Pin definitions.  Assign symbolic constant to Arduino pin numbers.
+// For more information see: https://www.arduino.cc/en/Tutorial/Foundations/DigitalPins
+//  This should be done with an "#elif", but I can't get it to work
 
 #if defined(KRAKE)
 
 #define SWITCH_MUTE 35
-//#define TONE_PIN 8
+// #define TONE_PIN 8
 #define LIGHT0 12
 #define LIGHT1 14
 #define LIGHT2 27
 #define LIGHT3 26
 #define LIGHT4 25
 #define LED_BUILTIN 13
-#define SWITCH_ENCODER 34 //Center switch aka button Normaly high.
+#define SWITCH_ENCODER 34 // Center switch aka button Normaly high.
 #endif
 
 #if defined(GPAD)
@@ -77,8 +76,8 @@
 // This should be done with an "#elif", but I can't get it to work
 #if defined(HMWK)
 
-//#define SWITCH_MUTE 34
-#define SWITCH_MUTE 0 //Boot button
+// #define SWITCH_MUTE 34
+#define SWITCH_MUTE 0 // Boot button
 #define LED_D9 23
 #define LIGHT0 15
 #define LIGHT1 4
@@ -90,28 +89,26 @@
 
 #endif
 
-
-#ifdef GPAD_VERSION1  //The Version 1 PCB.
-//#define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
+#ifdef GPAD_VERSION1 // The Version 1 PCB.
+// #define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
 
 #if defined(HMWK)
 // const int LED_D9 = 23;  // Mute1 LED on PMD
-#define LED_PIN 23      // for GPAD LIGHT0
-#define BUTTON_PIN 2    //GPAD Button to GND,  10K Resistor to +5V.
-#else                   // compile for an UNO, for example...
-#define LED_PIN PD3     // for GPAD LIGHT0
-#define BUTTON_PIN PD2  //GPAD Button to GND,  10K Resistor to +5V.
+#define LED_PIN 23     // for GPAD LIGHT0
+#define BUTTON_PIN 2   // GPAD Button to GND,  10K Resistor to +5V.
+#else                  // compile for an UNO, for example...
+#define LED_PIN PD3    // for GPAD LIGHT0
+#define BUTTON_PIN PD2 // GPAD Button to GND,  10K Resistor to +5V.
 #endif
 
-#else  //The proof of concept wiring.
+#else // The proof of concept wiring.
 #define LED_PIN 7
-#define BUTTON_PIN 2  //Button to GND, 10K Resistor to +5V.
+#define BUTTON_PIN 2 // Button to GND, 10K Resistor to +5V.
 #endif
 
-
-// Define TX and RX pins for UART1 
+// Define TX and RX pins for UART1
 // For PCB and for Mocking Krake Maryville
-//See also Issue# 94
+// See also Issue# 94
 #define TXD1 2
 #define RXD1 15
 #define UART1_BAUD_RATE 115200
@@ -141,7 +138,6 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 // This module has to be initialized and called each time through the superloop
 void GPAD_HAL_setup(Stream *serialport);
 void GPAD_HAL_loop();
-
 
 extern LiquidCrystal_I2C lcd;
 #endif
