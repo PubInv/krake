@@ -150,7 +150,7 @@ const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
-const char* mqtt_server = "public.cloud.shiftr.io";
+const char* mqtt_broker_name = "public.cloud.shiftr.io";
 const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
@@ -204,7 +204,7 @@ void serialSplash() {
   Serial.print(F("Alarm Topic: "));
   Serial.println(subscribe_Alarm_Topic);
   Serial.print(F("Broker: "));
-  Serial.println(mqtt_server);
+  Serial.println(mqtt_broker_name);
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
@@ -418,7 +418,7 @@ void setup() {
 #endif
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
-  client.setServer(mqtt_server, 1883);  //Default MQTT port
+  client.setServer(mqtt_broker_name, 1883);  //Default MQTT port
   client.setCallback(callback);
 
 #if (DEBUG > 0)
