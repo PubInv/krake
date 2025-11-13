@@ -30,9 +30,8 @@ These commands are implemented on the command line as:
 ```
 
 Remember, with our current hardware, to prepare the Krake to have firmware uploaded, you need to perform these actions:
-
- 1.      Connect Krake to power and to the computer
- 2.      Press and hold the BOOT button.
- 3.      While still holding BOOT, press and release the RESET button once.
- 4.      Release the BOOT button.
- 5.      The chip is now in boot mode. You can run your flasher and the port should respond.
+1.      Connect Krake to power and to the computer
+2.      Press and hold the BOOT button.
+3.      While still holding BOOT, press and release the RESET button once.
+4.      Release the BOOT button.
+5.      The chip is now in boot mode. You can run your flasher and the port should respond.
