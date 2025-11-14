@@ -448,10 +448,12 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
       }
     case Command::INFO:  //Information. Firmware Version, Mute Status,
       {
+        const char NULL_TERMINATOR = '\0';
         //Firmware Version
         // 81+23 = Maximum string length
         //        char onInfoMsg[32] = "Firmware Version: ";
         //        static char onInfoMsg[81+24] = "Firmware Version: "; //This does not have the bug.
+
         char onInfoMsg[81 + 24] = "Firmware Version: ";  //This
         char str[20];
 
@@ -459,10 +461,17 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         client->publish(publish_Ack_Topic, onInfoMsg);
         serialport->println(onInfoMsg);
 
-        //Up time
-        onInfoMsg[0] = '\0';
+        // GPAD API Version
+        onInfoMsg[0] = NULL_TERMINATOR;
+        strcat(onInfoMsg, "GPAD API Version: ");
+        strcat(onInfoMsg, GPAD_API_VERSION);
+        client->publish(publish_Ack_Topic, onInfoMsg);
+        serialport->println(onInfoMsg);
 
-        str[0] = '\0';
+        //Up time
+        onInfoMsg[0] = NULL_TERMINATOR;
+
+        str[0] = NULL_TERMINATOR;
         strcat(onInfoMsg, "System up time (mills): ");
         sprintf(str, "%d", millis());
         strcat(onInfoMsg, str);
@@ -470,7 +479,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         serialport->println(onInfoMsg);
 
         // Mute status
-        onInfoMsg[0] = '\0';
+        onInfoMsg[0] = NULL_TERMINATOR;
         //onInfoMsg[32] = "Mute Status: ";
         strcat(onInfoMsg, "Mute Status: ");
         if (currentlyMuted) {
@@ -482,7 +491,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         serialport->println(onInfoMsg);
 
         //Alarm level
-        onInfoMsg[0] = '\0';
+        onInfoMsg[0] = NULL_TERMINATOR;
         str[0] = '\0';
         strcat(onInfoMsg, "Current alarm Level: ");
         sprintf(str, "%d", getCurrentAlarmLevel());
@@ -491,7 +500,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         serialport->println(onInfoMsg);
 
         //Alarm message
-        onInfoMsg[0] = '\0';
+        onInfoMsg[0] = NULL_TERMINATOR;
         strcat(onInfoMsg, "Current alarm message: ");
         //        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
         strcat(onInfoMsg, getCurrentMessage());
@@ -501,7 +510,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
         //IP Address
         //Serial.println(WiFi.localIP());
 
-        onInfoMsg[0] = '\0';
+        onInfoMsg[0] = NULL_TERMINATOR;
         strcat(onInfoMsg, "IP Address: ");
         // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
 
