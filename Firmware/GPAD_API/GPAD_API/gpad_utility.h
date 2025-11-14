@@ -30,6 +30,9 @@
 #ifndef FIRMWARE_VERSION
 #define FIRMWARE_VERSION ""
 #endif
+#ifndef GPAD_API_VERSION
+#define GPAD_API_VERSION ""
+#endif
 // #define HARDWARE_VERSION "V0.0.1 "
 #ifndef MODEL_NAME
 #define MODEL_NAME ""
