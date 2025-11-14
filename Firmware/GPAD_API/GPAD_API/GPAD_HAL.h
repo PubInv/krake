@@ -122,6 +122,15 @@ extern HardwareSerial uartSerial1;
 #define UART2_BAUD_RATE 9600
 extern HardwareSerial uartSerial1;
 
+enum class Command : char
+{
+  MUTE   = 's',
+  UNMUTE = 'u',
+  HELP   = 'h',
+  ALARM  = 'a',
+  INFO   = 'i',
+};
+
 // SPI Functions....
 void setup_spi();
 void receive_byte(byte c);

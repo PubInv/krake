@@ -424,24 +424,24 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     printError(serialport);
     return;
   }
-  char C = buf[0];
+  Command command = static_cast<Command>(buf[0]);
 
   serialport->print(F("Command: "));
-  serialport->println(C);
-  switch (C)
+  serialport->println(F(command));
+  switch (command)
   {
-  case 's':
+  case Command::MUTE:
     serialport->println(F("Muting Case!"));
     currentlyMuted = true;
     break;
-  case 'u':
+  case Command::UNMUTE:
     serialport->println(F("UnMuting Case!"));
     currentlyMuted = false;
     break;
-  case 'h': // help
+  case Command::HELP: // help
     printInstructions(serialport);
     break;
-  case 'a':
+  case Command::ALARM:
   {
     // In the case of an alarm state, the rest of the buffer is a message.
     // we will read up to 60 characters from this buffer for display on our
@@ -462,7 +462,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break;
   }
-  case 'i': // Information. Firmware Version, Mute Status,
+  case Command::INFO: // Information. Firmware Version, Mute Status,
   {
     // Firmware Version
     //  81+23 = Maximum string length
