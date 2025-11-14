@@ -124,11 +124,12 @@ extern HardwareSerial uartSerial1;
 
 enum class Command : char
 {
-  MUTE   = 's',
+  MUTE = 's',
   UNMUTE = 'u',
-  HELP   = 'h',
-  ALARM  = 'a',
-  INFO   = 'i',
+  HELP = 'h',
+  ALARM = 'a',
+  INFO = 'i',
+  INFO_JSON = 'j',
 };
 
 // SPI Functions....

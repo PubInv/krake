@@ -538,6 +538,11 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break; // end of 'i'
   }
+  case Command::INFO_JSON:
+  {
+    // return INFO response, but as JSON payload
+    break;
+  }
   default:
     serialport->println(F("Unknown Command"));
     break;
