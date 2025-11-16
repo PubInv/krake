@@ -22,23 +22,23 @@
 #define GPAD_UTILITY 1
 #include <Stream.h>
 #ifndef COMPANY_NAME
-  #define COMPANY_NAME ""
+  #define COMPANY_NAME "PubInv "
 #endif
 #ifndef PROG_NAME
-  #define PROG_NAME ""
+  #define PROG_NAME "GPAD_API "
 #endif
 #ifndef FIRMWARE_VERSION
-  #define FIRMWARE_VERSION ""
+  #define FIRMWARE_VERSION "0.46 "
 #endif
 //#define HARDWARE_VERSION "V0.0.1 "
 #ifndef MODEL_NAME
-  #define MODEL_NAME ""
+  #define MODEL_NAME "KRAKE_"
 #endif
 #ifndef LICENSE
-  #define LICENSE ""
+  #define LICENSE "GNU Affero General Public License, version 3 "
 #endif
 #ifndef ORIGIN
-  #define ORIGIN ""
+  #define ORIGIN "US"
 #endif
 #define DEVICE_UNDER_TEST "Krake: DFPlayer"  //This is GPAD code, but if it is used in testing...
 
