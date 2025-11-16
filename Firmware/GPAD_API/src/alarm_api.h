@@ -22,18 +22,22 @@
 #define ALARM_API
 #include <Stream.h>
 
-enum AlarmLevel { silent,
-                  informational,
-                  problem,
-                  warning,
-                  critical,
-                  panic };
+enum AlarmLevel
+{
+  silent,
+  informational,
+  problem,
+  warning,
+  critical,
+  panic
+};
 // const char *AlarmNames[] = { "OK   ","INFO.","PROB.","WARN ","CRIT.","PANIC" };
 const int NUM_LEVELS = 6;
 
 const int MAX_MSG_LEN = 80;
 const int MAX_BUFFER_SIZE = MAX_MSG_LEN + 1;
-typedef struct {
+typedef struct
+{
   uint8_t lvl;
   // we will use a null-terminated string!
   char msg[MAX_MSG_LEN + 1];
