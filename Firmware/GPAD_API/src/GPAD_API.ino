@@ -526,7 +526,6 @@ bool menu_just_exited = false;
 
 void loop()
 {
-
   bool is_WIFIconnected = false;
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)

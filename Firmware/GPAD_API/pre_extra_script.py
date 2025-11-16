@@ -3,7 +3,7 @@ Import("env")
 cpp_defines = [
     ("COMPANY_NAME", "PubInv "),   # For the Broker ID for MQTT 
     ("PROG_NAME", "GPAD_API "),    # This program
-    ("FIRMWARE_VERSION", "0.45 "), # Initial Menu implementation
+    ("FIRMWARE_VERSION", "0.46 "), # Initial Menu implementation
     ("MODEL_NAME", "KRAKE_"), 
     ("LICENSE", "GNU Affero General Public License, version 3 "),
     ("ORIGIN", "US"),
