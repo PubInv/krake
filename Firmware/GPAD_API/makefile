@@ -21,3 +21,6 @@ run:
 
 monitor:
 	pio device monitor -b 115200
+
+uploadfs:
+	pio run --target uploadfs
