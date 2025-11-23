@@ -145,8 +145,8 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const char* password = "$Suve07$$";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
+// const char* ssid = "readfamilynetwork";
+// const char* password = "magicalsparrow96";
 
 
 // MQTT Broker
