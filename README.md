@@ -6,6 +6,11 @@ Krake is an **annunciator** meant to alert a human to something needing attentio
 
 The Krake has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer Inventional Coach Lee Erickson.
 
+## Inventory 
+URL https://nk25719.github.io/krakeFactory/factory-form.html
+DataBase for krake units and tests registeries. 
+
+
 # Wi-Fi enablement
 It will connect as a station to a Wi-Fi local area network.
 The Krake receives alarm messages from another device, the Controller.
