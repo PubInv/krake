@@ -5068,7 +5068,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 147.32 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062ce9822)
     (property "Reference" "H104" (at 219.71 146.0754 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5120,7 +5120,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 139.7 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062cea64d)
     (property "Reference" "H103" (at 219.71 138.4554 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5172,7 +5172,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 132.08 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062ceaa1a)
     (property "Reference" "H102" (at 219.71 130.8354 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5224,7 +5224,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 124.46 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062ceadbe)
     (property "Reference" "H101" (at 219.71 123.2154 0)
       (effects (font (size 1.27 1.27)) (justify left))
