@@ -36,7 +36,7 @@ const char* password = "textinsert";
 
 
 // MQTT Broker
-const char* mqtt_server = "public.cloud.shiftr.io";
+const char* mqtt_broker_name = "public.cloud.shiftr.io";
 const char* mqtt_user = "public";
 const char* mqtt_password = "public";
 
@@ -261,7 +261,7 @@ void setup() {
   turnOnAllLamps();
 
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_broker_name, 1883);
   client.setCallback(callback);
 
   digitalWrite(LED_BUILTIN, LOW);
