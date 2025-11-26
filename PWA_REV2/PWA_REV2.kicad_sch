@@ -9029,7 +9029,7 @@
   )
 
   (symbol (lib_id "Graphic:Logo_Open_Hardware_Small") (at 266.7 173.99 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e3c9b7d8-fadd-427c-88e4-717973e7bc41)
     (property "Reference" "SYM101" (at 266.7 167.005 0)
       (effects (font (size 1.27 1.27)))
