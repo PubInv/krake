@@ -22,25 +22,27 @@ include <StudModules.scad>
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
-Krake = 1;      // [0:Off, 1:On]
+Krake = 1;      // [0:Off, 1:On] //on
 GPAD  = 0;      // [0:Off, 1:On]
 
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
 
+//
+
 GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 1;
-GPAD_BShell          = 0;
-GPAD_FPanL           = 0;
-GPAD_BPanL           = 0;
+GPAD_TShellWithVESA  = 0; //1 back of unit
+GPAD_BShell          = 1; //2 w/LCD 
+GPAD_FPanL           = 0;//3 bottom
+GPAD_BPanL           = 0; //4 top
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
 T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;
+PWA_KRAKE            = 0;//pcb 
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -50,10 +52,16 @@ HEAT_SET_INSERTS     = 0;
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
+// speaker parameters
+SpeakerRadius_mm=78/2; 
+SpeakerHeight_mm=42;
+SpeakerDiameter_mm=80.4;
 
-Length         = 83.82 + 13;       
-Width          = 138 + 13;                     
-Height         = 40;  
+translationVariable = 1.5 * SpeakerHeight_mm;
+
+Length         = 83.82 + 13 +SpeakerHeight_mm*2;  //x axis    
+Width          = 138 + 13; //y axis axis            
+Height         = 40 + 1.5*SpeakerDiameter_mm; //z axis 
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
 Resolution     = 50;                   // Filet smoothness
@@ -62,11 +70,12 @@ PCBFeet        = 1;                    // Enable PCB feet
 Vent           = 1;                    // Enable vents
 Vent_width     = 1.5;
 
+
 ////////////////////////////////////////////////////////////////////
 // PCB Parameters - Common
 ////////////////////////////////////////////////////////////////////
 
-PCBPosX        = 0;
+PCBPosX        = 0 + translationVariable;
 PCBPosY        = 0;
 PCBLength      = 83.82;
 PCBWidth       = 137.16;
@@ -96,34 +105,35 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 
 
 //Modifications for Display
-DisplayXpos = PCBLength-50.8;
+DisplayXpos = PCBLength-50.8  + translationVariable;
 DisplayYpos = 71.12;
 DisplayLenght = 26;
 DisplayWidth = 76;
 DisplayFilet = 0;
 
-//Modificationd for muteButton
-muteButtonXpos = PCBLength-10;
+//Modifications for muteButton
+muteButtonXpos = PCBLength-10  + translationVariable;
 muteButtonYpos = 31.75;
 muteButtonDiameter = 15;
 
 //Modifications for SpeakerHole
 SpeakerHoleY = Krake ? PCBWidth*.769 : 15.24;
-SpeakerHoleX = Krake ? PCBLength*.815 :PCBLength - 15.24;
+SpeakerHoleX = translationVariable + ( Krake ? PCBLength*.815 :PCBLength - 15.24 );
 
 //Parameters for LEDHole
 LEDspacing = 12.7 ;
-LEDYposOffset = 15.24 ; // offset from the Encoder edge of PCB
+LEDYposOffset = 15.24  ; // offset from the Encoder edge of PCB
 LEDXposOffset = 27.94 ; // offset from the connector edge of PCB
 
 
 // Krake Modifications for RotaryEncodeHole
 i=-1; // Encoder is one LEd spacing below LEDs
-RotaryEncoderXpos      = Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0;
+RotaryEncoderXpos      =  translationVariable + ( Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0 );
 RotaryEncoderYpos      = Krake ? 15.24 : 0;
 RotaryEncoderDiameter  = Krake ? 16 : 0;
 
 // Connectors Modifications specific port logic
+//if krake true x: y; i.e if krake on, usbbon =0, aka off
 USBbOn    = Krake ? 0 : 1;
 USBcOn    = Krake ? 1 : 0;
 DE9On     = Krake ? 1 : 0;
@@ -139,7 +149,7 @@ if (Krake + GPAD > 1)
 
 // Import 3mm Plastite Screw
 if(BOSSScrew ==1){
-    translate ([PCBLength-70.74,12.24,25])
+    translate ([PCBLength-70.74,12.24,25]) //is this just to reposition the screw to the correct place?, where are these numbers from?
     //translate ([0,0,FootHeight+ScrewLenght+1])
     import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
@@ -165,6 +175,8 @@ module RoundBox($a=Length, $b=Width, $c=Height){// Cube bords arrondis
         }
     }
 }// End of RoundBox Module
+//strange cube sizing to mitigate the fact after minkowski the box would get larger as addition of cylinder size plus cube size thus desired length/2, desired width - 2 times the extra added because of the cylinder
+//confused on the translate and rotate requirements , when you rotate it it drops below the line so you need to translate it up to keep it on the right plane, the rotate means the cylinder is on the longest edge off the cube
 
 
 ////////////////////////////////// - Module Coque/Shell - //////////////////////////////////         
@@ -175,6 +187,7 @@ module Coque(){//Coque - Shell
         difference(){//sides decoration
             union(){    
                 difference() {//soustraction de la forme centrale - Substraction Fileted box
+                //??unsure why subtracting a fileted box after subtracting a cube
                     difference(){//soustraction cube median - Median cube slicer
                         union() {//union               
                             difference(){//Coque    
@@ -947,7 +960,7 @@ if(PWA_GPAD==1){
 
 if(PWA_KRAKE==1){
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
-    translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
+    translate([3*Thick+2  + translationVariable,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
         rotate([0,0,90])translate([0,0,PCBThick-0.2]);
         rotate([0,0,90])translate([-55.88,17.78,0])
         color(Couleur3)
@@ -1029,5 +1042,71 @@ if (T_BShellScrew==1){
         }
     }
 }//fin de sides holes
+
+// speaker expansion Courtney
+//consider port location and access holes
+module SonySpeaker () {
+import ("C:/Users/court/OneDrive/Documents/Public Invention/OpenSCAD models/Speaker_TwoBodies-Part_SpeakerBody_MetalWork.stl", convexity=3);
+}
+// Speaker location parameters
+SpeakerPositionX = Length/4;
+SpeakerPositionY =Width/2;
+SpeakerPositionZ = Height/4;
+
+SpeakerHolePosX =Thick+m/2 -FootHeight;
+SpeakerHolePosY = SpeakerPositionY;
+SpeakerHolePosZ = SpeakerPositionZ+ SpeakerDiameter_mm/2;
+Angle_deg =90;
+
+
+translate ([SpeakerPositionX, SpeakerPositionY, SpeakerPositionZ]) {
+    rotate ([0, 180, 0]){
+       //SonySpeaker ();
+        }
+    }
+module SpeakerFeet() {    
+    //1
+translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
+    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-10,SpeakerHolePosZ-10]) {
+        rotate ([0,90,0]){
+            foot(FootDia,FootHole,FootHeight);
+            }
+        }
+    }
+    //2
+translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
+    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-SpeakerDiameter_mm+10,SpeakerHolePosZ-10]) {
+        rotate ([0,90,0]){
+            foot(FootDia,FootHole,FootHeight);
+            }
+        }
+    }
+    //3
+    translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
+    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-SpeakerDiameter_mm+10,SpeakerHolePosZ-SpeakerHeight_mm*2+13.5]) {
+        rotate ([0,90,0]){
+            foot(FootDia,FootHole,FootHeight);
+            }
+        }
+    }
+    //4
+     translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
+    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-10,SpeakerHolePosZ-SpeakerHeight_mm*2+13.5]) {
+        rotate ([0,90,0]){
+            foot(FootDia,FootHole,FootHeight);
+            }
+        }
+    }
+    }
+    
+    
+module SonySpeakerKnife () {
+    cylinder ( h=2*SpeakerHeight_mm, r=SpeakerRadius_mm, center=false);
+}
+
+    translate ([SpeakerPositionX, SpeakerPositionY, -10]) {   
+       // SonySpeakerKnife();
+}
+
 
 
