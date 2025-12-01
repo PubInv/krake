@@ -1,0 +1,5 @@
+# Example .gitattributes entry
+*.png binary
+*.jpg binary
+*.pdf binary
+*.xlsx binary
