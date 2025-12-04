@@ -54,19 +54,19 @@
 #include "GPAD_HAL.h"
 #include "gpad_utility.h"
 #include "gpad_serial.h"
-#include "wink.h"
-#include <Math.h>
+#include "Wink.h"
+#include <math.h>
 
 #include <WiFi.h>
 #include <esp_wifi.h>
 
-#include <PubSubClient.h>  // From library https://github.com/knolleary/
+#include <PubSubClient.h> // From library https://github.com/knolleary/
 
-#include <WiFiManager.h>  // WiFi Manager for ESP32
-#include "LittleFS.h"
+#include <WiFiManager.h> // WiFi Manager for ESP32
+#include <LittleFS.h>
 #include <ElegantOTA.h>
-#include <FS.h>    // File System Support
-#include <Wire.h>  // req for i2c comm
+#include <FS.h>   // File System Support
+#include <Wire.h> // req for i2c comm
 
 #include "WiFiManagerOTA.h"
 #include <ESPAsyncWebServer.h>
@@ -76,14 +76,12 @@
 #include "DFPlayer.h"
 #include "GPAD_menu.h"
 
-
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
 PubSubClient client(espClient);
-
 
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
@@ -99,9 +97,9 @@ PubSubClient client(espClient);
    20220927 Change back for GPAD nCS on Pin 10
 */
 
-//SPI PERIPHERAL (ARDUINO UNO)
-//SPI COMMUNICATION BETWEEN TWO ARDUINO UNOs
-//CIRCUIT DIGEST
+// SPI PERIPHERAL (ARDUINO UNO)
+// SPI COMMUNICATION BETWEEN TWO ARDUINO UNOs
+// CIRCUIT DIGEST
 
 /* Hardware Notes Peripheral
    SPI Line Pin in Arduino, IO setup
@@ -113,12 +111,11 @@ PubSubClient client(espClient);
 
 #define GPAD_VERSION1
 
-
 #define DEBUG_SPI 0
 
-//#define DEBUG 0
+// #define DEBUG 0
 #define DEBUG 1
-//#define DEBUG 4
+// #define DEBUG 4
 
 unsigned long last_command_ms;
 
@@ -127,32 +124,31 @@ unsigned long last_command_ms;
 const unsigned long DELAY_BEFORE_NEW_COMMAND_ALLOWED = 10000;
 const unsigned int NUM_WIFI_RECONNECT_RETRIES = 3;
 
-const int LED_PINS[] = { LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4 };
+const int LED_PINS[] = {LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4};
 // const int SWITCH_PINS[] = { SW1, SW2, SW3, SW4 };  // SW1, SW2, SW3, SW4
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
-//Aley network
-// const char* ssid = "Home";
-// const char* password = "adt@1963#";
+// Aley network
+//  const char* ssid = "Home";
+//  const char* password = "adt@1963#";
 
-//Maryville network
-// const char* ssid = "VRX";
-// const char* password = "textinsert";
+// Maryville network
+//  const char* ssid = "VRX";
+//  const char* password = "textinsert";
 
-//Houstin network
-// const char* ssid = "DOS_WIFI";
-// const char* password = "$Suve07$$";
+// Houstin network
+//  const char* ssid = "DOS_WIFI";
+//  const char* password = "$Suve07$$";
 
 // Austin network
-const char* ssid = "readfamilynetwork";
-const char* password = "magicalsparrow96";
-
+const char *ssid = "readfamilynetwork";
+const char *password = "magicalsparrow96";
 
 // MQTT Broker
-const char* mqtt_broker_name = "public.cloud.shiftr.io";
-const char* mqtt_user = "public";
-const char* mqtt_password = "public";
+const char *mqtt_broker_name = "public.cloud.shiftr.io";
+const char *mqtt_user = "public";
+const char *mqtt_password = "public";
 
 // MQTT Topics, MAC plus an extention
 // A MAC addresss treated as a string has 12 chars.
@@ -180,18 +176,19 @@ char macAddressString[13];
 // #define SERIAL_TIMEOUT_MS 600000
 #define SERIAL_TIMEOUT_MS 1000
 
-//Set LED wink parameters
-const int HIGH_TIME_LED_MS = 800;  //time in milliseconds
+// Set LED wink parameters
+const int HIGH_TIME_LED_MS = 800; // time in milliseconds
 const int LOW_TIME_LED_MS = 200;
 unsigned long lastLEDtime_ms = 0;
 // unsigned long nextLEDchangee_ms = 100; //time in ms.
-unsigned long nextLEDchangee_ms = 5000;  //time in ms.
+unsigned long nextLEDchangee_ms = 5000; // time in ms.
 
 // extern int LIGHT[];
 // extern int NUM_LIGHTS;
 
-void serialSplash() {
-  //Serial splash
+void serialSplash()
+{
+  // Serial splash
   Serial.println(F("==================================="));
   Serial.println(COMPANY_NAME);
   Serial.println(MODEL_NAME);
@@ -206,18 +203,20 @@ void serialSplash() {
   Serial.print(F("Broker: "));
   Serial.println(mqtt_broker_name);
   Serial.print(F("Compiled at: "));
-  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+  Serial.println(F(__DATE__ " " __TIME__)); // compile date that is used for a unique identifier
   Serial.println(LICENSE);
   Serial.println(F("==================================="));
   Serial.println();
 }
 
 // A periodic message identifying the subscriber (Krake) is on line.
-void publishOnLineMsg(void) {
+void publishOnLineMsg(void)
+{
   const unsigned long MESSAGE_PERIOD = 10000;
-  static unsigned long lastMillis = 0;  // Sets timing for periodic MQTT publish message
+  static unsigned long lastMillis = 0; // Sets timing for periodic MQTT publish message
   // publish a message roughly every second.
-  if ((millis() - lastMillis > MESSAGE_PERIOD) || (millis() < lastMillis)) {  //Check for role over.
+  if ((millis() - lastMillis > MESSAGE_PERIOD) || (millis() < lastMillis))
+  { // Check for role over.
     lastMillis = lastMillis + MESSAGE_PERIOD;
 
     float rssi = WiFi.RSSI();
@@ -238,15 +237,15 @@ void publishOnLineMsg(void) {
     // Serial.println(WiFi.localIP());  //FLE
 
 #if defined(HMWK)
-    digitalWrite(LED_D9, !digitalRead(LED_D9));  // Toggle
+    digitalWrite(LED_D9, !digitalRead(LED_D9)); // Toggle
 #endif
   }
 }
 
-
-
-bool connect_to_wifi() {
-  if (WiFi.status() != WL_CONNECTED) {
+bool connect_to_wifi()
+{
+  if (WiFi.status() != WL_CONNECTED)
+  {
     delay(10);
     Serial.println();
 
@@ -254,34 +253,42 @@ bool connect_to_wifi() {
     Serial.println(ssid);
 
     WiFi.begin(ssid, password);
-    if (WiFi.status() != WL_CONNECTED) {
+    if (WiFi.status() != WL_CONNECTED)
+    {
       Serial.println("Failed to connect WiFi.");
       return false;
-    } else {
+    }
+    else
+    {
       Serial.print("WiFi connected");
 
 #if (DEBUG > 1)
       delay(100);
-      Serial.print("Device connected at IPaddress: ");  //FLE
-      Serial.println(WiFi.localIP());                   //FLE
+      Serial.print("Device connected at IPaddress: "); // FLE
+      Serial.println(WiFi.localIP());                  // FLE
 #endif
       return true;
     }
   }
   return true;
-}  // end connect_to_wifi()
+} // end connect_to_wifi()
 
 // TODO: have this return a success or failure status and move
 // the delay up.
-void reconnect() {
+void reconnect()
+{
   int n = 0;
-  while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES) {
+  while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES)
+  {
     n++;
     Serial.print("Attempting MQTT connection...");
-    if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password)) {
+    if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
+    {
       Serial.println("success!");
-      client.subscribe(subscribe_Alarm_Topic);  // Subscribe to GPAD API alarms
-    } else {
+      client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
+    }
+    else
+    {
       Serial.print("failed, rc=");
       Serial.print(client.state());
       delay(1000);
@@ -290,7 +297,8 @@ void reconnect() {
   Serial.println((client.connected()) ? "connected!" : "failed to reconnect!");
 }
 // Function to turn on all lamps
-void turnOnAllLamps() {
+void turnOnAllLamps()
+{
 #if defined(HMWK)
   digitalWrite(LED_D9, HIGH);
 #endif
@@ -300,7 +308,8 @@ void turnOnAllLamps() {
   digitalWrite(LIGHT3, HIGH);
   digitalWrite(LIGHT4, HIGH);
 }
-void turnOffAllLamps() {
+void turnOffAllLamps()
+{
 #if defined(HMWK)
   digitalWrite(LED_D9, LOW);
 #endif
@@ -311,21 +320,22 @@ void turnOffAllLamps() {
   digitalWrite(LIGHT4, LOW);
 }
 
-
-
 // Handeler for MQTT subscribed messages
-void callback(char* topic, byte* payload, unsigned int length) {
+void callback(char *topic, byte *payload, unsigned int length)
+{
   // todo, remove use of String here....
   // Note: We will check for topic or topics in the future...
-  if (strcmp(topic, subscribe_Alarm_Topic) == 0) {
+  if (strcmp(topic, subscribe_Alarm_Topic) == 0)
+  {
     char mbuff[121];
     Serial.print("Topic arrived [");
     Serial.print(topic);
     Serial.print("] ");
 
-    //Put payload into mbuff[] a character array
+    // Put payload into mbuff[] a character array
     int m = min((unsigned int)length, (unsigned int)120);
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < m; i++)
+    {
       mbuff[i] = (char)payload[i];
     }
     mbuff[m] = '\0';
@@ -337,49 +347,53 @@ void callback(char* topic, byte* payload, unsigned int length) {
 #endif
 
     Serial.println("Received MQTT Msg.");
-    interpretBuffer(mbuff, m, &Serial, &client);  //Process the MQTT message
+    interpretBuffer(mbuff, m, &Serial, &client); // Process the MQTT message
     annunciateAlarmLevel(&Serial);
   }
-}  //end call back
+} // end call back
 
-bool readMacAddress(uint8_t* baseMac) {
+bool readMacAddress(uint8_t *baseMac)
+{
   //  uint8_t baseMac[6];
   esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
-  if (ret == ESP_OK) {
+  if (ret == ESP_OK)
+  {
     // Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
     //               baseMac[0], baseMac[1], baseMac[2],
     //               baseMac[3], baseMac[4], baseMac[5]);
     return true;
-  } else {
+  }
+  else
+  {
     // Serial.println("Failed to read MAC address");
     return false;
   }
 }
 
-//Elegant OTA Setup
+// Elegant OTA Setup
 
-void setupOTA() {
+void setupOTA()
+{
 
   // Route for root / web page
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/index.html", "text/html", false, processor); });
 
   server.serveStatic("/", LittleFS, "/");
-
 
   // End of ELegant OTA Setup
 }
 
-
-void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);  // set the LED pin mode
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
-  //Serial setup
+  // Serial setup
   delay(100);
   Serial.begin(BAUDRATE);
-  while (!Serial) {
-    ;  // wait for serial port to connect. Needed for native USB
+  while (!Serial)
+  {
+    ; // wait for serial port to connect. Needed for native USB
   }
   serialSplash();
   // We call this a second time to get the MAC on the screen
@@ -398,7 +412,7 @@ void setup() {
   // Turn off all LEDs initially
   turnOnAllLamps();
 
-  //Init arrays.
+  // Init arrays.
   subscribe_Alarm_Topic[0] = '\0';
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
@@ -407,9 +421,9 @@ void setup() {
   Serial.println("Call: GPAD_HAL_setup(&Serial)");
 #endif
 
-  //Setup and present LCD splash screen
-  //Setup the SWITCH_MUTE
-  //Setup the SWITCH_ENCODER
+  // Setup and present LCD splash screen
+  // Setup the SWITCH_MUTE
+  // Setup the SWITCH_ENCODER
   GPAD_HAL_setup(&Serial);
 
 #if (DEBUG > 0)
@@ -418,13 +432,12 @@ void setup() {
 #endif
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
-  client.setServer(mqtt_broker_name, 1883);  //Default MQTT port
+  client.setServer(mqtt_broker_name, 1883); // Default MQTT port
   client.setCallback(callback);
 
 #if (DEBUG > 0)
   Serial.println("Starting WiFi as STA");
 #endif
-
 
   // Note: On Krake SN#3 only, performing this
   // while the Splash is on causes a reset, presumably
@@ -438,7 +451,6 @@ void setup() {
 #endif
 
   WiFi.mode(WIFI_STA);
-  WiFi.STA.begin();
 
 #if (LIMIT_POWER_DRAW)
   splashLCD();
@@ -478,76 +490,77 @@ void setup() {
   // req for Wifi Man and OTA
   WiFiMan();
   initLittleFS();
-  server.begin();  // Start server web socket to render pages
+  server.begin(); // Start server web socket to render pages
   ElegantOTA.begin(&server);
   setupOTA();
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
   turnOnAllLamps();
-  digitalWrite(LED_BUILTIN, LOW);  // turn the LED off at end of setup
+  digitalWrite(LED_BUILTIN, LOW); // turn the LED off at end of setup
 
   initRotator();
   splashLCD();
 
+  setupDFPlayer();
+  setup_GPAD_menu();
 
- setupDFPlayer();
- setup_GPAD_menu();
-
-}  // end of setup()
+} // end of setup()
 
 unsigned long last_ms = 0;
-void toggle(int pin) {
+void toggle(int pin)
+{
   digitalWrite(pin, digitalRead(pin) ? LOW : HIGH);
 }
 
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 
-//IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
-IPAddress myIP();  // declare for global
+// IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
+IPAddress myIP(); // declare for global
 
 int cnt_actions = 0;
 
 bool running_menu = false;
 bool menu_just_exited = false;
 
-void loop() {
-
+void loop()
+{
   bool is_WIFIconnected = false;
   unsigned long ms = millis();
-  if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS) {
+  if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)
+  {
     time_since_LOW_FREQ_ms = ms;
 
-    //If WiFi was not connected and becomes connected then print IP address
-    if (!is_WIFIconnected && connect_to_wifi()) {
+    // If WiFi was not connected and becomes connected then print IP address
+    if (!is_WIFIconnected && connect_to_wifi())
+    {
       is_WIFIconnected = true;
 
-      //Get the IP address into a variable I can make global
+      // Get the IP address into a variable I can make global
       IPAddress myIP = WiFi.localIP();
-      const char* ipString = myIP.toString().c_str();
+      const char *ipString = myIP.toString().c_str();
       // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
 
-      Serial.print("Device connected at IPaddress: ");  //FLE
-                                                        //      Serial.println(WiFi.localIP());                   //FLE
-      Serial.println(myIP);                             //FLE
+      Serial.print("Device connected at IPaddress: "); // FLE
+                                                       //       Serial.println(WiFi.localIP());                   //FLE
+      Serial.println(myIP);                            // FLE
     }
-
 
     // Serial.println(subscribe_Alarm_Topic);
     // Serial.println(publish_Ack_Topic);
 #if defined HMWK || defined KRAKE
-    if (!client.connected()) {
+    if (!client.connected())
+    {
       reconnect();
     }
 #endif
   }
 
-
 #if defined HMWK || defined KRAKE
   client.loop();
   publishOnLineMsg();
-  wink();  //The builtin LED
+  wink(); // The builtin LED
 #endif
 
   unchanged_anunicateAlarmLevel(&Serial);
@@ -568,13 +581,15 @@ void loop() {
 
   updateRotator();
 
-  if (menu_just_exited) {
+  if (menu_just_exited)
+  {
     lcd.clear();
     lcd.noBacklight();
     restoreAlarmLevel(&Serial);
     menu_just_exited = false;
   }
-  if (running_menu) {
+  if (running_menu)
+  {
     lcd.backlight();
     poll_GPAD_menu();
   }
