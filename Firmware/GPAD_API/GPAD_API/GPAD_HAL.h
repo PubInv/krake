@@ -18,8 +18,8 @@
 
 */
 
-#ifndef GPAD_HAL
-#define GPAD_HAL 1
+#ifndef GPAD_HAL_H
+#define GPAD_HAL_H
 #include <Stream.h>
 // #include <Arduino.h>
 #include <PubSubClient.h>
@@ -122,14 +122,42 @@ extern HardwareSerial uartSerial1;
 #define UART2_BAUD_RATE 9600
 extern HardwareSerial uartSerial1;
 
-enum class Command : char
+namespace gpad_hal
 {
-  MUTE   = 's',
-  UNMUTE = 'u',
-  HELP   = 'h',
-  ALARM  = 'a',
-  INFO   = 'i',
-};
+  enum class Command : char
+  {
+    MUTE = 's',
+    UNMUTE = 'u',
+    HELP = 'h',
+    ALARM = 'a',
+    INFO = 'i',
+  };
+
+  class SemanticVersion
+  {
+  public:
+    SemanticVersion(uint8_t major, uint8_t minor, uint8_t patch);
+
+    std::string toString();
+
+  private:
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+  };
+
+  class GPAD_HAL
+  {
+  public:
+    GPAD_HAL(SemanticVersion version);
+
+    SemanticVersion &getVersion();
+
+  private:
+    SemanticVersion version;
+  };
+
+}
 
 // SPI Functions....
 void setup_spi();
