@@ -26,6 +26,10 @@
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
 
+using namespace gpad_hal;
+
+GPAD_HAL gpadHal(SemanticVersion(0, 1, 0));
+
 extern IPAddress myIP;
 
 // Use Serial1 for UART communication
@@ -474,6 +478,13 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, FIRMWARE_VERSION);
     client->publish(publish_Ack_Topic, onInfoMsg);
     serialport->println(onInfoMsg);
+    onInfoMsg[0] = '\0';
+
+    // Report API version
+    strcat(onInfoMsg, gpadHal.getVersion().toString().c_str());
+    client->publish(publish_Ack_Topic, onInfoMsg);
+    serialport->println(onInfoMsg);
+    onInfoMsg[0] = '\0';
 
     // Up time
     onInfoMsg[0] = '\0';
@@ -747,4 +758,30 @@ void annunciateAlarmLevel(Stream *serialport)
   {
     playNotBusyLevel(currentLevel);
   }
+}
+
+GPAD_HAL::GPAD_HAL(SemanticVersion version)
+    : version(version)
+{
+}
+
+SemanticVersion &GPAD_HAL::getVersion()
+{
+  return this->version;
+}
+
+SemanticVersion::SemanticVersion(uint8_t major, uint8_t minor, uint8_t patch)
+    : major(major),
+      minor(minor),
+      patch(patch)
+{
+}
+
+std::string SemanticVersion::toString()
+{
+  std::string versionString;
+
+  versionString.append("0.0.0");
+
+  return versionString;
 }
