@@ -28,8 +28,6 @@
 
 using namespace gpad_hal;
 
-GPAD_HAL gpadHal(SemanticVersion(0, 1, 0));
-
 extern IPAddress myIP;
 
 // Use Serial1 for UART communication
@@ -481,7 +479,8 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     onInfoMsg[0] = '\0';
 
     // Report API version
-    strcat(onInfoMsg, gpadHal.getVersion().toString().c_str());
+    strcat(onInfoMsg, "GPAD API Version: ");
+    strcat(onInfoMsg, gpadApi.getVersion().toString().c_str());
     client->publish(publish_Ack_Topic, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
@@ -760,12 +759,12 @@ void annunciateAlarmLevel(Stream *serialport)
   }
 }
 
-GPAD_HAL::GPAD_HAL(SemanticVersion version)
+GPAD_API::GPAD_API(SemanticVersion version)
     : version(version)
 {
 }
 
-SemanticVersion &GPAD_HAL::getVersion()
+const SemanticVersion &GPAD_API::getVersion() const
 {
   return this->version;
 }
@@ -777,11 +776,13 @@ SemanticVersion::SemanticVersion(uint8_t major, uint8_t minor, uint8_t patch)
 {
 }
 
-std::string SemanticVersion::toString()
+std::string SemanticVersion::toString() const
 {
-  std::string versionString;
-
-  versionString.append("0.0.0");
+  std::string versionString = std::to_string(this->major);
+  versionString.push_back('.');
+  versionString.append(std::to_string(this->minor));
+  versionString.push_back('.');
+  versionString.append(std::to_string(this->patch));
 
   return versionString;
 }
