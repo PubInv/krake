@@ -426,6 +426,8 @@ void setup()
   // Setup the SWITCH_ENCODER
   GPAD_HAL_setup(&Serial);
 
+  const gpad_hal::GPAD_API gpadApi = gpad_hal::GPAD_API(&Serial);
+
 #if (DEBUG > 0)
   Serial.println("MAC: ");
   Serial.println(macAddressString);

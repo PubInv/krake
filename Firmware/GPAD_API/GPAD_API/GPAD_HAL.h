@@ -165,12 +165,17 @@ namespace gpad_hal
   class GPAD_API
   {
   public:
-    GPAD_API(SemanticVersion version);
+    GPAD_API(Stream *serial);
 
     const SemanticVersion &getVersion() const;
 
   private:
     const SemanticVersion version;
+    Stream *serial;
+
+    void muteButtonCallback(byte buttonEvent);
+    void encoderSwitchCallback(byte buttonEvent) const;
+    void showStatusLCD(AlarmLevel level, bool muted, char *msg) const;
   };
 
   const GPAD_API gpadApi = GPAD_API(SemanticVersion(API_MAJOR_VERSION, API_MINOR_VERSION, API_PATCH_VERSION));

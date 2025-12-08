@@ -233,13 +233,13 @@ void updateFromSPI()
 // Have to get a serialport here
 
 // void myCallback(byte buttonEvent) {
-void encoderSwitchCallback(byte buttonEvent)
+void GPAD_API::encoderSwitchCallback(byte buttonEvent) const
 {
   switch (buttonEvent)
   {
   case onPress:
     // Do something...
-    local_ptr_to_serial->println(F("ENCODER_SWITCH onPress"));
+    this->serial->println(F("ENCODER_SWITCH onPress"));
     // currentlyMuted = !currentlyMuted;
     // start_of_song = millis();
     // annunciateAlarmLevel(local_ptr_to_serial);
@@ -249,7 +249,7 @@ void encoderSwitchCallback(byte buttonEvent)
     break;
   case onRelease:
     // Do nothing...
-    local_ptr_to_serial->println(F("ENCODER_SWITCH onRelease"));
+    this->serial->println(F("ENCODER_SWITCH onRelease"));
     break;
   case onHold:
     // Do nothing...
@@ -281,25 +281,25 @@ void encoderSwitchCallback(byte buttonEvent)
 
 // Have to get a serialport here
 // void myCallback(byte buttonEvent) {
-void muteButtonCallback(byte buttonEvent)
+void GPAD_API::muteButtonCallback(byte buttonEvent)
 {
   switch (buttonEvent)
   {
   case onPress:
     // Do something...
-    local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
+    serial->println(F("SWITCH_MUTE onPress"));
     currentlyMuted = !currentlyMuted;
     start_of_song = millis();
-    annunciateAlarmLevel(local_ptr_to_serial);
-    printAlarmState(local_ptr_to_serial);
+    annunciateAlarmLevel(serial);
+    printAlarmState(serial);
     break;
   case onRelease:
     // Do nothing...
-    local_ptr_to_serial->println(F("SWITCH_MUTE onRelease"));
+    serial->println(F("SWITCH_MUTE onRelease"));
     break;
   case onHold:
     // Do nothing...
-    local_ptr_to_serial->println(F("SWITCH_MUTE onHold"));
+    serial->println(F("SWITCH_MUTE onHold"));
     break;
     // onLongPress is indidcated when you hold onto the button
   // more than longPressTime in milliseconds
@@ -324,84 +324,6 @@ void muteButtonCallback(byte buttonEvent)
     break;
   }
 }
-
-void GPAD_HAL_setup(Stream *serialport)
-{
-  // Setup and present LCD splash screen
-  // Setup the SWITCH_MUTE
-  // Setup the SWITCH_ENCODER
-  // Print instructions on DEBUG serial port
-
-  local_ptr_to_serial = serialport;
-  Wire.begin();
-  lcd.init();
-#if (DEBUG > 0)
-  serialport->println(F("Clear LCD"));
-#endif
-  clearLCD();
-  delay(100);
-#if (DEBUG > 0)
-  serialport->println(F("Start LCD splash"));
-#endif
-
-  splashLCD();
-
-#if (DEBUG > 0)
-  serialport->println(F("EndLCD splash"));
-#endif
-
-  // Setup GPIO pins, Mute and lights
-  pinMode(SWITCH_MUTE, INPUT_PULLUP);    // The SWITCH_MUTE is different on Atmega vs ESP32.  Is this redundant?
-  pinMode(SWITCH_ENCODER, INPUT_PULLUP); // The SWITCH_ENCODER is new to Krake. Is this redundant?
-
-  for (int i = 0; i < NUM_LIGHTS; i++)
-  {
-#if (DEBUG > 0)
-    serialport->print(LIGHT[i]);
-    serialport->print(", ");
-#endif
-    pinMode(LIGHT[i], OUTPUT);
-    // Rob trying to prevent resets
-    // This is necessary on SN#3
-    digitalWrite(LIGHT[i], LOW);
-  }
-  serialport->println("");
-
-  muteButton.set(SWITCH_MUTE, muteButtonCallback);
-  muteButton.enableLongPress(longPressTime);
-  muteButton.enableMultiHit(multiHitTime, multiHitTarget);
-
-  // SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
-  //   encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback, INT_PULL_UP);
-  encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback);
-  encoderSwitchButton.enableLongPress(longPressTime);
-  encoderSwitchButton.enableMultiHit(multiHitTime, multiHitTarget);
-
-  printInstructions(serialport);
-  AlarmMessageBuffer[0] = '\0';
-
-  // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
-
-#if !defined(HMWK) // On Homework2, LCD goes blank early
-  // Here initialize the UART1
-  // FLE the Serial1 is faliing to terminate
-  //   pinMode(RXD1, INPUT_PULLUP);
-  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1); // UART setup. On Homework2, LCD goes blank early
-  uartSerial1.flush();                                        // Clear any Serial1 crud at reset.
-
-#if (DEBUG > 0)
-  serialport->println(F("uartSerial1 Setup"));
-#endif
-#endif
-
-  // Here initialize the UART2
-  pinMode(RXD2, INPUT_PULLUP);
-  uartSerial2.begin(UART2_BAUD_RATE, SERIAL_8N1, RXD2, TXD2); // UART setup
-  uartSerial2.flush();
-#if (DEBUG > 0)
-  serialport->println(F("uartSerial2 Setup"));
-#endif
-} // end GPAD_HAL_setup()
 
 // This routine should be refactored so that it only "interprets"
 // the character buffer and returns an "abstract" command to be acted on
@@ -732,7 +654,7 @@ void unchanged_anunicateAlarmLevel(Stream *serialport)
 
     //   serialport->print("note lvl");
     //   serialport->println(note_lvl);
-    tone(TONE_PIN, BUZZER_LVL_FREQ_HZ[note_lvl], INF_DURATION);
+    tone(TONE_PIN, BUZZER_LVL_FREQ_HZ[note_lvl], INF_Dt->printlnURATION);
   }
   else
   {
@@ -759,9 +681,89 @@ void annunciateAlarmLevel(Stream *serialport)
   }
 }
 
-GPAD_API::GPAD_API(SemanticVersion version)
-    : version(version)
+GPAD_API::GPAD_API(Stream *serial)
+    : version(SemanticVersion(API_MAJOR_VERSION, API_MINOR_VERSION, API_PATCH_VERSION)),
+      serial(serial)
 {
+
+  using namespace std::placeholders;
+  // Setup and present LCD splash screen
+  // Setup the SWITCH_MUTE
+  // Setup the SWITCH_ENCODER
+  // Print instructions on DEBUG serial port
+
+  Wire.begin();
+  lcd.init();
+#if (DEBUG > 0)
+  this->serial->println(F("Clear LCD"));
+#endif
+  clearLCD();
+  delay(100);
+#if (DEBUG > 0)
+  this->serial->println(F("Start LCD splash"));
+#endif
+
+  splashLCD();
+
+#if (DEBUG > 0)
+  this->serial->println(F("EndLCD splash"));
+#endif
+
+  // Setup GPIO pins, Mute and lights
+  pinMode(SWITCH_MUTE, INPUT_PULLUP);    // The SWITCH_MUTE is different on Atmega vs ESP32.  Is this redundant?
+  pinMode(SWITCH_ENCODER, INPUT_PULLUP); // The SWITCH_ENCODER is new to Krake. Is this redundant?
+
+  for (int i = 0; i < NUM_LIGHTS; i++)
+  {
+#if (DEBUG > 0)
+    this->serial->print(LIGHT[i]);
+    this->serial->print(", ");
+#endif
+    pinMode(LIGHT[i], OUTPUT);
+    // Rob trying to prevent resets
+    // This is necessary on SN#3
+    digitalWrite(LIGHT[i], LOW);
+  }
+  this->serial->println("");
+
+  std::function<void(byte)> f = std::bind(&GPAD_API::muteButtonCallback, this, _1);
+
+  auto f1 = (void (*)(byte))(&f);
+
+  muteButton.set(SWITCH_MUTE, f1);
+  muteButton.enableLongPress(longPressTime);
+  muteButton.enableMultiHit(multiHitTime, multiHitTarget);
+
+  // SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
+  //   encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback, INT_PULL_UP);
+  // encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback);
+  encoderSwitchButton.enableLongPress(longPressTime);
+  encoderSwitchButton.enableMultiHit(multiHitTime, multiHitTarget);
+
+  printInstructions(this->serial);
+  AlarmMessageBuffer[0] = '\0';
+
+  // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
+
+#if !defined(HMWK) // On Homework2, LCD goes blank early
+  // Here initialize the UART1
+  // FLE the Serial1 is faliing to terminate
+  //   pinMode(RXD1, INPUT_PULLUP);
+  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1); // UART setup. On Homework2, LCD goes blank early
+  uartSerial1.flush();                                        // Clear any Serial1 crud at reset.
+
+#if (DEBUG > 0)
+  this->serial->println(F("uartSerial1 Setup"));
+#endif
+#endif
+
+  // Here initialize the UART2
+  pinMode(RXD2, INPUT_PULLUP);
+  uartSerial2.begin(UART2_BAUD_RATE, SERIAL_8N1, RXD2, TXD2); // UART setup
+  uartSerial2.flush();
+#if (DEBUG > 0)
+  this->serial->println(F("uartSerial2 Setup"));
+#endif
 }
 
 const SemanticVersion &GPAD_API::getVersion() const
