@@ -7,7 +7,7 @@ Krake is an **annunciator** meant to alert a human to something needing attentio
 The Krake has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer Inventional Coach Lee Erickson.
 
 ## Inventory 
-URL https://nk25719.github.io/krakeFactory/factory-form.html
+URL [Krake Factory Inventory](https://pubinv.github.io/testRecord_Inventory//factory-form.html)
 DataBase for krake units and tests registeries. 
 
 
