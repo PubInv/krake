@@ -7,7 +7,7 @@
 #include <FS.h>
 #include <LittleFS.h>
 
-extern const char *default_ssid;
+extern const char *DEFAULT_SSID;
 // extern String ssid;
 // extern String password;
 extern String ledState;
@@ -15,7 +15,7 @@ extern int WiFiLed;
 
 void saveCredentials(const char *ssid, const char *password);
 bool loadCredentials();
-void WiFiMan();
+void WiFiMan(const char *accessPointSsid);
 void initLittleFS();
 void initWiFi();
 String processor(const String &var);

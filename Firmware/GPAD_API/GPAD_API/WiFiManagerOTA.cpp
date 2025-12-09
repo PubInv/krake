@@ -1,7 +1,7 @@
 #include "WiFiManagerOTA.h"
 #include <LittleFS.h>
 
-const char *default_ssid = "ESP32-Setup"; // Default AP Name
+const char *DEFAULT_SSID = "ESP32-Setup"; // Default AP Name
 String ssid_wf = "";
 String password_wf = "";
 String ledState = "";
@@ -42,13 +42,24 @@ bool loadCredentials()
   return true;
 }
 
-void WiFiMan()
+void WiFiMan(const char *accessPointSsid)
 {
   WiFiManager wifiManager;
 
   if (!loadCredentials())
   {
-    if (!wifiManager.autoConnect(default_ssid))
+    boolean connectSuccess = false;
+
+    if (accessPointSsid == "")
+    {
+      connectSuccess = wifiManager.autoConnect(DEFAULT_SSID);
+    }
+    else
+    {
+      connectSuccess = wifiManager.autoConnect(accessPointSsid);
+    }
+
+    if (!connectSuccess)
     {
       Serial.println("Failed to connect. Restarting...");
       ESP.restart();
