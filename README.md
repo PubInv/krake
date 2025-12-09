@@ -6,6 +6,23 @@ Krake is an **annunciator** meant to alert a human to something needing attentio
 
 The Krake has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer Inventional Coach Lee Erickson.
 
+# Major Use Cases
+
+Our intention is that the Krake will be used to inform human operators of alarm conditions they need to know about.
+
+One use case is of an elderly person living alone, whose loved ones which to monitor them.
+For example, a person might have a Krake mounted on the wall in their home, which alerts them to a drop in blood pressure or if they have fallen.
+We intend to be compatible with the HL7 medical standard in order to be as valuable as possible.
+A separate project, the ADaM project, implements Alarm Dialog Managment. It is the ADaM project that will decide when a sensed condition should raise an alarm.
+
+Although some of this functionality could and should be done with smartphones, there are valuable reasons to have a dedicated hardware anunciator.
+
+A second use case is to use the Krake as a dedicated alarm device for a sophisticate medical instruments, such as the PolyVent ventilator made by Public Invention.
+In this case, the Krake serves the essential need of alarming life-threatenign mechanical failures, such as a hose disconnet. It is still the case that some algorithm must decided what to raise as an alarm.
+We hope to systematize that decision in the open-source ADaM project.
+
+
+
 ## Inventory 
 URL [Krake Factory Inventory](https://pubinv.github.io/testRecord_Inventory//factory-form.html)
 DataBase for krake units and tests registeries. 
