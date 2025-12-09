@@ -488,7 +488,10 @@ void setup()
   // We call this a second time to get the MAC on the screen
   //  clearLCD();
   // req for Wifi Man and OTA
-  WiFiMan();
+  char setupSsid[20] = "Krake_\0";
+  strcat(setupSsid, macAddressString);
+
+  WiFiMan(setupSsid);
   initLittleFS();
   server.begin(); // Start server web socket to render pages
   ElegantOTA.begin(&server);
