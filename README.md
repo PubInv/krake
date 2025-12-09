@@ -6,7 +6,7 @@ Krake is an **annunciator** meant to alert a human to something needing attentio
 
 The Krake has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer Inventional Coach Lee Erickson.
 
-# Major Use Cases
+# Use Cases
 
 Our intention is that the Krake will be used to inform human operators of alarm conditions they need to know about.
 
