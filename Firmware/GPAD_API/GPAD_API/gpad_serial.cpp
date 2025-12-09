@@ -22,11 +22,9 @@
 #include "gpad_utility.h"
 #include "alarm_api.h"
 #include "GPAD_HAL.h"
-//#include <Arduino.h>
+// #include <Arduino.h>
 
 extern bool currentlyMuted;
-
-
 
 // We accept maessages up to 128 characters, with 2 characters in front,
 // and an end-of-string delimiter makes 131 characters!
@@ -41,14 +39,16 @@ CD\n
 where C is an character, and D is a single digit.
 */
 
-// Note: The buffer "buf" used here might be more safely made 
+// Note: The buffer "buf" used here might be more safely made
 // a parameter passed in from the caller.
-void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client) {
+void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
+{
   // Now see if we have a serial command
   int rlen;
   // TODO: This code can probably hang; it needs to have
   // timeouts added!
-  if (inputPort->available() > 0) {
+  if (inputPort->available() > 0)
+  {
     // TODO: MAKE NON-BLOCKING
     // read the incoming bytes:
     int rlen = inputPort->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
@@ -64,8 +64,8 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client) {
     // Now "light and scream"appropriately...
     // This does not work on HMWK2 device
     annunciateAlarmLevel(debugPort);
-// removing in an attempt to make faster; reason for adding unknown  - rlr
-//    delay(3000);
+    // removing in an attempt to make faster; reason for adding unknown  - rlr
+    //    delay(3000);
     printAlarmState(debugPort);
   }
 }
