@@ -150,13 +150,14 @@ const char *mqtt_broker_name = "public.cloud.shiftr.io";
 const char *mqtt_user = "public";
 const char *mqtt_password = "public";
 
+const size_t MAC_ADDRESS_STRING_LENGTH = 13;
 // MQTT Topics, MAC plus an extention
 // A MAC addresss treated as a string has 12 chars.
 // The strings "_ALM" and "_ACK" have 4 chars.
 // A null character is one other. 12 + 4 + 1 = 17
 char subscribe_Alarm_Topic[17];
 char publish_Ack_Topic[17];
-char macAddressString[13];
+char macAddressString[MAC_ADDRESS_STRING_LENGTH];
 
 #define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
 #define MACSTR "%02x:%02x:%02x:%02x:%02x:%02x"
@@ -484,12 +485,15 @@ void setup()
   Serial.println(publish_Ack_Topic);
   Serial.println("XXXXXXX");
 #endif
+  // Setup SSID length is the length of the prefix, 'Krake_', which is 7
+  // plus the length of the MAC address string, MAC_ADDRESS_STRING_LENGTH
+  const size_t SETUP_SSID_LENGTH = 7 + MAC_ADDRESS_STRING_LENGTH;
+  char setupSsid[SETUP_SSID_LENGTH] = "Krake_";
+  strcat(setupSsid, macAddressString);
 
   // We call this a second time to get the MAC on the screen
   //  clearLCD();
   // req for Wifi Man and OTA
-  char setupSsid[20] = "Krake_\0";
-  strcat(setupSsid, macAddressString);
 
   WiFiMan(setupSsid);
   initLittleFS();
