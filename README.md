@@ -21,6 +21,8 @@ A second use case is to use the Krake as a dedicated alarm device for a sophisti
 In this case, the Krake serves the essential need of alarming life-threatenign mechanical failures, such as a hose disconnet. It is still the case that some algorithm must decided what to raise as an alarm.
 We hope to systematize that decision in the open-source ADaM project.
 
+## Krake Test and Assembly procedure Document
+Instructions to test the subassembly units when received from the manufacturer. And instructions to add additional components to the subassembly PCB_KRAKE_REV2.0 to build the final assembly of PWA into an enclosure. URL: [Krake Test and Assembly procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919) 
 
 
 ## Inventory 
