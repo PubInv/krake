@@ -22,5 +22,8 @@ run:
 monitor:
 	pio device monitor -b 115200
 
+build-fs:
+	pio run --target buildfs
+
 uploadfs:
 	pio run --target uploadfs
