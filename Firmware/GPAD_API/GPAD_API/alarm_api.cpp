@@ -20,7 +20,6 @@
 #include "alarm_api.h"
 #include "gpad_utility.h"
 
-
 // here is the abstract "state" of the machine,
 // completely independent of hardware.
 // This is very simple version of what is probably needed.
@@ -31,17 +30,20 @@
 AlarmLevel currentLevel = silent;
 bool currentlyMuted = false;
 char AlarmMessageBuffer[MAX_BUFFER_SIZE];
-const char *AlarmNames[] = { "OK   ", "INFO.", "PROB.", "WARN ", "CRIT.", "PANIC" };
+const char *AlarmNames[] = {"OK   ", "INFO.", "PROB.", "WARN ", "CRIT.", "PANIC"};
 
 // This is the abstract alarm function. It CANNOT
 // assume the msg buffer will exist after this call.
 // str must be null-terminated string!
 // It returns the PREVIOUS ALARM LEVEL
-int alarm_event(AlarmEvent &event, Stream *serialport) {
+int alarm_event(AlarmEvent &event, Stream *serialport)
+{
   return alarm((AlarmLevel)event.lvl, event.msg, serialport);
 }
-int alarm(AlarmLevel level, char *str, Stream *serialport) {
-  if (!(level >= 0 && level < NUM_LEVELS)) {
+int alarm(AlarmLevel level, char *str, Stream *serialport)
+{
+  if (!(level >= 0 && level < NUM_LEVELS))
+  {
     serialport->println(F("Bad Level!"));
     printError(serialport);
     return -1;
@@ -54,11 +56,13 @@ int alarm(AlarmLevel level, char *str, Stream *serialport) {
   return previousLevel;
 }
 
-AlarmLevel getCurrentAlarmLevel() {
+AlarmLevel getCurrentAlarmLevel()
+{
   return currentLevel;
 }
 
-char *getCurrentMessage() {
+char *getCurrentMessage()
+{
   return AlarmMessageBuffer;
 }
 

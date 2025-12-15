@@ -1,27 +1,33 @@
 #include "WiFiManagerOTA.h"
 #include <LittleFS.h>
 
-const char* default_ssid = "ESP32-Setup";  // Default AP Name
+const char *default_ssid = "ESP32-Setup"; // Default AP Name
 String ssid_wf = "";
 String password_wf = "";
 String ledState = "";
-int WiFiLed = 2;  // Modify based on actual LED pin
+int WiFiLed = 2; // Modify based on actual LED pin
 
-void saveCredentials(const char* ssid, const char* password) {
+void saveCredentials(const char *ssid, const char *password)
+{
   File file = LittleFS.open("/wifi.txt", "w");
-  if (file) {
+  if (file)
+  {
     file.println(ssid);
     file.println(password);
     file.close();
     Serial.println("WiFi credentials saved.");
-  } else {
+  }
+  else
+  {
     Serial.println("Failed to save WiFi credentials.");
   }
 }
 
-bool loadCredentials() {
+bool loadCredentials()
+{
   File file = LittleFS.open("/wifi.txt", "r");
-  if (!file) {
+  if (!file)
+  {
     Serial.println("No saved WiFi credentials found.");
     return false;
   }
@@ -36,11 +42,14 @@ bool loadCredentials() {
   return true;
 }
 
-void WiFiMan() {
+void WiFiMan()
+{
   WiFiManager wifiManager;
 
-  if (!loadCredentials()) {
-    if (!wifiManager.autoConnect(default_ssid)) {
+  if (!loadCredentials())
+  {
+    if (!wifiManager.autoConnect(default_ssid))
+    {
       Serial.println("Failed to connect. Restarting...");
       ESP.restart();
     }
@@ -52,32 +61,43 @@ void WiFiMan() {
   Serial.println("Connected to WiFi!");
 }
 
-void initLittleFS() {
-  if (!LittleFS.begin(true)) {
+void initLittleFS()
+{
+  if (!LittleFS.begin(true))
+  {
     Serial.println("An error occurred while mounting LittleFS.");
-  } else {
-    #if (DEBUG >1)
+  }
+  else
+  {
+#if (DEBUG > 1)
     Serial.println("LittleFS mounted successfully.");
-    #endif 
+#endif
   }
 }
 
-void initWiFi() {
+void initWiFi()
+{
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid_wf.c_str(), password_wf.c_str());
   Serial.print("Connecting to WiFi ..");
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     Serial.print('.');
     delay(1000);
   }
   Serial.println("\nConnected. IP Address: " + WiFi.localIP().toString());
 }
 
-String processor(const String& var) {
-  if (var == "STATE") {
-    if (digitalRead(WiFiLed)) {
+String processor(const String &var)
+{
+  if (var == "STATE")
+  {
+    if (digitalRead(WiFiLed))
+    {
       ledState = "ON";
-    } else {
+    }
+    else
+    {
       ledState = "OFF";
     }
     return ledState;

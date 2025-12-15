@@ -2,7 +2,7 @@
 #define DFPLAYER 1
 #include <Arduino.h>
 
-#define BAUD_DFPLAYER 9600  //for UART2 to the DFPlayer
+#define BAUD_DFPLAYER 9600 // for UART2 to the DFPlayer
 #define TXD2 17
 #define RXD2 16
 
