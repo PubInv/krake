@@ -142,8 +142,8 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 //  const char* password = "$Suve07$$";
 
 // Austin network
-const char *ssid = "readfamilynetwork";
-const char *password = "magicalsparrow96";
+// const char *ssid = "readfamilynetwork";
+// const char *password = "magicalsparrow96";
 
 // MQTT Broker
 const char *mqtt_broker_name = "public.cloud.shiftr.io";
@@ -242,37 +242,6 @@ void publishOnLineMsg(void)
 #endif
   }
 }
-
-bool connect_to_wifi()
-{
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    delay(10);
-    Serial.println();
-
-    Serial.print("Connecting to WiFi: ");
-    Serial.println(ssid);
-
-    WiFi.begin(ssid, password);
-    if (WiFi.status() != WL_CONNECTED)
-    {
-      Serial.println("Failed to connect WiFi.");
-      return false;
-    }
-    else
-    {
-      Serial.print("WiFi connected");
-
-#if (DEBUG > 1)
-      delay(100);
-      Serial.print("Device connected at IPaddress: "); // FLE
-      Serial.println(WiFi.localIP());                  // FLE
-#endif
-      return true;
-    }
-  }
-  return true;
-} // end connect_to_wifi()
 
 // TODO: have this return a success or failure status and move
 // the delay up.
@@ -451,8 +420,6 @@ void setup()
   clearLCD();
 #endif
 
-  WiFi.mode(WIFI_STA);
-
 #if (LIMIT_POWER_DRAW)
   splashLCD();
 #endif
@@ -531,16 +498,16 @@ int cnt_actions = 0;
 bool running_menu = false;
 bool menu_just_exited = false;
 
+bool is_WIFIconnected = false;
 void loop()
 {
-  bool is_WIFIconnected = false;
   unsigned long ms = millis();
   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)
   {
     time_since_LOW_FREQ_ms = ms;
 
     // If WiFi was not connected and becomes connected then print IP address
-    if (!is_WIFIconnected && connect_to_wifi())
+    if (!is_WIFIconnected)
     {
       is_WIFIconnected = true;
 

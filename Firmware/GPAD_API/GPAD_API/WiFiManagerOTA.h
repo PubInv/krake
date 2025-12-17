@@ -13,8 +13,6 @@ extern const char *DEFAULT_SSID;
 extern String ledState;
 extern int WiFiLed;
 
-void saveCredentials(const char *ssid, const char *password);
-bool loadCredentials();
 void WiFiMan(const char *accessPointSsid);
 void initLittleFS();
 void initWiFi();

@@ -7,66 +7,28 @@ String password_wf = "";
 String ledState = "";
 int WiFiLed = 2; // Modify based on actual LED pin
 
-void saveCredentials(const char *ssid, const char *password)
+void WiFiMan(const char *accessPointSsid)
 {
-  File file = LittleFS.open("/wifi.txt", "w");
-  if (file)
+  /// According to WifiManager's documentation, best practice is still to set the WiFi mode manually
+  /// https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
+  WiFi.mode(WIFI_STA);
+  WiFiManager wifiManager;
+
+  boolean connectSuccess = false;
+
+  if (accessPointSsid == "")
   {
-    file.println(ssid);
-    file.println(password);
-    file.close();
-    Serial.println("WiFi credentials saved.");
+    connectSuccess = wifiManager.autoConnect(DEFAULT_SSID);
   }
   else
   {
-    Serial.println("Failed to save WiFi credentials.");
-  }
-}
-
-bool loadCredentials()
-{
-  File file = LittleFS.open("/wifi.txt", "r");
-  if (!file)
-  {
-    Serial.println("No saved WiFi credentials found.");
-    return false;
+    connectSuccess = wifiManager.autoConnect(accessPointSsid);
   }
 
-  ssid_wf = file.readStringUntil('\n');
-  password_wf = file.readStringUntil('\n');
-  ssid_wf.trim();
-  password_wf.trim();
-
-  file.close();
-  Serial.println("Loaded WiFi credentials from storage.");
-  return true;
-}
-
-void WiFiMan(const char *accessPointSsid)
-{
-  WiFiManager wifiManager;
-
-  if (!loadCredentials())
+  if (!connectSuccess)
   {
-    boolean connectSuccess = false;
-
-    if (accessPointSsid == "")
-    {
-      connectSuccess = wifiManager.autoConnect(DEFAULT_SSID);
-    }
-    else
-    {
-      connectSuccess = wifiManager.autoConnect(accessPointSsid);
-    }
-
-    if (!connectSuccess)
-    {
-      Serial.println("Failed to connect. Restarting...");
-      ESP.restart();
-    }
-    ssid_wf = WiFi.SSID();
-    password_wf = WiFi.psk();
-    saveCredentials(ssid_wf.c_str(), password_wf.c_str());
+    Serial.println("Failed to connect. Restarting...");
+    ESP.restart();
   }
 
   Serial.println("Connected to WiFi!");
