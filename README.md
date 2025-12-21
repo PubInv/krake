@@ -29,6 +29,7 @@ Instructions to test the subassembly units when received from the manufacturer. 
 [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
 DataBase for krake units and tests registeries. 
 
+## GDT records 
 [Asset History Records Public Invention Krake Rev. 2](https://gosqas.org/record/8CMgkfrS4ufevweKy1QowF) GLobal Open Source Quality Assuring System.
 
 # Wi-Fi enablement
