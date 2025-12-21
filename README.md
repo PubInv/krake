@@ -26,7 +26,7 @@ Instructions to test the subassembly units when received from the manufacturer. 
 
 
 ## Inventory 
-URL [Krake Factory Inventory](https://pubinv.github.io/testRecord_Inventory//factory-form.html)
+URL [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
 DataBase for krake units and tests registeries. 
 
 
