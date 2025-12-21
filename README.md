@@ -25,7 +25,7 @@ We hope to systematize that decision in the open-source ADaM project.
 Instructions to test the subassembly units when received from the manufacturer. And instructions to add additional components to the subassembly PCB_KRAKE_REV2.0 to build the final assembly of PWA into an enclosure. URL: [Krake Test and Assembly procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919) 
 
 
-## Inventory / GDT records 
+## Inventory
 [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
 DataBase for krake units and tests registeries. 
 
