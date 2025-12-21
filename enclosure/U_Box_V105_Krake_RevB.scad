@@ -898,6 +898,60 @@ if(HEAT_SET_INSERTS==1){
 }
 
 
+module SPKBOSS62(stud_height_mm,h_offset_mm) {
+    // A VESA mount for D 75mm
+    // from Wikipedia https://en.wikipedia.org/wiki/Flat_Display_Mounting_Interface
+    // D 75mm	MIS-D, 75, C	75	75
+    
+    // First, I will create the 4 studs in the correct
+    // (square) pattern
+    stud_distance_mm = 62;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    
+    sh = stud_height_mm;
+    translate([0,0,sh-h_offset_mm])
+        union() {
+            rotate([180,0,0])
+            translate([hsd,hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([hsd,-hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([-hsd,hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([-hsd,-hsd,0])
+                m4_stud(0,0,sh,0);
+        }
+}
+module SPKBOSSpunch62(stud_height_mm,h_offset_mm) {
+//    sh = stud_height_mm +2; // addin length for cutting
+    sh = stud_height_mm + -2; // addin length for cutting
+    radius = 4.5; // just a guess!
+    
+    stud_distance_mm = 60;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    translate([0,0,sh-h_offset_mm])
+    union() {
+        rotate([180,0,0])
+        translate([hsd,hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([hsd,-hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([-hsd,hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([-hsd,-hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        }
+}
  module GPAD_BShell () { 
    // Coque bas - Bottom shell
     i=0;
@@ -976,15 +1030,17 @@ SpeakerCutOut();
     
 }
  
+
+/// SPKBOSS62 and SPKBOSSpunch62 integration w Speaker 62mm hole to hole
 if(GPAD_BShell==1){
 difference (){
 GPAD_BShell();
-translate ([SpeakerPositionX,SpeakerPositionY,Thick+7.8+.1])
-VESApunch75 (7.8,7.8);
+translate ([SpeakerPositionX+5,SpeakerPositionY+8,Thick+7.8+.1])
+SPKBOSSpunch62 (7.8,7.8);
 
 }
-translate ([SpeakerPositionX,SpeakerPositionY,Thick+7.8+.1])
-VESAmount75 (7.8,7.8);
+translate ([SpeakerPositionX+5,SpeakerPositionY+8,Thick+7.8+.1])
+SPKBOSS62 (7.8,7.8);
 }
 
 
@@ -1149,13 +1205,13 @@ module SpeakerEnclosure (){
 
 module SpeakerBoxKnife(){
 translate ([SpeakerPositionX+Thick*5, SpeakerPositionY,Height/4-Thick]){
-    cube ([1.75*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height], center=true);
+    cube ([1.6*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height], center=true);
     }}
     
  module SpeakerBoxOuter (){
 difference (){ 
-    translate ([SpeakerPositionX+Thick*5, SpeakerPositionY,Height/4+Thick+10]){
-    cube ([1.75*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5, Height-10], center=true);
+    translate ([SpeakerPositionX+2+Thick*5, SpeakerPositionY,Height/4+Thick+10]){
+    cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5, Height-10], center=true);
         }
         SpeakerBoxKnife();
     }
