@@ -42,26 +42,31 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;//pcb 
+PWA_KRAKE            = 1;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
+SpeakerGrill         = 0;
+SpeakerEnclosureBox  = 0;
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
+
+
 // speaker parameters
-SpeakerRadius_mm=78/2; 
-SpeakerHeight_mm=42;
-SpeakerDiameter_mm=80.4;
+SpeakerDiameter_mm=78;
+SpeakerRadius_mm=SpeakerDiameter_mm/2; 
+SpeakerHeight_mm=40;
 
-translationVariable = 1.5 * SpeakerHeight_mm;
+translationVariable = 4 * SpeakerHeight_mm -5;
+////////////////////////////////////////////////////////////////////
 
-Length         = 83.82 + 13 +SpeakerHeight_mm*2;  //x axis    
+Length         = 83.82 + 13 +translationVariable;  //x axis    
 Width          = 138 + 13; //y axis axis            
-Height         = 40 + 1.5*SpeakerDiameter_mm; //z axis 
+Height         = 40 + SpeakerHeight_mm/2; //z axis was 40
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
 Resolution     = 50;                   // Filet smoothness
@@ -102,7 +107,17 @@ Couleur3       = "Green";
 Dec_Thick      = Vent ? Thick * 2 : Thick;
 Dec_size       = Vent ? Thick * 2 : 0.8;
 
+////////////////////////////////////////////////////////////////////
+// Speaker location parameters
+////////////////////////////////////////////////////////////////////
+SpeakerPositionX = Length/4;
+SpeakerPositionY =Width/2;
+SpeakerPositionZ = 0-Thick;//Height/4;
 
+SpeakerHolePosX =Thick+m/2 -FootHeight;
+SpeakerHolePosY = SpeakerPositionY;
+SpeakerHolePosZ = SpeakerPositionZ+ SpeakerDiameter_mm/2;
+Angle_deg =90;
 
 //Modifications for Display
 DisplayXpos = PCBLength-50.8  + translationVariable;
@@ -123,12 +138,12 @@ SpeakerHoleX = translationVariable + ( Krake ? PCBLength*.815 :PCBLength - 15.24
 //Parameters for LEDHole
 LEDspacing = 12.7 ;
 LEDYposOffset = 15.24  ; // offset from the Encoder edge of PCB
-LEDXposOffset = 27.94 ; // offset from the connector edge of PCB
+LEDXposOffset = 27.94  ; // offset from the connector edge of PCB
 
 
 // Krake Modifications for RotaryEncodeHole
 i=-1; // Encoder is one LEd spacing below LEDs
-RotaryEncoderXpos      =  translationVariable + ( Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0 );
+RotaryEncoderXpos      =  translationVariable +( Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0 );
 RotaryEncoderYpos      = Krake ? 15.24 : 0;
 RotaryEncoderDiameter  = Krake ? 16 : 0;
 
@@ -306,12 +321,51 @@ if(SPK==1){
 
     import("Speaker2W-SpeakerOutline.stl");
 }
+module grill_pattern() {
+
+translate ([SpeakerPositionX,SpeakerPositionY,SpeakerPositionZ]){
+wall_thickness = 2;
+grill_bar_width = 1;
+    // The pattern consists of intersecting cubes (bars)
+  scale (1.2){ 
+   union() {
+        // Horizontal bars (along X-axis)
+        for (i = [-SpeakerDiameter_mm/2 : (grill_bar_width + wall_thickness) : SpeakerDiameter_mm/2]) {
+            translate([i, 0, 0])
+                cube([grill_bar_width, SpeakerDiameter_mm, Thick + 1], center=true);
+        }
+        // Vertical bars (along Y-axis)
+        for (j = [-SpeakerDiameter_mm/2 : (grill_bar_width + wall_thickness) : SpeakerDiameter_mm/2]) {
+            translate([0, j, 0])
+                cube([SpeakerDiameter_mm, grill_bar_width, Thick + 1], center=true);
+        }
+    }
+}
+}
+}
+
+module SpeakerHexGrill(OnOff, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
+   
+   if (OnOff == 1)
+    translate([Cx, Cy, 0])
+    intersection(){
+        cylinder(d=Cdia*0.95, h=h, $fn=100);
+
+        for (x=[-Cdia/2:cell:Cdia/2])
+            for (y=[-Cdia/2:cell:Cdia/2])
+                translate([x + (y%2)*cell/2, y*0.866, 0])
+                    difference(){
+                        cylinder(r=cell/2, h=h, $fn=6);
+                        cylinder(r=(cell/2)-wall, h=h+0.2, $fn=6);
+                    }
+    }
+}
+
 
 module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
     //difference(){
     if(OnOff==1)
-        
-        translate([Cx ,Cy ,-1]){
+                  translate([Cx ,Cy ,-1]){
             for(j = [1  : 3]){
 
                 rotate(a = 360*j/3,v = [0,0,1])
@@ -321,11 +375,15 @@ module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
 
                     cylinder(d=i*.65,h = 10, $fn=100,center=Ccenter);
                     //echo(i);
-
-
-                }
+               }
             }
-        }}
+          
+        }
+       
+        }
+    
+  
+       
 {// Parameters
     speaker_diameter = 25.5; // mm
     speaker_thickness = 5; // mm (adjust if needed)
@@ -760,6 +818,7 @@ module VESApunch75(stud_height_mm,h_offset_mm) {
         cylinder(h=sh,r=radius,center = false);
         }
 }
+
 module TShellWithVESA() {
     stud_height_mm = 7.8;
 
@@ -809,6 +868,7 @@ module centeredHeatSetInsert() {
    import( "flanged insert M4 D7.1 H9.11.stl",convexity=1);
 }
 
+
 if(HEAT_SET_INSERTS==1){
 
     stud_distance_mm = 75;
@@ -836,17 +896,18 @@ if(HEAT_SET_INSERTS==1){
         }
 
 }
-if(GPAD_BShell==1){
-    // Coque bas - Bottom shell
+
+
+ module GPAD_BShell () { 
+   // Coque bas - Bottom shell
     i=0;
-    
-    speaker_clamp();
-    
+        union(){
+   // speaker_clamp(); 
     difference(){
         color(Couleur1,1){
             union(){ 
                 Coque();
-                translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
+               translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
                 // Pied support PCB - PCB feet
 
                 if (PCBFeet==1){// Feet
@@ -864,10 +925,10 @@ if(GPAD_BShell==1){
                 //(On/Off, Xpos, Ypos, Diameter)
 
 
-                for ( i = [0 : 4] ){
-                    CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1  
+                for ( i = [-12.25:-8.25] ){
+                    CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1 , switch signs to move downwards ??Question
                 }
-                CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
+              //CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power //??Question extra?
 
                 //(On/Off, Xpos,Ypos,Length,Width,Filet)
                 SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
@@ -881,13 +942,17 @@ if(GPAD_BShell==1){
             }}
         color( Couleur1,1){
             translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
-                //(On/Off, Xpos, Ypos, Diameter)
-                SpeakerHole(1,SpeakerHoleX,SpeakerHoleY,11,Ccenter=true); //Buzzer
-                for ( i = [0 : 4] ){
-
-                    CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1  
-                }
-                CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
+              //  (On/Off, Xpos, Ypos, Diameter)
+             
+              SpeakerHole(1,SpeakerPositionX,SpeakerPositionY,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer
+            
+            
+            
+            
+     //LED hole generator  unsure why this works   ??Question repeated commented to avoid confusion    
+                //for ( i = [0 : 0] ){                    //CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1-5  
+              //  }
+                CylinderHole(1,PCBLength-46.99+translationVariable,PCBWidth-FootPosX,5); //LED6 power light ??Question delete extra
 
                 //(On/Off, Xpos,Ypos,Length,Width,Filet)
                 SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
@@ -903,9 +968,27 @@ if(GPAD_BShell==1){
                 //   // SquareHole(1,PCBLength-63.87,33.12,1,1,0,Ccenter=true);       //testing 
             }
         }
-
+SpeakerCutOut();
     }
+    translate ([-5,0,0])
+    SpeakerHexGrill(1,SpeakerPositionX, SpeakerPositionY);
+        }
+    
 }
+ 
+if(GPAD_BShell==1){
+difference (){
+GPAD_BShell();
+translate ([SpeakerPositionX,SpeakerPositionY,Thick+7.8+.1])
+VESApunch75 (7.8,7.8);
+
+}
+translate ([SpeakerPositionX,SpeakerPositionY,Thick+7.8+.1])
+VESAmount75 (7.8,7.8);
+}
+
+
+
 if(RotaryEncoder ==1){
     //RotaryEncoder
     translate( [3*Thick+2,Thick+5,0])     
@@ -1043,70 +1126,60 @@ if (T_BShellScrew==1){
     }
 }//fin de sides holes
 
-// speaker expansion Courtney
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+/////////// speaker expansion Courtney ////////////
 //consider port location and access holes
 module SonySpeaker () {
 import ("C:/Users/court/OneDrive/Documents/Public Invention/OpenSCAD models/Speaker_TwoBodies-Part_SpeakerBody_MetalWork.stl", convexity=3);
 }
-// Speaker location parameters
-SpeakerPositionX = Length/4;
-SpeakerPositionY =Width/2;
-SpeakerPositionZ = Height/4;
 
-SpeakerHolePosX =Thick+m/2 -FootHeight;
-SpeakerHolePosY = SpeakerPositionY;
-SpeakerHolePosZ = SpeakerPositionZ+ SpeakerDiameter_mm/2;
-Angle_deg =90;
-
-
-translate ([SpeakerPositionX, SpeakerPositionY, SpeakerPositionZ]) {
-    rotate ([0, 180, 0]){
-       //SonySpeaker ();
-        }
-    }
-module SpeakerFeet() {    
-    //1
-translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
-    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-10,SpeakerHolePosZ-10]) {
-        rotate ([0,90,0]){
-            foot(FootDia,FootHole,FootHeight);
-            }
-        }
-    }
-    //2
-translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
-    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-SpeakerDiameter_mm+10,SpeakerHolePosZ-10]) {
-        rotate ([0,90,0]){
-            foot(FootDia,FootHole,FootHeight);
-            }
-        }
-    }
-    //3
-    translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
-    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-SpeakerDiameter_mm+10,SpeakerHolePosZ-SpeakerHeight_mm*2+13.5]) {
-        rotate ([0,90,0]){
-            foot(FootDia,FootHole,FootHeight);
-            }
-        }
-    }
-    //4
-     translate([SpeakerDiameter_mm/2*cos(Angle_deg), SpeakerDiameter_mm/2*sin(Angle_deg),0]){
-    translate ([FootHeight/2+Thick+m/2+Thick,SpeakerHolePosY-10,SpeakerHolePosZ-SpeakerHeight_mm*2+13.5]) {
-        rotate ([0,90,0]){
-            foot(FootDia,FootHole,FootHeight);
-            }
-        }
-    }
-    }
     
-    
-module SonySpeakerKnife () {
-    cylinder ( h=2*SpeakerHeight_mm, r=SpeakerRadius_mm, center=false);
+module SpeakerKnife () {
+    translate ([SpeakerPositionX,       SpeakerPositionY, -20]) {
+   cylinder ( h=2*SpeakerHeight_mm, r=SpeakerRadius_mm, center=false);
+   }
 }
 
-    translate ([SpeakerPositionX, SpeakerPositionY, -10]) {   
-       // SonySpeakerKnife();
-}
+              
+        
+    
+module SpeakerEnclosure (){
 
+module SpeakerBoxKnife(){
+translate ([SpeakerPositionX+Thick*5, SpeakerPositionY,Height/4-Thick]){
+    cube ([1.75*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height], center=true);
+    }}
+    
+ module SpeakerBoxOuter (){
+difference (){ 
+    translate ([SpeakerPositionX+Thick*5, SpeakerPositionY,Height/4+Thick+10]){
+    cube ([1.75*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5, Height-10], center=true);
+        }
+        SpeakerBoxKnife();
+    }
+  }
+  
+  module SpeakerShelf (){
+  translate ([SpeakerPositionX +SpeakerHeight_mm + 10, SpeakerPositionY,Height/4+Thick]){
+  cube ([5,SpeakerDiameter_mm*1.5, Height/2], center=true);
+  }
+  }
+  union (){
+  SpeakerShelf();
+  SpeakerBoxOuter();
+  }
+     }
+ 
+module SpeakerCutOut () {
+translate ([SpeakerPositionX+Thick*5+45, SpeakerPositionY-52.5,-10]){
+cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
+  }
+  }
+  
+  if (SpeakerEnclosureBox==1){
+    SpeakerEnclosure();
+    }
 
-
+   
