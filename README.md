@@ -5,6 +5,8 @@ Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Kr
 Krake is an **annunciator** meant to alert a human to something needing attention.
 
 The Krake has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer Inventional Coach Lee Erickson.
+[Mentorship and Teamwork: The Story of the Krake.](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
+
 
 # Use Cases
 
