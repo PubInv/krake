@@ -1,3 +1,4 @@
+#define FIRMWARE_VERSION   "v0.4.0"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -235,8 +236,12 @@ static void printBanner() {
   Serial.println();
   Serial.println(F("======================================="));
   Serial.println(F("   KRAKE FACTORY TEST - ESP32-WROOM   "));
+  Serial.print("Firmware Version: ");
+  Serial.println(F(FIRMWARE_VERSION));
   Serial.println(F("======================================="));
-  Serial.printf("Chip revision: %d\n", ESP.getChipRevision());
+  Serial.print("Compiled at: ");
+  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+   Serial.printf("Chip revision: %d\n", ESP.getChipRevision());
   Serial.printf("Flash size: %u bytes\n", ESP.getFlashChipSize());
   Serial.print(F("MAC (STA): "));
   Serial.println(WiFi.macAddress());
