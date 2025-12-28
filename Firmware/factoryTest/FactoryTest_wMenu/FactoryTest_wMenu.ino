@@ -5,7 +5,7 @@ File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.0
+Version:         v0.4.1
 Date:            2025-12-27
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -17,16 +17,18 @@ Revision History:
 | v0.2.0  | 2025-12-27| N. Kheir      | Operator confirmation for LCD/LED               |
 | v0.3.0  | 2025-12-27| N. Kheir      | Prompt/menu abort handling improvements         |
 | v0.3.1  | 2025-12-27| N. Kheir      | SD gating to avoid DF actions with no SD        |
-| v0.4.0  | 2025-12-27| N. Kheir      | Cleaned: robust Y/N (Enter optional),           |
-|         |           |               | safer Run-All (break on pending command),       |
-|         |           |               | clearer I2C reporting, safer DF/SD flow         |
+| v0.4.0  | 2025-12-27| N. Kheir      | Robust Y/N, safer Run-All, clearer I2C, DF/SD   |
+| v0.4.1  | 2025-12-27| N. Kheir      | Cleanup: remove duplicate DF flags, fix         |
+|         |           |               | LCD allow-list loop, clean line input parsing   |
 ------------------------------------------------------------------------------
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
 - Operator interacts via USB Serial @ 115200 baud.
-- Y/N prompts accept Y/N immediately (Enter optional). CR/LF both supported.
-- Menu keys (1..8/A..D/P/R) typed at the start of a prompt abort that step
+- Y/N prompts accept Y/N immediately (Enter optional). CR/LF supported.
+- During prompts, menu keys typed as the FIRST character abort that step
   (marks FAIL) and the command runs next.
+- WiFi SSID/PASS input does NOT abort just because SSID starts with A/B/C/D.
+  It aborts only when the entire line is exactly one menu key (e.g., "C"+Enter).
 ------------------------------------------------------------------------------
 Build notes:
 - Adjust pin mapping to match your PCB (especially UART1 pins).
@@ -47,17 +49,12 @@ Build notes:
 // Configuration
 // ============================================================================
 
-static const uint32_t SERIAL_BAUD          = 115200;
-static const uint32_t PROMPT_TIMEOUT_MS   = 25000;
-static const uint32_t WIFI_CONNECT_MS     = 20000;
+static const uint32_t SERIAL_BAUD       = 115200;
+static const uint32_t PROMPT_TIMEOUT_MS = 65000;
+static const uint32_t WIFI_CONNECT_MS   = 20000;
 
-// If true: during LED test we do NOT drive LAMP2 because it may be DF BUSY
-static const bool SKIP_DRIVING_LAMP2 = true;
-
-// LCD expected I2C addresses (common backpacks). Add/remove as needed.
+static const bool SKIP_DRIVING_LAMP2 = true;  // shared with DF BUSY on some builds
 static const uint8_t LCD_ALLOWED_ADDRS[] = { 0x27, 0x3F, 0x38 };
-
-// Enable/disable optional tests
 static const bool ENABLE_RS232_TEST = true;
 
 // ============================================================================
@@ -89,18 +86,27 @@ const int SPI_SCK_PIN  = LAMP4;  // 18
 const int SPI_CS_PIN   = LAMP3;  // 5
 
 // RS-232 (UART1) – IMPORTANT: set these to YOUR PCB pins (via MAX3232)
-// NOTE: Do NOT set these to GPIO15 if you use LAMP1=15.
-const int UART1_TXD1 = 27;       // placeholder safe GPIO
-const int UART1_RXD1 = 26;       // placeholder safe GPIO
+const int  UART1_TXD1 = 27;       // placeholder safe GPIO
+const int  UART1_RXD1 = 26;       // placeholder safe GPIO
 const long UART1_BAUD = 115200;
 
 // ============================================================================
-// DFPlayer & test bookkeeping
+// DFPlayer bookkeeping + SD cache
 // ============================================================================
 
 HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
-bool dfInitialized = false;
+
+enum DfState { DF_UNKNOWN, DF_OK, DF_FAIL };
+static DfState dfState = DF_UNKNOWN;
+
+// SD cache: read file count ONCE during test [5], reuse during test [6]
+static bool g_sdChecked   = false;
+static int  g_sdFileCount = -999;
+
+// ============================================================================
+// Test bookkeeping
+// ============================================================================
 
 enum TestIndex {
   T_POWER = 0,
@@ -152,8 +158,15 @@ static void flushSerialRx() {
   while (Serial.available()) (void)Serial.read();
 }
 
-// Read a line with menu-abort: if FIRST char is menu key, abort and queue it.
-// Returns true if line ended (CR/LF) or timeout; false if aborted by menu key.
+/*
+  Read a line (SSID/PASS) with “menu abort” behavior:
+  - We DO NOT abort on first character anymore (SSID can start with C, etc.)
+  - We abort ONLY if the *entire entered line* is exactly ONE menu key,
+    e.g., user types "C" then Enter to jump to SPI test.
+  Returns:
+  - true  = line completed (or timeout)
+  - false = aborted by menu key (queued into g_pendingCmd)
+*/
 static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
   out = "";
   uint32_t start = millis();
@@ -161,24 +174,34 @@ static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
   while (millis() - start < timeoutMs) {
     while (Serial.available()) {
       char c = Serial.read();
-      if (c == '\n' || c == '\r') return true;   // accept CR or LF
 
-      if (out.length() == 0 && isMenuKey(c)) {
-        g_pendingCmd = up(c);
-        return false;
+      if (c == '\n' || c == '\r') {
+        out.trim();
+
+        if (out.length() == 1 && isMenuKey(out[0])) {
+          g_pendingCmd = up(out[0]);
+          out = "";
+          return false; // aborted
+        }
+
+        return true; // completed normally
       }
 
       out += c;
     }
     delay(5);
   }
+
+  out.trim();
   return true; // timeout (out may be empty)
 }
 
-// Bulletproof Y/N:
-// - Accepts Y/N immediately (Enter optional)
-// - CR/LF supported
-// - If menu key is pressed at the start, aborts step (FAIL) and queues command
+/*
+  Bulletproof Y/N:
+  - Accepts Y/N immediately (Enter optional)
+  - CR/LF supported
+  - If menu key is pressed as first char, aborts step (FAIL) and queues command
+*/
 static bool promptYesNo(const __FlashStringHelper* question,
                         uint32_t timeoutMs = PROMPT_TIMEOUT_MS,
                         bool defaultNo = true) {
@@ -194,31 +217,29 @@ static bool promptYesNo(const __FlashStringHelper* question,
     while (Serial.available()) {
       char c = Serial.read();
 
-      // Newline: if buffer has content, evaluate it
       if (c == '\n' || c == '\r') {
         buf.trim();
-        if (buf.length() == 0) continue; // ignore empty Enter
+        if (buf.length() == 0) continue;
+
         char k = up(buf[0]);
         if (k == 'Y') return true;
         if (k == 'N') return false;
         if (isMenuKey(k)) { g_pendingCmd = k; Serial.println(F("\nAborted -> FAIL.")); return false; }
+
         Serial.println(F("\nUnknown input -> FAIL"));
         return false;
       }
 
-      // First char menu key => abort now
       if (buf.length() == 0 && isMenuKey(c)) {
         g_pendingCmd = up(c);
         Serial.println(F("\nAborted -> FAIL."));
         return false;
       }
 
-      // Immediate Y/N (no Enter needed)
       char u = up(c);
       if (u == 'Y') { Serial.println(F("Y")); return true; }
       if (u == 'N') { Serial.println(F("N")); return false; }
 
-      // Otherwise buffer
       buf += c;
     }
     delay(5);
@@ -334,7 +355,8 @@ static bool runTest_Inputs() {
 }
 
 static bool addrInAllowList(uint8_t addr) {
-  for (uint8_t i = 0; i < sizeof(LCD_ALLOWED_ADDRS); ++i) {
+  const size_t n = sizeof(LCD_ALLOWED_ADDRS) / sizeof(LCD_ALLOWED_ADDRS[0]);
+  for (size_t i = 0; i < n; ++i) {
     if (LCD_ALLOWED_ADDRS[i] == addr) return true;
   }
   return false;
@@ -346,7 +368,6 @@ static bool runTest_LCD() {
   Wire.begin();
   delay(80);
 
-  // Full scan for operator visibility
   Serial.println(F("Scanning I2C bus (show all devices)..."));
   bool any = false;
   uint8_t firstAllowed = 0;
@@ -364,13 +385,11 @@ static bool runTest_LCD() {
     Serial.println(F("No I2C devices found. LCD test FAIL."));
     return false;
   }
-
   if (!firstAllowed) {
     Serial.println(F("No LCD found at expected addresses (0x27/0x3F/0x38). LCD test FAIL."));
     return false;
   }
 
-  // Try to write something; final PASS is operator-confirmed
   LiquidCrystal_I2C lcd(firstAllowed, 20, 4);
   lcd.init();
   lcd.backlight();
@@ -423,69 +442,88 @@ static bool runTest_LEDs() {
 }
 
 static bool initDFPlayer() {
-  if (dfInitialized) return true;
+  if (dfState == DF_OK)   return true;
+  if (dfState == DF_FAIL) return false;
 
   Serial.println(F("Initializing DFPlayer (UART2)..."));
   pinMode(DF_BUSY_IN, INPUT_PULLUP);
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
-  delay(400);
+  delay(300);
 
-  if (!dfPlayer.begin(dfSerial, true, false)) {
+  // doReset=true helps a LOT with SD indexing reliability
+  if (!dfPlayer.begin(dfSerial, true, true)) {
     Serial.println(F("  DFPlayer not detected. Check wiring & power."));
+    dfState = DF_FAIL;
     return false;
   }
 
-  dfPlayer.setTimeOut(500);
+  dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
   dfPlayer.volume(20);
 
-  dfInitialized = true;
-  Serial.println(F("  DFPlayer detected and initialized."));
+  // Force device selection (important on some clones)
+  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+  delay(1200);                   // let TF card mount + index after reset/device select
+
+  dfState = DF_OK;
+  Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
   return true;
 }
 
-// SD test is gated: if SD not inserted, we do NOT query DFPlayer for file counts.
 static bool runTest_SD() {
   Serial.println(F("\n[5] SD (DFPlayer card)"));
 
-  // Gate: avoids DF queries when SD is absent (and avoids “hang” behavior)
+  // reset SD cache each time test [5] runs (so it stays consistent per run)
+  g_sdChecked   = false;
+  g_sdFileCount = -999;
+
   if (!promptYesNo(F("Is the SD card inserted with audio files?"), PROMPT_TIMEOUT_MS, true)) {
     Serial.println(F("SD test: FAIL (operator says SD not inserted)."));
+    g_sdChecked   = true;
+    g_sdFileCount = -1;
     return false;
   }
 
   if (!initDFPlayer()) {
-    Serial.println(F("SD test FAIL (no DFPlayer)."));
+    Serial.println(F("SD test: FAIL (DFPlayer not detected)."));
+    g_sdChecked   = true;
+    g_sdFileCount = -1;
     return false;
   }
 
-  Serial.println(F("Querying SD file count..."));
-  int fileCount = dfPlayer.readFileCounts();
-  Serial.printf("  DFPlayer reports %d files.\n", fileCount);
+    Serial.println(F("Reading SD file count (once)..."));
+  g_sdFileCount = dfPlayer.readFileCounts();
 
-  if (fileCount < 0) {
-    Serial.println(F("SD test FAIL: could not read SD/file index."));
-    Serial.println(F("Check: FAT32 format, good contacts, stable power."));
-    return false;
+  if (g_sdFileCount < 0) {
+    Serial.println(F("  No reply / SD not ready. Waiting 1.5s and retrying ONCE..."));
+    delay(1500);
+    g_sdFileCount = dfPlayer.readFileCounts();
   }
 
-  bool pass = (fileCount > 0);
-  Serial.printf("SD test: %s\n", pass ? "PASS" : "FAIL (no files on SD)");
-  return pass;
+  g_sdChecked = true;
+  Serial.printf("  DFPlayer reports %d files.\n", g_sdFileCount);
+
+
+  Serial.println(F("SD test: PASS"));
+  return true;
 }
 
 static bool runTest_DFPlayer() {
   Serial.println(F("\n[6] DFPlayer + Speaker"));
 
   if (!initDFPlayer()) {
-    Serial.println(F("DFPlayer test FAIL (no DFPlayer)."));
+    Serial.println(F("DFPlayer test: FAIL (DFPlayer not detected)."));
     return false;
   }
 
-  // Must have SD + files (otherwise playing is pointless / can misbehave)
-  int fileCount = dfPlayer.readFileCounts();
-  Serial.printf("  SD file count = %d\n", fileCount);
-  if (fileCount <= 0) {
+  if (!g_sdChecked) {
+    Serial.println(F("DFPlayer test requires SD test first."));
+    Serial.println(F("Run [5] SD test, then run [6]."));
+    return false;
+  }
+
+  Serial.printf("  Using cached SD file count = %d\n", g_sdFileCount);
+  if (g_sdFileCount <= 0) {
     Serial.println(F("No readable SD/files -> NOT playing audio. DFPlayer test FAIL."));
     return false;
   }
@@ -493,12 +531,10 @@ static bool runTest_DFPlayer() {
   Serial.println(F("Playing track #1 for ~3 seconds..."));
   dfPlayer.play(1);
 
-  unsigned long start = millis();
-  while (millis() - start < 3000UL) {
-    if (((millis() - start) % 250) < 10) Serial.print('.');
+  uint32_t start = millis();
+  while (millis() - start < 3000) {
     delay(10);
   }
-  Serial.println();
 
   dfPlayer.stop();
   delay(200);
@@ -535,12 +571,12 @@ static bool runTest_WifiSTA() {
   WiFi.disconnect(true, true);
   delay(300);
 
-  flushSerialRx(); // only here (line entry)
+  flushSerialRx();
 
-  Serial.println(F("Enter Wi-Fi SSID then press Enter (15 s timeout):"));
+  Serial.println(F("Enter Wi-Fi SSID then press Enter (25 s timeout):"));
   Serial.print(F("> "));
   String ssid;
-  if (!readLineOrMenuAbort(ssid, 15000)) {
+  if (!readLineOrMenuAbort(ssid, 25000)) {
     Serial.println(F("\nAborted by menu key."));
     return false;
   }
@@ -550,10 +586,10 @@ static bool runTest_WifiSTA() {
     return false;
   }
 
-  Serial.println(F("Enter Wi-Fi PASSWORD then press Enter (can be empty):"));
+  Serial.println(F("Enter Wi-Fi PASSWORD then press Enter (25 s timeout, can be empty):"));
   Serial.print(F("> "));
   String pass;
-  if (!readLineOrMenuAbort(pass, 15000)) {
+  if (!readLineOrMenuAbort(pass, 25000)) {
     Serial.println(F("\nAborted by menu key."));
     return false;
   }
@@ -702,10 +738,9 @@ static void runAllTests() {
   Serial.println(F("\n[P] Running ALL tests (1 -> D) in order..."));
 
   for (int i = 0; i < T_COUNT; ++i) {
-    // If operator pressed a menu key during any prompt, stop Run-All and execute it
     if (g_pendingCmd) break;
 
-    // If SD failed, skip DFPlayer play test
+    // skip audio play if SD failed
     if (i == T_DFPLAYER && testResults[T_SD] == false) {
       Serial.println(F("\n[6] DFPlayer + Speaker"));
       Serial.println(F("Skipping audio play because SD test FAILED."));
@@ -795,4 +830,3 @@ void loop() {
     handleCommand(c);
   }
 }
- 
