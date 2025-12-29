@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION   "v0.4.0"
+#define FIRMWARE_VERSION   "v0.4.1"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
