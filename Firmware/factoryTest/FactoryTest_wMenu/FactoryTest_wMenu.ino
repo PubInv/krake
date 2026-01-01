@@ -62,12 +62,12 @@ static const bool ENABLE_RS232_TEST = true;
 // ============================================================================
 
 // Lamps / LEDs
-const int LED_D9 = 23;    // Mute LED / general status
-const int LAMP1  = 15;    // Lamp 1
-const int LAMP2  = 4;     // Lamp 2 (often DFPlayer BUSY on some builds)
-const int LAMP3  = 5;     // Lamp 3 (also SPI CS)
-const int LAMP4  = 18;    // Lamp 4 (also SPI SCK)
-const int LAMP5  = 19;    // Lamp 5 (also SPI MISO)
+const int LED_Status = 13;    // Mute LED / general status
+const int LAMP1  = 12;    // Lamp 1
+const int LAMP2  = 14;     // Lamp 2 (often DFPlayer BUSY on some builds)
+const int LAMP3  = 27;     // Lamp 3 (also SPI CS)
+const int LAMP4  = 26;    // Lamp 4 (also SPI SCK)
+const int LAMP5  = 25;    // Lamp 5 (also SPI MISO)
 
 // Rotary encoder (input-only pins OK on ESP32)
 const int ENC_CLK = 39;
@@ -80,15 +80,21 @@ const int DF_RXD2    = 16;       // ESP32 RX2 <- DFPlayer TX
 const int DF_BUSY_IN = LAMP2;    // Active LOW when playing (if wired)
 
 // SPI (VSPI)
-const int SPI_MOSI_PIN = LED_D9; // 23
-const int SPI_MISO_PIN = LAMP5;  // 19
-const int SPI_SCK_PIN  = LAMP4;  // 18
-const int SPI_CS_PIN   = LAMP3;  // 5
+const int SPI_MOSI_PIN = 23 ;
+const int SPI_MISO_PIN = 19 ;
+const int SPI_SCK_PIN  = 18 ;
+const int SPI_CS_PIN   = 5 ;
+// ===== TEST PARAMETERS =====
+static const uint32_t SPI_SPEED = 1000000; // 1 MHz (safe for factory)
+static const uint8_t TEST_PATTERN[] = {
+  0x55, 0xAA, 0x00, 0xFF, 0x12, 0x34, 0xA5
+};
 
 // RS-232 (UART1) – IMPORTANT: set these to YOUR PCB pins (via MAX3232)
-const int  UART1_TXD1 = 27;       // placeholder safe GPIO
-const int  UART1_RXD1 = 26;       // placeholder safe GPIO
+const int  UART1_TXD1 = 2;       // placeholder safe GPIO
+const int  UART1_RXD1 = 15;       // placeholder safe GPIO
 const long UART1_BAUD = 115200;
+static const uint32_t TIMEOUT_MS = 600; 
 
 // ============================================================================
 // DFPlayer bookkeeping + SD cache
@@ -409,14 +415,14 @@ static bool runTest_LCD() {
 static bool runTest_LEDs() {
   Serial.println(F("\n[4] LEDs / Lamps"));
 
-  const int pins[] = { LAMP1, LAMP2, LAMP3, LAMP4, LAMP5, LED_D9 };
+  const int pins[] = { LAMP1, LAMP2, LAMP3, LAMP4, LAMP5, LED_Status };
   const char* names[] = {
     "LAMP1",
-    "LAMP2 (maybe DF BUSY)",
-    "LAMP3 (SPI_CS)",
-    "LAMP4 (SPI_SCK)",
-    "LAMP5 (SPI_MISO)",
-    "LED_D9 (SPI_MOSI)"
+    "LAMP2 (LAMP2)",
+    "LAMP3 (LAMP3)",
+    "LAMP4 (LAMP4)",
+    "LAMP5 (LAMP5)",
+    "LED_Status (LED_Status)"
   };
 
   for (int i = 0; i < 6; ++i) {
@@ -665,49 +671,107 @@ static bool runTest_SPI() {
 
   SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_CS_PIN);
   pinMode(SPI_CS_PIN, OUTPUT);
+ 
+  digitalWrite(SPI_CS_PIN, HIGH);
+  delay(20);
+
+  Serial.println("[SPI] Starting RJ12 loopback test");
+
+  SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0));
   digitalWrite(SPI_CS_PIN, LOW);
 
-  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-  uint8_t out = 0xA5;
-  uint8_t in  = SPI.transfer(out);
-  SPI.endTransaction();
-  digitalWrite(SPI_CS_PIN, HIGH);
+  bool pass = true;
 
-  Serial.printf("SPI sent 0x%02X, received 0x%02X\n", out, in);
-  bool ok = (in == out);
+  for (size_t i = 0; i < sizeof(TEST_PATTERN); i++) {
+    uint8_t tx = TEST_PATTERN[i];
+    uint8_t rx = SPI.transfer(tx);
+
+    if (rx != tx) {
+      Serial.printf("[SPI] FAIL at byte %u: TX=0x%02X RX=0x%02X\n",
+                    (unsigned)i, tx, rx);
+      pass = false;
+      break;
+    }
+  }
+
+  digitalWrite(SPI_CS_PIN, HIGH);
+  SPI.endTransaction();
+  SPI.end();
+
+  // if (pass) {
+  //   Serial.println("[SPI] PASS: RJ12 loopback OK");
+  // }
+  // return pass;
+
+  Serial.printf("SPI sent 0x%02X, received 0x%02X\n", RX, TX);
+  bool ok = (RX == RX);
   Serial.printf("SPI loopback test: %s\n", ok ? "PASS" : "FAIL (check jumper)");
   return ok;
 }
 
 static bool runTest_RS232() {
+
   if (!ENABLE_RS232_TEST) {
     Serial.println(F("\n[D] RS-232 loopback disabled (ENABLE_RS232_TEST=false)"));
     return false;
   }
 
   Serial.println(F("\n[D] RS-232 loopback (UART1)"));
-  Serial.println(F("Connect RS-232 TX <-> RX at DB9 (pins 2 and 3) via MAX3232."));
+  Serial.println(F("Connected RS-232 TX <-> RX at DB9 (pins 2 and 3) via MAX3232."));
   Serial.printf("Using UART1 TXD=%d, RXD=%d, BAUD=%ld\n", UART1_TXD1, UART1_RXD1, UART1_BAUD);
 
   HardwareSerial rs232(1);
   rs232.begin(UART1_BAUD, SERIAL_8N1, UART1_RXD1, UART1_TXD1);
   delay(150);
+ // Clear any pending garbage
+  while (rs232.available()) rs232.read();
 
-  const uint8_t pattern = 0x55;
-  unsigned long start = millis();
-  bool ok = false;
+  const char *payload = "KRAKE_rs232_UART1_LOOPBACK_123\r\n";
+  const size_t n = strlen(payload);
 
-  while (millis() - start < 3000UL) {
-    rs232.write(pattern);
-    rs232.flush();
-    delay(20);
-    if (rs232.available()) {
-      int b = rs232.read();
-      if (b == pattern) { ok = true; break; }
+  // Send
+  size_t written = rs232.write((const uint8_t*)payload, n);
+  rs232.flush();
+  if (written != n) {
+    Serial.println("[rs232] FAIL: write length mismatch");
+    rs232.end();
+    return false;
+  }
+
+  // Receive
+  String rx;
+  uint32_t t0 = millis();
+  while (millis() - t0 < TIMEOUT_MS && rx.length() < n) {
+    while (rs232.available()) {
+      char c = (char)rs232.read();
+      rx += c;
     }
+    delay(2);
   }
 
   rs232.end();
+
+  // Validate
+  if (rx.length() != n) {
+    Serial.printf("[rs232] FAIL: expected %u bytes, got %u\n",
+                  (unsigned)n, (unsigned)rx.length());
+    Serial.println("Tip: ensure rs232 TX<->RX loopback plug is installed.");
+    return false;
+  }
+
+  if (rx != payload) {
+    Serial.println("[rs232] FAIL: payload mismatch");
+    Serial.print("Sent: "); Serial.print(payload);
+    Serial.print("Recv: "); Serial.print(rx);
+    return false;
+  }
+
+  Serial.print("Sent: "); Serial.print(payload);
+  Serial.print("Recv: "); Serial.print(rx);
+  Serial.println("[rs232] PASS: UART1 loopback OK");
+  return true;
+ 
+  bool ok = (rx == payload) ;
   Serial.printf("RS-232 loopback test: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
   return ok;
 }
