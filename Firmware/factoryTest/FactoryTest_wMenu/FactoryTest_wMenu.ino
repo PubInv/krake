@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION   "v0.4.1"
+#define FIRMWARE_VERSION   "v0.4.2.1"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -95,17 +95,12 @@ const int  UART1_TXD1 = 2;       // placeholder safe GPIO
 const int  UART1_RXD1 = 15;       // placeholder safe GPIO
 const long UART1_BAUD = 115200;
 static const uint32_t TIMEOUT_MS = 600; 
-
-// ============================================================================
+ 
 // DFPlayer bookkeeping + SD cache
-// ============================================================================
-
 HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
-
-enum DfState { DF_UNKNOWN, DF_OK, DF_FAIL };
-static DfState dfState = DF_UNKNOWN;
-
+enum dfState { DF_UNKNOWN, DF_OK, DF_FAIL };
+static bool dfState = DF_UNKNOWN;
 // SD cache: read file count ONCE during test [5], reuse during test [6]
 static bool g_sdChecked   = false;
 static int  g_sdFileCount = -999;
@@ -119,8 +114,9 @@ enum TestIndex {
   T_INPUTS,
   T_LCD,
   T_LEDS,
-  T_SD,
   T_DFPLAYER,
+  T_SD,
+  T_Speaker,
   T_WIFI_AP,
   T_WIFI_STA,
   T_LITTLEFS,
@@ -131,12 +127,13 @@ enum TestIndex {
 };
 
 const char* TEST_NAMES[T_COUNT] = {
-  "1 Power / ID",
-  "2 Inputs (Encoder / Button)",
-  "3 LCD (I2C)",
-  "4 LEDs / Lamps",
+  "0 Power / ID",
+  "1 Inputs (Encoder / Button)",
+  "2 LCD (I2C)",
+  "3 LEDs / Lamps",
+  "4 DFPlayer ",
   "5 SD (DFPlayer card)",
-  "6 DFPlayer + Speaker",
+  "6 Speaker",
   "7 Wi-Fi AP",
   "8 Wi-Fi STA (manual SSID/PASS)",
   "A LittleFS R/W",
@@ -164,15 +161,7 @@ static void flushSerialRx() {
   while (Serial.available()) (void)Serial.read();
 }
 
-/*
-  Read a line (SSID/PASS) with “menu abort” behavior:
-  - We DO NOT abort on first character anymore (SSID can start with C, etc.)
-  - We abort ONLY if the *entire entered line* is exactly ONE menu key,
-    e.g., user types "C" then Enter to jump to SPI test.
-  Returns:
-  - true  = line completed (or timeout)
-  - false = aborted by menu key (queued into g_pendingCmd)
-*/
+ 
 static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
   out = "";
   uint32_t start = millis();
@@ -202,12 +191,7 @@ static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
   return true; // timeout (out may be empty)
 }
 
-/*
-  Bulletproof Y/N:
-  - Accepts Y/N immediately (Enter optional)
-  - CR/LF supported
-  - If menu key is pressed as first char, aborts step (FAIL) and queues command
-*/
+ 
 static bool promptYesNo(const __FlashStringHelper* question,
                         uint32_t timeoutMs = PROMPT_TIMEOUT_MS,
                         bool defaultNo = true) {
@@ -287,12 +271,13 @@ static void printSummary() {
 
 static void printMenu() {
   Serial.println(F("Test menu (order matters):"));
-  Serial.println(F(" 1 Power / ID"));
-  Serial.println(F(" 2 Inputs (Encoder / Button)"));
-  Serial.println(F(" 3 LCD (I2C)"));
-  Serial.println(F(" 4 LEDs / Lamps"));
+  Serial.println(F(" 0 Power / ID"));
+  Serial.println(F(" 1 Inputs (Encoder / Button)"));
+  Serial.println(F(" 2 LCD (I2C)"));
+  Serial.println(F(" 3 LEDs / Lamps"));
+  Serial.println(F(" 4 DFPlayer"));
   Serial.println(F(" 5 SD (DFPlayer card)"));
-  Serial.println(F(" 6 DFPlayer + Speaker"));
+  Serial.println(F(" 6 Speaker"));
   Serial.println(F(" 7 Wi-Fi AP"));
   Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)"));
   Serial.println(F(" A LittleFS R/W"));
@@ -447,7 +432,8 @@ static bool runTest_LEDs() {
   return ok;
 }
 
-static bool initDFPlayer() {
+
+ static bool initDFPlayer() {
   if (dfState == DF_OK)   return true;
   if (dfState == DF_FAIL) return false;
 
@@ -463,32 +449,116 @@ static bool initDFPlayer() {
     dfState = DF_FAIL;
     return false;
   }
-
+  
   dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
-  dfPlayer.volume(20);
-
-  // Force device selection (important on some clones)
-  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  delay(1200);                   // let TF card mount + index after reset/device select
 
   dfState = DF_OK;
   Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
   return true;
 }
 
+
+// Put this OUTSIDE of runTest_DFPlayer() (global scope).
+// Call it when dfPlayer.available() is true.
+void printDetail(uint8_t type, int value) {
+  switch (type) {
+    case TimeOut:
+      Serial.println(F("Time Out!"));
+      break;
+    case WrongStack:
+      Serial.println(F("Stack Wrong!"));
+      break;
+    case DFPlayerCardInserted:
+      Serial.println(F("Card Inserted!"));
+      break;
+    case DFPlayerCardRemoved:
+      Serial.println(F("Card Removed!"));
+      break;
+    case DFPlayerCardOnline:
+      Serial.println(F("Card Online!"));
+      break;
+    case DFPlayerUSBInserted:
+      Serial.println("USB Inserted!");
+      break;
+    case DFPlayerUSBRemoved:
+      Serial.println("USB Removed!");
+      break;
+    case DFPlayerPlayFinished:
+      Serial.print(F("Number:"));
+      Serial.print(value);
+      Serial.println(F(" Play Finished!"));
+      break;
+    case DFPlayerError:
+      Serial.print(F("DFPlayerError:"));
+      switch (value) {
+        case Busy:
+          Serial.println(F("Card not found"));
+          break;
+        case Sleeping:
+          Serial.println(F("Sleeping"));
+          break;
+        case SerialWrongStack:
+          Serial.println(F("Get Wrong Stack"));
+          break;
+        case CheckSumNotMatch:
+          Serial.println(F("Check Sum Not Match"));
+          break;
+        case FileIndexOut:
+          Serial.println(F("File Index Out of Bound"));
+          break;
+        case FileMismatch:
+          Serial.println(F("Cannot Find File"));
+          break;
+        case Advertise:
+          Serial.println(F("In Advertise"));
+          break;
+        default:
+          break;
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+
+static bool runTest_DFPlayer() {
+  // If you want live DFPlayer diagnostics, call this elsewhere during waits:
+  // if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
+  
+   if (!initDFPlayer()) {
+  Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
+  return false;
+  }
+  
+  // Serial.println(F("\n[6] DFPlayer + Speaker"));
+  Serial.println(F("DFPlayer Mini online."));
+  return true;
+  // Force device selection (important on some clones)
+  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+  delay(1200);                   // let TF card mount + index after reset/device select
+
+  bool ok = initDFPlayer();
+  Serial.printf("DFPLAYER Initialized: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
+  // return ok;
+}
+
 static bool runTest_SD() {
   Serial.println(F("\n[5] SD (DFPlayer card)"));
 
   // reset SD cache each time test [5] runs (so it stays consistent per run)
-  g_sdChecked   = false;
-  g_sdFileCount = -999;
+  // g_sdChecked   = false;
+  // g_sdFileCount = -999;
 
-  if (!promptYesNo(F("Is the SD card inserted with audio files?"), PROMPT_TIMEOUT_MS, true)) {
-    Serial.println(F("SD test: FAIL (operator says SD not inserted)."));
-    g_sdChecked   = true;
-    g_sdFileCount = -1;
-    return false;
-  }
+  g_sdChecked   = true;
+  g_sdFileCount = -1;
+
+  // if (!promptYesNo(F("Is the SD card inserted with audio files?"), PROMPT_TIMEOUT_MS, true)) {
+  //   Serial.println(F("SD test: FAIL (operator says SD not inserted)."));
+  //   g_sdChecked   = true;
+  //   g_sdFileCount = -1;
+  //   return false;
+  // }
 
   if (!initDFPlayer()) {
     Serial.println(F("SD test: FAIL (DFPlayer not detected)."));
@@ -497,7 +567,7 @@ static bool runTest_SD() {
     return false;
   }
 
-    Serial.println(F("Reading SD file count (once)..."));
+  Serial.println(F("Reading SD file count (once)..."));
   g_sdFileCount = dfPlayer.readFileCounts();
 
   if (g_sdFileCount < 0) {
@@ -509,36 +579,50 @@ static bool runTest_SD() {
   g_sdChecked = true;
   Serial.printf("  DFPlayer reports %d files.\n", g_sdFileCount);
 
-
-  Serial.println(F("SD test: PASS"));
+  if (g_sdFileCount <= 0) {
+  Serial.println(F("SD test: FAIL (no readable files)."));
+    return false;
+  }
   return true;
+
+  bool ok = runTest_SD();
+  Serial.printf("SD test: %s\n", ok ? "PASS" : "FAIL");
+  
+    void printDetail(uint8_t type, int value);
+ 
 }
 
-static bool runTest_DFPlayer() {
-  Serial.println(F("\n[6] DFPlayer + Speaker"));
+static bool runTest_Speaker() {
+  Serial.println(F("Playing track #1 for ~3 seconds..."));
 
   if (!initDFPlayer()) {
-    Serial.println(F("DFPlayer test: FAIL (DFPlayer not detected)."));
+    Serial.println(F("Speaker test: FAIL (DFPlayer not detected)."));
     return false;
   }
 
   if (!g_sdChecked) {
     Serial.println(F("DFPlayer test requires SD test first."));
-    Serial.println(F("Run [5] SD test, then run [6]."));
+    Serial.println(F("Run [5] SD test, then run speaker test."));
     return false;
   }
 
   Serial.printf("  Using cached SD file count = %d\n", g_sdFileCount);
   if (g_sdFileCount <= 0) {
-    Serial.println(F("No readable SD/files -> NOT playing audio. DFPlayer test FAIL."));
+    Serial.println(F("No readable SD/files -> NOT playing audio. Speaker test FAIL."));
     return false;
   }
+  const int VOL = 20;
+  dfPlayer.volume(VOL);
+  Serial.printf("DFPlayer volume set to: %d\n", VOL);
 
-  Serial.println(F("Playing track #1 for ~3 seconds..."));
   dfPlayer.play(1);
 
   uint32_t start = millis();
   while (millis() - start < 3000) {
+    // Optional: report DFPlayer events while playing
+    if (dfPlayer.available()) {
+      printDetail(dfPlayer.readType(), dfPlayer.read());
+    }
     delay(10);
   }
 
@@ -546,7 +630,7 @@ static bool runTest_DFPlayer() {
   delay(200);
 
   bool ok = promptYesNo(F("Did you hear audio from the speaker?"), PROMPT_TIMEOUT_MS, true);
-  Serial.printf("DFPlayer/Speaker test: %s\n", ok ? "PASS" : "FAIL");
+  Serial.printf("Speaker test: %s\n", ok ? "PASS" : "FAIL");
   return ok;
 }
 
@@ -723,7 +807,7 @@ static bool runTest_RS232() {
   HardwareSerial rs232(1);
   rs232.begin(UART1_BAUD, SERIAL_8N1, UART1_RXD1, UART1_TXD1);
   delay(150);
- // Clear any pending garbage
+  // Clear any pending garbage
   while (rs232.available()) rs232.read();
 
   const char *payload = "KRAKE_rs232_UART1_LOOPBACK_123\r\n";
@@ -748,7 +832,6 @@ static bool runTest_RS232() {
     }
     delay(2);
   }
-
   rs232.end();
 
   // Validate
@@ -786,8 +869,9 @@ static bool runSingleTestFromIndex(TestIndex idx) {
     case T_INPUTS:     return runTest_Inputs();
     case T_LCD:        return runTest_LCD();
     case T_LEDS:       return runTest_LEDs();
-    case T_SD:         return runTest_SD();
     case T_DFPLAYER:   return runTest_DFPlayer();
+    case T_SD:         return runTest_SD();
+    case T_Speaker:    return runTest_Speaker();
     case T_WIFI_AP:    return runTest_WifiAP();
     case T_WIFI_STA:   return runTest_WifiSTA();
     case T_LITTLEFS:   return runTest_LittleFS();
@@ -827,12 +911,13 @@ static void handleCommand(char c) {
 
   bool recognized = true;
   switch (c) {
-    case '1': testResults[T_POWER]      = runTest_Power();      break;
-    case '2': testResults[T_INPUTS]     = runTest_Inputs();     break;
-    case '3': testResults[T_LCD]        = runTest_LCD();        break;
-    case '4': testResults[T_LEDS]       = runTest_LEDs();       break;
+    case '0': testResults[T_POWER]      = runTest_Power();      break;
+    case '1': testResults[T_INPUTS]     = runTest_Inputs();     break;
+    case '2': testResults[T_LCD]        = runTest_LCD();        break;
+    case '3': testResults[T_LEDS]       = runTest_LEDs();       break;
+    case '4': testResults[T_DFPLAYER]   = runTest_DFPlayer();   break;
     case '5': testResults[T_SD]         = runTest_SD();         break;
-    case '6': testResults[T_DFPLAYER]   = runTest_DFPlayer();   break;
+    case '6': testResults[T_Speaker]    = runTest_Speaker();    break;
     case '7': testResults[T_WIFI_AP]    = runTest_WifiAP();     break;
     case '8': testResults[T_WIFI_STA]   = runTest_WifiSTA();    break;
     case 'A': testResults[T_LITTLEFS]   = runTest_LittleFS();   break;
