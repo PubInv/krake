@@ -829,7 +829,6 @@ static bool runTest_SPI() {
  
   digitalWrite(SPI_CS_PIN, HIGH);
   delay(20);
-
   Serial.println("[SPI] Starting RJ12 loopback test");
 
   SPI.beginTransaction(SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0));
@@ -853,13 +852,13 @@ static bool runTest_SPI() {
   SPI.endTransaction();
   SPI.end();
 
-  // if (pass) {
-  //   Serial.println("[SPI] PASS: RJ12 loopback OK");
-  // }
-  // return pass;
-
+  if (pass) {
+    Serial.println("[SPI] PASS: RJ12 loopback OK");
+  }
+  return pass;
+ 
   Serial.printf("SPI sent 0x%02X, received 0x%02X\n", RX, TX);
-  bool ok = (RX == TX);
+  bool ok = runTest_UART0();
   Serial.printf("SPI loopback test: %s\n", ok ? "PASS" : "FAIL (check jumper)");
   return ok;
 }
