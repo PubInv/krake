@@ -859,7 +859,7 @@ static bool runTest_SPI() {
   // return pass;
 
   Serial.printf("SPI sent 0x%02X, received 0x%02X\n", RX, TX);
-  bool ok = (RX == RX);
+  bool ok = (RX == TX);
   Serial.printf("SPI loopback test: %s\n", ok ? "PASS" : "FAIL (check jumper)");
   return ok;
 }
