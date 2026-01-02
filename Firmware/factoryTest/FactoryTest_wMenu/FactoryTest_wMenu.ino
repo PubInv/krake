@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION   "v0.4.2.1"
+#define FIRMWARE_VERSION   "v0.4.2.2"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -23,6 +23,7 @@ Revision History:
 |v0.4.1.1 | 2025-12-30| N. Kheir      | UART1 backloop working and final.               |
 | v0.4.2  | 2026-1-1  | N. Kheir      | SPI backloop working and final. DFP debug       |
 |v0.4.2.1 | 2026-1-1  | N. Kheir      | DFplayer cleanup test.                          |
+|v0.4.2.2 | 2026-1-1  | N. Kheir      | SPI cleanup test.                          |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
