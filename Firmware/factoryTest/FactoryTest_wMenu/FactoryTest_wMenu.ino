@@ -20,7 +20,10 @@ Revision History:
 | v0.4.0  | 2025-12-27| N. Kheir      | Robust Y/N, safer Run-All, clearer I2C, DF/SD   |
 | v0.4.1  | 2025-12-27| N. Kheir      | Cleanup: remove duplicate DF flags, fix         |
 |         |           |               | LCD allow-list loop, clean line input parsing   |
-------------------------------------------------------------------------------
+|v0.4.1.1 | 2025-12-30| N. Kheir      | UART1 backloop working and final.               |
+| v0.4.2  | 2026-1-1  | N. Kheir      | SPI backloop working and final. DFP debug       |
+|v0.4.2.1 | 2026-1-1  | N. Kheir      | DFplayer cleanup test.                          |
+----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
 - Operator interacts via USB Serial @ 115200 baud.
@@ -433,8 +436,34 @@ static bool runTest_LEDs() {
 }
 
 
- static bool initDFPlayer() {
-  if (dfState == DF_OK)   return true;
+static void clearDFPlayerCache() {
+  dfState = DF_UNKNOWN;
+  // optional: hard reset the UART session as well
+  dfSerial.end();
+  delay(50);
+}
+
+// Quick "ping" to verify the module is actually responding NOW.
+// If module is removed, most DF commands return < 0 (no reply).
+static bool dfPlayerResponding() {
+  int c = dfPlayer.readFileCounts();
+  if (c >= 0) return true;
+
+  // One small retry (some modules are slow / SD busy)
+  delay(150);
+  c = dfPlayer.readFileCounts();
+  return (c >= 0);
+}
+
+static bool initDFPlayer() {
+
+  if (dfState == DF_OK) {
+    if (dfPlayerResponding()) return true;
+
+    Serial.println(F("  DFPlayer was OK but no reply now -> clearing cache & re-init..."));
+    clearDFPlayerCache();
+  }
+
   if (dfState == DF_FAIL) return false;
 
   Serial.println(F("Initializing DFPlayer (UART2)..."));
@@ -449,13 +478,50 @@ static bool runTest_LEDs() {
     dfState = DF_FAIL;
     return false;
   }
-  
+
   dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
+
+  // Force device selection (important on some clones)
+  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+  delay(1200);                   // let TF card mount + index after reset/device select
+
+  // Optional: verify it actually replies after init
+  if (!dfPlayerResponding()) {
+    Serial.println(F("  DFPlayer init done, but still no reply -> FAIL"));
+    dfState = DF_FAIL;
+    return false;
+  }
 
   dfState = DF_OK;
   Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
   return true;
 }
+
+
+//  static bool initDFPlayer() {
+//   if (dfState == DF_OK)   return true;
+//   if (dfState == DF_FAIL) return false;
+
+//   Serial.println(F("Initializing DFPlayer (UART2)..."));
+//   pinMode(DF_BUSY_IN, INPUT_PULLUP);
+
+//   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
+//   delay(300);
+
+//   // doReset=true helps a LOT with SD indexing reliability
+//   if (!dfPlayer.begin(dfSerial, true, true)) {
+//     Serial.println(F("  DFPlayer not detected. Check wiring & power."));
+//     dfState = DF_FAIL;
+//     return false;
+//   }else {
+
+//    dfState = DF_OK;
+//    Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
+//   }
+  
+//   dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
+//   return true;
+// }
 
 
 // Put this OUTSIDE of runTest_DFPlayer() (global scope).
@@ -522,25 +588,30 @@ void printDetail(uint8_t type, int value) {
 }
 
 
-static bool runTest_DFPlayer() {
+static bool runTest_DFPlayer(bool forceReinit = false) {
   // If you want live DFPlayer diagnostics, call this elsewhere during waits:
   // if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
-  
+   if (forceReinit) {
+    clearDFPlayerCache();
+  }
+
    if (!initDFPlayer()) {
   Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
+  dfState = DF_FAIL;
   return false;
-  }
-  
+  }else {
   // Serial.println(F("\n[6] DFPlayer + Speaker"));
   Serial.println(F("DFPlayer Mini online."));
+  dfState = DF_OK;
+  }
   return true;
   // Force device selection (important on some clones)
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   delay(1200);                   // let TF card mount + index after reset/device select
 
-  bool ok = initDFPlayer();
+  bool ok = (dfState);
   Serial.printf("DFPLAYER Initialized: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
-  // return ok;
+  return ok;
 }
 
 static bool runTest_SD() {
