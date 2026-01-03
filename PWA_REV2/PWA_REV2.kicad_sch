@@ -5068,7 +5068,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 147.32 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062ce9822)
     (property "Reference" "H104" (at 219.71 146.0754 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5120,7 +5120,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 139.7 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062cea64d)
     (property "Reference" "H103" (at 219.71 138.4554 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5172,7 +5172,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 132.08 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062ceaa1a)
     (property "Reference" "H102" (at 219.71 130.8354 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5224,7 +5224,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:MountingHole_Pad_3.5mm") (at 217.17 124.46 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062ceadbe)
     (property "Reference" "H101" (at 219.71 123.2154 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5558,16 +5558,16 @@
     )
   )
 
-  (symbol (lib_id "Device:R") (at 157.48 35.56 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+  (symbol (lib_id "Device:R") (at 157.48 35.56 270) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062e2029a)
-    (property "Reference" "R106" (at 152.4 36.83 90)
+    (property "Reference" "R106" (at 156.21 30.48 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "DNI" (at 154.94 35.56 90)
+    (property "Value" "DNI" (at 157.48 33.02 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" (at 155.702 35.56 90)
+    (property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder" (at 157.48 33.782 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 157.48 35.56 0)
@@ -5612,7 +5612,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 189.23 38.1 270) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-000062e47436)
     (property "Reference" "R107" (at 187.96 33.02 90)
       (effects (font (size 1.27 1.27)))
@@ -7854,7 +7854,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:ToolingHole_Pad_1.152mm") (at 212.09 109.22 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 916b5fe5-ce69-4f85-a56e-fce0e7ca1b42)
     (property "Reference" "T102" (at 214.63 107.95 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -8108,7 +8108,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:ToolingHole_Pad_1.152mm") (at 212.09 114.3 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ad481afe-48ab-4371-bd6e-3b67d2bf0a7e)
     (property "Reference" "T103" (at 214.63 113.03 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -8482,7 +8482,7 @@
   )
 
   (symbol (lib_id "GPAD_SCH_LIB:ToolingHole_Pad_1.152mm") (at 212.09 104.14 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bead3382-a521-450d-879d-3affa501f4fd)
     (property "Reference" "T101" (at 214.63 102.87 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -9029,7 +9029,7 @@
   )
 
   (symbol (lib_id "Graphic:Logo_Open_Hardware_Small") (at 266.7 173.99 0) (unit 1)
-    (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e3c9b7d8-fadd-427c-88e4-717973e7bc41)
     (property "Reference" "SYM101" (at 266.7 167.005 0)
       (effects (font (size 1.27 1.27)))
