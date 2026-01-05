@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION   "v0.4.2.2"
+#define FIRMWARE_VERSION   "v0.4.2.3"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -23,7 +23,8 @@ Revision History:
 |v0.4.1.1 | 2025-12-30| N. Kheir      | UART1 backloop working and final.               |
 | v0.4.2  | 2026-1-1  | N. Kheir      | SPI backloop working and final. DFP debug       |
 |v0.4.2.1 | 2026-1-1  | N. Kheir      | DFplayer cleanup test.                          |
-|v0.4.2.2 | 2026-1-1  | N. Kheir      | SPI cleanup test.                          |
+|v0.4.2.2 | 2026-1-1  | N. Kheir      | SPI cleanup test.                               |
+|v0.4.2.3 | 2026-1-5  | L. Erickson   | Make menu two colums.                           |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -274,24 +275,18 @@ static void printSummary() {
 }
 
 static void printMenu() {
-  Serial.println(F("Test menu (order matters):"));
-  Serial.println(F(" 0 Power / ID"));
-  Serial.println(F(" 1 Inputs (Encoder / Button)"));
-  Serial.println(F(" 2 LCD (I2C)"));
-  Serial.println(F(" 3 LEDs / Lamps"));
-  Serial.println(F(" 4 DFPlayer"));
-  Serial.println(F(" 5 SD (DFPlayer card)"));
-  Serial.println(F(" 6 Speaker"));
-  Serial.println(F(" 7 Wi-Fi AP"));
-  Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)"));
-  Serial.println(F(" A LittleFS R/W"));
-  Serial.println(F(" B UART0 (USB Serial)"));
-  Serial.println(F(" C SPI loopback"));
-  Serial.println(F(" D RS-232 loopback"));
-  Serial.println(F(" P Run ALL (1 -> D)"));
-  Serial.println(F(" R Reboot"));
-  Serial.println();
-  Serial.print(F("Enter command: "));
+Serial.println(F("Test menu (order matters):"));
+Serial.println(F(" 0 Power / ID                    1 Inputs (Encoder / Button)"));
+Serial.println(F(" 2 LCD (I2C)                     3 LEDs / Lamps"));
+Serial.println(F(" 4 DFPlayer                      5 SD (DFPlayer card)"));
+Serial.println(F(" 6 Speaker                       7 Wi-Fi AP"));
+Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
+Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
+Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
+Serial.println(F(" R Reboot"));
+Serial.println();
+Serial.print(F("Enter command: "));
+
 }
 
 // ============================================================================
