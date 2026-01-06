@@ -267,9 +267,28 @@ static void printBanner() {
 static void printSummary() {
   Serial.println();
   Serial.println(F("========== FACTORY TEST SUMMARY =========="));
-  for (int i = 0; i < T_COUNT; ++i) {
-    Serial.printf("%-33s : %s\n", TEST_NAMES[i], testResults[i] ? "PASS" : "FAIL");
+
+  for (int i = 0; i < T_COUNT; i += 2) {
+
+    // Left column
+    Serial.printf(
+      "%-33s : %-4s",
+      TEST_NAMES[i],
+      testResults[i] ? "PASS" : "FAIL"
+    );
+
+    // Right column (if present)
+    if (i + 1 < T_COUNT) {
+      Serial.printf(
+        "    %-33s : %-4s",
+        TEST_NAMES[i + 1],
+        testResults[i + 1] ? "PASS" : "FAIL"
+      );
+    }
+
+    Serial.println();
   }
+
   Serial.println(F("=========================================="));
   Serial.println();
 }
