@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION   "v0.4.2.3"
+#define FIRMWARE_VERSION "v0.4.2.5"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -25,6 +25,8 @@ Revision History:
 |v0.4.2.1 | 2026-1-1  | N. Kheir      | DFplayer cleanup test.                          |
 |v0.4.2.2 | 2026-1-1  | N. Kheir      | SPI cleanup test.                               |
 |v0.4.2.3 | 2026-1-5  | L. Erickson   | Make menu two colums.                           |
+|v0.4.2.4 | 2026-1-6  | L. Erickson   | Make volume full, 30.                           |
+|v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                          |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -54,9 +56,9 @@ Build notes:
 // Configuration
 // ============================================================================
 
-static const uint32_t SERIAL_BAUD       = 115200;
+static const uint32_t SERIAL_BAUD = 115200;
 static const uint32_t PROMPT_TIMEOUT_MS = 65000;
-static const uint32_t WIFI_CONNECT_MS   = 20000;
+static const uint32_t WIFI_CONNECT_MS = 20000;
 
 static const bool SKIP_DRIVING_LAMP2 = true;  // shared with DF BUSY on some builds
 static const uint8_t LCD_ALLOWED_ADDRS[] = { 0x27, 0x3F, 0x38 };
@@ -67,48 +69,50 @@ static const bool ENABLE_RS232_TEST = true;
 // ============================================================================
 
 // Lamps / LEDs
-const int LED_Status = 13;    // Mute LED / general status
-const int LAMP1  = 12;    // Lamp 1
-const int LAMP2  = 14;     // Lamp 2 (often DFPlayer BUSY on some builds)
-const int LAMP3  = 27;     // Lamp 3 (also SPI CS)
-const int LAMP4  = 26;    // Lamp 4 (also SPI SCK)
-const int LAMP5  = 25;    // Lamp 5 (also SPI MISO)
+const int LED_Status = 13;  // Mute LED / general status
+const int LAMP1 = 12;       // Lamp 1
+const int LAMP2 = 14;       // Lamp 2 (often DFPlayer BUSY on some builds)
+const int LAMP3 = 27;       // Lamp 3 (also SPI CS)
+const int LAMP4 = 26;       // Lamp 4 (also SPI SCK)
+const int LAMP5 = 25;       // Lamp 5 (also SPI MISO)
 
 // Rotary encoder (input-only pins OK on ESP32)
 const int ENC_CLK = 39;
-const int ENC_DT  = 36;
-const int ENC_SW  = 34;
+const int ENC_DT = 36;
+const int ENC_SW = 34;
 
 // DFPlayer / speaker (UART2)
-const int DF_TXD2    = 17;       // ESP32 TX2 -> DFPlayer RX
-const int DF_RXD2    = 16;       // ESP32 RX2 <- DFPlayer TX
-const int DF_BUSY_IN = LAMP2;    // Active LOW when playing (if wired)
+const int DF_TXD2 = 17;        // ESP32 TX2 -> DFPlayer RX
+const int DF_RXD2 = 16;        // ESP32 RX2 <- DFPlayer TX
+const int DF_BUSY_IN = LAMP2;  // Active LOW when playing (if wired)
 
 // SPI (VSPI)
-const int SPI_MOSI_PIN = 23 ;
-const int SPI_MISO_PIN = 19 ;
-const int SPI_SCK_PIN  = 18 ;
-const int SPI_CS_PIN   = 5 ;
+const int SPI_MOSI_PIN = 23;
+const int SPI_MISO_PIN = 19;
+const int SPI_SCK_PIN = 18;
+const int SPI_CS_PIN = 5;
 // ===== TEST PARAMETERS =====
-static const uint32_t SPI_SPEED = 1000000; // 1 MHz (safe for factory)
+static const uint32_t SPI_SPEED = 1000000;  // 1 MHz (safe for factory)
 static const uint8_t TEST_PATTERN[] = {
   0x55, 0xAA, 0x00, 0xFF, 0x12, 0x34, 0xA5
 };
 
 // RS-232 (UART1) – IMPORTANT: set these to YOUR PCB pins (via MAX3232)
-const int  UART1_TXD1 = 2;       // placeholder safe GPIO
-const int  UART1_RXD1 = 15;       // placeholder safe GPIO
+const int UART1_TXD1 = 2;   // placeholder safe GPIO
+const int UART1_RXD1 = 15;  // placeholder safe GPIO
 const long UART1_BAUD = 115200;
-static const uint32_t TIMEOUT_MS = 600; 
- 
+static const uint32_t TIMEOUT_MS = 600;
+
 // DFPlayer bookkeeping + SD cache
 HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
-enum dfState { DF_UNKNOWN, DF_OK, DF_FAIL };
+enum dfState { DF_UNKNOWN,
+               DF_OK,
+               DF_FAIL };
 static bool dfState = DF_UNKNOWN;
 // SD cache: read file count ONCE during test [5], reuse during test [6]
-static bool g_sdChecked   = false;
-static int  g_sdFileCount = -999;
+static bool g_sdChecked = false;
+static int g_sdFileCount = -999;
 
 // ============================================================================
 // Test bookkeeping
@@ -155,7 +159,9 @@ bool testResults[T_COUNT] = { false };
 
 static char g_pendingCmd = 0;
 
-static char up(char c) { return (char)toupper((unsigned char)c); }
+static char up(char c) {
+  return (char)toupper((unsigned char)c);
+}
 
 static bool isMenuKey(char c) {
   c = up(c);
@@ -166,8 +172,8 @@ static void flushSerialRx() {
   while (Serial.available()) (void)Serial.read();
 }
 
- 
-static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
+
+static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
   out = "";
   uint32_t start = millis();
 
@@ -181,10 +187,10 @@ static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
         if (out.length() == 1 && isMenuKey(out[0])) {
           g_pendingCmd = up(out[0]);
           out = "";
-          return false; // aborted
+          return false;  // aborted
         }
 
-        return true; // completed normally
+        return true;  // completed normally
       }
 
       out += c;
@@ -193,10 +199,10 @@ static bool readLineOrMenuAbort(String &out, uint32_t timeoutMs = 15000) {
   }
 
   out.trim();
-  return true; // timeout (out may be empty)
+  return true;  // timeout (out may be empty)
 }
 
- 
+
 static bool promptYesNo(const __FlashStringHelper* question,
                         uint32_t timeoutMs = PROMPT_TIMEOUT_MS,
                         bool defaultNo = true) {
@@ -219,7 +225,11 @@ static bool promptYesNo(const __FlashStringHelper* question,
         char k = up(buf[0]);
         if (k == 'Y') return true;
         if (k == 'N') return false;
-        if (isMenuKey(k)) { g_pendingCmd = k; Serial.println(F("\nAborted -> FAIL.")); return false; }
+        if (isMenuKey(k)) {
+          g_pendingCmd = k;
+          Serial.println(F("\nAborted -> FAIL."));
+          return false;
+        }
 
         Serial.println(F("\nUnknown input -> FAIL"));
         return false;
@@ -232,8 +242,14 @@ static bool promptYesNo(const __FlashStringHelper* question,
       }
 
       char u = up(c);
-      if (u == 'Y') { Serial.println(F("Y")); return true; }
-      if (u == 'N') { Serial.println(F("N")); return false; }
+      if (u == 'Y') {
+        Serial.println(F("Y"));
+        return true;
+      }
+      if (u == 'N') {
+        Serial.println(F("N"));
+        return false;
+      }
 
       buf += c;
     }
@@ -257,7 +273,7 @@ static void printBanner() {
   Serial.println(F("======================================="));
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
-   Serial.printf("Chip revision: %d\n", ESP.getChipRevision());
+  Serial.printf("Chip revision: %d\n", ESP.getChipRevision());
   Serial.printf("Flash size: %u bytes\n", ESP.getFlashChipSize());
   Serial.print(F("MAC (STA): "));
   Serial.println(WiFi.macAddress());
@@ -274,16 +290,14 @@ static void printSummary() {
     Serial.printf(
       "%-33s : %-4s",
       TEST_NAMES[i],
-      testResults[i] ? "PASS" : "FAIL"
-    );
+      testResults[i] ? "PASS" : "FAIL");
 
     // Right column (if present)
     if (i + 1 < T_COUNT) {
       Serial.printf(
         "    %-33s : %-4s",
         TEST_NAMES[i + 1],
-        testResults[i + 1] ? "PASS" : "FAIL"
-      );
+        testResults[i + 1] ? "PASS" : "FAIL");
     }
 
     Serial.println();
@@ -294,18 +308,17 @@ static void printSummary() {
 }
 
 static void printMenu() {
-Serial.println(F("Test menu (order matters):"));
-Serial.println(F(" 0 Power / ID                    1 Inputs (Encoder / Button)"));
-Serial.println(F(" 2 LCD (I2C)                     3 LEDs / Lamps"));
-Serial.println(F(" 4 DFPlayer                      5 SD (DFPlayer card)"));
-Serial.println(F(" 6 Speaker                       7 Wi-Fi AP"));
-Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
-Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
-Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
-Serial.println(F(" R Reboot"));
-Serial.println();
-Serial.print(F("Enter command: "));
-
+  Serial.println(F("Test menu (order matters):"));
+  Serial.println(F(" 0 Power / ID                    1 Inputs (Encoder / Button)"));
+  Serial.println(F(" 2 LCD (I2C)                     3 LEDs / Lamps"));
+  Serial.println(F(" 4 DFPlayer                      5 SD (DFPlayer card)"));
+  Serial.println(F(" 6 Speaker                       7 Wi-Fi AP"));
+  Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
+  Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
+  Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
+  Serial.println(F(" R Reboot"));
+  Serial.println();
+  Serial.print(F("Enter command: "));
 }
 
 // ============================================================================
@@ -323,16 +336,16 @@ static bool runTest_Inputs() {
   Serial.println(F("\n[2] Inputs (Encoder / Button)"));
 
   pinMode(ENC_CLK, INPUT);
-  pinMode(ENC_DT,  INPUT);
-  pinMode(ENC_SW,  INPUT_PULLUP);
+  pinMode(ENC_DT, INPUT);
+  pinMode(ENC_SW, INPUT_PULLUP);
 
   Serial.println(F("Rotate encoder CLOCKWISE, then COUNTER-CLOCKWISE,"));
   Serial.println(F("then PRESS the encoder button within 10 seconds."));
   delay(200);
 
-  int  lastCLK  = digitalRead(ENC_CLK);
-  bool sawCW    = false;
-  bool sawCCW   = false;
+  int lastCLK = digitalRead(ENC_CLK);
+  bool sawCW = false;
+  bool sawCCW = false;
   bool sawPress = false;
 
   unsigned long start = millis();
@@ -404,10 +417,15 @@ static bool runTest_LCD() {
   lcd.backlight();
   lcd.clear();
 
-  lcd.setCursor(0, 0); lcd.print("KRAKE FACTORY TEST");
-  lcd.setCursor(0, 1); lcd.print("LCD @ 0x"); lcd.print(firstAllowed, HEX);
-  lcd.setCursor(0, 2); lcd.print("Confirm display OK");
-  lcd.setCursor(0, 3); lcd.print("Press Y/N on Serial");
+  lcd.setCursor(0, 0);
+  lcd.print("KRAKE FACTORY TEST");
+  lcd.setCursor(0, 1);
+  lcd.print("LCD @ 0x");
+  lcd.print(firstAllowed, HEX);
+  lcd.setCursor(0, 2);
+  lcd.print("Confirm display OK");
+  lcd.setCursor(0, 3);
+  lcd.print("Press Y/N on Serial");
 
   Serial.println(F("LCD initialized and message written."));
   bool ok = promptYesNo(F("Visually confirm LCD shows the message on all lines."), PROMPT_TIMEOUT_MS, true);
@@ -440,9 +458,13 @@ static bool runTest_LEDs() {
       Serial.println(F("  -> Skipping LAMP2 drive (BUSY shared safety)"));
       continue;
     }
-    Serial.print(F("  -> ")); Serial.print(names[i]); Serial.println(F(" blink"));
-    digitalWrite(pins[i], HIGH); delay(300);
-    digitalWrite(pins[i], LOW);  delay(150);
+    Serial.print(F("  -> "));
+    Serial.print(names[i]);
+    Serial.println(F(" blink"));
+    digitalWrite(pins[i], HIGH);
+    delay(300);
+    digitalWrite(pins[i], LOW);
+    delay(150);
   }
 
   bool ok = promptYesNo(F("Did you see the LEDs/Lamps blink as expected?"), PROMPT_TIMEOUT_MS, true);
@@ -470,7 +492,15 @@ static bool dfPlayerResponding() {
   return (c >= 0);
 }
 
+/* Function Description
+Initialized the UART to the Mini MP3 player (DF Player)
+Initilize the DF player
+Set for file output from SD card.
+On subsiquent calls, will report of Mini MP3 player BECOMES unresponsive.
+*/
 static bool initDFPlayer() {
+  Serial.print("initDFPlayer() called at: ");
+  Serial.println(millis());
 
   if (dfState == DF_OK) {
     if (dfPlayerResponding()) return true;
@@ -486,6 +516,15 @@ static bool initDFPlayer() {
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
   delay(300);
+  dfPlayer.begin(dfSerial, true, true);
+  delay(300);
+  dfPlayer.setTimeOut(1000);  // give replies more time (some modules are slow)
+  delay(300);
+  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+
+  int version = dfPlayer.available();  //
+  Serial.print("InitDFPlayer, dfPlayer.available(): ");
+  Serial.println(version);
 
   // doReset=true helps a LOT with SD indexing reliability
   if (!dfPlayer.begin(dfSerial, true, true)) {
@@ -494,11 +533,15 @@ static bool initDFPlayer() {
     return false;
   }
 
-  dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
+  dfPlayer.setTimeOut(1000);  // give replies more time (some modules are slow)
 
   // Force device selection (important on some clones)
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  delay(1200);                   // let TF card mount + index after reset/device select
+  delay(1200);                     // let TF card mount + index after reset/device select
+  version = dfPlayer.available();  //
+  Serial.print("Afer OutputDevice  InitDFPOlayer, dfPlayer.available(): ");
+  Serial.println(version);
+
 
   // Optional: verify it actually replies after init
   if (!dfPlayerResponding()) {
@@ -533,7 +576,7 @@ static bool initDFPlayer() {
 //    dfState = DF_OK;
 //    Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
 //   }
-  
+
 //   dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
 //   return true;
 // }
@@ -606,23 +649,40 @@ void printDetail(uint8_t type, int value) {
 static bool runTest_DFPlayer(bool forceReinit = false) {
   // If you want live DFPlayer diagnostics, call this elsewhere during waits:
   // if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
-   if (forceReinit) {
+  if (forceReinit) {
     clearDFPlayerCache();
   }
 
-   if (!initDFPlayer()) {
-  Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
-  dfState = DF_FAIL;
-  return false;
-  }else {
-  // Serial.println(F("\n[6] DFPlayer + Speaker"));
-  Serial.println(F("DFPlayer Mini online."));
-  dfState = DF_OK;
+  // initDFPlayer();
+  // //Check Mini MP3 Player availability. Works on TD5580A too.
+  // int version = dfPlayer.available();  //
+  // Serial.print("dfPlayer.available(): ");
+  // Serial.println(version);
+
+  if (!initDFPlayer()) {
+    Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
+    dfState = DF_FAIL;
+    // //Check Mini MP3 Player availability. Works on TD5580A too.
+    delay(1000);
+    int version = dfPlayer.available();  //
+    Serial.print("dfPlayer.available(): ");
+    Serial.println(version);
+    return false;
+  } else {
+    // Serial.println(F("\n[6] DFPlayer + Speaker"));
+    Serial.println(F("DFPlayer Mini online."));
+    dfState = DF_OK;
+    int version = dfPlayer.available();  //
+    Serial.print("dfPlayer.available(): ");
+    Serial.println(version);
+    if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
   }
+
+
   return true;
   // Force device selection (important on some clones)
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  delay(1200);                   // let TF card mount + index after reset/device select
+  delay(1200);  // let TF card mount + index after reset/device select
 
   bool ok = (dfState);
   Serial.printf("DFPLAYER Initialized: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
@@ -636,7 +696,7 @@ static bool runTest_SD() {
   // g_sdChecked   = false;
   // g_sdFileCount = -999;
 
-  g_sdChecked   = true;
+  g_sdChecked = true;
   g_sdFileCount = -1;
 
   // if (!promptYesNo(F("Is the SD card inserted with audio files?"), PROMPT_TIMEOUT_MS, true)) {
@@ -646,9 +706,18 @@ static bool runTest_SD() {
   //   return false;
   // }
 
+  initDFPlayer();
+
+  //Check Mini MP3 Player availability. Works on TD5580A too.
+  int version = dfPlayer.available();  //
+  Serial.print("dfPlayer.available(): ");
+  Serial.println(version);
+
+
+
   if (!initDFPlayer()) {
     Serial.println(F("SD test: FAIL (DFPlayer not detected)."));
-    g_sdChecked   = true;
+    g_sdChecked = true;
     g_sdFileCount = -1;
     return false;
   }
@@ -666,38 +735,37 @@ static bool runTest_SD() {
   Serial.printf("  DFPlayer reports %d files.\n", g_sdFileCount);
 
   if (g_sdFileCount <= 0) {
-  Serial.println(F("SD test: FAIL (no readable files)."));
+    Serial.println(F("SD test: FAIL (no readable files)."));
     return false;
   }
   return true;
 
   bool ok = runTest_SD();
   Serial.printf("SD test: %s\n", ok ? "PASS" : "FAIL");
-  
-    void printDetail(uint8_t type, int value);
- 
+
+  void printDetail(uint8_t type, int value);
 }
 
 static bool runTest_Speaker() {
   Serial.println(F("Playing track #1 for ~3 seconds..."));
 
-  if (!initDFPlayer()) {
-    Serial.println(F("Speaker test: FAIL (DFPlayer not detected)."));
-    return false;
-  }
+  // if (!initDFPlayer()) {
+  //   Serial.println(F("Speaker test: FAIL (DFPlayer not detected)."));
+  //   return false;
+  // }
 
-  if (!g_sdChecked) {
-    Serial.println(F("DFPlayer test requires SD test first."));
-    Serial.println(F("Run [5] SD test, then run speaker test."));
-    return false;
-  }
+  // if (!g_sdChecked) {
+  //   Serial.println(F("DFPlayer test requires SD test first."));
+  //   Serial.println(F("Run [5] SD test, then run speaker test."));
+  //   return false;
+  // }
 
-  Serial.printf("  Using cached SD file count = %d\n", g_sdFileCount);
-  if (g_sdFileCount <= 0) {
-    Serial.println(F("No readable SD/files -> NOT playing audio. Speaker test FAIL."));
-    return false;
-  }
-  const int VOL = 20;
+  // Serial.printf("  Using cached SD file count = %d\n", g_sdFileCount);
+  // if (g_sdFileCount <= 0) {
+  //   Serial.println(F("No readable SD/files -> NOT playing audio. Speaker test FAIL."));
+  //   return false;
+  // }
+  const int VOL = 30;
   dfPlayer.volume(VOL);
   Serial.printf("DFPlayer volume set to: %d\n", VOL);
 
@@ -724,7 +792,8 @@ static bool runTest_WifiAP() {
   Serial.println(F("\n[7] Wi-Fi AP"));
 
   WiFi.mode(WIFI_AP);
-  String mac = WiFi.macAddress(); mac.replace(":", "");
+  String mac = WiFi.macAddress();
+  mac.replace(":", "");
   String ssid = "KRAKE_" + mac;
 
   bool ok = WiFi.softAP(ssid.c_str(), "krakefactory");
@@ -734,8 +803,10 @@ static bool runTest_WifiAP() {
   }
 
   IPAddress ip = WiFi.softAPIP();
-  Serial.print(F("AP SSID: ")); Serial.println(ssid);
-  Serial.print(F("AP IP:   ")); Serial.println(ip);
+  Serial.print(F("AP SSID: "));
+  Serial.println(ssid);
+  Serial.print(F("AP IP:   "));
+  Serial.println(ip);
   Serial.println(F("Operator: verify AP is visible from phone/PC."));
   return true;
 }
@@ -771,7 +842,8 @@ static bool runTest_WifiSTA() {
   }
   pass.trim();
 
-  Serial.print(F("Connecting to: ")); Serial.println(ssid);
+  Serial.print(F("Connecting to: "));
+  Serial.println(ssid);
   WiFi.begin(ssid.c_str(), pass.c_str());
 
   uint32_t start = millis();
@@ -787,8 +859,10 @@ static bool runTest_WifiSTA() {
   }
 
   Serial.println(F("Wi-Fi STA connected successfully."));
-  Serial.print(F("IP:   ")); Serial.println(WiFi.localIP());
-  Serial.print(F("RSSI: ")); Serial.println(WiFi.RSSI());
+  Serial.print(F("IP:   "));
+  Serial.println(WiFi.localIP());
+  Serial.print(F("RSSI: "));
+  Serial.println(WiFi.RSSI());
   return true;
 }
 
@@ -800,10 +874,11 @@ static bool runTest_LittleFS() {
     return false;
   }
 
-  const char* path    = "/factory_test.txt";
+  const char* path = "/factory_test.txt";
   const char* payload = "KRAKE_FACTORY_TEST";
 
-  Serial.print(F("Writing ")); Serial.println(path);
+  Serial.print(F("Writing "));
+  Serial.println(path);
   File f = LittleFS.open(path, FILE_WRITE);
   if (!f) {
     Serial.println(F("Failed to open file for write."));
@@ -841,7 +916,7 @@ static bool runTest_SPI() {
 
   SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_CS_PIN);
   pinMode(SPI_CS_PIN, OUTPUT);
- 
+
   digitalWrite(SPI_CS_PIN, HIGH);
   delay(20);
   Serial.println("[SPI] Starting RJ12 loopback test");
@@ -871,7 +946,7 @@ static bool runTest_SPI() {
     Serial.println("[SPI] PASS: RJ12 loopback OK");
   }
   return pass;
- 
+
   Serial.printf("SPI sent 0x%02X, received 0x%02X\n", RX, TX);
   bool ok = runTest_UART0();
   Serial.printf("SPI loopback test: %s\n", ok ? "PASS" : "FAIL (check jumper)");
@@ -895,7 +970,7 @@ static bool runTest_RS232() {
   // Clear any pending garbage
   while (rs232.available()) rs232.read();
 
-  const char *payload = "KRAKE_rs232_UART1_LOOPBACK_123\r\n";
+  const char* payload = "KRAKE_rs232_UART1_LOOPBACK_123\r\n";
   const size_t n = strlen(payload);
 
   // Send
@@ -929,17 +1004,21 @@ static bool runTest_RS232() {
 
   if (rx != payload) {
     Serial.println("[rs232] FAIL: payload mismatch");
-    Serial.print("Sent: "); Serial.print(payload);
-    Serial.print("Recv: "); Serial.print(rx);
+    Serial.print("Sent: ");
+    Serial.print(payload);
+    Serial.print("Recv: ");
+    Serial.print(rx);
     return false;
   }
 
-  Serial.print("Sent: "); Serial.print(payload);
-  Serial.print("Recv: "); Serial.print(rx);
+  Serial.print("Sent: ");
+  Serial.print(payload);
+  Serial.print("Recv: ");
+  Serial.print(rx);
   Serial.println("[rs232] PASS: UART1 loopback OK");
   return true;
- 
-  bool ok = (rx == payload) ;
+
+  bool ok = (rx == payload);
   Serial.printf("RS-232 loopback test: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
   return ok;
 }
@@ -950,20 +1029,20 @@ static bool runTest_RS232() {
 
 static bool runSingleTestFromIndex(TestIndex idx) {
   switch (idx) {
-    case T_POWER:      return runTest_Power();
-    case T_INPUTS:     return runTest_Inputs();
-    case T_LCD:        return runTest_LCD();
-    case T_LEDS:       return runTest_LEDs();
-    case T_DFPLAYER:   return runTest_DFPlayer();
-    case T_SD:         return runTest_SD();
-    case T_Speaker:    return runTest_Speaker();
-    case T_WIFI_AP:    return runTest_WifiAP();
-    case T_WIFI_STA:   return runTest_WifiSTA();
-    case T_LITTLEFS:   return runTest_LittleFS();
-    case T_UART0:      return runTest_UART0();
-    case T_SPI:        return runTest_SPI();
-    case T_RS232:      return runTest_RS232();
-    default:           return false;
+    case T_POWER: return runTest_Power();
+    case T_INPUTS: return runTest_Inputs();
+    case T_LCD: return runTest_LCD();
+    case T_LEDS: return runTest_LEDs();
+    case T_DFPLAYER: return runTest_DFPlayer();
+    case T_SD: return runTest_SD();
+    case T_Speaker: return runTest_Speaker();
+    case T_WIFI_AP: return runTest_WifiAP();
+    case T_WIFI_STA: return runTest_WifiSTA();
+    case T_LITTLEFS: return runTest_LittleFS();
+    case T_UART0: return runTest_UART0();
+    case T_SPI: return runTest_SPI();
+    case T_RS232: return runTest_RS232();
+    default: return false;
   }
 }
 
@@ -996,20 +1075,20 @@ static void handleCommand(char c) {
 
   bool recognized = true;
   switch (c) {
-    case '0': testResults[T_POWER]      = runTest_Power();      break;
-    case '1': testResults[T_INPUTS]     = runTest_Inputs();     break;
-    case '2': testResults[T_LCD]        = runTest_LCD();        break;
-    case '3': testResults[T_LEDS]       = runTest_LEDs();       break;
-    case '4': testResults[T_DFPLAYER]   = runTest_DFPlayer();   break;
-    case '5': testResults[T_SD]         = runTest_SD();         break;
-    case '6': testResults[T_Speaker]    = runTest_Speaker();    break;
-    case '7': testResults[T_WIFI_AP]    = runTest_WifiAP();     break;
-    case '8': testResults[T_WIFI_STA]   = runTest_WifiSTA();    break;
-    case 'A': testResults[T_LITTLEFS]   = runTest_LittleFS();   break;
-    case 'B': testResults[T_UART0]      = runTest_UART0();      break;
-    case 'C': testResults[T_SPI]        = runTest_SPI();        break;
-    case 'D': testResults[T_RS232]      = runTest_RS232();      break;
-    case 'P': runAllTests();                                     break;
+    case '0': testResults[T_POWER] = runTest_Power(); break;
+    case '1': testResults[T_INPUTS] = runTest_Inputs(); break;
+    case '2': testResults[T_LCD] = runTest_LCD(); break;
+    case '3': testResults[T_LEDS] = runTest_LEDs(); break;
+    case '4': testResults[T_DFPLAYER] = runTest_DFPlayer(); break;
+    case '5': testResults[T_SD] = runTest_SD(); break;
+    case '6': testResults[T_Speaker] = runTest_Speaker(); break;
+    case '7': testResults[T_WIFI_AP] = runTest_WifiAP(); break;
+    case '8': testResults[T_WIFI_STA] = runTest_WifiSTA(); break;
+    case 'A': testResults[T_LITTLEFS] = runTest_LittleFS(); break;
+    case 'B': testResults[T_UART0] = runTest_UART0(); break;
+    case 'C': testResults[T_SPI] = runTest_SPI(); break;
+    case 'D': testResults[T_RS232] = runTest_RS232(); break;
+    case 'P': runAllTests(); break;
     case 'R':
       Serial.println(F("Rebooting..."));
       delay(200);
@@ -1060,7 +1139,7 @@ void loop() {
     char c = Serial.read();
     if (c == '\r' || c == '\n') return;
 
-    Serial.println(up(c)); // echo
+    Serial.println(up(c));  // echo
     handleCommand(c);
   }
 }
