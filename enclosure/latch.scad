@@ -1,6 +1,10 @@
 
 $fn = 50;
 rotate_d = 10;
+tip_lenght = 7;
+thikness = 5;
+width = 7;
+height = 7;
 
 module locker()
 {
@@ -20,10 +24,7 @@ module locker()
     
     
     
-tip_lenght = 3;
-thikness = 5;
-width = 5;
-height = 15;
+
     
 
     module the_tip(){
@@ -58,24 +59,17 @@ height = 15;
     
     
        difference()
-       {latch(height, 5);
-       translate([0,0,-0.1])latch(height*2,4,width+0.2);
+       {latch(height, width);
+       translate([0,0,-0.1])latch(height*2,width-1,width+5);
            rotate([0,0,rotate_d])translate([0,-1,-1])cube([20,10,10]);
           translate([0,-1,-1]) cube([20,10,10]);
        }
-       rotate([0,0,rotate_d])translate([3,0,0])difference(){
-       translate([height-5.5,(width/2)+2,thikness/2])rotate([0,0,0])cube([7.3,4,thikness],true);
-       translate([height-3,width-(0.5),thikness/2])rotate([0,0,45])cube([5,8,thikness*2],true);
-       translate([height-8,width-(0.5),thikness/2])rotate([0,0,45])cube([8,5,thikness*2],true);
-             
-           
-     }
+       rotate([0,0,rotate_d])translate([3,1,0]){snap();}
        
        
+       translate([0,-4,0])the_tip();
        
-       translate([0,-1+2.6,0])the_tip();
-       
-              rotate([0,0,rotate_d])translate([0,2,0])cube([height+0.5,0.5,width]);
+              rotate([0,0,rotate_d])translate([0,(width-1)/2,0])cube([height+0.5,0.5,thikness]);
        }
        
       // lock_m();
@@ -84,4 +78,21 @@ height = 15;
        scale(1)translate([-4.5,2.5,11.7])rotate([90,90,0])lock_m();
  
 
+
+module snap(w = 5,h= height)
+       {
+           
+           
+           difference(){
+       translate([height-5.5,(w/2)+2,thikness/2])rotate([0,0,0])cube([7.3,4,thikness],true);
+    
+               translate([height-3,w-(0.5),thikness/2])rotate([0,0,45])cube([5,8,thikness*2],true);
+       
+               translate([height-8,w-(0.5),thikness/2])rotate([0,0,45])cube([8,5,thikness*2],true);
+             
+           
+     }
+       
+           
+           }
        
