@@ -16,7 +16,7 @@
 // https://www.thingiverse.com/thing:5849866
 include <StudModules.scad>
 
-
+use <COVER.scad>
 
 
 KrakeEnclosureVersion = 0.1; // change this with each rev
@@ -30,8 +30,8 @@ GPAD  = 0;      // [0:Off, 1:On]
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_TShell2          = 1;
-
+GPAD_TShell2          = 0;
+GPAD_TShell3          = 1;
 GPAD_TShellWithVESA  = 0;
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
@@ -42,7 +42,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;
+PWA_KRAKE            = 0;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -58,7 +58,7 @@ Width          = 138 + 13;
 Height         = 40;  
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
-Resolution     = 50;                   // Filet smoothness
+Resolution     = 10;                   // Filet smoothness
 m              = 0.9;                  // Panel/rail tolerance
 PCBFeet        = 1;                    // Enable PCB feet
 Vent           = 1;                    // Enable vents
@@ -1065,7 +1065,24 @@ hull()
 
 
 
- 
+ if(GPAD_TShell3==1){
+     union(){
+     difference(){
+         translate([0,Width,Height+0.2]){
+        color( Couleur1,1){
+            rotate([0,180,180]){
+                
+                Coque();
+            }
+        }
+    }
+        translate([34,32,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+3,35+20,5]);
+    }
+         
+translate([34,32,40+0.2])rotate([180,0,90])cover_unit();
+}
+     
+     }
     
 ACB_x = 38.77-5;
 ACB_y = 42.44;
@@ -1200,5 +1217,6 @@ module ACB_tip(width = 5)
     sphere(d= width);
     translate([0,0,-width/2])cube(width,true);
     }}
+
 //rotate([0,0,90])translate([27,-22,Height-10])linear_extrude(10)round_hull(10,20);
 //rotate([0,0,90])translate([27,-22,Height-5])translate([0,0 ,0.5])linear_extrude(5)round_hull(8,20);

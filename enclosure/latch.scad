@@ -1,7 +1,7 @@
 
 $fn = 50;
 rotate_d = 10;
-tip_lenght = 7;
+tip_lenght = 6;
 thikness = 5;
 width = 7;
 height = 7;
@@ -57,19 +57,22 @@ module locker()
        
        module lock_m(){
     
-    
+    union(){
        difference()
        {latch(height, width);
        translate([0,0,-0.1])latch(height*2,width-1,width+5);
            rotate([0,0,rotate_d])translate([0,-1,-1])cube([20,10,10]);
           translate([0,-1,-1]) cube([20,10,10]);
        }
+       
+       
        rotate([0,0,rotate_d])translate([3,1,0]){snap();}
        
        
        translate([0,-4,0])the_tip();
-       
+   
               rotate([0,0,rotate_d])translate([0,(width-1)/2,0])cube([height+0.5,0.5,thikness]);
+       }
        }
        
       // lock_m();
