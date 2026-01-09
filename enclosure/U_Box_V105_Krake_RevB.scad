@@ -49,7 +49,7 @@ PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SpeakerGrill         = 0;
-SpeakerEnclosureBox  = 0;
+SPKLid               = 0;
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -955,6 +955,10 @@ module SPKBOSSpunch62(stud_height_mm,h_offset_mm) {
  module GPAD_BShell () { 
    // Coque bas - Bottom shell
     i=0;
+    difference(){
+    difference (){
+    union () {
+    
         union(){
    // speaker_clamp(); 
     difference(){
@@ -1028,7 +1032,13 @@ SpeakerCutOut();
     SpeakerHexGrill(1,SpeakerPositionX, SpeakerPositionY);
         }
     
+SpeakerEnclosure();
 }
+    CableHole();
+    }
+ AllScrewPockets ();
+}
+    }
  
 
 /// SPKBOSS62 and SPKBOSSpunch62 integration w Speaker 62mm hole to hole
@@ -1197,21 +1207,19 @@ module SpeakerKnife () {
    cylinder ( h=2*SpeakerHeight_mm, r=SpeakerRadius_mm, center=false);
    }
 }
-
-              
-        
+          
     
 module SpeakerEnclosure (){
 
 module SpeakerBoxKnife(){
-translate ([SpeakerPositionX+Thick*5, SpeakerPositionY,Height/4-Thick]){
-    cube ([1.6*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height], center=true);
+translate ([SpeakerPositionX+4+Thick*5, SpeakerPositionY,Height/4-Thick]){
+    cube ([1.6*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height*2], center=true);
     }}
     
  module SpeakerBoxOuter (){
 difference (){ 
-    translate ([SpeakerPositionX+2+Thick*5, SpeakerPositionY,Height/4+Thick+10]){
-    cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5, Height-10], center=true);
+    translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,Height/4+Thick+10]){
+    cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+10, Height-10], center=true);
         }
         SpeakerBoxKnife();
     }
@@ -1226,6 +1234,7 @@ difference (){
   SpeakerShelf();
   SpeakerBoxOuter();
   }
+  
      }
  
 module SpeakerCutOut () {
@@ -1234,8 +1243,58 @@ cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
   }
   }
   
-  if (SpeakerEnclosureBox==1){
-    SpeakerEnclosure();
+  
+   ScrewDiameter=2.2;
+   ScrewLength=5+Thick;
+   Spacing=100;
+ module ScrewPocket(){
+cylinder (d=ScrewDiameter,h=ScrewLength+Thick,center=true);
+}
+
+module AllScrewPockets (){
+translate([SpeakerPositionX + Thick*5 + 5,
+               SpeakerPositionY,
+               Height/4 + Thick + 10 - (Height-10)/2]) {
+
+        part_x = 1.6*SpeakerDiameter_mm;
+        part_y = SpeakerDiameter_mm*1.5 + 10;
+        part_z = Height - 10;
+
+        edge_offset = 4;   // distance from edges to hole center (mm)
+
+        x = part_x/2 - edge_offset;
+        y = part_y/2 - edge_offset;
+
+        // 4 corner holes
+        translate([ x,  y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+        translate([-x,  y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+        translate([ x, -y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+        translate([-x, -y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+    }
+}
+ 
+module SpeakerBoxLid(){
+difference (){
+    translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,Height-ScrewLength]){
+        cube ([1.6*SpeakerDiameter_mm,       SpeakerDiameter_mm*1.5+10, Thick], center=true);
+        }
+    AllScrewPockets();
+    }
+}
+
+if (SPKLid==1){
+SpeakerBoxLid();
+}
+
+module CableHole() {
+    translate ([1.8*SpeakerDiameter_mm,SpeakerDiameter_mm,3*Height/4]){
+        rotate ([0,90,0]){
+            cylinder (d=10,h=Thick*5,center=true);
+            }
+        }
     }
 
-   
