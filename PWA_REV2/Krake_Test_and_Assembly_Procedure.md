@@ -179,11 +179,9 @@ The files must be loaded in a specified order.
 The files are found at: https://drive.google.com/drive/u/1/folders/1j0NoWhTwpoMUFePJHcl5dvErf954-mCs
 There is a script file there, copy_to_sd.sh which on a Windows PC can copy the files in the required order to a microSCH Flash card.
 
-Screen shot of file explorer view of a programed card.
+Screen shot of file explorer view of a programed card.  
 <img width="453" alt="image of Krake MP3 files on an SD card" src="https://github.com/user-attachments/assets/bf922b82-8fc6-46ef-afb9-ff510ae298f3" />  
 Note these files do not display in the order in which they were written.
-
-
 
 ## Unpacking procedure and Serial Numbering
 
@@ -220,7 +218,9 @@ Before any additional soldering:
 
 2. Confirm that the PCB is marked as Rev 2.1 (or the revision for which this procedure is valid).
 
-![Inspect for polarity](Inspection1.png)
+Inspect for polarity  
+<img width="1024" alt="Inspection1" src="https://github.com/user-attachments/assets/8de3dcae-75e6-4250-ba96-e947009413bc" />
+
 
 ### Time to start soldering
 
@@ -262,7 +262,9 @@ Before applying power, the following resistance measurements are taken between t
 
 Test point locator:
 
-![Test Points for Unpowered Tests](Inspection2.png)
+Test Points for Unpowered Tests
+<img width="1024"  alt="image" src="https://github.com/user-attachments/assets/dd8a57dc-74cd-4b2f-9265-cc250774c20e" />
+
 
 ### Acceptance criteria
 
@@ -350,7 +352,9 @@ Additional tests verify that voltage is going through the decoupling resistors t
 
 Test points:
 
-![Test Points for Powered Tests](Inspection3A.png)
+Test Points for Powered Tests
+<img width="1024"  alt="image" src="https://github.com/user-attachments/assets/7d33534b-6648-4b58-b193-4e33a3443038" />
+
 
 ### Typical results and criteria
 
