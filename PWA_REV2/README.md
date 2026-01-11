@@ -6,7 +6,7 @@ for some selected documents in this folder.
 The Rev2 PWA [Krake_Test_and_Assembly_Procedure.md](https://github.com/PubInv/krake/blob/155-doc-factory-test-and-assembly-instructions/PWA_REV2/Krake_Test_and_Assembly_Procedure.md)
 
 ## References
-Link to issue capturing the order from PCBWay of PWA subassemblies.
-Link to issue capturing the order from other vendors of balance of BOM for PWAs.
+Link to issue capturing the order from PCBWay of PWA subassemblies.  
+Link to issue capturing the order from other vendors of balance of BOM for PWAs.  
 
 
