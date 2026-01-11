@@ -351,10 +351,10 @@ Additional tests verify that voltage is going through the decoupling resistors t
    - J701 pin 2 (DB9), charge pump output negative.
 
 Test points:
-
-Test Points for Powered Tests
-<img width="1024"  alt="image" src="https://github.com/user-attachments/assets/7d33534b-6648-4b58-b193-4e33a3443038" />
-
+Test Points for Powered Tests  
+<img width="1024"  alt="image" src="https://github.com/user-attachments/assets/7d33534b-6648-4b58-b193-4e33a3443038" />  
+Locator for DB9 pins  
+<img width="525" alt="image" src="https://github.com/user-attachments/assets/46de0113-69bc-4c7a-9812-c80e29a87c2b" />  
 
 ### Typical results and criteria
 
