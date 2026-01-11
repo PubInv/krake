@@ -297,21 +297,14 @@ Steps:
 
 Finish Assembly: Solder the LCD and LEDs and continue powered testing.
 
-## LCD, ESD ground connections
-
-To improve ESD performance and noise immunity, the LCD module includes two pads (J1 and J2) intended to be shorted together.
-
-1. On the back of the LCD module, locate pads J1 and J2.
-2. Form a small solder bridge (“ball” of solder) connecting J1 and J2.
-
-This step ensures the LCD frame and internal reference have an appropriate ground reference.
-
 ## LCD mounting
 
-1. Install the mechanical spacers and bolts that mount the LCD above the PCB.
+1. A quantity of four, nylon 1/8" spacers are placed at the four corners of the LCD sub module. One spacer may need to be trimmed to clear the roatary encoder.
 2. Place the LCD module onto its header footprint, ensuring correct orientation.
-3. Solder the LCD header pins to the PCB while maintaining the LCD flat and level.
-4. Install the nuts on the bolts and torque them to approximately 2 in·lb (light hand-tight torque using the nut driver).
+3. Four 4-40 x 3/8" screws with 4-40 x 3/16" nuts go through both boards and are torqued to 3.4 - 4.8 Inch-Pounds. Hold the nut with an approprate wrench or nut driver.
+4. Solder the LCD header pins to the PCB while maintaining the LCD flat and level.
+![HeaderToLCD.jpg](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/HeaderToLCD.jpg)  
+ Soldering the LCD pins on the header.
 
 ## LED installation
 
