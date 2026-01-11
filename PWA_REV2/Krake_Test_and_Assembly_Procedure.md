@@ -38,13 +38,14 @@ Status:               Draft
 | v1.0.0  | YYYY-MM-DD | [Author Name] | Finalized for publication        |
 
 ## 1. Abstract
-Instructions to test the sub assembly units when received from the manufacturer. And instructions to add additional components to the sub assembly `PCB_KRAKE_REV2.0` to build the final assembly of PWA into enclosure.
+Instructions to test the sub assembly units when received from the manufacturer. And instructions to add additional components to the sub assembly `PCB_KRAKE_REV2.0` to build the final assembly of PWA and speaker into enclosure.
 
 ## 2. Purpose
-This document describes the steps for testing and finishing the assembly of the Krake PWA (Printed Wiring Assembly) Rev 2.
+This document is written for a technician and describes the steps for testing and finishing the assembly of the Krake PWA (Printed Wiring Assembly) Rev 2.
 
 ## 3. Scope
-This document describes how to take the sub assembly received from the contract manufacturer, and add the additional components (Mini MP3 player, SD card, LCD and the LEDs) and electrical testing and functional testing. This document does not describe troubleshooting.
+This document describes how to take the sub assembly received from the contract manufacturer, and add the additional components (Mini MP3 player, SD card, LCD and the LEDs with their spacers) and electrical testing and functional testing. This document describes how to load factory test firmware and finaly product production firmware (the firmware the end user gets). This document also describes the final assembly of the PWA and a speaker into an enclosure.
+This document does not describe troubleshooting.
 
 ## 4. Definitions and Abbreviations
 
@@ -52,11 +53,17 @@ This document describes how to take the sub assembly received from the contract 
 |------|------------|
 | Krake | [Definition] |
 | API | Application Programming Interface |
-| ESD | Electro Static Discharge, a damage caused by over voltage. |
+| DFP layer | A Mini MP3 player, DFP layer is by DF Robot, a more generic term is Mini MP3 Player.|
+| ESD | Electro Static Discharge, damage caused by over voltage. |
+| LCD | Liquid Crystal Display |
+| PCB | Printed Circuit Board, typically a fiberglass panel with copper traces but to which electronic comments are NOT yet attached.  |
+| PWA | Printed Wiring Assembly, a PCB with components soldered / attached |
+| Sketch | the Arduino vocabulary for source code file of the type used in the Arduino IDE and typically ending with the extension ".ino". |
 | ... | ... |
 
 ## 5. Background
-Context or history that justifies the work.
+This document was developed from the similar document of the GPAD (General Purpous Alarm Device) found at: https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/ManufacturingUnitTestTroubleshootingRev2.md
+Additional notes from the Krake issue: ?TBD?
 
 ## 6. Technical Description / Methodology
 Detailed description, architecture, procedures, protocols, etc.
@@ -109,6 +116,7 @@ Start with receiving the subassembly KRK-PL-0002 (Krake Rev2.1 PCB, plus BOM-TBD
 
 | Qty | Reference(s) | Value | Datasheet | Cost | Description |
 |---:|---|---|---|---:|---|
+| 1 | KRK-PL-0001 | Subassembly, Krake Contract Manufacture | ~ | 1,000 | As built from parts list PCBWay |
 | 1 | BZ601 | Speaker | ~ | 1 | 8 Ohm 2W Speaker, 28mm |
 | 1 | J603 | DFPlayermini | [DFPlayer Mini Manual](https://image.dfrobot.com/image/data/DFR0299/DFPlayer%20Mini%20Manul.pdf) | 3 | Mini MP3 Player |
 | 1 | SD601 | Micro_SD_Card_16GB | -- | 7 | SanDisk 16GB SDHC SDSDB-016G |
@@ -137,7 +145,7 @@ This section documents the procedure used to complete assembly of Krake Rev 2.0 
 
 The following tools are required for through-hole assembly and rework:
 
-- Sharpie indelible pen.
+- Sharpie or other indelible pen.
 - Box cutter or similar.
 - Soldering station with appropriate ventilation.
 - 3/16 or 7/32 inch nut driver for the nuts on the LCD screws.
@@ -146,9 +154,26 @@ The following tools are required for through-hole assembly and rework:
 - Basic ESD protection (wrist strap, mat) appropriate for handling microcontrollers and logic ICs.
 - Assembly fixture or simple mechanical support to hold the PCB during soldering (optional but recommended).
 
-*Photo of assembly fixture / test station here.*
+### An Assembly Fixture
+For the GPAD, We made an assembly assistant / fixture by using a raw PCB with some long #6 screws and nuts to hold at the PCB mounting points.  This same test fixture can be used for the Krake.
+![Assembly Fixture View 1, no LCD](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/AssemblyFixtureView1.jpg)  
 
-## General information and serial numbering
+In addition four 4.40 screws with washers and 4-40 nuts to make a 1/8" spacer for holding the LCD and header for soldering.
+![Assembly Fixture View 2, With LCD](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/AssemblyFixtureView2.jpg)  
+
+An alternative is to make a 3D printed test bench
+<img width="939" height="598" alt="image" src="https://github.com/user-attachments/assets/b8495141-0fc9-4d42-8993-b6f9b8f04e6c" />
+The file for which is _TBD_
+
+### LCD Bezel Grounding
+On the LCD module locate the J1 and J2 solder pads which if soldered ground the bezel.  
+NOTE, not all LCD modules have J1.
+ ![View of J1 and J2.](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/LocateJ1J2.jpg)
+Solder them.  
+ ![Solder on of J1 and J2.  ](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/SolderJ1J2.jpg)  
+As soldered.
+
+## Unpacking procedure and Serial Numbering
 
 The contract manufacturer order (approximately September 2025) provided partially assembled PCBs with all SMT components and some through-hole parts installed. These are referred to as sub-assemblies KRK-PL-0001.
 
