@@ -26,6 +26,8 @@
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
 
+using namespace gpad_hal;
+
 extern IPAddress myIP;
 
 // Use Serial1 for UART communication
@@ -424,24 +426,24 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     printError(serialport);
     return;
   }
-  char C = buf[0];
+  Command command = static_cast<Command>(buf[0]);
 
   serialport->print(F("Command: "));
-  serialport->println(C);
-  switch (C)
+  serialport->println(F(command));
+  switch (command)
   {
-  case 's':
+  case Command::MUTE:
     serialport->println(F("Muting Case!"));
     currentlyMuted = true;
     break;
-  case 'u':
+  case Command::UNMUTE:
     serialport->println(F("UnMuting Case!"));
     currentlyMuted = false;
     break;
-  case 'h': // help
+  case Command::HELP: // help
     printInstructions(serialport);
     break;
-  case 'a':
+  case Command::ALARM:
   {
     // In the case of an alarm state, the rest of the buffer is a message.
     // we will read up to 60 characters from this buffer for display on our
@@ -462,7 +464,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break;
   }
-  case 'i': // Information. Firmware Version, Mute Status,
+  case Command::INFO: // Information. Firmware Version, Mute Status,
   {
     // Firmware Version
     //  81+23 = Maximum string length
@@ -474,6 +476,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, FIRMWARE_VERSION);
     client->publish(publish_Ack_Topic, onInfoMsg);
     serialport->println(onInfoMsg);
+    onInfoMsg[0] = '\0';
+
+    // Report API version
+    strcat(onInfoMsg, "GPAD API Version: ");
+    strcat(onInfoMsg, gpadApi.getVersion().toString().c_str());
+    client->publish(publish_Ack_Topic, onInfoMsg);
+    serialport->println(onInfoMsg);
+    onInfoMsg[0] = '\0';
 
     // Up time
     onInfoMsg[0] = '\0';
@@ -747,4 +757,32 @@ void annunciateAlarmLevel(Stream *serialport)
   {
     playNotBusyLevel(currentLevel);
   }
+}
+
+GPAD_API::GPAD_API(SemanticVersion version)
+    : version(version)
+{
+}
+
+const SemanticVersion &GPAD_API::getVersion() const
+{
+  return this->version;
+}
+
+SemanticVersion::SemanticVersion(uint8_t major, uint8_t minor, uint8_t patch)
+    : major(major),
+      minor(minor),
+      patch(patch)
+{
+}
+
+std::string SemanticVersion::toString() const
+{
+  std::string versionString = std::to_string(this->major);
+  versionString.push_back('.');
+  versionString.append(std::to_string(this->minor));
+  versionString.push_back('.');
+  versionString.append(std::to_string(this->patch));
+
+  return versionString;
 }
