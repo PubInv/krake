@@ -48,18 +48,23 @@ LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
-SpeakerGrill         = 0;
 SPKLid               = 0;
+
+///////////////// speakers //////////
+SoundLabSPK = 1;
+
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
-
-
 // speaker parameters
-SpeakerDiameter_mm=78;
-SpeakerRadius_mm=SpeakerDiameter_mm/2; 
+SpeakerDiameter_mm=78; 
+SpeakerRadius_mm=SpeakerDiameter_mm/2;
 SpeakerHeight_mm=40;
+
+
+
+
 
 translationVariable = 4 * SpeakerHeight_mm -5;
 ////////////////////////////////////////////////////////////////////
@@ -112,7 +117,7 @@ Dec_size       = Vent ? Thick * 2 : 0.8;
 ////////////////////////////////////////////////////////////////////
 SpeakerPositionX = Length/4;
 SpeakerPositionY =Width/2;
-SpeakerPositionZ = 0-Thick;//Height/4;
+SpeakerPositionZ = 0-Thick;
 
 SpeakerHolePosX =Thick+m/2 -FootHeight;
 SpeakerHolePosY = SpeakerPositionY;
@@ -1053,8 +1058,6 @@ translate ([SpeakerPositionX+5,SpeakerPositionY+8,Thick+7.8+.1])
 SPKBOSS62 (7.8,7.8);
 }
 
-
-
 if(RotaryEncoder ==1){
     //RotaryEncoder
     translate( [3*Thick+2,Thick+5,0])     
@@ -1065,9 +1068,6 @@ if(BButton ==1){
     translate( [3*Thick+2,Thick+5,0])     
     ButtonSwitch(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter); //Mute Button
 }
-
-
-
 if(LED_Standoff == 1){
     //(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){ 
     translate( [3*Thick+2,Thick+5,5]){//([-.5,0,0]){
@@ -1079,7 +1079,6 @@ if(LED_Standoff == 1){
         LedSpacer(1,PCBLength-46.99,PCBWidth-FootPosX,5,2.54,Thick+FootHeight+PCBThick/2+.1-6,false); //LED6 power
     }
 }
-
 if(PCB_SIMPLE==1){
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
     translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
@@ -1106,7 +1105,6 @@ if(PWA_GPAD==1){
         }
     } // Fin PCB 
 }
-
 if(PWA_KRAKE==1){
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
     translate([3*Thick+2  + translationVariable,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
@@ -1145,8 +1143,6 @@ if(GPAD_BPanL==1){
     translate([Thick+m/2,Thick+m/2,Thick+m/2])
     Panel(Length,Width,Thick,Filet);
 }
-
-
 
 // Module Section
 // RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
@@ -1196,18 +1192,7 @@ if (T_BShellScrew==1){
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 /////////// speaker expansion Courtney ////////////
-//consider port location and access holes
-module SonySpeaker () {
-import ("C:/Users/court/OneDrive/Documents/Public Invention/OpenSCAD models/Speaker_TwoBodies-Part_SpeakerBody_MetalWork.stl", convexity=3);
-}
-
-    
-module SpeakerKnife () {
-    translate ([SpeakerPositionX,       SpeakerPositionY, -20]) {
-   cylinder ( h=2*SpeakerHeight_mm, r=SpeakerRadius_mm, center=false);
-   }
-}
-          
+//consider port location and access holes      
     
 module SpeakerEnclosure (){
 
@@ -1219,15 +1204,15 @@ translate ([SpeakerPositionX+4+Thick*5, SpeakerPositionY,Height/4-Thick]){
  module SpeakerBoxOuter (){
 difference (){ 
     translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,Height/4+Thick+10]){
-    cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+10, Height-10], center=true);
+    cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+10, SpeakerHeight_mm+5], center=true);
         }
         SpeakerBoxKnife();
     }
   }
   
   module SpeakerShelf (){
-  translate ([SpeakerPositionX +SpeakerHeight_mm + 10, SpeakerPositionY,Height/4+Thick]){
-  cube ([5,SpeakerDiameter_mm*1.5, Height/2], center=true);
+  translate ([SpeakerPositionX +SpeakerHeight_mm + 10, SpeakerPositionY,SpeakerHeight_mm/2-Thick]){
+  cube ([5,SpeakerDiameter_mm*1.5, 3*SpeakerHeight_mm/4], center=true);
   }
   }
   union (){
@@ -1243,7 +1228,7 @@ cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
   }
   }
   
-  
+ ///////////////screw parameters///////////////////
    ScrewDiameter=2.2;
    ScrewLength=5+Thick;
    Spacing=100;
@@ -1279,7 +1264,7 @@ translate([SpeakerPositionX + Thick*5 + 5,
  
 module SpeakerBoxLid(){
 difference (){
-    translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,Height-ScrewLength]){
+    translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,SpeakerHeight_mm-ScrewLength]){
         cube ([1.6*SpeakerDiameter_mm,       SpeakerDiameter_mm*1.5+10, Thick], center=true);
         }
     AllScrewPockets();
@@ -1291,7 +1276,7 @@ SpeakerBoxLid();
 }
 
 module CableHole() {
-    translate ([1.8*SpeakerDiameter_mm,SpeakerDiameter_mm,3*Height/4]){
+    translate ([1.8*SpeakerDiameter_mm,SpeakerDiameter_mm,3*SpeakerHeight_mm/4]){
         rotate ([0,90,0]){
             cylinder (d=10,h=Thick*5,center=true);
             }
