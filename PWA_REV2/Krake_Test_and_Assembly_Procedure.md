@@ -162,16 +162,20 @@ In addition four 4.40 screws with washers and 4-40 nuts to make a 1/8" spacer fo
 ![Assembly Fixture View 2, With LCD](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/AssemblyFixtureView2.jpg)  
 
 An alternative is to make a 3D printed test bench
-<img width="939" height="598" alt="image" src="https://github.com/user-attachments/assets/b8495141-0fc9-4d42-8993-b6f9b8f04e6c" />
-The file for which is _TBD_
+<img width="939"  alt="image" src="https://github.com/user-attachments/assets/b8495141-0fc9-4d42-8993-b6f9b8f04e6c" />  
+The file for which is here:
+[Platform_PWA-Part_PlatformPWABody_PlatformPWA20260114.zip](https://github.com/user-attachments/files/24619821/Platform_PWA-Part_PlatformPWABody_PlatformPWA20260114.zip)
+
+
 
 ### LCD Bezel Grounding
 On the LCD module locate the J1 and J2 solder pads which if soldered ground the bezel.  
-NOTE, not all LCD modules have J1.
- ![View of J1 and J2.](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/LocateJ1J2.jpg)
+ ![View of J1 and J2.](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/LocateJ1J2.jpg)  
 Solder them.  
- ![Solder on of J1 and J2.  ](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/SolderJ1J2.jpg)  
+ ![Solder on of J1 and J2.  ](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/SolderJ1J2.jpg)    
 As soldered.
+NOTE, not all LCD modules have J1.  This LCD module has only J2 pictured with solder on J2.  
+<img width="1024"  alt="image" src="https://github.com/user-attachments/assets/3094d6d1-0b83-48bc-8afc-8217a2494079" />
 
 ### Load MP3 Files to SD Card
 For each Krake assembly, load into a microSCHC Flash card several MP3 files. 
