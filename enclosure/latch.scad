@@ -82,16 +82,16 @@ module locker()
  
 
 
-module snap(w = 5,h= height)
+ module snap(w = 5,h= height, t= thikness)
        {
            
            
            difference(){
-       translate([height-5.5,(w/2)+2,thikness/2])rotate([0,0,0])cube([7.3,4,thikness],true);
+       translate([height-5.5,(w/2)+2,t/2])rotate([0,0,0])cube([7.3,4,t],true);
     
-               translate([height-3,w-(0.5),thikness/2])rotate([0,0,45])cube([5,8,thikness*2],true);
+               translate([height-3,w-(0.5),t/2])rotate([0,0,45])cube([5,8,t*2],true);
        
-               translate([height-8,w-(0.5),thikness/2])rotate([0,0,45])cube([8,5,thikness*2],true);
+               translate([height-8,w-(0.5),t/2])rotate([0,0,45])cube([8,5,t*2],true);
              
            
      }

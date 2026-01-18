@@ -6,9 +6,145 @@ AC_button_y = 44.44;
 
 use <COVER.scad>
 
+use <button_cap.scad>
 
-translate([33,32,40])rotate([180,0,90])cover_unit();
-/*
+//translate([AC_button_x,AC_button_y,25])button_cap_S(5.175,5,60);
+
+//translate([33,32,40])rotate([180,0,90])cover_unit();
+
+
+
+translate([0,0,5])scale([1.1,1.1,1])translate([0,0,-5])button_cap_S(5.175,5,60);
+
+w_p = 2;
+h_p = 50;
+l_p = 0.5;
+
+
+r_w = 40;
+r_l = 70;
+r_h = 9;
+r_t = 2;
+
+module reccessed(w,l,h,t)
+{
+
+difference(){    
+    translate([w/2,l/2,h/2])
+    difference(){
+    cube([w,l,h], true);    
+    translate([0,0,0])cube([w-t,l-t,h+t], true);  
+        
+        
+        
+    }
+    translate([-1,15,-11+0.4])cube([w+2,40,16],false);
+}
+
+}
+
+
+
+
+
+
+under_r_x = 30.5-2;
+under_r_y = 28;
+under_r_z = 38-r_h-r_t-0.1;
+
+
+
+
+
+
+snap_l = 6.5;
+snap_h = 2;
+snap_w = snap_h/2;
+
+module hh(){
+  difference(){
+    reccesed_f();
+      translate([AC_button_x,AC_button_y,25])cylinder(r=6,h=10);
+    translate([AC_button_x,AC_button_y+29.67,25])cylinder(r=6,h=10);  
+      
+          translate([AC_button_x+8,AC_button_y,26.5])
+      {
+          cube([17,35,3]);
+          
+          } 
+      }
+      AC_buttons_pins2(s_t = 0.5, s_w =0.5);
+      
+translate([AC_button_x+24.98,AC_button_y+34.8,28.9])rotate([0,0,180])rotate([0,180,270])cover2(17,44,2);
+//reccessed_bottom_f();
+
+}
+difference(){
+    hh();
+//cube([50,50,50]);
+}
+module reccesed_f(){
+union(){
+translate([under_r_x,under_r_y+15,under_r_z]){translate([-0.1,0.1,0])snap(snap_h,snap_w,40-0.2,snap_l,2);
+    translate([0.1,0.1,0])mirror([1,0,0])translate([-r_w-4,0,0]) snap(snap_h,snap_w,40-0.2,snap_l,2);
+    }
+    
+translate([under_r_x-0.1,under_r_y,under_r_z])cube([r_w+4.2,r_l,r_t], false);
+}
+}
+ 
+ module reccessed_bottom_f(){
+    union(){
+    translate([30.5,28,38-r_h])reccessed(r_w,r_l,r_h,r_t);
+
+    translate([0,0,15-r_h])add_supp_snap();
+    translate([100+1,0,15-r_h])mirror([1,0,0])translate([0,0,0])add_supp_snap();
+    }
+    
+}
+    
+    module add_supp_snap(){
+    difference(){
+    translate([30.5,38,27])supp_snap();
+translate([under_r_x-0.001,under_r_y+15,under_r_z-r_h+3])translate([2,25,5.5])scale([1.15,1.05,1.15])translate([-2,-25,-5.5])snap(snap_h,snap_w,40,snap_l,2);
+          translate([28.8,38,24])cube([2,50,2]);
+        }
+    }
+        
+      
+module  supp_snap(){
+difference(){
+hull(){
+hull(){
+rotate([0,45,0])cube([w_p,h_p,w_p]);
+translate([0,0,-l_p])rotate([0,45,0])cube([w_p,h_p,w_p]);}
+translate([-2,0,0])hull(){
+rotate([0,45,0])cube([w_p,h_p,w_p]);
+translate([0,0,-l_p])rotate([0,45,0])cube([w_p,h_p,w_p]);}
+}
+translate([-3,-1,-20])cube([w_p+1,h_p+2,50],false);
+
+}
+}
+
+ module snap(w = 100,h, t,l,thick)
+       {
+           
+           translate([0,0,l])rotate([90,270,180])mirror([1,0,0])union(){
+           translate([0,thick,0])linear_extrude(t)polygon(points=[[0,0],[w,0],[w/2,h]]);       
+    cube([l,thick,t],false);
+   }
+   }
+   
+   
+
+
+
+//test();
+//translate([10,10,10])cube([30,50,50]);
+
+
+     /*
 difference(){translate([ACB_x,ACB_y,ACB_z-10])rotate([0,0,90])linear_extrude(10)round_hull(20,34);
 
 
@@ -16,8 +152,8 @@ difference(){translate([ACB_x,ACB_y,ACB_z-10])rotate([0,0,90])linear_extrude(10)
     translate([30,15,ACB_z])cube([50,50,50],true);
 }*/
 
-AC_buttons();
-AC_buttons_pins();
+//AC_buttons();
+//AC_buttons_pins();
 
 
 
@@ -39,6 +175,24 @@ module AC_buttons_pins()
         translate([AC_button_x,AC_button_y+29.67,-0.5+ACB_z-10])rotate([0,180,0])AC_button_Pin();
     }
 
+module AC_buttons_pins2(s_t = 2,s_w = 0.5, scale_s = 1)
+{
+    translate([AC_button_x,AC_button_y,-0.5+ACB_z-15.17])translate([0,0,5])translate([0,0,-5])button_cap_S(4.57,5,60,t=s_t,w =s_w);
+    
+    
+        translate([AC_button_x,AC_button_y+29.67,-0.5+ACB_z-15.17])translate([0,0,5])translate([0,0,-5])button_cap_S(4.57,5,60,t = s_t, w =s_w);
+    }
+
+module AC_buttons2()
+{
+    
+    
+
+translate([AC_button_x+5,AC_button_y-4,25])rotate([0,0,90])ACB();
+translate([AC_button_x+5,AC_button_y-4+29.67,25])rotate([0,0,90])ACB();
+    
+    
+    }
 
 module AC_button_Pin()
 {

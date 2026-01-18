@@ -17,8 +17,21 @@
 include <StudModules.scad>
 
 use <COVER.scad>
+use <recessed.scad>
 
 
+reccessed_bottom_f();
+  difference(){
+    reccesed_f();
+      translate([AC_button_x,AC_button_y,25])cylinder(r=6,h=10);
+    translate([AC_button_x,AC_button_y+29.67,25])cylinder(r=6,h=10);
+    translate([AC_button_x+8,AC_button_y,26.5])
+      {
+          cube([17,35,3]);
+          
+          }  
+      }translate([AC_button_x+24.98,AC_button_y+34.8,28.9])rotate([0,0,180])rotate([0,180,270])cover2(17,44,2);
+      AC_buttons_pins2(s_t = 0.5, s_w =0.5);    
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
@@ -31,7 +44,7 @@ GPAD  = 0;      // [0:Off, 1:On]
 
 GPAD_TShell          = 0;
 GPAD_TShell2          = 0;
-GPAD_TShell3          = 1;
+GPAD_TShell3          = 0;
 GPAD_TShellWithVESA  = 0;
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
@@ -42,7 +55,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;
+PWA_KRAKE            = 1;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -1076,7 +1089,7 @@ hull()
             }
         }
     }
-        translate([34,32,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+3,35+20,5]);
+        translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
     }
          
 translate([34,32,40+0.2])rotate([180,0,90])cover_unit();

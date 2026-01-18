@@ -103,7 +103,7 @@ translate([0,cover_width,0])mirror([0,1,0]){
     }
 }
 
-#translate([-1.7,0,0])cube([3,cover_width,3]);
+translate([-1.7,0,0])cube([3,cover_width,3]);
 /*
 translate([0,30,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15);
@@ -123,7 +123,7 @@ color("green"){cover(cover_width,cover_length,cover_thickness);}
 
 difference(){
 translate([0,0.3,0])color("blue"){cover(cover_width-0.6,cover_length-1,cover_thickness);}
-#translate([cover_length-cover_width/2-9.6,cover_width/2-2.6,-1])cube([11,5+0.6,8]);
+translate([cover_length-cover_width/2-9.6,cover_width/2-2.6,-1])cube([11,5+0.6,8]);
 }
 
 
@@ -157,5 +157,39 @@ translate([cover_length-cover_width/2-1.8,cover_width/2-3.5,2])cube([3,7,3]);
     }
 
 }
+module cover2(width,length,thickness)
+    {
+//width = 30;
+//length = 60;
+//thickness = 2;
+c_x = 3;
+c_y = 3.2;
+c_z = 0;
+module joint()
+        {
+            
+        
+ rotate([90,0,0])translate([c_x,c_y,c_z])drafted_pin(1.5,1);
+        
+            }
+     
+          
+Resolution = 50;
+            
+
+ union(){union(){       
+translate([0,width/2,0])  
+    s_cover(width,length,thickness);
+     
+
+   rotate([90,0,0])translate([c_x,c_y,-width])cylinder(width,1.5,1.5);
+  
+        joint();
+        
+ }mirror([0,1,0])translate([0,-width,0]) joint();}
+        
+ 
+ }
+        
 
 cover_unit();
