@@ -357,6 +357,90 @@ static bool addrInAllowList(uint8_t addr) {
   return false;
 }
 
+// ----------------------------------------------------------------------------
+// LCD Connection Check (Busy Flag Read)
+// ----------------------------------------------------------------------------
+// This function manually talks to the PCF8574 to read back from the LCD.
+// It verifies that an LCD is physically connected by checking the "Busy Flag".
+// Wiring Requirement: PCF8574 P1 must be connected to LCD R/W pin.
+// ----------------------------------------------------------------------------
+static bool verifyLCDConnection(uint8_t i2c_addr) {
+  // We assume the PCF8574 pinout is:
+  // P0=RS, P1=RW, P2=EN, P3=Backlight, P4..P7 = D4..D7
+  const uint8_t RS = 0x01;
+  const uint8_t RW = 0x02;
+  const uint8_t EN = 0x04;
+  const uint8_t BL = 0x08; // Check if your backlight is P3 (Value 0x08)
+
+  // To read from the LCD, we need to set RW=1, RS=0 (Instruction Register).
+  // ALSO, the data pins (P4-P7) on the PCF8574 are quasi-bidirectional.
+  // To read, we must write "1" to them so they act as inputs (weak pull-ups).
+  // So we write: BL | Data=High(0xF0) | EN=0 | RW=1 | RS=0
+  uint8_t dataMask = 0xF0;
+  uint8_t ctrlSet = BL | RW; // Keep Backlight ON, set Read mode
+
+  Wire.beginTransmission(i2c_addr);
+  Wire.write(dataMask | ctrlSet | EN); // Pulse EN High
+  Wire.endTransmission();
+
+  // Now we read the PCF8574 port state while EN is High
+  Wire.requestFrom((int)i2c_addr, 1);
+  if (!Wire.available())
+    return false;
+  uint8_t readVal = Wire.read();
+
+  // Finish the pulse (EN Low)
+  Wire.beginTransmission(i2c_addr);
+  Wire.write(dataMask | ctrlSet); // EN Low
+  Wire.endTransmission();
+
+  // We are in 4-bit mode, so we must perform a SECOND "dummy" cycle
+  // to read the lower nibble, even if we don't use it, to keep
+  // nibble-alignment.
+
+  // Pulse EN High for low nibble
+  Wire.beginTransmission(i2c_addr);
+  Wire.write(dataMask | ctrlSet | EN);
+  Wire.endTransmission();
+
+  // (Optional: we could read again here, but we don't strictly need to)
+
+  // Finish the pulse (EN Low)
+  Wire.beginTransmission(i2c_addr);
+  Wire.write(dataMask | ctrlSet);
+  Wire.endTransmission();
+
+  // Restore to Write mode (RW=0) so normal library calls work later
+  // We'll leave it with Backlight ON and no control signals.
+  Wire.beginTransmission(i2c_addr);
+  Wire.write(BL);
+  Wire.endTransmission();
+
+  // Analysis:
+  // If the LCD is missing (open circuit), the weak pull-ups on PCF8574 P4-P7
+  // will cause us to read 0xF0 (all highs) for the upper nibble.
+  // The Busy Flag is D7 (bit 7 of the byte, or P7 on the expander).
+  // If we read 0xFF (or typically 0xF?), it acts like "BUSY" forever.
+  // A real LCD is usually NOT busy immediately after init, so D7 should be 0.
+  // However, there's a chance it IS busy. But reading 0xF (all nibble bits
+  // high) is the signature of "nothing connected".
+
+  // Let's check the upper nibble (P4-P7).
+  uint8_t upperNibble = readVal & 0xF0;
+
+  Serial.printf("  [LCD Diagnostic] Read: 0x%02X (Upper: 0x%02X)\n", readVal,
+                upperNibble);
+
+  if (upperNibble == 0xF0) {
+    // All high -> likely nothing driving the bus low -> Missing LCD.
+    return false;
+  }
+
+  // If we got here, something pulled at least one data line low.
+  // Valid LCD.
+  return true;
+}
+
 static bool runTest_LCD() {
   Serial.println(F("\n[3] LCD (I2C 20x4)"));
 
@@ -387,6 +471,20 @@ static bool runTest_LCD() {
 
   LiquidCrystal_I2C lcd(firstAllowed, 20, 4);
   lcd.init();
+
+  // --- NEW: Hardware verification ---
+  Serial.println(F("Verifying LCD connection (Busy Flag check)..."));
+  if (!verifyLCDConnection(firstAllowed)) {
+    Serial.println(F("LCD hardware check FAILED."));
+    Serial.println(F("  -> I2C device responded (Backpack OK), but LCD glass "
+                     "not detected."));
+    Serial.println(F(
+        "  -> Check soldering between Backpack and LCD (especially R/W pin)."));
+    return false;
+  }
+  Serial.println(F("LCD hardware check PASSED (Busy Flag low)."));
+  // ----------------------------------
+
   lcd.backlight();
   lcd.clear();
 
@@ -519,7 +617,7 @@ static bool initDFPlayer() {
 //    dfState = DF_OK;
 //    Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
 //   }
-  
+
 //   dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
 //   return true;
 // }
@@ -529,62 +627,62 @@ static bool initDFPlayer() {
 // Call it when dfPlayer.available() is true.
 void printDetail(uint8_t type, int value) {
   switch (type) {
-    case TimeOut:
-      Serial.println(F("Time Out!"));
+  case TimeOut:
+    Serial.println(F("Time Out!"));
+    break;
+  case WrongStack:
+    Serial.println(F("Stack Wrong!"));
+    break;
+  case DFPlayerCardInserted:
+    Serial.println(F("Card Inserted!"));
+    break;
+  case DFPlayerCardRemoved:
+    Serial.println(F("Card Removed!"));
+    break;
+  case DFPlayerCardOnline:
+    Serial.println(F("Card Online!"));
+    break;
+  case DFPlayerUSBInserted:
+    Serial.println("USB Inserted!");
+    break;
+  case DFPlayerUSBRemoved:
+    Serial.println("USB Removed!");
+    break;
+  case DFPlayerPlayFinished:
+    Serial.print(F("Number:"));
+    Serial.print(value);
+    Serial.println(F(" Play Finished!"));
+    break;
+  case DFPlayerError:
+    Serial.print(F("DFPlayerError:"));
+    switch (value) {
+    case Busy:
+      Serial.println(F("Card not found"));
       break;
-    case WrongStack:
-      Serial.println(F("Stack Wrong!"));
+    case Sleeping:
+      Serial.println(F("Sleeping"));
       break;
-    case DFPlayerCardInserted:
-      Serial.println(F("Card Inserted!"));
+    case SerialWrongStack:
+      Serial.println(F("Get Wrong Stack"));
       break;
-    case DFPlayerCardRemoved:
-      Serial.println(F("Card Removed!"));
+    case CheckSumNotMatch:
+      Serial.println(F("Check Sum Not Match"));
       break;
-    case DFPlayerCardOnline:
-      Serial.println(F("Card Online!"));
+    case FileIndexOut:
+      Serial.println(F("File Index Out of Bound"));
       break;
-    case DFPlayerUSBInserted:
-      Serial.println("USB Inserted!");
+    case FileMismatch:
+      Serial.println(F("Cannot Find File"));
       break;
-    case DFPlayerUSBRemoved:
-      Serial.println("USB Removed!");
-      break;
-    case DFPlayerPlayFinished:
-      Serial.print(F("Number:"));
-      Serial.print(value);
-      Serial.println(F(" Play Finished!"));
-      break;
-    case DFPlayerError:
-      Serial.print(F("DFPlayerError:"));
-      switch (value) {
-        case Busy:
-          Serial.println(F("Card not found"));
-          break;
-        case Sleeping:
-          Serial.println(F("Sleeping"));
-          break;
-        case SerialWrongStack:
-          Serial.println(F("Get Wrong Stack"));
-          break;
-        case CheckSumNotMatch:
-          Serial.println(F("Check Sum Not Match"));
-          break;
-        case FileIndexOut:
-          Serial.println(F("File Index Out of Bound"));
-          break;
-        case FileMismatch:
-          Serial.println(F("Cannot Find File"));
-          break;
-        case Advertise:
-          Serial.println(F("In Advertise"));
-          break;
-        default:
-          break;
-      }
+    case Advertise:
+      Serial.println(F("In Advertise"));
       break;
     default:
       break;
+    }
+    break;
+  default:
+    break;
   }
 }
 
@@ -592,18 +690,18 @@ void printDetail(uint8_t type, int value) {
 static bool runTest_DFPlayer(bool forceReinit = false) {
   // If you want live DFPlayer diagnostics, call this elsewhere during waits:
   // if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
-   if (forceReinit) {
+  if (forceReinit) {
     clearDFPlayerCache();
   }
 
-   if (!initDFPlayer()) {
-  Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
-  dfState = DF_FAIL;
-  return false;
+  if (!initDFPlayer()) {
+    Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
+    dfState = DF_FAIL;
+    return false;
   }else {
-  // Serial.println(F("\n[6] DFPlayer + Speaker"));
-  Serial.println(F("DFPlayer Mini online."));
-  dfState = DF_OK;
+    // Serial.println(F("\n[6] DFPlayer + Speaker"));
+    Serial.println(F("DFPlayer Mini online."));
+    dfState = DF_OK;
   }
   return true;
   // Force device selection (important on some clones)
@@ -652,15 +750,15 @@ static bool runTest_SD() {
   Serial.printf("  DFPlayer reports %d files.\n", g_sdFileCount);
 
   if (g_sdFileCount <= 0) {
-  Serial.println(F("SD test: FAIL (no readable files)."));
+    Serial.println(F("SD test: FAIL (no readable files)."));
     return false;
   }
   return true;
 
   bool ok = runTest_SD();
   Serial.printf("SD test: %s\n", ok ? "PASS" : "FAIL");
-  
-    void printDetail(uint8_t type, int value);
+
+  void printDetail(uint8_t type, int value);
  
 }
 
@@ -827,7 +925,7 @@ static bool runTest_SPI() {
 
   SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_CS_PIN);
   pinMode(SPI_CS_PIN, OUTPUT);
- 
+
   digitalWrite(SPI_CS_PIN, HIGH);
   delay(20);
   Serial.println("[SPI] Starting RJ12 loopback test");
@@ -857,7 +955,7 @@ static bool runTest_SPI() {
     Serial.println("[SPI] PASS: RJ12 loopback OK");
   }
   return pass;
- 
+
   Serial.printf("SPI sent 0x%02X, received 0x%02X\n", RX, TX);
   bool ok = runTest_UART0();
   Serial.printf("SPI loopback test: %s\n", ok ? "PASS" : "FAIL (check jumper)");
@@ -924,7 +1022,7 @@ static bool runTest_RS232() {
   Serial.print("Recv: "); Serial.print(rx);
   Serial.println("[rs232] PASS: UART1 loopback OK");
   return true;
- 
+
   bool ok = (rx == payload) ;
   Serial.printf("RS-232 loopback test: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
   return ok;
@@ -996,15 +1094,15 @@ static void handleCommand(char c) {
     case 'C': testResults[T_SPI]        = runTest_SPI();        break;
     case 'D': testResults[T_RS232]      = runTest_RS232();      break;
     case 'P': runAllTests();                                     break;
-    case 'R':
-      Serial.println(F("Rebooting..."));
-      delay(200);
-      ESP.restart();
-      break;
-    default:
-      recognized = false;
-      Serial.println(F("Unknown command."));
-      break;
+  case 'R':
+    Serial.println(F("Rebooting..."));
+    delay(200);
+    ESP.restart();
+    break;
+  default:
+    recognized = false;
+    Serial.println(F("Unknown command."));
+    break;
   }
 
   if (recognized && c != 'P' && c != 'R') printSummary();
