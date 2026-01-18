@@ -22,9 +22,9 @@ include <StudModules.scad>
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
-Krake = 1;      // [0:Off, 1:On] //on
+Krake = 0;      // [0:Off, 1:On] //on
 GPAD  = 0;      // [0:Off, 1:On]
-
+Krake_rev2 = 1; // turn on for the enralged enclosure
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
@@ -32,10 +32,10 @@ GPAD  = 0;      // [0:Off, 1:On]
 //
 
 GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 0; //1 back of unit
+GPAD_TShellWithVESA  = 1; //1 back of unit
 GPAD_BShell          = 1; //2 w/LCD 
-GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           = 0; //4 top
+GPAD_FPanL           = 1;//3 bottom
+GPAD_BPanL           = 1; //4 top
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
 T_BShellScrew        = 0;
@@ -51,17 +51,19 @@ HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 
 ///////////////// speakers //////////
-SoundLabSPK = 1;
+// SoundLabSPK = 1;
 
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
 // speaker parameters
+
 SpeakerDiameter_mm=78; 
 SpeakerRadius_mm=SpeakerDiameter_mm/2;
-SpeakerHeight_mm=40;
-
+ 
+SpeakerHeight_mm = Krake_rev2 ? 40 : 0; 
+ 
 
 
 
@@ -160,10 +162,31 @@ DE9On     = Krake ? 1 : 0;
 I2COn     = Krake ? 0 : 1;
 RJ12On    = Krake ? 1 : 1;
 DCOn      = Krake ? 1 : 1;
+speaker_clamp = Krake ? 0 : 1;
+grill_pattern = Krake ? 0 : 1;
+SpeakerEnclosure  = Krake ? 0 : 1;
+SpeakerCutOut  = Krake ? 0 : 1;
+ SPKBOSS62 = Krake ? 0 : 0;
+SPKBOSSpunch62 = Krake ? 0 : 0;
+
+USBbOn    = Krake_rev2 ? 0 : 1;
+USBcOn    = Krake_rev2 ? 1 : 0;
+DE9On     = Krake_rev2 ? 1 : 0;
+I2COn     = Krake_rev2 ? 0 : 1;
+RJ12On    = Krake_rev2 ? 1 : 1;
+DCOn      = Krake_rev2 ? 1 : 1;
+speaker_clamp = Krake_rev2 ? 1 : 0;
+grill_pattern = Krake_rev2 ? 1 : 0;
+SpeakerEnclosure  = Krake_rev2 ? 1 : 0;
+SpeakerCutOut  = Krake_rev2 ? 1 : 0;
+ SPKBOSS62 = Krake_rev2 ? 1 : 0;
+SPKBOSSpunch62 = Krake_rev2 ? 1 : 0;
 //DE9SquareHole      = Krake ? 1 : 0;
 
 if (Krake + GPAD > 1)
     echo("WARNING: More than one project mode active!!!");
+
+
 
 //For instructions on mute Button inscription go to line 594.
 
@@ -327,7 +350,6 @@ if(SPK==1){
     import("Speaker2W-SpeakerOutline.stl");
 }
 module grill_pattern() {
-
 translate ([SpeakerPositionX,SpeakerPositionY,SpeakerPositionZ]){
 wall_thickness = 2;
 grill_bar_width = 1;
@@ -349,9 +371,9 @@ grill_bar_width = 1;
 }
 }
 
-module SpeakerHexGrill(OnOff, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
+module SpeakerHexGrill(Krake_rev2, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
    
-   if (OnOff == 1)
+   if (Krake_rev2 == 1)
     translate([Cx, Cy, 0])
     intersection(){
         cylinder(d=Cdia*0.95, h=h, $fn=100);
@@ -367,9 +389,9 @@ module SpeakerHexGrill(OnOff, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell
 }
 
 
-module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
+module SpeakerHole(Krake_rev2,Cx,Cy,Cdia,Ccenter=false){
     //difference(){
-    if(OnOff==1)
+    if(Krake_rev2==1)
                   translate([Cx ,Cy ,-1]){
             for(j = [1  : 3]){
 
@@ -382,9 +404,7 @@ module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
                     //echo(i);
                }
             }
-          
         }
-       
         }
     
   
@@ -1031,7 +1051,7 @@ module SPKBOSSpunch62(stud_height_mm,h_offset_mm) {
                 //   // SquareHole(1,PCBLength-63.87,33.12,1,1,0,Ccenter=true);       //testing 
             }
         }
-SpeakerCutOut();
+//SpeakerCutOut();
     }
     translate ([-5,0,0])
     SpeakerHexGrill(1,SpeakerPositionX, SpeakerPositionY);
@@ -1195,7 +1215,8 @@ if (T_BShellScrew==1){
 //consider port location and access holes      
     
 module SpeakerEnclosure (){
-
+ 
+ 
 module SpeakerBoxKnife(){
 translate ([SpeakerPositionX+4+Thick*5, SpeakerPositionY,Height/4-Thick]){
     cube ([1.6*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height*2], center=true);
@@ -1219,15 +1240,14 @@ difference (){
   SpeakerShelf();
   SpeakerBoxOuter();
   }
-  
-     }
+     
  
 module SpeakerCutOut () {
 translate ([SpeakerPositionX+Thick*5+45, SpeakerPositionY-52.5,-10]){
 cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
   }
   }
-  
+ 
  ///////////////screw parameters///////////////////
    ScrewDiameter=2.2;
    ScrewLength=5+Thick;
@@ -1281,5 +1301,4 @@ module CableHole() {
             cylinder (d=10,h=Thick*5,center=true);
             }
         }
-    }
-
+  }}
