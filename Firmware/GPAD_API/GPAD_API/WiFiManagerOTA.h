@@ -13,9 +13,25 @@ extern const char *DEFAULT_SSID;
 extern String ledState;
 extern int WiFiLed;
 
+namespace WifiOTA
+{
+    class Manager
+    {
+    public:
+        Manager(const char *const accessPointSsid, bool nonBlocking);
+        ~Manager();
+
+        bool process();
+
+    private:
+        bool nonBlocking;
+        WiFiManager wifiManager;
+    };
+
+    String processor(const String &var);
+};
+
 void WiFiMan(const char *accessPointSsid);
 void initLittleFS();
-void initWiFi();
-String processor(const String &var);
 
 #endif // WIFI_MANAGER_H

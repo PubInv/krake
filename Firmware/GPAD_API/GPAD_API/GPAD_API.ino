@@ -129,22 +129,6 @@ const int LED_PINS[] = {LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4};
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
-// Aley network
-//  const char* ssid = "Home";
-//  const char* password = "adt@1963#";
-
-// Maryville network
-//  const char* ssid = "VRX";
-//  const char* password = "textinsert";
-
-// Houstin network
-//  const char* ssid = "DOS_WIFI";
-//  const char* password = "$Suve07$$";
-
-// Austin network
-// const char *ssid = "readfamilynetwork";
-// const char *password = "magicalsparrow96";
-
 // MQTT Broker
 const char *mqtt_broker_name = "public.cloud.shiftr.io";
 const char *mqtt_user = "public";
@@ -347,7 +331,7 @@ void setupOTA()
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/index.html", "text/html", false, processor); });
+            { request->send(LittleFS, "/index.html", "text/html", false, WifiOTA::processor); });
 
   server.serveStatic("/", LittleFS, "/");
 
@@ -489,9 +473,6 @@ void toggle(int pin)
 
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
-
-// IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
-IPAddress myIP(); // declare for global
 
 int cnt_actions = 0;
 

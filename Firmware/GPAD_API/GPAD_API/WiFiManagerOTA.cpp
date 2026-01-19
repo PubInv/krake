@@ -7,10 +7,52 @@ String password_wf = "";
 String ledState = "";
 int WiFiLed = 2; // Modify based on actual LED pin
 
+using namespace WifiOTA;
+
+Manager::Manager(const char *const accessPointSsid, bool nonBlocking)
+    : nonBlocking(nonBlocking)
+{
+  // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
+  // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
+  WiFi.mode(WIFI_STA);
+  wifiManager.setConfigPortalBlocking(nonBlocking);
+
+  boolean connectSuccess = false;
+
+  if (accessPointSsid == "")
+  {
+    connectSuccess = wifiManager.autoConnect(DEFAULT_SSID);
+  }
+  else
+  {
+    connectSuccess = wifiManager.autoConnect(accessPointSsid);
+  }
+
+  if (!connectSuccess)
+  {
+    Serial.println("Failed to connect. Restarting...");
+    ESP.restart();
+  }
+
+  Serial.println("Connected to WiFi!");
+}
+
+Manager::~Manager() {}
+
+bool Manager::process()
+{
+  if (nonBlocking)
+  {
+    return wifiManager.process();
+  }
+
+  return true;
+}
+
 void WiFiMan(const char *accessPointSsid)
 {
-  /// According to WifiManager's documentation, best practice is still to set the WiFi mode manually
-  /// https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
+  // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
+  // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
   WiFi.mode(WIFI_STA);
   WiFiManager wifiManager;
 
@@ -46,19 +88,6 @@ void initLittleFS()
     Serial.println("LittleFS mounted successfully.");
 #endif
   }
-}
-
-void initWiFi()
-{
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid_wf.c_str(), password_wf.c_str());
-  Serial.print("Connecting to WiFi ..");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.print('.');
-    delay(1000);
-  }
-  Serial.println("\nConnected. IP Address: " + WiFi.localIP().toString());
 }
 
 String processor(const String &var)
