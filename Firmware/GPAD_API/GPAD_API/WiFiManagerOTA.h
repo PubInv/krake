@@ -18,20 +18,19 @@ namespace WifiOTA
     class Manager
     {
     public:
-        Manager(const char *const accessPointSsid, bool nonBlocking);
+        Manager();
         ~Manager();
 
+        void connect(const char *const accessPointSsid, bool nonBlocking);
         bool process();
 
     private:
-        bool nonBlocking;
+        bool _nonBlocking = false;
         WiFiManager wifiManager;
     };
 
+    void initLittleFS();
     String processor(const String &var);
 };
-
-void WiFiMan(const char *accessPointSsid);
-void initLittleFS();
 
 #endif // WIFI_MANAGER_H

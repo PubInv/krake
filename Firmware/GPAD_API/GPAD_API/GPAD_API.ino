@@ -83,6 +83,8 @@ AsyncWebSocket ws("/ws");
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+WifiOTA::Manager wifiManager;
+
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
    Modified by Forrest Lee Erickson 20220523
@@ -446,8 +448,8 @@ void setup()
   //  clearLCD();
   // req for Wifi Man and OTA
 
-  WiFiMan(setupSsid);
-  initLittleFS();
+  wifiManager.connect(setupSsid, true);
+  WifiOTA::initLittleFS();
   server.begin(); // Start server web socket to render pages
   ElegantOTA.begin(&server);
   setupOTA();
@@ -460,7 +462,7 @@ void setup()
   initRotator();
   splashLCD();
 
-  setupDFPlayer();
+  // setupDFPlayer();
   setup_GPAD_menu();
 
 } // end of setup()
@@ -482,35 +484,37 @@ bool menu_just_exited = false;
 bool is_WIFIconnected = false;
 void loop()
 {
-  unsigned long ms = millis();
-  if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)
-  {
-    time_since_LOW_FREQ_ms = ms;
+  bool proccessResponse = wifiManager.process();
+  Serial.println("handled the process request");
+  // unsigned long ms = millis();
+  //   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)
+  //   {
+  //     time_since_LOW_FREQ_ms = ms;
 
-    // If WiFi was not connected and becomes connected then print IP address
-    if (!is_WIFIconnected)
-    {
-      is_WIFIconnected = true;
+  //     // If WiFi was not connected and becomes connected then print IP address
+  //     if (!is_WIFIconnected)
+  //     {
+  //       is_WIFIconnected = true;
 
-      // Get the IP address into a variable I can make global
-      IPAddress myIP = WiFi.localIP();
-      const char *ipString = myIP.toString().c_str();
-      // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
+  //       // Get the IP address into a variable I can make global
+  //       IPAddress myIP = WiFi.localIP();
+  //       const char *ipString = myIP.toString().c_str();
+  //       // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
 
-      Serial.print("Device connected at IPaddress: "); // FLE
-                                                       //       Serial.println(WiFi.localIP());                   //FLE
-      Serial.println(myIP);                            // FLE
-    }
+  //       Serial.print("Device connected at IPaddress: "); // FLE
+  //                                                        //       Serial.println(WiFi.localIP());                   //FLE
+  //       Serial.println(myIP);                            // FLE
+  //     }
 
-    // Serial.println(subscribe_Alarm_Topic);
-    // Serial.println(publish_Ack_Topic);
-#if defined HMWK || defined KRAKE
-    if (!client.connected())
-    {
-      reconnect();
-    }
-#endif
-  }
+  //     // Serial.println(subscribe_Alarm_Topic);
+  //     // Serial.println(publish_Ack_Topic);
+  // #if defined HMWK || defined KRAKE
+  //     if (!client.connected())
+  //     {
+  //       reconnect();
+  //     }
+  // #endif
+  //   }
 
 #if defined HMWK || defined KRAKE
   client.loop();
