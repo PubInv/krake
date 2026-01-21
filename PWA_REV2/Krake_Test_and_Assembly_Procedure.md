@@ -182,10 +182,14 @@ For each Krake assembly, load into a microSCHC Flash card several MP3 files.
 The files must be loaded in a specified order.
 The files are found at: https://drive.google.com/drive/u/1/folders/1j0NoWhTwpoMUFePJHcl5dvErf954-mCs
 There is a script file there, copy_to_sd.sh which on a Windows PC can copy the files in the required order to a microSCH Flash card.
+Run copy_to_sd.sh from the bash shell, by typing "./copy_to_sd.sh"
 
 Screen shot of file explorer view of a programed card.  
 <img width="453" alt="image of Krake MP3 files on an SD card" src="https://github.com/user-attachments/assets/bf922b82-8fc6-46ef-afb9-ff510ae298f3" />  
 Note these files do not display in the order in which they were written.
+
+<img width="874" height="612" alt="image" src="https://github.com/user-attachments/assets/5a366e54-f95d-46f0-8ee6-ca3463a33c57" />
+This is a screenshot of successful copying of files.
 
 ## Unpacking procedure and Serial Numbering
 
