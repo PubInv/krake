@@ -237,9 +237,10 @@ At this point install the MP3 Player sockets and the MP3 Player.
 ### DFPlayer module in sockets
 
 Solder at the MP3 Player, two 1×8 socket headers at J603.
-!!! IMAGE HERE OF SOCKES 
+![IMG_5553](https://github.com/user-attachments/assets/9120f979-4d98-4206-a730-8ecfc7f087d9)
+
 The MP3 player audio module is installed using sockets to simplify rework and replacement.
-!!! IMAGE HERE OF Mini MP3 Player in socket showing correct orentation
+![IMG_5554](https://github.com/user-attachments/assets/49251807-a953-4e59-b881-109ded224feb)
 
 #### MP3 Header Install Steps
 
