@@ -83,7 +83,7 @@ AsyncWebSocket ws("/ws");
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-WifiOTA::Manager wifiManager(WiFi);
+WifiOTA::Manager wifiManager(WiFi, Serial);
 
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial

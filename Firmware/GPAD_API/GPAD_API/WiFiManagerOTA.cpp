@@ -14,7 +14,9 @@ void testFunction(std::function<void(int, int)> callback)
   callback(1, 2);
 }
 
-Manager::Manager(WiFiClass &wifi) : wifi(wifi) {}
+Manager::Manager(WiFiClass &wifi, Print &print)
+    : wifi(wifi), print(print) {}
+
 Manager::~Manager() {}
 
 void Manager::connect(const char *const accessPointSsid, bool nonBlocking)
@@ -28,26 +30,16 @@ void Manager::connect(const char *const accessPointSsid, bool nonBlocking)
   this->wifiManager.setConfigPortalBlocking(!nonBlocking);
   this->wifiManager.setConfigPortalTimeout(45);
 
-  WiFiClass &thisWifi = this->wifi;
-  auto saveConfigCallback = [&]()
+  auto saveConfigCallback = [this]()
   {
-    Manager::ssidSaved(thisWifi);
+    this->ssidSaved();
   };
 
   this->wifiManager.setSaveConfigCallback(saveConfigCallback);
 
-  auto thisConnectedCallback = this->connectedCallback;
-  auto apStaConnectedCallback = [&](arduino_event_id_t event, arduino_event_info_t info)
+  auto apStaConnectedCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
   {
-    Serial.print("Connected to Network: ");
-    Serial.print(thisWifi.SSID());
-    Serial.print("\n");
-
-    Serial.print("Obtained IP Address: ");
-    thisWifi.localIP().printTo(Serial);
-    Serial.print("\n");
-
-    thisConnectedCallback();
+    this->ipSet();
   };
   this->wifi.onEvent(apStaConnectedCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 
@@ -70,11 +62,27 @@ void Manager::process()
   }
 }
 
-void Manager::ssidSaved(WiFiClass &wifi)
+void Manager::ssidSaved()
 {
-  Serial.print("Network Saved with SSID: ");
-  Serial.print(wifi.SSID());
-  Serial.print("\n");
+  this->print.print("Network Saved with SSID: ");
+  this->print.print(this->wifi.SSID());
+  this->print.print("\n");
+}
+
+void Manager::ipSet()
+{
+  this->print.print("Connected to Network: ");
+  this->print.print(this->wifi.SSID());
+  this->print.print("\n");
+
+  this->print.print("Obtained IP Address: ");
+  this->wifi.localIP().printTo(Serial);
+  this->print.print("\n");
+
+  if (this->connectedCallback)
+  {
+    this->connectedCallback();
+  }
 }
 
 void WifiOTA::initLittleFS()

@@ -18,7 +18,7 @@ namespace WifiOTA
     class Manager
     {
     public:
-        Manager(WiFiClass &wifi);
+        Manager(WiFiClass &wifi, Print &print);
         ~Manager();
 
         void connect(const char *const accessPointSsid, bool nonBlocking);
@@ -27,11 +27,13 @@ namespace WifiOTA
 
     private:
         WiFiClass &wifi;
+        Print &print;
         bool nonBlocking = false;
         WiFiManager wifiManager;
         std::function<void()> connectedCallback;
 
-        static void ssidSaved(WiFiClass &wifi);
+        void ssidSaved();
+        void ipSet();
     };
 
     void initLittleFS();
