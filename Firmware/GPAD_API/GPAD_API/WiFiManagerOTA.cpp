@@ -10,15 +10,21 @@ int WiFiLed = 2; // Modify based on actual LED pin
 using namespace WifiOTA;
 
 Manager::Manager(WiFiClass &wifi, Print &print)
-    : wifi(wifi), print(print) {}
+    : wifi(wifi), print(print)
+{
+}
+
+void Manager::initialize()
+{
+  // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
+  // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
+  this->wifi.mode(WIFI_STA);
+}
 
 Manager::~Manager() {}
 
 void Manager::connect(const char *const accessPointSsid)
 {
-  // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
-  // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
-  this->wifi.mode(WIFI_STA);
 
   auto saveConfigCallback = [this]()
   {

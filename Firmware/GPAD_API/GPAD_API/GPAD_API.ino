@@ -342,6 +342,8 @@ void setupOTA()
 
 void setup()
 {
+  wifiManager.initialize();
+
   pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   // Serial setup

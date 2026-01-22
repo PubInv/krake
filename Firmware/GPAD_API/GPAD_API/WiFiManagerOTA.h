@@ -19,6 +19,7 @@ namespace WifiOTA
         Manager(WiFiClass &wifi, Print &print);
         ~Manager();
 
+        void initialize();
         void connect(const char *const accessPointSsid);
         void setConnectedCallback(std::function<void()> callBack);
 
