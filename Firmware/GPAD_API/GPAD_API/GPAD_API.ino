@@ -134,16 +134,16 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 //  const char* password = "adt@1963#";
 
 // Maryville network
-//  const char* ssid = "VRX";
-//  const char* password = "textinsert";
+ const char* ssid = "VRX";
+ const char* password = "textinsert";
 
 // Houstin network
 //  const char* ssid = "DOS_WIFI";
 //  const char* password = "$Suve07$$";
 
 // Austin network
-const char *ssid = "readfamilynetwork";
-const char *password = "magicalsparrow96";
+// const char *ssid = "readfamilynetwork";
+// const char *password = "magicalsparrow96";
 
 // MQTT Broker
 const char *mqtt_broker_name = "public.cloud.shiftr.io";
