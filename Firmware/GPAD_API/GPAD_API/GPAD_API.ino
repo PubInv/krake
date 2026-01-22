@@ -448,6 +448,7 @@ void setup()
   //  clearLCD();
   // req for Wifi Man and OTA
 
+#if defined HMWK || defined KRAKE
   auto connectedCallback = [&]()
   {
     if (!client.connected())
@@ -456,8 +457,9 @@ void setup()
     }
   };
   wifiManager.setConnectedCallback(connectedCallback);
+#endif
 
-  wifiManager.connect(setupSsid, true);
+  wifiManager.connect(setupSsid);
   WifiOTA::initLittleFS();
   server.begin(); // Start server web socket to render pages
   ElegantOTA.begin(&server);
@@ -490,10 +492,8 @@ int cnt_actions = 0;
 bool running_menu = false;
 bool menu_just_exited = false;
 
-bool is_WIFIconnected = false;
 void loop()
 {
-  wifiManager.process();
 #if defined HMWK || defined KRAKE
   client.loop();
   publishOnLineMsg();

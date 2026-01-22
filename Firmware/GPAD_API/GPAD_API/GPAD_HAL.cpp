@@ -297,7 +297,7 @@ void muteButtonCallback(byte buttonEvent)
     break;
   case onHold:
     // Do nothing...
-    // local_ptr_to_serial->println(F("SWITCH_MUTE onHold"));
+    local_ptr_to_serial->println(F("SWITCH_MUTE onHold"));
     break;
     // onLongPress is indidcated when you hold onto the button
   // more than longPressTime in milliseconds

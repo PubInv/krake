@@ -9,26 +9,16 @@ int WiFiLed = 2; // Modify based on actual LED pin
 
 using namespace WifiOTA;
 
-void testFunction(std::function<void(int, int)> callback)
-{
-  callback(1, 2);
-}
-
 Manager::Manager(WiFiClass &wifi, Print &print)
     : wifi(wifi), print(print) {}
 
 Manager::~Manager() {}
 
-void Manager::connect(const char *const accessPointSsid, bool nonBlocking)
+void Manager::connect(const char *const accessPointSsid)
 {
-  this->nonBlocking = nonBlocking;
-
   // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
   // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
   this->wifi.mode(WIFI_STA);
-
-  this->wifiManager.setConfigPortalBlocking(!nonBlocking);
-  this->wifiManager.setConfigPortalTimeout(45);
 
   auto saveConfigCallback = [this]()
   {
@@ -54,12 +44,9 @@ void Manager::connect(const char *const accessPointSsid, bool nonBlocking)
   }
 }
 
-void Manager::process()
+void Manager::setConnectedCallback(std::function<void()> callback)
 {
-  if (this->nonBlocking)
-  {
-    this->wifiManager.process();
-  }
+  this->connectedCallback = callback;
 }
 
 void Manager::ssidSaved()
@@ -97,11 +84,6 @@ void WifiOTA::initLittleFS()
     Serial.println("LittleFS mounted successfully.");
 #endif
   }
-}
-
-void Manager::setConnectedCallback(std::function<void()> callback)
-{
-  this->connectedCallback = callback;
 }
 
 String WifiOTA::processor(const String &var)
