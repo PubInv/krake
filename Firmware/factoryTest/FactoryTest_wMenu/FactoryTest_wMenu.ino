@@ -299,14 +299,14 @@ static void printMenu() {
 // ============================================================================
 
 static bool runTest_Power() {
-  Serial.println(F("\n[1] Power / ID"));
+  Serial.println(F("\n[0] Power / ID"));
   printBanner();
   Serial.println(F("Power OK: MCU running and Serial is active."));
   return true;
 }
 
 static bool runTest_Inputs() {
-  Serial.println(F("\n[2] Inputs (Encoder / Button)"));
+  Serial.println(F("\n[1] Inputs (Encoder / Button)"));
 
   pinMode(ENC_CLK, INPUT);
   pinMode(ENC_DT,  INPUT);
@@ -442,7 +442,7 @@ static bool verifyLCDConnection(uint8_t i2c_addr) {
 }
 
 static bool runTest_LCD() {
-  Serial.println(F("\n[3] LCD (I2C 20x4)"));
+  Serial.println(F("\n[2] LCD (I2C 20x4)"));
 
   Wire.begin();
   delay(80);
@@ -500,7 +500,7 @@ static bool runTest_LCD() {
 }
 
 static bool runTest_LEDs() {
-  Serial.println(F("\n[4] LEDs / Lamps"));
+  Serial.println(F("\n[3] LEDs / Lamps"));
 
   const int pins[] = { LAMP1, LAMP2, LAMP3, LAMP4, LAMP5, LED_Status };
   const char* names[] = {
@@ -690,6 +690,7 @@ void printDetail(uint8_t type, int value) {
 static bool runTest_DFPlayer(bool forceReinit = false) {
   // If you want live DFPlayer diagnostics, call this elsewhere during waits:
   // if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
+  Serial.println(F("\n[4] DF Player"));
   if (forceReinit) {
     clearDFPlayerCache();
   }
@@ -763,6 +764,7 @@ static bool runTest_SD() {
 }
 
 static bool runTest_Speaker() {
+  Serial.println(F("\n[6] Speaker"));
   Serial.println(F("Playing track #1 for ~3 seconds..."));
 
   if (!initDFPlayer()) {
