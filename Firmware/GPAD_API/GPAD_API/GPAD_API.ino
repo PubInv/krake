@@ -83,7 +83,7 @@ AsyncWebSocket ws("/ws");
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-WifiOTA::Manager wifiManager;
+WifiOTA::Manager wifiManager(WiFi);
 
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
@@ -448,6 +448,15 @@ void setup()
   //  clearLCD();
   // req for Wifi Man and OTA
 
+  auto connectedCallback = [&]()
+  {
+    if (!client.connected())
+    {
+      reconnect();
+    }
+  };
+  wifiManager.setConnectedCallback(connectedCallback);
+
   wifiManager.connect(setupSsid, true);
   WifiOTA::initLittleFS();
   server.begin(); // Start server web socket to render pages
@@ -484,38 +493,7 @@ bool menu_just_exited = false;
 bool is_WIFIconnected = false;
 void loop()
 {
-  bool proccessResponse = wifiManager.process();
-  Serial.println("handled the process request");
-  // unsigned long ms = millis();
-  //   if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)
-  //   {
-  //     time_since_LOW_FREQ_ms = ms;
-
-  //     // If WiFi was not connected and becomes connected then print IP address
-  //     if (!is_WIFIconnected)
-  //     {
-  //       is_WIFIconnected = true;
-
-  //       // Get the IP address into a variable I can make global
-  //       IPAddress myIP = WiFi.localIP();
-  //       const char *ipString = myIP.toString().c_str();
-  //       // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
-
-  //       Serial.print("Device connected at IPaddress: "); // FLE
-  //                                                        //       Serial.println(WiFi.localIP());                   //FLE
-  //       Serial.println(myIP);                            // FLE
-  //     }
-
-  //     // Serial.println(subscribe_Alarm_Topic);
-  //     // Serial.println(publish_Ack_Topic);
-  // #if defined HMWK || defined KRAKE
-  //     if (!client.connected())
-  //     {
-  //       reconnect();
-  //     }
-  // #endif
-  //   }
-
+  wifiManager.process();
 #if defined HMWK || defined KRAKE
   client.loop();
   publishOnLineMsg();

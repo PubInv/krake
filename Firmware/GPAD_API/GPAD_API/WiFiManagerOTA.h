@@ -18,15 +18,20 @@ namespace WifiOTA
     class Manager
     {
     public:
-        Manager();
+        Manager(WiFiClass &wifi);
         ~Manager();
 
         void connect(const char *const accessPointSsid, bool nonBlocking);
-        bool process();
+        void process();
+        void setConnectedCallback(std::function<void()> callBack);
 
     private:
-        bool _nonBlocking = false;
+        WiFiClass &wifi;
+        bool nonBlocking = false;
         WiFiManager wifiManager;
+        std::function<void()> connectedCallback;
+
+        static void ssidSaved(WiFiClass &wifi);
     };
 
     void initLittleFS();
