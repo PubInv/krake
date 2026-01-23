@@ -19,11 +19,18 @@ include <StudModules.scad>
 use <COVER.scad>
 use <recessed.scad>
 
-cover_slot();
+//cover_slot();
 
-reccessed_bottom_f();
-  difference(){
-    reccesed_f();
+//reccessed_bottom_f();
+
+
+module mp3_player(){
+translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
+    }
+
+/*
+  translate([0,0,0])translate([0,0,0])difference(){
+//   reccesed_f();
       translate([AC_button_x,AC_button_y,25])cylinder(r=6,h=10);
     translate([AC_button_x,AC_button_y+29.67,25])cylinder(r=6,h=10);
     translate([AC_button_x+8,AC_button_y,26.5])
@@ -33,8 +40,10 @@ reccessed_bottom_f();
           }  
           
           translate([45.2,48,0])cube([20.2,4,50]);
-      }//translate([AC_button_x+24.98,AC_button_y+34.8,28.9])rotate([0,0,180])rotate([0,180,270])cover2(17,44,2);
-      AC_buttons_pins2(s_t = 0.5, s_w =0.5);    
+      }
+      
+    */  //translate([AC_button_x+24.98,AC_button_y+34.8,28.9])rotate([0,0,180])rotate([0,180,270])cover2(17,44,2);
+  //    AC_buttons_pins2(s_t = 0.5, s_w =0.5);    
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
@@ -46,9 +55,7 @@ GPAD  = 0;      // [0:Off, 1:On]
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_TShell2          = 0;
-GPAD_TShell3          = 0;
-GPAD_TShellWithVESA  = 0;
+GPAD_TShellWithVESA  = 1;
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -794,8 +801,14 @@ module TShellWithVESA() {
 // #VESApunch75(stud_height_mm);
 }
 
-if(GPAD_TShellWithVESA==1){
+if(GPAD_TShellWithVESA == 1){
+    difference(){
     TShellWithVESA();
+            translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
+        
+        }
+    
+translate([34,32,40+0.2])rotate([180,0,90])cover_unit();
 }
 
 if(GPAD_TShell==1){
@@ -1081,24 +1094,7 @@ hull()
 
 
 
- if(GPAD_TShell3==1){
-     union(){
-     difference(){
-         translate([0,Width,Height+0.2]){
-        color( Couleur1,1){
-            rotate([0,180,180]){
-                
-                Coque();
-            }
-        }
-    }
-        translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
-    }
-         
-translate([34,32,40+0.2])rotate([180,0,90])cover_unit();
-}
-     
-     }
+
     
 ACB_x = 38.77-5;
 ACB_y = 42.44;
@@ -1107,48 +1103,6 @@ AC_button_x = 38.77;
 AC_button_y = 44.44;
 
 
-if(GPAD_TShell2==1){
-    
-union(){
-union(){difference(){difference(){union(){    
-if(GPAD_TShell2==1){
- difference(){   // Coque haut - Top Shell
-    translate([0,Width,Height+0.2]){
-        color( Couleur1,1){
-            rotate([0,180,180]){
-                
-                Coque();
-            }
-        }
-    }
-
-
-
-    
-    }
-{
-    //linear_extrude(4)square([30,65]);
-}
-}
-//translate([27.808,22.77,19.9+17.9])
-//linear_extrude(4)square([30,65]);
-translate([ACB_x,ACB_y,ACB_z-10])rotate([0,0,90])linear_extrude(10)round_hull(20,34);
-}
-
-    translate([ACB_x,ACB_y,ACB_z-5])rotate([0,0,90])translate([0,0 ,0.5])linear_extrude(5)round_hull(16,34);
-
-}
-
-
-AC_buttons();
-}
-AC_buttons_pins();
-}
-
-}
-ACB_tips();
-
-}
 module AC_buttons_pins()
 {
     translate([AC_button_x,AC_button_y,-0.5+ACB_z-10])rotate([0,180,0])AC_button_Pin();

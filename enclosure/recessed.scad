@@ -14,7 +14,7 @@ use <slot.scad>
 
 //translate([AC_button_x,AC_button_y,25])button_cap_S(5.175,5,60);
 
-//translate([33,32,40])rotate([180,0,90])cover_unit();
+translate([33,32,40])rotate([180,0,90])cover_unit();
 cover_slot();
 module cover_slot() {
  
@@ -109,7 +109,7 @@ difference(){
 difference()
 {
 union(){
-//reccessed_bottom_f();
+reccessed_bottom_f();
 //reccesed_f();
 }    
  //cube([500,60,80]);   
