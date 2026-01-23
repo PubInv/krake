@@ -15,7 +15,7 @@ use <slot.scad>
 //translate([AC_button_x,AC_button_y,25])button_cap_S(5.175,5,60);
 
 //translate([33,32,40])rotate([180,0,90])cover_unit();
-//cover_slot();
+cover_slot();
 module cover_slot() {
  
 translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);
@@ -24,10 +24,16 @@ slot_w = 1.3;
 slot_h = 3;
 slot_t = 0.5;
 slot_l = 35;
+difference(){union(){
 translate([55.3,75,25.5]){
 
 mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+
+}
+}
+translate([45.2,48,0])cube([20.2,4,50]);
+  
 } 
 }
 w_p = 2;
@@ -86,6 +92,7 @@ module hh(){
           cube([17,35,3]);
           
           } 
+          translate([45.2,48,0])cube([20.2,4,50]);
       }
       AC_buttons_pins2(s_t = 0.5, s_w =0.5);
       
@@ -94,7 +101,7 @@ module hh(){
 
 }
 difference(){
-  //  hh();
+    hh();
 //cube([50,50,50]);
 }
 //reccesed_f();
@@ -102,8 +109,8 @@ difference(){
 difference()
 {
 union(){
-reccessed_bottom_f();
-reccesed_f();
+//reccessed_bottom_f();
+//reccesed_f();
 }    
  //cube([500,60,80]);   
     }

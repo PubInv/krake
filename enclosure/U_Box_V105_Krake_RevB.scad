@@ -31,6 +31,8 @@ reccessed_bottom_f();
           cube([17,35,3]);
           
           }  
+          
+          translate([45.2,48,0])cube([20.2,4,50]);
       }//translate([AC_button_x+24.98,AC_button_y+34.8,28.9])rotate([0,0,180])rotate([0,180,270])cover2(17,44,2);
       AC_buttons_pins2(s_t = 0.5, s_w =0.5);    
 KrakeEnclosureVersion = 0.1; // change this with each rev
