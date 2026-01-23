@@ -19,31 +19,16 @@ include <StudModules.scad>
 use <COVER.scad>
 use <recessed.scad>
 
-//cover_slot();
 
-//reccessed_bottom_f();
+    
+ACB_x = 38.77-5;
+ACB_y = 42.44;
+ACB_z = 40;
+AC_button_x = 38.77;
+AC_button_y = 44.44;
 
+recess_height = 9;
 
-module mp3_player(){
-translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
-    }
-
-/*
-  translate([0,0,0])translate([0,0,0])difference(){
-//   reccesed_f();
-      translate([AC_button_x,AC_button_y,25])cylinder(r=6,h=10);
-    translate([AC_button_x,AC_button_y+29.67,25])cylinder(r=6,h=10);
-    translate([AC_button_x+8,AC_button_y,26.5])
-      {
-          cube([17,35,3]);
-          
-          }  
-          
-          translate([45.2,48,0])cube([20.2,4,50]);
-      }
-      
-    */  //translate([AC_button_x+24.98,AC_button_y+34.8,28.9])rotate([0,0,180])rotate([0,180,270])cover2(17,44,2);
-  //    AC_buttons_pins2(s_t = 0.5, s_w =0.5);    
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
@@ -56,6 +41,7 @@ GPAD  = 0;      // [0:Off, 1:On]
 
 GPAD_TShell          = 0;
 GPAD_TShellWithVESA  = 1; // Krake TShell 
+GPAD_TshellDoorRecess = 0; // turn on/off recessed area when krake Tshell is on 
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -65,7 +51,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;
+PWA_KRAKE            = 0;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -809,6 +795,12 @@ if(GPAD_TShellWithVESA == 1){
         }
     
 translate([34,32,40+0.2])rotate([180,0,90])cover_unit();
+
+if(GPAD_TshellDoorRecess)
+    {
+        recessed_module();
+    }
+
 }
 
 if(GPAD_TShell==1){
@@ -1077,3 +1069,27 @@ module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
     
 }// End of RoundBox Module
 
+
+
+module recessed_module(){
+translate([0,0,9-recess_height])cover_slot();
+reccessed_bottom_f(R_height = recess_height);
+translate([0,0,9-recess_height])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height = 4.57);
+
+translate([0,0,9-recess_height])difference(){
+   reccesed_f();
+      translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
+    translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
+    translate([AC_button_x+8,AC_button_y,26.5])
+      {
+          cube([17,35,3]);
+          
+          }  
+          
+          translate([45.2,48,0])cube([20.2,4,50]);
+      }      
+  }
+module mp3_player(){
+translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
+    }
+    

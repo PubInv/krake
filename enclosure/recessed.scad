@@ -23,9 +23,9 @@ gap = -10;
 slot_w = 1.3;
 slot_h = 3;
 slot_t = 0.5;
-slot_l = 35;
+slot_l = 50;
 difference(){union(){
-translate([55.3,75,25.5]){
+translate([55.3,90,25.5]){
 
 mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
@@ -77,7 +77,7 @@ under_r_z = 38-r_h-r_t-0.1;
 
 
 
-snap_l = 6.5;
+snap_l = r_h+4.5;
 snap_h = 2;
 snap_w = snap_h/2;
 
@@ -122,12 +122,12 @@ translate([under_r_x+3,under_r_y,under_r_z])cube([r_w-2,r_l,r_t], false);
 translate([100+1,0,-0.8])mirror([1,0,0])translate([1,0,0])add_supp_snap();
 }
  
- module reccessed_bottom_f(){
+ module reccessed_bottom_f(R_height = r_h){
     union(){
-    translate([30.5,28,38-r_h])reccessed(r_w,r_l,r_h,r_t);
+    translate([30.5,28,38-R_height])reccessed(r_w,r_l,R_height,r_t);
         
-rotate([0,180,0])translate([-70.5,43,-38]){translate([-0.1,0.1,0])snap(snap_h,snap_w,40-0.2,snap_l+7,1);
-    translate([0.1,0.1,0])mirror([1,0,0])translate([-r_w,0,0]) snap(snap_h,snap_w,40-0.2,snap_l+7,1);
+rotate([0,180,0])translate([-70.5,43,-38]){translate([-0.1,0.1,0])snap(snap_h,snap_w,40-0.2,R_height+4.5,1);
+    translate([0.1,0.1,0])mirror([1,0,0])translate([-r_w,0,0]) snap(snap_h,snap_w,40-0.2,R_height+4.5,1);
     }
     //translate([0,0,15-r_h])add_supp_snap();
     //translate([100+1,0,15-r_h])mirror([1,0,0])translate([0,0,0])add_supp_snap();
@@ -168,27 +168,6 @@ translate([-3,-1,-20])cube([w_p+1,h_p+2,50],false);
    }
    }
    
-   
-
-
-
-//test();
-//translate([10,10,10])cube([30,50,50]);
-
-
-     /*
-difference(){translate([ACB_x,ACB_y,ACB_z-10])rotate([0,0,90])linear_extrude(10)round_hull(20,34);
-
-
-    translate([ACB_x,ACB_y,ACB_z-5])rotate([0,0,90])translate([0,0 ,0.5])linear_extrude(5)round_hull(16,34);
-    translate([30,15,ACB_z])cube([50,50,50],true);
-}*/
-
-//AC_buttons();
-//AC_buttons_pins();
-
-
-
 module round_hull(r,w)
 {
     
@@ -200,107 +179,11 @@ hull()
     }    
     
     }
-
-module AC_buttons_pins()
+    
+module AC_buttons_pins2(s_t = 0.5,s_w = 0.5, scale_s = 1, B_height = 4.57)
 {
-    translate([AC_button_x,AC_button_y,-0.5+ACB_z-10])rotate([0,180,0])AC_button_Pin();
-        translate([AC_button_x,AC_button_y+29.67,-0.5+ACB_z-10])rotate([0,180,0])AC_button_Pin();
+    translate([AC_button_x,AC_button_y,ACB_z-15.67+4.57-B_height])translate([0,0,5])translate([0,0,-5])button_cap_S(B_height,5,60,t=s_t,w =s_w);
+    
+    
+        translate([AC_button_x,AC_button_y+29.67,ACB_z-15.67+4.57-B_height])translate([0,0,5])translate([0,0,-5])button_cap_S(B_height,5,60,t = s_t, w =s_w);
     }
-
-module AC_buttons_pins2(s_t = 2,s_w = 0.5, scale_s = 1)
-{
-    translate([AC_button_x,AC_button_y,-0.5+ACB_z-15.17])translate([0,0,5])translate([0,0,-5])button_cap_S(4.57,5,60,t=s_t,w =s_w);
-    
-    
-        translate([AC_button_x,AC_button_y+29.67,-0.5+ACB_z-15.17])translate([0,0,5])translate([0,0,-5])button_cap_S(4.57,5,60,t = s_t, w =s_w);
-    }
-
-module AC_buttons2()
-{
-    
-    
-
-translate([AC_button_x+5,AC_button_y-4,25])rotate([0,0,90])ACB();
-translate([AC_button_x+5,AC_button_y-4+29.67,25])rotate([0,0,90])ACB();
-    
-    
-    }
-
-module AC_button_Pin()
-{
-    
-    union(){difference(){difference(){
-     cylinder(1,2,2,true); 
-    
-    rotate_extrude(convexity = 10)translate([2, 0, 0])
-        circle(r = 0.5);
-        
-      
-}
-translate([0,0,2])cube(4,true);}
-cylinder(5.175,1.5,1.5,false);
-}
-
-    
-}
-
-
-module AC_buttons()
-{
-    
-    
-
-translate([AC_button_x+5,AC_button_y-4,25])rotate([0,0,90])ACB();
-translate([AC_button_x+5,AC_button_y-4+29.67,25])rotate([0,0,90])ACB();
-    
-    
-    }
-
-
-module ACB(){
-linear_extrude(20)union(){
-mirror([1,0,0])translate([-8,0,0])ACB_s(4);
-ACB_s(4);
-}
-module ACB_s(width = 5)
-{
-    
-    length = 24;
-    
-    union(){union()
-
-{
-square([width,1],false);
-
-square([1,length]);
-translate([0,length,0])rotate([0,0,-90])difference(){difference(){
-    
-    circle(r = 1);
-    translate([0.5,0.5,0])square([1,2],true);
-
-    }translate([0,-1,0])square(2,true);
-}
-
- }
-translate([1,length-1,0])square([0,1]);
-}
-    
-}
-
-}
-
-
-
-
-
-module ACB_tips(){
-translate([AC_button_x,AC_button_y,35.5])ACB_tip();
-translate([AC_button_x,AC_button_y+29.67,35.5]) ACB_tip();
-    }
-module ACB_tip(width = 5)
-{
-    difference(){
-    sphere(d= width);
-    translate([0,0,-width/2])cube(width,true);
-    }}
-    
