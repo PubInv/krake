@@ -22,9 +22,9 @@ include <StudModules.scad>
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
-Krake_28mm = 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
+Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
 GPAD  = 0;      // [0:Off, 1:On]
-Krake_76mm = 1;  // for the 3 inch speaker
+Krake_rev2_76mmSPK= 1;  // 76 mm / 3 inch speaker
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
@@ -58,14 +58,14 @@ SPKLid               = 0;
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
 // speaker parameters
-SpeakerDiameter_mm=78; 
+SpeakerDiameter_mm= Krake_rev2_76mmSPK? 78 : 27; 
 SpeakerRadius_mm=SpeakerDiameter_mm/2;
-SpeakerHeight_mm = Krake_rev2 ? 40 : 0; 
+SpeakerHeight_mm = Krake_rev2_76mmSPK ? 40 : 0; 
  
 
 
 
-translationVariable = 4 * SpeakerHeight_mm -5;
+translationVariable = Krake_rev2_76mmSPK ? 4 * SpeakerHeight_mm -5: 0 ;
 ////////////////////////////////////////////////////////////////////
 
 Length         = 83.82 + 13 +translationVariable;  //x axis    
@@ -169,18 +169,18 @@ SpeakerCutOut  = Krake ? 0 : 1;
  SPKBOSS62 = Krake ? 0 : 0;
 SPKBOSSpunch62 = Krake ? 0 : 0;
 
-USBbOn    = Krake_rev2 ? 0 : 1;
-USBcOn    = Krake_rev2 ? 1 : 0;
-DE9On     = Krake_rev2 ? 1 : 0;
-I2COn     = Krake_rev2 ? 0 : 1;
-RJ12On    = Krake_rev2 ? 1 : 1;
-DCOn      = Krake_rev2 ? 1 : 1;
-speaker_clamp = Krake_rev2 ? 1 : 0;
-grill_pattern = Krake_rev2 ? 1 : 0;
-SpeakerEnclosure  = Krake_rev2 ? 1 : 0;
-SpeakerCutOut  = Krake_rev2 ? 1 : 0;
- SPKBOSS62 = Krake_rev2 ? 1 : 0;
-SPKBOSSpunch62 = Krake_rev2 ? 1 : 0;
+USBbOn    = Krake_rev2_76mmSPK ? 0 : 1;
+USBcOn    = Krake_rev2_76mmSPK ? 1 : 0;
+DE9On     = Krake_rev2_76mmSPK ? 1 : 0;
+I2COn     = Krake_rev2_76mmSPK ? 0 : 1;
+RJ12On    = Krake_rev2_76mmSPK ? 1 : 1;
+DCOn      = Krake_rev2_76mmSPK ? 1 : 1;
+speaker_clamp = Krake_rev2_76mmSPK ? 1 : 0;
+grill_pattern = Krake_rev2_76mmSPK ? 1 : 0;
+SpeakerEnclosure  = Krake_rev2_76mmSPK ? 1 : 0;
+SpeakerCutOut  = Krake_rev2_76mmSPK ? 1 : 0;
+ SPKBOSS62 = Krake_rev2_76mmSPK ? 1 : 0;
+SPKBOSSpunch62 = Krake_rev2_76mmSPK ? 1 : 0;
 
  
 
@@ -371,9 +371,9 @@ grill_bar_width = 1;
 }
 }
 
-module SpeakerHexGrill(Krake_rev2, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
+module SpeakerHexGrill(Krake_rev2_76mmSPK, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
    
-   if (Krake_rev2 == 1)
+   if (Krake_rev2_76mmSPK == 1)
     translate([Cx, Cy, 0])
     intersection(){
         cylinder(d=Cdia*0.95, h=h, $fn=100);
@@ -389,9 +389,9 @@ module SpeakerHexGrill(Krake_rev2, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick,
 }
 
 
-module SpeakerHole(Krake_rev2,Cx,Cy,Cdia,Ccenter=false){
+module SpeakerHole(Krake_rev2_76mmSPK,Cx,Cy,Cdia,Ccenter=false){
     //difference(){
-    if(Krake_rev2==1)
+    if(Krake_rev2_76mmSPK==1)
                   translate([Cx ,Cy ,-1]){
             for(j = [1  : 3]){
 
@@ -477,8 +477,8 @@ module LedSpacer(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){
 }
 
 //Speaker Holder
-module SpeakerHolder(Krake_rev2,Cx,Cy,Cdia,Ccenter=false){ 
-    if(Krake_rev2==1){
+module SpeakerHolder(Krake_rev2_76mmSPK,Cx,Cy,Cdia,Ccenter=false){ 
+    if(Krake_rev2_76mmSPK==1){
         translate([Cx,Cy,-Thick])
         difference(){
             cylinder(d=Cdia+Thick,10, $fn=50,center=Ccenter);
@@ -1029,7 +1029,7 @@ module SPKBOSSpunch62(stud_height_mm,h_offset_mm) {
             translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
               //  (On/Off, Xpos, Ypos, Diameter)
              
-              SpeakerHole(1,SpeakerPositionX,SpeakerPositionY,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer
+              SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY:SpeakerHoleY ,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer // Speaker 
             
             
             
@@ -1056,7 +1056,7 @@ module SPKBOSSpunch62(stud_height_mm,h_offset_mm) {
 SpeakerCutOut();
     }
     translate ([-5,0,0])
-    SpeakerHexGrill(1,SpeakerPositionX, SpeakerPositionY);
+    SpeakerHexGrill(Krake_rev2_76mmSPK,SpeakerPositionX, SpeakerPositionY);
         }
     
 SpeakerEnclosure();
@@ -1219,11 +1219,13 @@ if (T_BShellScrew==1){
 module SpeakerEnclosure (){
 
 module SpeakerBoxKnife(){
+    if (Krake_rev2_76mmSPK == 1)
 translate ([SpeakerPositionX+4+Thick*5, SpeakerPositionY,Height/4-Thick]){
     cube ([1.6*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height*2], center=true);
     }}
     
  module SpeakerBoxOuter (){
+     if (Krake_rev2_76mmSPK == 1)
 difference (){ 
     translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,Height/4+Thick+10]){
     cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+10, SpeakerHeight_mm+5], center=true);
@@ -1233,6 +1235,7 @@ difference (){
   }
   
   module SpeakerShelf (){
+      if (Krake_rev2_76mmSPK == 1)
   translate ([SpeakerPositionX +SpeakerHeight_mm + 10, SpeakerPositionY,SpeakerHeight_mm/2-Thick]){
   cube ([5,SpeakerDiameter_mm*1.5, 3*SpeakerHeight_mm/4], center=true);
   }
@@ -1245,6 +1248,7 @@ difference (){
      }
  
 module SpeakerCutOut () {
+    if (Krake_rev2_76mmSPK == 1)
 translate ([SpeakerPositionX+Thick*5+45, SpeakerPositionY-52.5,-10]){
 cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
   }
@@ -1255,10 +1259,12 @@ cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
    ScrewLength=5+Thick;
    Spacing=100;
  module ScrewPocket(){
+     if (Krake_rev2_76mmSPK == 1)
 cylinder (d=ScrewDiameter,h=ScrewLength+Thick,center=true);
 }
 
 module AllScrewPockets (){
+    if (Krake_rev2_76mmSPK == 1)
 translate([SpeakerPositionX + Thick*5 + 5,
                SpeakerPositionY,
                Height/4 + Thick + 10 - (Height-10)/2]) {
@@ -1285,6 +1291,7 @@ translate([SpeakerPositionX + Thick*5 + 5,
 }
  
 module SpeakerBoxLid(){
+    if (Krake_rev2_76mmSPK == 1)
 difference (){
     translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,SpeakerHeight_mm-ScrewLength]){
         cube ([1.6*SpeakerDiameter_mm,       SpeakerDiameter_mm*1.5+10, Thick], center=true);
@@ -1298,6 +1305,7 @@ SpeakerBoxLid();
 }
 
 module CableHole() {
+    if (Krake_rev2_76mmSPK == 1)
     translate ([1.8*SpeakerDiameter_mm,SpeakerDiameter_mm,3*SpeakerHeight_mm/4]){
         rotate ([0,90,0]){
             cylinder (d=10,h=Thick*5,center=true);
