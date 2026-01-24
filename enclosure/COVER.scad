@@ -103,7 +103,7 @@ translate([0,cover_width,0])mirror([0,1,0]){
     }
 }
 
-translate([-1.7,0,0])cube([3,cover_width,3]);
+
 /*
 translate([0,30,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15);
@@ -113,17 +113,24 @@ rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15);
 //scale([1,1,1.04])translate([0,0,-0.05])
 color("green"){cover(cover_width,cover_length,cover_thickness);}
 
+
+
 //color("red")translate([46.6,18,7])rotate([90,90,0])scale([1.05,1.05,1.05])lock_m();
 
     translate([cover_length-cover_width/2-2.8,cover_width/2,2]) cube([2,6.5,3],true);
 
 //translate([3,15,-1])s_cover(cover_width,cover_length,cover_thickness+2);
+
+
+        translate([cover_length-cover_width/2-6.6+0.2,cover_width/2+3,6.2-0.75])    translate([4.5,-2.5,-11.7])
+       scale([1+tollerance,1.21,1+tollerance])translate([-4.5,2.5,11.7])rotate([90,90,0])lock_m();
+
 }
 
 
 difference(){
 translate([0,0.3,0])color("blue"){cover(cover_width-0.6,cover_length-1,cover_thickness);}
-translate([cover_length-cover_width/2-9.6,cover_width/2-2.6,-1])cube([11,5+0.6,8]);
+translate([cover_length-cover_width/2-9.6+0.75,cover_width/2-2.6,-1])cube([11,5+0.6,8]);
 }
 
 
@@ -146,11 +153,11 @@ translate([-0.5,0,-0.2])translate([cover_length-cover_width/2,cover_width/2,cove
        
 }
 
-tollerance = 0.1;
+tollerance = 0.2;
 difference(){
 translate([cover_length-cover_width/2-1.8,cover_width/2-3.5,2])cube([3,7,3]);
     
-        translate([cover_length-cover_width/2-6.6,cover_width/2+3,6.2])    translate([4.5,-2.5,-11.7])
+        translate([cover_length-cover_width/2-6.6+0.2,cover_width/2+3,6.2-0.75])    translate([4.5,-2.5,-11.7])
        scale([1+tollerance,2,1+tollerance])translate([-4.5,2.5,11.7])rotate([90,90,0])lock_m();
 
     

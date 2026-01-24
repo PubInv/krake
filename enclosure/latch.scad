@@ -1,11 +1,20 @@
 
 $fn = 50;
-rotate_d = 10;
+rotate_d = 15;
 tip_lenght = 6;
 thikness = 5;
 width = 7;
 height = 7;
 
+
+// translate([-0.5,0,1.4])#sup_triangel();
+
+module sup_triangel()
+{
+    h = 1;
+points = [[(h),0],[-(h),0],[0,h]];
+rotate([90,0,0])linear_extrude(10)polygon(points);
+}
 module locker()
 {
     
@@ -56,11 +65,11 @@ module locker()
        }
        
        module lock_m(){
-    
+    difference(){
     union(){
        difference()
        {latch(height, width);
-       translate([0,0,-0.1])latch(height*2,width-1,width+5);
+       translate([0,0,-0.1])latch(height*2,width-2.5,width+5);
            rotate([0,0,rotate_d])translate([0,-1,-1])cube([20,10,10]);
           translate([0,-1,-1]) cube([20,10,10]);
        }
@@ -71,7 +80,9 @@ module locker()
        
        translate([0,-4,0])the_tip();
    
-              rotate([0,0,rotate_d])translate([0,(width-1)/2,0])cube([height+0.5,0.5,thikness]);
+              rotate([0,0,rotate_d])translate([0,(width-1)/2-0.75,0])cube([height+0.5,1.25,thikness]);
+       }
+       translate([-1.9,0,8])rotate([90,0,-90])sup_triangel();
        }
        }
        
