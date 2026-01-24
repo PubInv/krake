@@ -22,9 +22,9 @@ include <StudModules.scad>
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
 /* Project Selector */
-Krake = 1;      // [0:Off, 1:On] //on
+Krake_28mm = 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
 GPAD  = 0;      // [0:Off, 1:On]
-
+Krake_76mm = 1;  // for the 3 inch speaker
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 
 ///////////////// speakers //////////
-SoundLabSPK = 1;
+//SoundLabSPK = 1;
 
 
 ////////////////////////////////////////////////////////////////////
@@ -60,9 +60,8 @@ SoundLabSPK = 1;
 // speaker parameters
 SpeakerDiameter_mm=78; 
 SpeakerRadius_mm=SpeakerDiameter_mm/2;
-SpeakerHeight_mm=40;
-
-
+SpeakerHeight_mm = Krake_rev2 ? 40 : 0; 
+ 
 
 
 
@@ -161,6 +160,29 @@ I2COn     = Krake ? 0 : 1;
 RJ12On    = Krake ? 1 : 1;
 DCOn      = Krake ? 1 : 1;
 //DE9SquareHole      = Krake ? 1 : 0;
+
+
+speaker_clamp = Krake ? 0 : 1;
+grill_pattern = Krake ? 0 : 1;
+SpeakerEnclosure  = Krake ? 0 : 1;
+SpeakerCutOut  = Krake ? 0 : 1;
+ SPKBOSS62 = Krake ? 0 : 0;
+SPKBOSSpunch62 = Krake ? 0 : 0;
+
+USBbOn    = Krake_rev2 ? 0 : 1;
+USBcOn    = Krake_rev2 ? 1 : 0;
+DE9On     = Krake_rev2 ? 1 : 0;
+I2COn     = Krake_rev2 ? 0 : 1;
+RJ12On    = Krake_rev2 ? 1 : 1;
+DCOn      = Krake_rev2 ? 1 : 1;
+speaker_clamp = Krake_rev2 ? 1 : 0;
+grill_pattern = Krake_rev2 ? 1 : 0;
+SpeakerEnclosure  = Krake_rev2 ? 1 : 0;
+SpeakerCutOut  = Krake_rev2 ? 1 : 0;
+ SPKBOSS62 = Krake_rev2 ? 1 : 0;
+SPKBOSSpunch62 = Krake_rev2 ? 1 : 0;
+
+ 
 
 if (Krake + GPAD > 1)
     echo("WARNING: More than one project mode active!!!");
@@ -349,9 +371,9 @@ grill_bar_width = 1;
 }
 }
 
-module SpeakerHexGrill(OnOff, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
+module SpeakerHexGrill(Krake_rev2, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
    
-   if (OnOff == 1)
+   if (Krake_rev2 == 1)
     translate([Cx, Cy, 0])
     intersection(){
         cylinder(d=Cdia*0.95, h=h, $fn=100);
@@ -367,9 +389,9 @@ module SpeakerHexGrill(OnOff, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell
 }
 
 
-module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
+module SpeakerHole(Krake_rev2,Cx,Cy,Cdia,Ccenter=false){
     //difference(){
-    if(OnOff==1)
+    if(Krake_rev2==1)
                   translate([Cx ,Cy ,-1]){
             for(j = [1  : 3]){
 
@@ -455,8 +477,8 @@ module LedSpacer(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){
 }
 
 //Speaker Holder
-module SpeakerHolder(OnOff,Cx,Cy,Cdia,Ccenter=false){ 
-    if(OnOff==1){
+module SpeakerHolder(Krake_rev2,Cx,Cy,Cdia,Ccenter=false){ 
+    if(Krake_rev2==1){
         translate([Cx,Cy,-Thick])
         difference(){
             cylinder(d=Cdia+Thick,10, $fn=50,center=Ccenter);
