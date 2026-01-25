@@ -7,72 +7,78 @@ String password_wf = "";
 String ledState = "";
 int WiFiLed = 2; // Modify based on actual LED pin
 
-void saveCredentials(const char *ssid, const char *password)
+using namespace WifiOTA;
+
+Manager::Manager(WiFiClass &wifi, Print &print)
+    : wifi(wifi), print(print)
 {
-  File file = LittleFS.open("/wifi.txt", "w");
-  if (file)
+}
+
+void Manager::initialize()
+{
+  // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
+  // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
+  this->wifi.mode(WIFI_STA);
+}
+
+Manager::~Manager() {}
+
+void Manager::connect(const char *const accessPointSsid)
+{
+
+  auto saveConfigCallback = [this]()
   {
-    file.println(ssid);
-    file.println(password);
-    file.close();
-    Serial.println("WiFi credentials saved.");
+    this->ssidSaved();
+  };
+
+  this->wifiManager.setSaveConfigCallback(saveConfigCallback);
+
+  auto apStaConnectedCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
+  {
+    this->ipSet();
+  };
+  this->wifi.onEvent(apStaConnectedCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+
+  bool connectSuccess = false;
+  if (accessPointSsid == "")
+  {
+    connectSuccess = this->wifiManager.autoConnect(DEFAULT_SSID);
   }
   else
   {
-    Serial.println("Failed to save WiFi credentials.");
+    connectSuccess = this->wifiManager.autoConnect(accessPointSsid);
   }
 }
 
-bool loadCredentials()
+void Manager::setConnectedCallback(std::function<void()> callback)
 {
-  File file = LittleFS.open("/wifi.txt", "r");
-  if (!file)
-  {
-    Serial.println("No saved WiFi credentials found.");
-    return false;
-  }
-
-  ssid_wf = file.readStringUntil('\n');
-  password_wf = file.readStringUntil('\n');
-  ssid_wf.trim();
-  password_wf.trim();
-
-  file.close();
-  Serial.println("Loaded WiFi credentials from storage.");
-  return true;
+  this->connectedCallback = callback;
 }
 
-void WiFiMan(const char *accessPointSsid)
+void Manager::ssidSaved()
 {
-  WiFiManager wifiManager;
-
-  if (!loadCredentials())
-  {
-    boolean connectSuccess = false;
-
-    if (accessPointSsid == "")
-    {
-      connectSuccess = wifiManager.autoConnect(DEFAULT_SSID);
-    }
-    else
-    {
-      connectSuccess = wifiManager.autoConnect(accessPointSsid);
-    }
-
-    if (!connectSuccess)
-    {
-      Serial.println("Failed to connect. Restarting...");
-      ESP.restart();
-    }
-    ssid_wf = WiFi.SSID();
-    password_wf = WiFi.psk();
-    saveCredentials(ssid_wf.c_str(), password_wf.c_str());
-  }
-
-  Serial.println("Connected to WiFi!");
+  this->print.print("Network Saved with SSID: ");
+  this->print.print(this->wifi.SSID());
+  this->print.print("\n");
 }
 
-void initLittleFS()
+void Manager::ipSet()
+{
+  this->print.print("Connected to Network: ");
+  this->print.print(this->wifi.SSID());
+  this->print.print("\n");
+
+  this->print.print("Obtained IP Address: ");
+  this->wifi.localIP().printTo(Serial);
+  this->print.print("\n");
+
+  if (this->connectedCallback)
+  {
+    this->connectedCallback();
+  }
+}
+
+void WifiOTA::initLittleFS()
 {
   if (!LittleFS.begin(true))
   {
@@ -86,20 +92,7 @@ void initLittleFS()
   }
 }
 
-void initWiFi()
-{
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid_wf.c_str(), password_wf.c_str());
-  Serial.print("Connecting to WiFi ..");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.print('.');
-    delay(1000);
-  }
-  Serial.println("\nConnected. IP Address: " + WiFi.localIP().toString());
-}
-
-String processor(const String &var)
+String WifiOTA::processor(const String &var)
 {
   if (var == "STATE")
   {
