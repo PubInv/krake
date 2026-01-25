@@ -43,7 +43,8 @@
 #define DEVICE_UNDER_TEST "Krake: DFPlayer" // This is GPAD code, but if it is used in testing...
 
 // THIS IS FOR DEBUGGING
-#define LIMIT_POWER_DRAW 1
+// #define LIMIT_POWER_DRAW 1  //FLE on 20260119
+#define LIMIT_POWER_DRAW 0
 
 void printError(Stream *serialport);
 void printInstructions(Stream *serialport);
