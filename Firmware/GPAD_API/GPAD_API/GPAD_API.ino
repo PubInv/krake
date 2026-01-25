@@ -83,6 +83,8 @@ AsyncWebSocket ws("/ws");
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+WifiOTA::Manager wifiManager(WiFi, Serial);
+
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
    Modified by Forrest Lee Erickson 20220523
@@ -129,34 +131,19 @@ const int LED_PINS[] = {LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4};
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
-// Aley network
-//  const char* ssid = "Home";
-//  const char* password = "adt@1963#";
-
-// Maryville network
-//  const char* ssid = "VRX";
-//  const char* password = "textinsert";
-
-// Houstin network
-//  const char* ssid = "DOS_WIFI";
-//  const char* password = "$Suve07$$";
-
-// Austin network
-const char *ssid = "readfamilynetwork";
-const char *password = "magicalsparrow96";
-
 // MQTT Broker
 const char *mqtt_broker_name = "public.cloud.shiftr.io";
 const char *mqtt_user = "public";
 const char *mqtt_password = "public";
 
+const size_t MAC_ADDRESS_STRING_LENGTH = 13;
 // MQTT Topics, MAC plus an extention
 // A MAC addresss treated as a string has 12 chars.
 // The strings "_ALM" and "_ACK" have 4 chars.
 // A null character is one other. 12 + 4 + 1 = 17
 char subscribe_Alarm_Topic[17];
 char publish_Ack_Topic[17];
-char macAddressString[13];
+char macAddressString[MAC_ADDRESS_STRING_LENGTH];
 
 #define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
 #define MACSTR "%02x:%02x:%02x:%02x:%02x:%02x"
@@ -241,37 +228,6 @@ void publishOnLineMsg(void)
 #endif
   }
 }
-
-bool connect_to_wifi()
-{
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    delay(10);
-    Serial.println();
-
-    Serial.print("Connecting to WiFi: ");
-    Serial.println(ssid);
-
-    WiFi.begin(ssid, password);
-    if (WiFi.status() != WL_CONNECTED)
-    {
-      Serial.println("Failed to connect WiFi.");
-      return false;
-    }
-    else
-    {
-      Serial.print("WiFi connected");
-
-#if (DEBUG > 1)
-      delay(100);
-      Serial.print("Device connected at IPaddress: "); // FLE
-      Serial.println(WiFi.localIP());                  // FLE
-#endif
-      return true;
-    }
-  }
-  return true;
-} // end connect_to_wifi()
 
 // TODO: have this return a success or failure status and move
 // the delay up.
@@ -377,7 +333,7 @@ void setupOTA()
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/index.html", "text/html", false, processor); });
+            { request->send(LittleFS, "/index.html", "text/html", false, WifiOTA::processor); });
 
   server.serveStatic("/", LittleFS, "/");
 
@@ -386,6 +342,8 @@ void setupOTA()
 
 void setup()
 {
+  wifiManager.initialize();
+
   pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   // Serial setup
@@ -450,8 +408,6 @@ void setup()
   clearLCD();
 #endif
 
-  WiFi.mode(WIFI_STA);
-
 #if (LIMIT_POWER_DRAW)
   splashLCD();
 #endif
@@ -484,12 +440,29 @@ void setup()
   Serial.println(publish_Ack_Topic);
   Serial.println("XXXXXXX");
 #endif
+  // Setup SSID length is the length of the prefix, 'Krake_', which is 7
+  // plus the length of the MAC address string, MAC_ADDRESS_STRING_LENGTH
+  const size_t SETUP_SSID_LENGTH = 7 + MAC_ADDRESS_STRING_LENGTH;
+  char setupSsid[SETUP_SSID_LENGTH] = "Krake_";
+  strcat(setupSsid, macAddressString);
 
   // We call this a second time to get the MAC on the screen
   //  clearLCD();
   // req for Wifi Man and OTA
-  WiFiMan();
-  initLittleFS();
+
+#if defined HMWK || defined KRAKE
+  auto connectedCallback = [&]()
+  {
+    if (!client.connected())
+    {
+      reconnect();
+    }
+  };
+  wifiManager.setConnectedCallback(connectedCallback);
+#endif
+
+  wifiManager.connect(setupSsid);
+  WifiOTA::initLittleFS();
   server.begin(); // Start server web socket to render pages
   ElegantOTA.begin(&server);
   setupOTA();
@@ -502,7 +475,7 @@ void setup()
   initRotator();
   splashLCD();
 
-  setupDFPlayer();
+  // setupDFPlayer();
   setup_GPAD_menu();
 
 } // end of setup()
@@ -516,9 +489,6 @@ void toggle(int pin)
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
 unsigned long time_since_LOW_FREQ_ms = 0;
 
-// IPAddress myIP(0, 0, 0, 0); // declare for global and initialize
-IPAddress myIP(); // declare for global
-
 int cnt_actions = 0;
 
 bool running_menu = false;
@@ -526,37 +496,6 @@ bool menu_just_exited = false;
 
 void loop()
 {
-  bool is_WIFIconnected = false;
-  unsigned long ms = millis();
-  if (ms - time_since_LOW_FREQ_ms > LOW_FREQ_DEBUG_MS)
-  {
-    time_since_LOW_FREQ_ms = ms;
-
-    // If WiFi was not connected and becomes connected then print IP address
-    if (!is_WIFIconnected && connect_to_wifi())
-    {
-      is_WIFIconnected = true;
-
-      // Get the IP address into a variable I can make global
-      IPAddress myIP = WiFi.localIP();
-      const char *ipString = myIP.toString().c_str();
-      // strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
-
-      Serial.print("Device connected at IPaddress: "); // FLE
-                                                       //       Serial.println(WiFi.localIP());                   //FLE
-      Serial.println(myIP);                            // FLE
-    }
-
-    // Serial.println(subscribe_Alarm_Topic);
-    // Serial.println(publish_Ack_Topic);
-#if defined HMWK || defined KRAKE
-    if (!client.connected())
-    {
-      reconnect();
-    }
-#endif
-  }
-
 #if defined HMWK || defined KRAKE
   client.loop();
   publishOnLineMsg();

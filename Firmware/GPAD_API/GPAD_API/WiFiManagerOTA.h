@@ -7,17 +7,34 @@
 #include <FS.h>
 #include <LittleFS.h>
 
-extern const char *default_ssid;
-// extern String ssid;
-// extern String password;
+extern const char *DEFAULT_SSID;
 extern String ledState;
 extern int WiFiLed;
 
-void saveCredentials(const char *ssid, const char *password);
-bool loadCredentials();
-void WiFiMan();
-void initLittleFS();
-void initWiFi();
-String processor(const String &var);
+namespace WifiOTA
+{
+    class Manager
+    {
+    public:
+        Manager(WiFiClass &wifi, Print &print);
+        ~Manager();
+
+        void initialize();
+        void connect(const char *const accessPointSsid);
+        void setConnectedCallback(std::function<void()> callBack);
+
+    private:
+        WiFiClass &wifi;
+        Print &print;
+        WiFiManager wifiManager;
+        std::function<void()> connectedCallback;
+
+        void ssidSaved();
+        void ipSet();
+    };
+
+    void initLittleFS();
+    String processor(const String &var);
+};
 
 #endif // WIFI_MANAGER_H
