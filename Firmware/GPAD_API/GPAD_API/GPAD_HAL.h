@@ -18,8 +18,8 @@
 
 */
 
-#ifndef GPAD_HAL
-#define GPAD_HAL 1
+#ifndef GPAD_HAL_H
+#define GPAD_HAL_H
 #include <Stream.h>
 // #include <Arduino.h>
 #include <PubSubClient.h>
@@ -121,6 +121,60 @@ extern HardwareSerial uartSerial1;
 #define RXD2 16
 #define UART2_BAUD_RATE 9600
 extern HardwareSerial uartSerial1;
+
+namespace gpad_hal
+{
+
+  static const uint8_t API_MAJOR_VERSION = 0;
+  static const uint8_t API_MINOR_VERSION = 1;
+  static const uint8_t API_PATCH_VERSION = 0;
+
+  enum class Command : char
+  {
+    MUTE = 's',
+    UNMUTE = 'u',
+    HELP = 'h',
+    ALARM = 'a',
+    INFO = 'i',
+  };
+
+  /**
+   * SemanticVersion stores a version following the "semantic versioning" convention
+   * defined here: https://semver.org/
+   *
+   * In summary:
+   *  - Major version defines breaking an incompatible changes with different versions
+   *  - Minor version adds new functionality in a backwards capability
+   *    ie v2.4.1 and v2.5.1 are still compatible but v2.5.1 may have additional functionality
+   *  - Patch version simply addresses bugs with no new features again in a backwards
+   *    compatible way
+   */
+  class SemanticVersion
+  {
+  public:
+    SemanticVersion(uint8_t major, uint8_t minor, uint8_t patch);
+
+    std::string toString() const;
+
+  private:
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+  };
+
+  class GPAD_API
+  {
+  public:
+    GPAD_API(SemanticVersion version);
+
+    const SemanticVersion &getVersion() const;
+
+  private:
+    const SemanticVersion version;
+  };
+
+  const GPAD_API gpadApi = GPAD_API(SemanticVersion(API_MAJOR_VERSION, API_MINOR_VERSION, API_PATCH_VERSION));
+}
 
 // SPI Functions....
 void setup_spi();
