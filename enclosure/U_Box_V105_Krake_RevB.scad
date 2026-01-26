@@ -49,6 +49,7 @@ PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
+Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
 
 ///////////////// speakers //////////
 //SoundLabSPK = 1;
@@ -62,7 +63,7 @@ SpeakerDiameter_mm= Krake_rev2_76mmSPK? 78 : 27;
 SpeakerRadius_mm=SpeakerDiameter_mm/2;
 SpeakerHeight_mm = Krake_rev2_76mmSPK ? 40 : 0; 
  
-
+ 
 
 
 translationVariable = Krake_rev2_76mmSPK ? 4 * SpeakerHeight_mm -5: 0 ;
@@ -70,7 +71,7 @@ translationVariable = Krake_rev2_76mmSPK ? 4 * SpeakerHeight_mm -5: 0 ;
 
 Length         = 83.82 + 13 +translationVariable;  //x axis    
 Width          = 138 + 13; //y axis axis            
-Height         = 40 + SpeakerHeight_mm/2; //z axis was 40
+Height         = Krake_76mmSPK_56h? 90 + SpeakerHeight_mm/2 : 40 + SpeakerHeight_mm/2; //z axis was 40
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
 Resolution     = 50;                   // Filet smoothness
