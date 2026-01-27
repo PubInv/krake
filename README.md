@@ -1,3 +1,6 @@
+## [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
+
+
 # Krake™   
 Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
 ![image](https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07)
