@@ -522,28 +522,28 @@ static bool runTest_LCD() {
   }
 
   // STEP 4.5: Optical visibility check (operator confirmed)
-  // Serial.println(F("Displaying alert visibility test..."));
+  Serial.println(F("Displaying alert visibility test..."));
 
-  // lcd.clear();
-  // lcd.setCursor(0, 0);
-  // lcd.print("!!! ALERT TEST !!!");
-  // lcd.setCursor(0, 1);
-  // lcd.print("LINE 2 OK");
-  // lcd.setCursor(0, 2);
-  // lcd.print("LINE 3 OK");
-  // lcd.setCursor(0, 3);
-  // lcd.print("LINE 4 OK");
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("!!! ALERT TEST !!!");
+  lcd.setCursor(0, 1);
+  lcd.print("LINE 2 OK");
+  lcd.setCursor(0, 2);
+  lcd.print("LINE 3 OK");
+  lcd.setCursor(0, 3);
+  lcd.print("LINE 4 OK");
 
-  // bool visible = promptYesNo(
-  //   F("Do you see ALL 4 lines clearly and readable on the LCD?"),
-  //   PROMPT_TIMEOUT_MS,
-  //   false
-  // );
+  bool visible = promptYesNo(
+    F("Do you see ALL 4 lines clearly and readable on the LCD?"),
+    PROMPT_TIMEOUT_MS,
+    false
+  );
 
-  // if (!visible) {
-  //   Serial.println(F("FAIL: LCD visible test failed."));
-  //   return false;
-  // }
+  if (!visible) {
+    Serial.println(F("FAIL: LCD visible test failed."));
+    return false;
+  }
 
   // STEP 5: Backlight electrical toggle test
   Serial.println(F("Testing backlight control..."));
