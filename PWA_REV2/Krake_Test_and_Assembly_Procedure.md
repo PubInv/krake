@@ -304,8 +304,25 @@ Steps:
 - Add speaker at J601 or J604
 - Apply power at USB
 - Make quick powered test. **STOP IF OVER VOLTAGE** on TP103 (5V) and TP100 (3.3V).
-- Program with `FactoryTest_wMenu.ino` !!information required here about libraies required, port identification etc 
-- Test Mini MP3 Player and Speaker (with test items: 4 DFPlayer, 5 SD (DFPlayer card), 6 Speaker)
+- Test Mini MP3 Player and Speaker procedure is below
+- Navigate to krake\Firmware\factoryTest\FactoryTest_wMenu and open  `FactoryTest_wMenu.ino`
+- Using USB to USB C cable to connect the PCB to the computer
+- Using device manager identify which port the PCB is connected to.
+- When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
+- Proceed to select the board - esp32 dev board
+- Upload to the board and allow missing libraries to be identified, library specifications are below
+  PubSubClient by Nick O'Leary
+  Aruinojson by Benoit Blanchon
+  LiquidCrystal I2C by Frank de Brabander
+  ESPEssentials by Stephan Rumswinkel
+  LittleFS_esp32 by lorol
+  RotaryEncoder by Matthais Hertel
+  DFRobotDFPlayerMini by DFRobot
+- One upload is complete, navigate to the Serial Monitor within Arduino IDE
+- Change the 'baud rate' to 115200
+- Enter '4'- , '5'- , '6' - Speaker into the Serial Monitor
+- After entering 6, the serial monitor will ask for confirmation of audio - enter Y/N to confirm or deny audio and pass or fail test
+  !!enter images of serial monitor output CL
 
 Finish Assembly: Solder the LCD and LEDs and continue powered testing.
 
