@@ -107,21 +107,21 @@ difference(){union(){
 union()
 {
 translate([-15,-10,0]) cube([cover_length+3,cover_width+20,2.1]);
-translate([-2,-10,2])cube([10,10,8]);    
+translate([-2,-10,2])cube([10,10,6.5]);    
  translate([45,17.5,3.6])rotate([0,180,-90])locking(w = 16, h = 1.5);
 
 }
 translate([0,cover_width,0])mirror([0,1,0]){
-    translate([-2,-10,2])cube([10,10,8]);
+    translate([-2,-10,2])cube([10,10,6.5]);
     }
 }
 
 
-/*
+
 translate([0,30,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15);
 
-*/
+
 
 //scale([1,1,1.04])translate([0,0,-0.05])
 color("green"){cover(cover_width,cover_length,cover_thickness);}
