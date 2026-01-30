@@ -142,8 +142,8 @@ translate([cover_length-cover_width/2-9.6+0.75,cover_width/2-4,2.2])cube([11-3.5
 
 
 difference(){
-translate([0,0.3,0])color("blue"){cover(cover_width-0.6,cover_length-1,cover_thickness);}
-translate([cover_length-cover_width/2-9.6+0.75,cover_width/2-2.6,-1])cube([11,5+0.6,8]);
+translate([0,0.1,0])color("blue"){cover(cover_width-0.2,cover_length-1,cover_thickness);}
+translate([cover_length-cover_width/2-4,cover_width/2-2.6,-1])cube([4,5+0.6,8]);
 }
 
 
