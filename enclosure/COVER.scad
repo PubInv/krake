@@ -1,7 +1,7 @@
 
 $fs = 0.1;
 
-
+$fn =100;
 
 use <latch.scad>
 
@@ -52,12 +52,6 @@ cylinder(h,c1,c2);
        
             translate([(length-width),0,0]){
                 cylinder(h=thickness,r1 = width/2, r2 =width/2-(sqrt(2)*thickness));
-            translate([0,0,thickness2-thickness])difference(){
-               
-            translate([0,0,(thickness)*2+0])mirror([0,0,1])cylinder(h=thickness2,r1 = width2/2, r2 =width2/2-(sqrt(2)*thickness2));
-            translate([0,0,(thickness)*2+0.1])mirror([0,0,1])cylinder(h=thickness2+0.2,r1 = width2/2-1, r2 =(width2/2-(sqrt(2)*thickness2)-1));
-            translate([-50,-25,0])cube([50,50,5]);
-            }
             
             }
         
@@ -103,6 +97,7 @@ translate([0,width/2,0])
  
  cover_unit();
 module cover_unit(){
+
 difference(){union(){
 union()
 {
@@ -115,8 +110,8 @@ translate([0,cover_width,0])mirror([0,1,0]){
     translate([-2,-10,2])cube([10,10,6.5]);
     }
 }
-
-
+door_back_gap = 0.4;
+#translate([-door_back_gap,0,0])cube([door_back_gap,cover_width,3]);
 
 translate([0,30,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15);
@@ -142,7 +137,24 @@ translate([cover_length-cover_width/2-9.6+0.75,cover_width/2-4,2.2])cube([11-3.5
 
 
 difference(){
-translate([0,0.1,0])color("blue"){cover(cover_width-0.2,cover_length-1,cover_thickness);}
+    
+union(){translate([0.5,0.15,0])color("blue"){cover(cover_width-0.3,cover_length-1,cover_thickness);}
+        b_h = 0.7;
+         b_w = 5;
+         c_w = 2;
+         h2 = 1;
+         w2 = b_h+h2;
+         w = 14.3- b_w;
+                translate([cover_length-cover_width-0.5,cover_width/2,cover_thickness]){
+ 
+         
+        points = [[0-c_w,0],[0,b_h],[b_w-1,b_h],[b_w+w2-1,b_h+h2],[b_w+w2,b_h+h2],[b_w,0]];
+    rotate([0,0,-90])rotate_extrude(angle = 180)translate([w,0,0])mirror([0,0,0])polygon(points);
+
+            
+            }
+
+}
 translate([cover_length-cover_width/2-4,cover_width/2-2.6,-1])cube([4,5+0.6,8]);
 }
 
@@ -163,7 +175,7 @@ tollerance = 0.2;
 
 module locking(w = 1, h = 1)
 {
-    points = [[0,0],[0,h],[h,h]];
+    points = [[-5,0],[-5,h],[h,h],[0,0]];
     rotate_extrude(angle = 180)translate([w,0,0])mirror([1,0,0])polygon(points);
 
 }
