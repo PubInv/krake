@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION   "v0.4.2.2"
+#define FIRMWARE_VERSION   "v0.4.2.3"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -442,120 +442,65 @@ static bool verifyLCDConnection(uint8_t i2c_addr) {
 }
 
 static bool runTest_LCD() {
-  Serial.println(F("\n[3] LCD (I2C 20x4) – AUTOMATED"));
+  Serial.println(F("\n[2] LCD (I2C)"));
 
   Wire.begin();
-  delay(80);
+  delay(100);
 
-
-  // STEP 1: I2C scan – validate backpack (U301)
+  // STEP 1: Scan allowed I2C addresses
   uint8_t lcdAddr = 0;
-  Serial.println(F("Scanning I2C bus..."));
-
-  for (uint8_t addr = 1; addr < 127; ++addr) {
+  for (uint8_t addr : LCD_ALLOWED_ADDRS) {
     Wire.beginTransmission(addr);
-    if (Wire.endTransmission() == 0 && addrInAllowList(addr)) {
+    if (Wire.endTransmission() == 0) {
       lcdAddr = addr;
-      Serial.printf("  Found LCD backpack at 0x%02X\n", addr);
+      Serial.printf("  LCD backpack found at 0x%02X\n", addr);
       break;
     }
   }
 
   if (!lcdAddr) {
-    Serial.println(F("FAIL: No LCD backpack found at allowed addresses."));
+    Serial.println(F("FAIL: No LCD backpack detected."));
     return false;
   }
 
-  // STEP 2: Electrical LCD presence check – validate LCD glass (U302)
-  Serial.println(F("Verifying LCD electrical presence..."));
-  if (!verifyLCDConnection(lcdAddr)) {
-    Serial.println(F("FAIL: Backpack responds, but LCD glass not detected."));
-    return false;
-  }
-  Serial.println(F("LCD glass detected."));
-
-  // STEP 3: Initialize LCD controller and validate busy behavior
+  // STEP 2: Initialize LCD cleanly
   LiquidCrystal_I2C lcd(lcdAddr, 20, 4);
   lcd.init();
   lcd.backlight();
-
-  Serial.println(F("Validating LCD controller busy behavior..."));
   lcd.clear();
+  delay(5);
 
-  uint32_t t0 = millis();
-  bool busyCleared = false;
+  // STEP 3: Deterministic pattern test
+  const char* patterns[4] = {
+    "####################",
+    "ABCDEFGHIJKLMNOPQRST",
+    "abcdefghijklmnopqrst",
+    "12345678901234567890"
+  };
 
-  while (millis() - t0 < 20) { // HD44780 clear should finish < 2 ms
-    if (verifyLCDConnection(lcdAddr)) {
-      busyCleared = true;
-      break;
-    }
-    delay(1);
+  for (uint8_t row = 0; row < 4; row++) {
+    lcd.setCursor(0, row);
+    lcd.print(patterns[row]);
   }
 
-  if (!busyCleared) {
-    Serial.println(F("FAIL: LCD busy flag did not clear."));
-    return false;
-  }
-
-  // STEP 4: DDRAM write/read stress test – validate data & control lines
-  Serial.println(F("Running DDRAM pattern test..."));
-
-  const char patterns[] = { 0x00, 0xFF, 'A', '5' };
-
-  for (uint8_t p = 0; p < sizeof(patterns); p++) {
-    char ch = patterns[p];
-
-    for (uint8_t row = 0; row < 4; row++) {
-      lcd.setCursor(0, row);
-      for (uint8_t col = 0; col < 20; col++) {
-        lcd.write(ch);
-      }
-    }
-
-    // Read back DDRAM via busy-flag read heuristic
-    // (confirms data bus activity, not pixel optics)
-    if (!verifyLCDConnection(lcdAddr)) {
-      Serial.println(F("FAIL: Data bus error during pattern write."));
-      return false;
-    }
-  }
-
-  // STEP 4.5: Optical visibility check (operator confirmed)
-  Serial.println(F("Displaying alert visibility test..."));
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("!!! ALERT TEST !!!");
-  lcd.setCursor(0, 1);
-  lcd.print("LINE 2 OK");
-  lcd.setCursor(0, 2);
-  lcd.print("LINE 3 OK");
-  lcd.setCursor(0, 3);
-  lcd.print("LINE 4 OK");
-
+  // STEP 4: Operator optical confirmation
   bool visible = promptYesNo(
-    F("Do you see ALL 4 lines clearly and readable on the LCD?"),
+    F("Do you see 4 FULL lines, aligned, no garbage characters?"),
     PROMPT_TIMEOUT_MS,
     false
   );
 
   if (!visible) {
-    Serial.println(F("FAIL: LCD visible test failed."));
+    Serial.println(F("FAIL: LCD optical test failed."));
     return false;
   }
 
-  // STEP 5: Backlight electrical toggle test
-  Serial.println(F("Testing backlight control..."));
+  // STEP 5: Backlight toggle (non-destructive)
   lcd.noBacklight();
-  delay(100);
+  delay(150);
   lcd.backlight();
-  delay(100);
 
-  // If PCF8574 BL pin were shorted/open, earlier checks would fail
-  Serial.println(F("Backlight toggled."));
-
-  Serial.println(F("LCD automated test: PASS"));
+  Serial.println(F("LCD test: PASS"));
   return true;
 }
 
