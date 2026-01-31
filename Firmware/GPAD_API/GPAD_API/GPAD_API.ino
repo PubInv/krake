@@ -131,6 +131,26 @@ const int LED_PINS[] = {LIGHT0, LIGHT1, LIGHT2, LIGHT3, LIGHT4};
 const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
+<<<<<<< HEAD:Firmware/GPAD_API/GPAD_API/GPAD_API.ino
+=======
+//Aley network
+// const char* ssid = "Home";
+// const char* password = "adt@1963#";
+
+//Maryville network
+// const char* ssid = "VRX";
+// const char* password = "textinsert";
+
+//Houstin network
+// const char* ssid = "DOS_WIFI";
+// const char* password = "$Suve07$$";
+
+// Austin network
+// const char* ssid = "readfamilynetwork";
+// const char* password = "magicalsparrow96";
+
+
+>>>>>>> fix/318-lcd-detection-test:Firmware/GPAD_API/GPAD_API.ino
 // MQTT Broker
 const char *mqtt_broker_name = "public.cloud.shiftr.io";
 const char *mqtt_user = "public";

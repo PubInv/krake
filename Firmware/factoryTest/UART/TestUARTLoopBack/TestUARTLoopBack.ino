@@ -10,7 +10,9 @@ This program demonstrates use of all three UARTs on the ESP32.
 
 Modified by Robert L. Read to perform a loop back, Dec. 15, 2024
 Modified to make UART 1 pins GPIO 2 and 5 by Forrest Lee Erickson, Dec. 16, 2024
-Modified to add UART 2 on pins GPIO 16 and 17 by Forrest Lee Erickson, Dec. 16, 2024
+Modified to add UART 2 on pins GPIO 16 and 17 by of UART1 by Nagham Kheir, Jan. 1, 2026
+
+
 **/
 
 // Define TX and RX pins for UART (change if needed)
@@ -63,7 +65,7 @@ void setup() {
 void loop() {
 
   while (mySerialUART1.available()) {
-    Serial.println("Bytes Available UART1! :");
+    // Serial.println(" Bytes Available UART1!"); // coomented out Nagham 20260101
     Serial.write(mySerialUART1.read());
   }
 
