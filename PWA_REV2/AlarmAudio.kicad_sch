@@ -2175,7 +2175,7 @@
     (property "Value" " SWITCH_TACTILE_Projected_12mmx12mm_7.3mm_SPST-NO_0.05A_24V" (at 92.71 78.74 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Footprint" "GeneralPurposeAlarmDevicePCB:SW_PUSH-12mm_WithCap_Green" (at 97.79 78.74 0)
+    (property "Footprint" "GeneralPurposeAlarmDevicePCB:SW_PUSH-12mm_WithGPAD_KeyCap" (at 97.79 78.74 0)
       (effects (font (size 1.524 1.524)) (justify left) hide)
     )
     (property "Datasheet" "https://eu.mouser.com/datasheet/3/39/1/en-b3f.pdf" (at 97.79 76.2 0)
