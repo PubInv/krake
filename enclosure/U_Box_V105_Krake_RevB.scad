@@ -56,7 +56,7 @@ LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
-HEAT_SET_INSERTS     = 0;
+HEAT_SET_INSERTS     = 1;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
 GPAD_TshellDoorRecess = 1; // turn on/off recessed area when krake Tshell is on 
@@ -869,13 +869,13 @@ module TShellWithVESA() {
             }
         }
 //        translate([Length/2,Width/2,Height+0.2]) 
-        translate([Length/2,Width/2,35]) 
+        translate([Length/2-35,Width/2,35]) 
         VESApunch75(stud_height_mm+15,h_offset_mm);
     }
 
     // Note: The Coque is not centered on the origin,
     // so we have to do some math for that....
-    translate([Length/2,Width/2,Height+0.2]) 
+    translate([Length/2-35,Width/2,Height+0.2]) 
     color("blue"){
         VESAmount75(stud_height_mm,h_offset_mm);
     }
@@ -896,23 +896,32 @@ if(GPAD_TShell==1){
     }
     
     
-    if(GPAD_TShellWithVESA == 1){
+if(GPAD_TShellWithVESA == 1){
     difference(){
     TShellWithVESA();
-            translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
+         translate([Length/2-35,Width/2,Height+0.15])
+            rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
         
         }
-        
-if (GPAD_TshellDoorRecess == 1)
-    translate([0,Width,Height+0.2])
-translate([34,32,40+0.2]){rotate([180,0,90]){difference(){cover_unit();
+    }
+    
+    
+    
+if (GPAD_TshellDoorRecess == 1){
+    translate([Length/2 +70,Width/2-36.33,Height+0.25]){ 
+ {rotate([180,0,90]){difference(){cover_unit(); 
     translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+ 
+
 }
 translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+  
     }
 }}
 
-translate([0,Width,Height+0.2]) recessed_module();
+ translate([-34,-32,-40.2]) recessed_module();
+  
+}
     
 }
 
@@ -933,7 +942,7 @@ if(HEAT_SET_INSERTS==1){
     hsd = half_stud_distance_mm;
     insert_height = 6;
     #color("gray")
-    translate([Length/2,Width/2,Height+0.2]) 
+    translate([Length/2-35,Width/2,Height+0.2]) 
 //    translate([0,0,insert_height/2+1])
     translate([0,0, 0+1])
     union() {
@@ -1163,29 +1172,15 @@ if(PWA_KRAKE==1){
     translate([3*Thick+2  + translationVariable,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
         rotate([0,0,90])translate([0,0,PCBThick-0.2]);
     translate([(3*Thick)+2,Thick+5,Thick+FootHeight+PCBThick/2-.1])
-    {
+    {   
         echo(Thick+FootHeight+PCBThick/2-.1)
         rotate([0,0,90])translate([-55.88,17.78,0])
         color(Couleur3)
         import("KRAKE_PWArev2.stl", convexity=3);
-        //%cube ([PCBLength,PCBWidth,PCBThick]);
-        //translate([PCBLength/2,PCBWidth/2,0]){ 
-        //color("Olive")
-        //%text("PCB", halign="center", valign="center", font="Arial black");
+       
     }}
 }
-/*
-  translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
-
-  rotate([0,0,90])translate([0,0,PCBThick-0.2])import("General Alarm Device Enclosure-GeneralPurposeAlarmDevicePCB 1.stl", convexity=3);
-  %cube ([PCBLength,PCBWidth,PCBThick]);
-  translate([PCBLength/2,PCBWidth/2,0]){ 
-  color("Olive")
-  %text("PCB", halign="center", valign="center", font="Arial black");
-  }
-  } // Fin PCB 
-  }
-*/
+ 
 
 // Panneau avant - Front panel  <<<<<< Text and holes only on this one.
 //rotate([0,-90,-90]) 
@@ -1214,11 +1209,7 @@ module frontPanel(){
 
 // This is a 2mm screw that connects the BShell to the TShell.
 if (T_BShellScrew==1){
-    //translate([3*Thick+11,-1,Height/2+4]){
-    // rotate([90,0,0])
-    // import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
-    //}
-
+   
 
     union(){ //sides holes
         $fn=50;
@@ -1363,13 +1354,13 @@ module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
 
 
 module recessed_module(){
-translate([0,0,9-recess_height])cover_slot();
-reccessed_bottom_f(R_height = recess_height);
-translate([0,0,9-recess_height])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height = 4.57);
+ translate([0,0,-Height+59])cover_slot();
+reccessed_bottom_f(R_height = Height-50);
+translate([0,0,-Height+59])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height =10);
 
-translate([0,0,9-recess_height])difference(){
-   reccesed_f();
-      translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
+translate([0,0,-Height+59])difference(){
+  reccesed_f();
+     # translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
     translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
     translate([AC_button_x+8,AC_button_y,26.5])
       {
