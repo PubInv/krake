@@ -16,8 +16,18 @@
 // https://www.thingiverse.com/thing:5849866
 include <StudModules.scad>
 
+use <COVER.scad>
+use <recessed.scad>
 
 
+    
+ACB_x = 38.77-5;
+ACB_y = 42.44;
+ACB_z = 40;
+AC_button_x = 38.77;
+AC_button_y = 44.44;
+
+recess_height = 9;
 
 KrakeEnclosureVersion = 0.1; // change this with each rev
 
@@ -30,23 +40,23 @@ GPAD  = 0;      // [0:Off, 1:On]
 ////////////////////////////////////////////////////////////////////
 
 GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 1;
+GPAD_TShellWithVESA  = 1; // Krake TShell 
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
-BButton              = 0 ;
+BButton              = 0;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
 T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;
+PWA_KRAKE            = 1;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
-
+GPAD_TshellDoorRecess = 0; // turn on/off recessed area when krake Tshell is on 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
@@ -56,7 +66,7 @@ Width          = 138 + 13;
 Height         = 40;  
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
-Resolution     = 50;                   // Filet smoothness
+Resolution     = 10;                   // Filet smoothness
 m              = 0.9;                  // Panel/rail tolerance
 PCBFeet        = 1;                    // Enable PCB feet
 Vent           = 1;                    // Enable vents
@@ -776,8 +786,25 @@ module TShellWithVESA() {
 // #VESApunch75(stud_height_mm);
 }
 
-if(GPAD_TShellWithVESA==1){
+if(GPAD_TShellWithVESA == 1){
+    difference(){
     TShellWithVESA();
+            translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
+        
+        }
+    
+translate([34,32,40+0.2]){rotate([180,0,90]){difference(){cover_unit();
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+}
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+    }
+}}
+
+if(GPAD_TshellDoorRecess)
+    {
+        recessed_module();
+    }
+
 }
 
 if(GPAD_TShell==1){
@@ -932,7 +959,9 @@ if(PCB_SIMPLE==1){
         }
     } // Fin PCB 
 }
+
 if(PWA_GPAD==1){
+
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
     translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
 
@@ -947,11 +976,12 @@ if(PWA_GPAD==1){
 
 if(PWA_KRAKE==1){
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
-    translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
-        rotate([0,0,90])translate([0,0,PCBThick-0.2]);
+    translate([(3*Thick)+2,Thick+5,Thick+FootHeight+PCBThick/2-.1])
+    {
+        echo(Thick+FootHeight+PCBThick/2-.1)
         rotate([0,0,90])translate([-55.88,17.78,0])
         color(Couleur3)
-        import("KRAKE_PWArev1.stl", convexity=3);
+        import("KRAKE_PWArev2.stl", convexity=3);
         //%cube ([PCBLength,PCBWidth,PCBThick]);
         //translate([PCBLength/2,PCBWidth/2,0]){ 
         //color("Olive")
@@ -1031,3 +1061,39 @@ if (T_BShellScrew==1){
 }//fin de sides holes
 
 
+module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
+    $fn=Resolution;            
+    
+    
+   translate([f,f,0]) minkowski()
+{
+  cube([Length-(2*f),Width-(2*f),Height-1]);
+  cylinder(r=f,h=1,false);
+}
+    
+}// End of RoundBox Module
+
+
+
+module recessed_module(){
+translate([0,0,9-recess_height])cover_slot();
+reccessed_bottom_f(R_height = recess_height);
+translate([0,0,9-recess_height])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height = 4.57);
+
+translate([0,0,9-recess_height])difference(){
+   reccesed_f();
+      translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
+    translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
+    translate([AC_button_x+8,AC_button_y,26.5])
+      {
+          cube([17,35,3]);
+          
+          }  
+          
+          translate([45.2,48,0])cube([20.2,4,50]);
+      }      
+  }
+module mp3_player(){
+translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
+    }
+    
