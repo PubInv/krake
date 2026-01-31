@@ -41,8 +41,7 @@ Krake_rev2_76mmSPK= 1;  // 76 mm / 3 inch speaker
 
 //
 
-GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 0; // Krake TShell 
+GPAD_TShell          = 1;
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -61,7 +60,7 @@ HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
 GPAD_TshellDoorRecess = 1; // turn on/off recessed area when krake Tshell is on 
-
+ GPAD_TShellWithVESA  = 1; // Krake TShell 
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -884,26 +883,7 @@ module TShellWithVESA() {
 // #VESApunch75(stud_height_mm);
 }
 
-if(GPAD_TShellWithVESA == 1){
-    difference(){
-    TShellWithVESA();
-            translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
-        
-        }
-    
-translate([34,32,40+0.2]){rotate([180,0,90]){difference(){cover_unit();
-    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
-}
-translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
-    }
-}}
 
-if(GPAD_TshellDoorRecess)
-    {
-        recessed_module();
-    }
-
-}
 
 if(GPAD_TShell==1){
     // Coque haut - Top Shell
@@ -914,6 +894,29 @@ if(GPAD_TShell==1){
             }
         }
     }
+    
+    
+    if(GPAD_TShellWithVESA == 1){
+    difference(){
+    TShellWithVESA();
+            translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
+        
+        }
+        
+if (GPAD_TshellDoorRecess == 1)
+    translate([0,Width,Height+0.2])
+translate([34,32,40+0.2]){rotate([180,0,90]){difference(){cover_unit();
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+}
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+    }
+}}
+
+translate([0,Width,Height+0.2]) recessed_module();
+    
+}
+
+    
 }
 
 module centeredHeatSetInsert() {
