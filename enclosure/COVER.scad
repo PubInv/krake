@@ -8,7 +8,7 @@ use <latch.scad>
 
 module test_locking(){
     difference(){
-translate([6,-83,-25])import("Testpiece.stl",convexity=10);
+translate([6,-83,-25])#import("Testpiece.stl",convexity=10);
 
 difference(){
 translate([0,0,-15])cylinder(h = 30, r = 50);
@@ -28,8 +28,6 @@ cover_thickness = 2.1;
 Resolution = 50;
 
 
-translate([cover_length-16.8,cover_width/2+5,0])rotate([90,0,0])lock(w = 10,h =4.8,h2 = 8, l = 15,tip=0.5);
-
 
 module lock(w,h,h2,l,tip){
 
@@ -40,10 +38,9 @@ linear_extrude(l)polygon(points);
 //cover_unit();
 
 difference(){cover_unit();
-    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 35, r = 7.9);
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
 }
-translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
-    
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])scale([1.05,1.05,1])test_locking();
     }
 
 module round_hull(r,w)
@@ -217,6 +214,8 @@ rotate([90,0,0])translate([3.5,4,0])drafted_pin(3+0.15,2+0.15);
 //scale([1,1,1.04])translate([0,0,-0.05])
 color("green"){cover(cover_width,cover_length,cover_thickness);}
 }
+
+translate([cover_length-16.8,cover_width/2+5,0])rotate([90,0,0])lock(w = 10,h =4.8,h2 = 8, l = 15,tip=0.5);
 
 
 

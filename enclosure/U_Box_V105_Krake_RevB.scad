@@ -41,7 +41,7 @@ GPAD  = 0;      // [0:Off, 1:On]
 
 GPAD_TShell          = 0;
 GPAD_TShellWithVESA  = 1; // Krake TShell 
-GPAD_TshellDoorRecess = 0; // turn on/off recessed area when krake Tshell is on 
+GPAD_TshellDoorRecess = 1; // turn on/off recessed area when krake Tshell is on 
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -51,7 +51,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;
+PWA_KRAKE            = 1;
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -794,7 +794,12 @@ if(GPAD_TShellWithVESA == 1){
         
         }
     
-translate([34,32,40+0.2])rotate([180,0,90])cover_unit();
+translate([34,32,40+0.2]){rotate([180,0,90]){difference(){cover_unit();
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+}
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+    }
+}}
 
 if(GPAD_TshellDoorRecess)
     {
