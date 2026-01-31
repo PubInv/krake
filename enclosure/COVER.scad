@@ -1,9 +1,25 @@
 
 $fs = 0.1;
 
-$fn =100;
+$fn =30;
 
 use <latch.scad>
+
+
+module test_locking(){
+    difference(){
+translate([6,-83,-25])import("Testpiece.stl",convexity=10);
+
+difference(){
+translate([0,0,-15])cylinder(h = 30, r = 50);
+translate([0,0,-16])cylinder(h = 35, r = 8);
+}
+//translate([-25,-59,-50])cube([50,50,100]);
+    }
+//cube([29,17.6,50],true); // this cube for cutout
+
+}
+
 
 
 cover_length = 80;
@@ -11,7 +27,24 @@ cover_width = 35;
 cover_thickness = 2.1;
 Resolution = 50;
 
- cover_unit();
+
+translate([cover_length-16.8,cover_width/2+5,0])rotate([90,0,0])lock(w = 10,h =4.8,h2 = 8, l = 15,tip=0.5);
+
+
+module lock(w,h,h2,l,tip){
+
+points = [[0,0],[0,h],[-h2,h+h2],[-h2,h+h2+tip],[w,h+h2+tip],[w,0]];
+linear_extrude(l)polygon(points);
+}
+
+//cover_unit();
+
+difference(){cover_unit();
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 35, r = 7.9);
+}
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+    
+    }
 
 module round_hull(r,w)
 {
@@ -94,7 +127,7 @@ translate([0,width/2,0])
  
  }
         
-module cover_unit(){
+module cover_unit2(){
 
 difference(){union(){
 union()
@@ -156,6 +189,43 @@ module locking(w = 1, h = 1)
 {
     points = [[-5,0],[-5,h],[h,h],[0,0]];
     rotate_extrude(angle = 180)translate([w,0,0])mirror([1,0,0])polygon(points);
+
+}
+
+
+
+module cover_unit(){
+
+difference(){union(){
+union()
+{
+    
+translate([-15,-10,0]) cube([cover_length+7,cover_width+20,2.1]);
+translate([-2,-10,2])cube([10,10,6.5]);    
+
+}
+translate([0,cover_width,0])mirror([0,1,0]){translate([-2,-10,2])cube([10,10,6.5]);}
+}
+door_back_gap = 0.4;
+translate([-door_back_gap,0,0])cube([door_back_gap,cover_width,3]);
+
+translate([0.5,35,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
+rotate([90,0,0])translate([3.5,4,0])drafted_pin(3+0.15,2+0.15);
+
+
+
+//scale([1,1,1.04])translate([0,0,-0.05])
+color("green"){cover(cover_width,cover_length,cover_thickness);}
+}
+
+
+
+    
+
+translate([0.5,0.25,0])color("blue"){cover(cover_width-0.5,cover_length-1.2,cover_thickness);}
+
+
+
 
 }
 
