@@ -41,7 +41,6 @@ GPAD  = 0;      // [0:Off, 1:On]
 
 GPAD_TShell          = 0;
 GPAD_TShellWithVESA  = 1; // Krake TShell 
-GPAD_TshellDoorRecess = 1; // turn on/off recessed area when krake Tshell is on 
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -57,7 +56,7 @@ LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
-
+GPAD_TshellDoorRecess = 0; // turn on/off recessed area when krake Tshell is on 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
