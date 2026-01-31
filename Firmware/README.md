@@ -1,9 +1,16 @@
-# Libraries to Install
+# Summary 
+These files are for firmware (for the most part into ESP32).
+The GPAD_API is the firmware which will ship in the Krake.
+Other files are for factory test / troubele shooting or were developed during to evaluate and understand hardware.
 
-We normally build the Firmware with the Arduino IDE.
+## Userfull link for compairing firmware branches
+Jump to compareing on Github various commits.
+https://github.com/PubInv/krake/compare
 
-The board should be set to "ESP32 Dev Module".
+## Arduino IDE Settings and Libraries to Install
+The IDE setting for board should be set to "ESP32 Dev Module".
 
+Although we are migrating to VSCode and PlatformIO, For developing Firmware with the Arduino IDE the following libraries are required.
 A number of libraries must be installed.  This is an incomplete list:
 * ElegantOTA v. 3.1.7 by Ayush Sharma
 * ESP AsyncWebServer by ESP32Async
@@ -11,7 +18,8 @@ A number of libraries must be installed.  This is an incomplete list:
 
 (There are many other more common libraries.)
 
-Note: We use the Random Nerd Tutorials tutorial: [https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/](https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/) which gives instructions for changing 
+## Caution, Must Modify a Library
+We use the Random Nerd Tutorials tutorial: [https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/](https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/) which gives instructions for changing 
 the value of ELEGANTOTA_USE_ASYNC_WEBSERVER in ElegantOTA.h.
 
 This value needs to be set to 1:

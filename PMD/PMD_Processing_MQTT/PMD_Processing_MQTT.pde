@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.31 ";
+String VERSION = "V0.32 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -33,6 +33,8 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20250107 Rev 0.28.  Add test 't' sends "a1Test with CR and LF\r\n" to reproduceing  Unexpected characters at the end of the alarm message, GPAD API 0.22 #131
 // Date: 20250115 Rev 0.29.  Add test 'e' and 'f' for Robert Status in Discord.
 // Date: 20250201 Rev 0.30.  Spaces to formate date and time and ID in message.
+// Date: 20251225 Rev 0.32.  Publish with retain = true.  void client.publish(String topic, byte[] payload, int qos, boolean retained);
+
 
 
 
@@ -64,7 +66,7 @@ void setupDictionary() {
   mac_to_NameDict.set("142B2FEB1E24", "KRAKE_LB0004");
   mac_to_NameDict.set("F024F9F1B880", "KRAKE_LB0005");
   
- 
+  mac_to_NameDict.set("F4650BC0B52C", "KRAKE_US0006");
   mac_to_NameDict.set("ECC9FF7D8EE8", "KRAKE_US0005");
   mac_to_NameDict.set("ECC9FF7D8EF4", "KRAKE_US0004");
   mac_to_NameDict.set("ECC9FF7C8C98", "KRAKE_US0003");

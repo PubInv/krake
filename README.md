@@ -1,3 +1,6 @@
+## [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
+
+
 # Krake™   
 Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
 ![image](https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07)
@@ -5,11 +8,34 @@ Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Kr
 Krake is an **annunciator** meant to alert a human to something needing attention.
 
 The Krake has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer Inventional Coach Lee Erickson.
+[Mentorship and Teamwork: The Story of the Krake.](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
 
-## Inventory 
-URL https://nk25719.github.io/krakeFactory/factory-form.html
+
+# Use Cases
+
+Our intention is that the Krake will be used to inform human operators of alarm conditions they need to know about.
+
+One use case is of an elderly person living alone, whose loved ones which to monitor them.
+For example, a person might have a Krake mounted on the wall in their home, which alerts them to a drop in blood pressure or if they have fallen.
+We intend to be compatible with the HL7 medical standard in order to be as valuable as possible.
+A separate project, the ADaM project, implements Alarm Dialog Managment. It is the ADaM project that will decide when a sensed condition should raise an alarm.
+
+Although some of this functionality could and should be done with smartphones, there are valuable reasons to have a dedicated hardware anunciator.
+
+A second use case is to use the Krake as a dedicated alarm device for a sophisticate medical instruments, such as the PolyVent ventilator made by Public Invention.
+In this case, the Krake serves the essential need of alarming life-threatenign mechanical failures, such as a hose disconnet. It is still the case that some algorithm must decided what to raise as an alarm.
+We hope to systematize that decision in the open-source ADaM project.
+
+## Krake Test and Assembly procedure Document
+Instructions to test the subassembly units when received from the manufacturer. And instructions to add additional components to the subassembly PCB_KRAKE_REV2.0 to build the final assembly of PWA into an enclosure. URL: [Krake Test and Assembly procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919) 
+
+
+## Inventory
+[Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
 DataBase for krake units and tests registeries. 
 
+## GDT records 
+[Asset History Records Public Invention Krake Rev. 2](https://gosqas.org/record/8CMgkfrS4ufevweKy1QowF) GLobal Open Source Quality Assuring System.
 
 # Wi-Fi enablement
 It will connect as a station to a Wi-Fi local area network.
