@@ -29,7 +29,7 @@ AC_button_y = 44.44;
 
 recess_height = 9;
 
-KrakeEnclosureVersion = 0.1; // change this with each rev
+KrakeEnclosureVersion = 2.1; // change this with each rev
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
@@ -42,7 +42,7 @@ Krake_rev2_76mmSPK= 1;  // 76 mm / 3 inch speaker
 //
 
 GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 1; // Krake TShell 
+GPAD_TShellWithVESA  = 0; // Krake TShell 
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -60,12 +60,9 @@ SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
-
-///////////////// speakers //////////
-//SoundLabSPK = 1;
+GPAD_TshellDoorRecess = 1; // turn on/off recessed area when krake Tshell is on 
 
 
-GPAD_TshellDoorRecess = 0; // turn on/off recessed area when krake Tshell is on 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
@@ -1173,7 +1170,7 @@ if(PWA_KRAKE==1){
         //color("Olive")
         //%text("PCB", halign="center", valign="center", font="Arial black");
     }}
-//}
+}
 /*
   translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
 
@@ -1201,7 +1198,8 @@ if(GPAD_BPanL==1){
 }
 
 // Module Section
-// RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
+ //RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution =50);
+
 module frontPanel(){
     difference() {
         Coque();
