@@ -7,6 +7,7 @@ use <latch.scad>
 
 
 module test_locking(){
+    //  the source link for the Testpiece.stl file https://www.thingiverse.com/thing:3660535/remixes
     difference(){
 translate([6,-83,-25])import("Testpiece.stl",convexity=10);
 
