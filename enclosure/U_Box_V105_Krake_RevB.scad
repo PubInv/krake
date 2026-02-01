@@ -19,7 +19,7 @@ include <StudModules.scad>
 
 
 
-KrakeEnclosureVersion = 0.1; // change this with each rev
+KrakeEnclosureVersion = 2.1; // change this with each rev
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
