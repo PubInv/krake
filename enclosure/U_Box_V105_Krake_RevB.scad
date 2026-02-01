@@ -95,10 +95,10 @@ Vent_width     = 1.5;
 
 ///////// recess paramters //////////
 R_height = Krake_76mmSPK_56h? Height -53: 9;
-button_pins_height = Krake_76mmSPK_56h? 8.75  : 6.75;
+button_pins_height = Krake_76mmSPK_56h? 8.85  : 6.85;
 
-Door_recess_x_offset = 71;
-Door_recess_y_offset = 36.5;
+Door_recess_x_offset = Krake_rev2_76mmSPK? 71 : -6.3;
+Door_recess_y_offset = Krake_rev2_76mmSPK? 36.5 : 36.5;
 ///////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////
