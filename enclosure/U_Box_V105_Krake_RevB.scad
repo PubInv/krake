@@ -18,16 +18,14 @@ include <StudModules.scad>
 
 use <COVER.scad>
 use <recessed.scad>
-
+use <slot.scad>
+use <flex_cover.scad>
 
     
-ACB_x = 38.77-5;
-ACB_y = 42.44;
-ACB_z = 40;
+
 AC_button_x = 38.77;
 AC_button_y = 44.44;
 
-recess_height = 9;
 
 KrakeEnclosureVersion = 2.1; // change this with each rev
 
@@ -56,11 +54,19 @@ LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
-HEAT_SET_INSERTS     = 1;
+HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
-GPAD_TshellDoorRecess = 1; // turn on/off recessed area when krake Tshell is on 
- GPAD_TShellWithVESA  = 1; // Krake TShell 
+GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
+GPAD_TShellWithVESA  = 1; // Krake TShell 
+
+recessed_module_on_off = 1; // turn on/off the recess moduel only
+
+//// recess sub modules when recess module is on///
+sd_door_on_off = 1;
+recessed_wall_on_off = 1;
+recessed_bottom_on_off = 1;
+//////////////////////////////
 
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
@@ -87,6 +93,13 @@ PCBFeet        = 1;                    // Enable PCB feet
 Vent           = 1;                    // Enable vents
 Vent_width     = 1.5;
 
+///////// recess paramters //////////
+R_height = Krake_76mmSPK_56h? Height -53: 9;
+button_pins_height = Krake_76mmSPK_56h? 8.75  : 6.75;
+
+Door_recess_x_offset = 71;
+Door_recess_y_offset = 36.5;
+///////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////
 // PCB Parameters - Common
@@ -884,32 +897,37 @@ module TShellWithVESA() {
 }
 
 
-
 if(GPAD_TShell==1){
-    // Coque haut - Top Shell
-    translate([0,Width,Height+0.2]){
-        color( Couleur1,1){
-            rotate([0,180,180]){
-                Coque();
+    
+    difference(){
+    if(GPAD_TShellWithVESA == 1){
+        TShellWithVESA();
+        }
+    else
+    {
+        // Coque haut - Top Shell
+        translate([0,Width,Height+0.2]){
+            color( Couleur1,1){
+                rotate([0,180,180]){
+                    Coque();
+                }
             }
         }
-    }
-    
-    
-if(GPAD_TShellWithVESA == 1){
-    difference(){
-    TShellWithVESA();
-         translate([Length/2-35,Width/2,Height+0.15])
-            rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
         
-        }
     }
+    if (GPAD_TshellDoorRecess == 1){
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
+        
+    }}
+    
     
     
     
 if (GPAD_TshellDoorRecess == 1){
-    translate([Length/2 +70,Width/2-36.33,Height+0.25]){ 
- {rotate([180,0,90]){difference(){cover_unit(); 
+    
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
+        
+ rotate([180,0,90]){difference(){cover_unit(); 
     translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
  
 
@@ -917,15 +935,18 @@ if (GPAD_TshellDoorRecess == 1){
 translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
   
     }
-}}
+}
 
- translate([-34,-32,-40.2]) recessed_module();
-  
 }
     
 }
 
     
+}
+
+
+if(recessed_module_on_off == 1){
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
 }
 
 module centeredHeatSetInsert() {
@@ -1352,26 +1373,57 @@ module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
 }// End of RoundBox Module
 
 
-
 module recessed_module(){
- translate([0,0,-Height+59])cover_slot();
-reccessed_bottom_f(R_height = Height-50);
-translate([0,0,-Height+59])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height =10);
+    translate([0,0,-R_height+9]){
+        if (sd_door_on_off == 1){
+            translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);
+            }
+        if(recessed_bottom_on_off == 1)cover_slot();
+    
+        }
+    if(recessed_wall_on_off == 1)reccessed_bottom_f(R_height = R_height);
+    if(recessed_bottom_on_off == 1){
+    translate([0,0,-R_height+9])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height =button_pins_height);
 
-translate([0,0,-Height+59])difference(){
-  reccesed_f();
-     # translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
-    translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
-    translate([AC_button_x+8,AC_button_y,26.5])
-      {
-          cube([17,35,3]);
-          
-          }  
-          
-          translate([45.2,48,0])cube([20.2,4,50]);
-      }      
+    translate([0,0,-R_height+9])difference(){
+        reccesed_f();
+        translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
+        translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
+        translate([AC_button_x+8,AC_button_y,26.5])
+        {
+            cube([17,35,3]);
+        }  
+            translate([45.2,48,10])cube([20.2,4,50]);
+       
+        }      
+      
+    }
+        
   }
+  
+  
 module mp3_player(){
 translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
     }
     
+
+
+module cover_slot() {
+ gap = -10;
+slot_w = 1.3;
+slot_h = 3;
+slot_t = 0.5;
+slot_l = 50;
+
+difference(){union(){
+translate([55.3,90,25.5]){
+
+mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+
+}
+}
+translate([45.2,48,0])cube([20.2,4,50]);
+  
+} 
+}
