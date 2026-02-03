@@ -18,29 +18,28 @@ include <StudModules.scad>
 
 use <COVER.scad>
 use <recessed.scad>
-
+use <slot.scad>
+use <flex_cover.scad>
 
     
-ACB_x = 38.77-5;
-ACB_y = 42.44;
-ACB_z = 40;
+
 AC_button_x = 38.77;
 AC_button_y = 44.44;
 
-recess_height = 9;
 
-KrakeEnclosureVersion = 0.1; // change this with each rev
+KrakeEnclosureVersion = 2.1; // change this with each rev
 
 /* Project Selector */
-Krake = 1;      // [0:Off, 1:On]
+Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
 GPAD  = 0;      // [0:Off, 1:On]
-
+Krake_rev2_76mmSPK= 1;  // 76 mm / 3 inch speaker
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
 
-GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 1; // Krake TShell 
+//
+
+GPAD_TShell          = 1;
 GPAD_BShell          = 0;
 GPAD_FPanL           = 0;
 GPAD_BPanL           = 0;
@@ -50,20 +49,42 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;
+PWA_KRAKE            = 1;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
-GPAD_TshellDoorRecess = 0; // turn on/off recessed area when krake Tshell is on 
+SPKLid               = 0;
+Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
+GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
+GPAD_TShellWithVESA  = 1; // Krake TShell 
+
+recessed_module_on_off = 1; // turn on/off the recess moduel only
+
+//// recess sub modules when recess module is on///
+sd_door_on_off = 1;
+recessed_wall_on_off = 1;
+recessed_bottom_on_off = 1;
+//////////////////////////////
+
 ////////////////////////////////////////////////////////////////////
 // Common Parameters - Base settings shared by all configurations
 ////////////////////////////////////////////////////////////////////
+// speaker parameters
+SpeakerDiameter_mm= Krake_rev2_76mmSPK? 78 : 27; 
+SpeakerRadius_mm=SpeakerDiameter_mm/2;
+SpeakerHeight_mm = Krake_rev2_76mmSPK ? 40 : 0; 
+ 
+ 
 
-Length         = 83.82 + 13;       
-Width          = 138 + 13;                     
-Height         = 40;  
+
+translationVariable = Krake_rev2_76mmSPK ? 4 * SpeakerHeight_mm -5: 0 ;
+////////////////////////////////////////////////////////////////////
+
+Length         = 83.82 + 13 +translationVariable;  //x axis    
+Width          = 138 + 13; //y axis axis            
+Height         = Krake_76mmSPK_56h? 90 + SpeakerHeight_mm/2 : 40 + SpeakerHeight_mm/2; //z axis was 40
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
 Resolution     = 10;                   // Filet smoothness
@@ -72,11 +93,19 @@ PCBFeet        = 1;                    // Enable PCB feet
 Vent           = 1;                    // Enable vents
 Vent_width     = 1.5;
 
+///////// recess paramters //////////
+R_height = Krake_76mmSPK_56h? Height -53: 9;
+button_pins_height = Krake_76mmSPK_56h? 8.85  : 6.85;
+
+Door_recess_x_offset = Krake_rev2_76mmSPK? 71 : -6.3;
+Door_recess_y_offset = Krake_rev2_76mmSPK? 36.5 : 36.5;
+///////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////
 // PCB Parameters - Common
 ////////////////////////////////////////////////////////////////////
 
-PCBPosX        = 0;
+PCBPosX        = 0 + translationVariable;
 PCBPosY        = 0;
 PCBLength      = 83.82;
 PCBWidth       = 137.16;
@@ -103,37 +132,48 @@ Couleur3       = "Green";
 Dec_Thick      = Vent ? Thick * 2 : Thick;
 Dec_size       = Vent ? Thick * 2 : 0.8;
 
+////////////////////////////////////////////////////////////////////
+// Speaker location parameters
+////////////////////////////////////////////////////////////////////
+SpeakerPositionX = Length/4;
+SpeakerPositionY =Width/2;
+SpeakerPositionZ = 0-Thick;
 
+SpeakerHolePosX =Thick+m/2 -FootHeight;
+SpeakerHolePosY = SpeakerPositionY;
+SpeakerHolePosZ = SpeakerPositionZ+ SpeakerDiameter_mm/2;
+Angle_deg =90;
 
 //Modifications for Display
-DisplayXpos = PCBLength-50.8;
+DisplayXpos = PCBLength-50.8  + translationVariable;
 DisplayYpos = 71.12;
 DisplayLenght = 26;
 DisplayWidth = 76;
 DisplayFilet = 0;
 
-//Modificationd for muteButton
-muteButtonXpos = PCBLength-10;
+//Modifications for muteButton
+muteButtonXpos = PCBLength-10  + translationVariable;
 muteButtonYpos = 31.75;
 muteButtonDiameter = 15;
 
 //Modifications for SpeakerHole
 SpeakerHoleY = Krake ? PCBWidth*.769 : 15.24;
-SpeakerHoleX = Krake ? PCBLength*.815 :PCBLength - 15.24;
+SpeakerHoleX = translationVariable + ( Krake ? PCBLength*.815 :PCBLength - 15.24 );
 
 //Parameters for LEDHole
 LEDspacing = 12.7 ;
-LEDYposOffset = 15.24 ; // offset from the Encoder edge of PCB
-LEDXposOffset = 27.94 ; // offset from the connector edge of PCB
+LEDYposOffset = 15.24  ; // offset from the Encoder edge of PCB
+LEDXposOffset = 27.94  ; // offset from the connector edge of PCB
 
 
 // Krake Modifications for RotaryEncodeHole
 i=-1; // Encoder is one LEd spacing below LEDs
-RotaryEncoderXpos      = Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0;
+RotaryEncoderXpos      =  translationVariable +( Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : 0 );
 RotaryEncoderYpos      = Krake ? 15.24 : 0;
 RotaryEncoderDiameter  = Krake ? 16 : 0;
 
 // Connectors Modifications specific port logic
+//if krake true x: y; i.e if krake on, usbbon =0, aka off
 USBbOn    = Krake ? 0 : 1;
 USBcOn    = Krake ? 1 : 0;
 DE9On     = Krake ? 1 : 0;
@@ -142,6 +182,29 @@ RJ12On    = Krake ? 1 : 1;
 DCOn      = Krake ? 1 : 1;
 //DE9SquareHole      = Krake ? 1 : 0;
 
+
+speaker_clamp = Krake ? 0 : 1;
+grill_pattern = Krake ? 0 : 1;
+SpeakerEnclosure  = Krake ? 0 : 1;
+SpeakerCutOut  = Krake ? 0 : 1;
+ SPKBOSS62 = Krake ? 0 : 0;
+SPKBOSSpunch62 = Krake ? 0 : 0;
+
+USBbOn    = Krake_rev2_76mmSPK ? 0 : 1;
+USBcOn    = Krake_rev2_76mmSPK ? 1 : 0;
+DE9On     = Krake_rev2_76mmSPK ? 1 : 0;
+I2COn     = Krake_rev2_76mmSPK ? 0 : 1;
+RJ12On    = Krake_rev2_76mmSPK ? 1 : 1;
+DCOn      = Krake_rev2_76mmSPK ? 1 : 1;
+speaker_clamp = Krake_rev2_76mmSPK ? 1 : 0;
+grill_pattern = Krake_rev2_76mmSPK ? 1 : 0;
+SpeakerEnclosure  = Krake_rev2_76mmSPK ? 1 : 0;
+SpeakerCutOut  = Krake_rev2_76mmSPK ? 1 : 0;
+ SPKBOSS62 = Krake_rev2_76mmSPK ? 1 : 0;
+SPKBOSSpunch62 = Krake_rev2_76mmSPK ? 1 : 0;
+
+ 
+
 if (Krake + GPAD > 1)
     echo("WARNING: More than one project mode active!!!");
 
@@ -149,7 +212,7 @@ if (Krake + GPAD > 1)
 
 // Import 3mm Plastite Screw
 if(BOSSScrew ==1){
-    translate ([PCBLength-70.74,12.24,25])
+    translate ([PCBLength-70.74,12.24,25]) //is this just to reposition the screw to the correct place?, where are these numbers from?
     //translate ([0,0,FootHeight+ScrewLenght+1])
     import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
@@ -175,6 +238,8 @@ module RoundBox($a=Length, $b=Width, $c=Height){// Cube bords arrondis
         }
     }
 }// End of RoundBox Module
+//strange cube sizing to mitigate the fact after minkowski the box would get larger as addition of cylinder size plus cube size thus desired length/2, desired width - 2 times the extra added because of the cylinder
+//confused on the translate and rotate requirements , when you rotate it it drops below the line so you need to translate it up to keep it on the right plane, the rotate means the cylinder is on the longest edge off the cube
 
 
 ////////////////////////////////// - Module Coque/Shell - //////////////////////////////////         
@@ -185,6 +250,7 @@ module Coque(){//Coque - Shell
         difference(){//sides decoration
             union(){    
                 difference() {//soustraction de la forme centrale - Substraction Fileted box
+                //??unsure why subtracting a fileted box after subtracting a cube
                     difference(){//soustraction cube median - Median cube slicer
                         union() {//union               
                             difference(){//Coque    
@@ -303,12 +369,51 @@ if(SPK==1){
 
     import("Speaker2W-SpeakerOutline.stl");
 }
+module grill_pattern() {
 
-module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
+translate ([SpeakerPositionX,SpeakerPositionY,SpeakerPositionZ]){
+wall_thickness = 2;
+grill_bar_width = 1;
+    // The pattern consists of intersecting cubes (bars)
+  scale (1.2){ 
+   union() {
+        // Horizontal bars (along X-axis)
+        for (i = [-SpeakerDiameter_mm/2 : (grill_bar_width + wall_thickness) : SpeakerDiameter_mm/2]) {
+            translate([i, 0, 0])
+                cube([grill_bar_width, SpeakerDiameter_mm, Thick + 1], center=true);
+        }
+        // Vertical bars (along Y-axis)
+        for (j = [-SpeakerDiameter_mm/2 : (grill_bar_width + wall_thickness) : SpeakerDiameter_mm/2]) {
+            translate([0, j, 0])
+                cube([SpeakerDiameter_mm, grill_bar_width, Thick + 1], center=true);
+        }
+    }
+}
+}
+}
+
+module SpeakerHexGrill(Krake_rev2_76mmSPK, Cx, Cy, Cdia=SpeakerDiameter_mm*1.5, h=Thick, cell=6, wall=1){
+   
+   if (Krake_rev2_76mmSPK == 1)
+    translate([Cx, Cy, 0])
+    intersection(){
+        cylinder(d=Cdia*0.95, h=h, $fn=100);
+
+        for (x=[-Cdia/2:cell:Cdia/2])
+            for (y=[-Cdia/2:cell:Cdia/2])
+                translate([x + (y%2)*cell/2, y*0.866, 0])
+                    difference(){
+                        cylinder(r=cell/2, h=h, $fn=6);
+                        cylinder(r=(cell/2)-wall, h=h+0.2, $fn=6);
+                    }
+    }
+}
+
+
+module SpeakerHole(Krake_rev2_76mmSPK,Cx,Cy,Cdia,Ccenter=false){
     //difference(){
-    if(OnOff==1)
-        
-        translate([Cx ,Cy ,-1]){
+    if(Krake_rev2_76mmSPK==1)
+                  translate([Cx ,Cy ,-1]){
             for(j = [1  : 3]){
 
                 rotate(a = 360*j/3,v = [0,0,1])
@@ -318,11 +423,15 @@ module SpeakerHole(OnOff,Cx,Cy,Cdia,Ccenter=false){
 
                     cylinder(d=i*.65,h = 10, $fn=100,center=Ccenter);
                     //echo(i);
-
-
-                }
+               }
             }
-        }}
+          
+        }
+       
+        }
+    
+  
+       
 {// Parameters
     speaker_diameter = 25.5; // mm
     speaker_thickness = 5; // mm (adjust if needed)
@@ -389,8 +498,8 @@ module LedSpacer(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){
 }
 
 //Speaker Holder
-module SpeakerHolder(OnOff,Cx,Cy,Cdia,Ccenter=false){ 
-    if(OnOff==1){
+module SpeakerHolder(Krake_rev2_76mmSPK,Cx,Cy,Cdia,Ccenter=false){ 
+    if(Krake_rev2_76mmSPK==1){
         translate([Cx,Cy,-Thick])
         difference(){
             cylinder(d=Cdia+Thick,10, $fn=50,center=Ccenter);
@@ -757,6 +866,7 @@ module VESApunch75(stud_height_mm,h_offset_mm) {
         cylinder(h=sh,r=radius,center = false);
         }
 }
+
 module TShellWithVESA() {
     stud_height_mm = 7.8;
 
@@ -772,13 +882,13 @@ module TShellWithVESA() {
             }
         }
 //        translate([Length/2,Width/2,Height+0.2]) 
-        translate([Length/2,Width/2,35]) 
+        translate([Length/2-35,Width/2,35]) 
         VESApunch75(stud_height_mm+15,h_offset_mm);
     }
 
     // Note: The Coque is not centered on the origin,
     // so we have to do some math for that....
-    translate([Length/2,Width/2,Height+0.2]) 
+    translate([Length/2-35,Width/2,Height+0.2]) 
     color("blue"){
         VESAmount75(stud_height_mm,h_offset_mm);
     }
@@ -786,42 +896,64 @@ module TShellWithVESA() {
 // #VESApunch75(stud_height_mm);
 }
 
-if(GPAD_TShellWithVESA == 1){
-    difference(){
-    TShellWithVESA();
-            translate([34.5,32.5,40])rotate([180,0,90])translate([-15,-10,-1]) cube([80+2,35+19,5]);
-        
-        }
-    
-translate([34,32,40+0.2]){rotate([180,0,90]){difference(){cover_unit();
-    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
-}
-translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
-    }
-}}
-
-if(GPAD_TshellDoorRecess)
-    {
-        recessed_module();
-    }
-
-}
 
 if(GPAD_TShell==1){
-    // Coque haut - Top Shell
-    translate([0,Width,Height+0.2]){
-        color( Couleur1,1){
-            rotate([0,180,180]){
-                Coque();
+    
+    difference(){
+    if(GPAD_TShellWithVESA == 1){
+        TShellWithVESA();
+        }
+    else
+    {
+        // Coque haut - Top Shell
+        translate([0,Width,Height+0.2]){
+            color( Couleur1,1){
+                rotate([0,180,180]){
+                    Coque();
+                }
             }
         }
+        
     }
+    if (GPAD_TshellDoorRecess == 1){
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
+        
+    }}
+    
+    
+    
+    
+if (GPAD_TshellDoorRecess == 1){
+    
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
+        
+ rotate([180,0,90]){difference(){cover_unit(); 
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+ 
+
+}
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+  
+    }
+}
+
+}
+    
+}
+
+    
+}
+
+
+if(recessed_module_on_off == 1){
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
 }
 
 module centeredHeatSetInsert() {
     translate([0,-60.05,0])
    import( "flanged insert M4 D7.1 H9.11.stl",convexity=1);
 }
+
 
 if(HEAT_SET_INSERTS==1){
 
@@ -831,7 +963,7 @@ if(HEAT_SET_INSERTS==1){
     hsd = half_stud_distance_mm;
     insert_height = 6;
     #color("gray")
-    translate([Length/2,Width/2,Height+0.2]) 
+    translate([Length/2-35,Width/2,Height+0.2]) 
 //    translate([0,0,insert_height/2+1])
     translate([0,0, 0+1])
     union() {
@@ -850,17 +982,76 @@ if(HEAT_SET_INSERTS==1){
         }
 
 }
-if(GPAD_BShell==1){
-    // Coque bas - Bottom shell
+
+
+module SPKBOSS62(stud_height_mm,h_offset_mm) {
+    // A VESA mount for D 75mm
+    // from Wikipedia https://en.wikipedia.org/wiki/Flat_Display_Mounting_Interface
+    // D 75mm	MIS-D, 75, C	75	75
+    
+    // First, I will create the 4 studs in the correct
+    // (square) pattern
+    stud_distance_mm = 62;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    
+    sh = stud_height_mm;
+    translate([0,0,sh-h_offset_mm])
+        union() {
+            rotate([180,0,0])
+            translate([hsd,hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([hsd,-hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([-hsd,hsd,0])
+                m4_stud(0,0,sh,0);
+            rotate([180,0,0])
+            translate([-hsd,-hsd,0])
+                m4_stud(0,0,sh,0);
+        }
+}
+module SPKBOSSpunch62(stud_height_mm,h_offset_mm) {
+//    sh = stud_height_mm +2; // addin length for cutting
+    sh = stud_height_mm + -2; // addin length for cutting
+    radius = 4.5; // just a guess!
+    
+    stud_distance_mm = 60;
+    sd = stud_distance_mm;
+    half_stud_distance_mm = sd/2;
+    hsd = half_stud_distance_mm;
+    translate([0,0,sh-h_offset_mm])
+    union() {
+        rotate([180,0,0])
+        translate([hsd,hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([hsd,-hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([-hsd,hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        rotate([180,0,0])
+        translate([-hsd,-hsd,0])
+        cylinder(h=sh,r=radius,center = false);
+        }
+}
+ module GPAD_BShell () { 
+   // Coque bas - Bottom shell
     i=0;
+    difference(){
+    difference (){
+    union () {
     
-    speaker_clamp();
-    
+        union(){
+   // speaker_clamp(); 
     difference(){
         color(Couleur1,1){
             union(){ 
                 Coque();
-                translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
+               translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
                 // Pied support PCB - PCB feet
 
                 if (PCBFeet==1){// Feet
@@ -878,10 +1069,10 @@ if(GPAD_BShell==1){
                 //(On/Off, Xpos, Ypos, Diameter)
 
 
-                for ( i = [0 : 4] ){
-                    CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1  
+                for ( i = [-12.25:-8.25] ){
+                    CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1 , switch signs to move downwards ??Question
                 }
-                CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
+              //CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power //??Question extra?
 
                 //(On/Off, Xpos,Ypos,Length,Width,Filet)
                 SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
@@ -895,13 +1086,17 @@ if(GPAD_BShell==1){
             }}
         color( Couleur1,1){
             translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
-                //(On/Off, Xpos, Ypos, Diameter)
-                SpeakerHole(1,SpeakerHoleX,SpeakerHoleY,11,Ccenter=true); //Buzzer
-                for ( i = [0 : 4] ){
-
-                    CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1  
-                }
-                CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power
+              //  (On/Off, Xpos, Ypos, Diameter)
+             
+              SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY:SpeakerHoleY ,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer // Speaker 
+            
+            
+            
+            
+     //LED hole generator  unsure why this works   ??Question repeated commented to avoid confusion    
+                //for ( i = [0 : 0] ){                    //CylinderHole(1,PCBLength-(27.94+12.7*i),15.24,5); //LED1-5  
+              //  }
+                CylinderHole(1,PCBLength-46.99+translationVariable,PCBWidth-FootPosX,5); //LED6 power light ??Question delete extra
 
                 //(On/Off, Xpos,Ypos,Length,Width,Filet)
                 SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
@@ -917,9 +1112,33 @@ if(GPAD_BShell==1){
                 //   // SquareHole(1,PCBLength-63.87,33.12,1,1,0,Ccenter=true);       //testing 
             }
         }
-
+SpeakerCutOut();
     }
+    translate ([-5,0,0])
+    SpeakerHexGrill(Krake_rev2_76mmSPK,SpeakerPositionX, SpeakerPositionY);
+        }
+    
+SpeakerEnclosure();
 }
+    CableHole();
+    }
+ AllScrewPockets ();
+}
+    }
+ 
+
+/// SPKBOSS62 and SPKBOSSpunch62 integration w Speaker 62mm hole to hole
+if(GPAD_BShell==1){
+difference (){
+GPAD_BShell();
+translate ([SpeakerPositionX+5,SpeakerPositionY+8,Thick+7.8+.1])
+SPKBOSSpunch62 (7.8,7.8);
+
+}
+translate ([SpeakerPositionX+5,SpeakerPositionY+8,Thick+7.8+.1])
+SPKBOSS62 (7.8,7.8);
+}
+
 if(RotaryEncoder ==1){
     //RotaryEncoder
     translate( [3*Thick+2,Thick+5,0])     
@@ -930,9 +1149,6 @@ if(BButton ==1){
     translate( [3*Thick+2,Thick+5,0])     
     ButtonSwitch(1,muteButtonXpos,muteButtonYpos,muteButtonDiameter); //Mute Button
 }
-
-
-
 if(LED_Standoff == 1){
     //(OnOff,Cx,Cy,Cdia,Cpitch,Cheight,Ccenter=false){ 
     translate( [3*Thick+2,Thick+5,5]){//([-.5,0,0]){
@@ -944,7 +1160,6 @@ if(LED_Standoff == 1){
         LedSpacer(1,PCBLength-46.99,PCBWidth-FootPosX,5,2.54,Thick+FootHeight+PCBThick/2+.1-6,false); //LED6 power
     }
 }
-
 if(PCB_SIMPLE==1){
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
     translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
@@ -973,33 +1188,20 @@ if(PWA_GPAD==1){
         }
     } // Fin PCB 
 }
-
 if(PWA_KRAKE==1){
     //////////////////// - PCB only visible in the preview mode - /////////////////////    
+    translate([3*Thick+2  + translationVariable,Thick+5,Thick+FootHeight+PCBThick/2-.1]){
+        rotate([0,0,90])translate([0,0,PCBThick-0.2]);
     translate([(3*Thick)+2,Thick+5,Thick+FootHeight+PCBThick/2-.1])
-    {
+    {   
         echo(Thick+FootHeight+PCBThick/2-.1)
         rotate([0,0,90])translate([-55.88,17.78,0])
         color(Couleur3)
         import("KRAKE_PWArev2.stl", convexity=3);
-        //%cube ([PCBLength,PCBWidth,PCBThick]);
-        //translate([PCBLength/2,PCBWidth/2,0]){ 
-        //color("Olive")
-        //%text("PCB", halign="center", valign="center", font="Arial black");
+       
     }}
-//}
-/*
-  translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
-
-  rotate([0,0,90])translate([0,0,PCBThick-0.2])import("General Alarm Device Enclosure-GeneralPurposeAlarmDevicePCB 1.stl", convexity=3);
-  %cube ([PCBLength,PCBWidth,PCBThick]);
-  translate([PCBLength/2,PCBWidth/2,0]){ 
-  color("Olive")
-  %text("PCB", halign="center", valign="center", font="Arial black");
-  }
-  } // Fin PCB 
-  }
-*/
+}
+ 
 
 // Panneau avant - Front panel  <<<<<< Text and holes only on this one.
 //rotate([0,-90,-90]) 
@@ -1014,10 +1216,9 @@ if(GPAD_BPanL==1){
     Panel(Length,Width,Thick,Filet);
 }
 
-
-
 // Module Section
-// RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
+ //RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution =50);
+
 module frontPanel(){
     difference() {
         Coque();
@@ -1029,11 +1230,7 @@ module frontPanel(){
 
 // This is a 2mm screw that connects the BShell to the TShell.
 if (T_BShellScrew==1){
-    //translate([3*Thick+11,-1,Height/2+4]){
-    // rotate([90,0,0])
-    // import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
-    //}
-
+   
 
     union(){ //sides holes
         $fn=50;
@@ -1061,6 +1258,108 @@ if (T_BShellScrew==1){
 }//fin de sides holes
 
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+/////////// speaker expansion Courtney ////////////
+//consider port location and access holes      
+    
+module SpeakerEnclosure (){
+
+module SpeakerBoxKnife(){
+    if (Krake_rev2_76mmSPK == 1)
+translate ([SpeakerPositionX+4+Thick*5, SpeakerPositionY,Height/4-Thick]){
+    cube ([1.6*SpeakerDiameter_mm-10,SpeakerDiameter_mm*1.5-10, Height*2], center=true);
+    }}
+    
+ module SpeakerBoxOuter (){
+     if (Krake_rev2_76mmSPK == 1)
+difference (){ 
+    translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,Height/4+Thick+10]){
+    cube ([1.6*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+10, SpeakerHeight_mm+5], center=true);
+        }
+        SpeakerBoxKnife();
+    }
+  }
+  
+  module SpeakerShelf (){
+      if (Krake_rev2_76mmSPK == 1)
+  translate ([SpeakerPositionX +SpeakerHeight_mm + 10, SpeakerPositionY,SpeakerHeight_mm/2-Thick]){
+  cube ([5,SpeakerDiameter_mm*1.5, 3*SpeakerHeight_mm/4], center=true);
+  }
+  }
+  union (){
+  SpeakerShelf();
+  SpeakerBoxOuter();
+  }
+  
+     }
+ 
+module SpeakerCutOut () {
+    if (Krake_rev2_76mmSPK == 1)
+translate ([SpeakerPositionX+Thick*5+45, SpeakerPositionY-52.5,-10]){
+cube ([15,SpeakerDiameter_mm*1.25+5,Height]);
+  }
+  }
+  
+ ///////////////screw parameters///////////////////
+   ScrewDiameter=2.2;
+   ScrewLength=5+Thick;
+   Spacing=100;
+ module ScrewPocket(){
+     if (Krake_rev2_76mmSPK == 1)
+cylinder (d=ScrewDiameter,h=ScrewLength+Thick,center=true);
+}
+
+module AllScrewPockets (){
+    if (Krake_rev2_76mmSPK == 1)
+translate([SpeakerPositionX + Thick*5 + 5,
+               SpeakerPositionY,
+               Height/4 + Thick + 10 - (Height-10)/2]) {
+
+        part_x = 1.6*SpeakerDiameter_mm;
+        part_y = SpeakerDiameter_mm*1.5 + 10;
+        part_z = Height - 10;
+
+        edge_offset = 4;   // distance from edges to hole center (mm)
+
+        x = part_x/2 - edge_offset;
+        y = part_y/2 - edge_offset;
+
+        // 4 corner holes
+        translate([ x,  y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+        translate([-x,  y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+        translate([ x, -y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+        translate([-x, -y, Height-ScrewLength-Thick]) 
+            ScrewPocket();
+    }
+}
+ 
+module SpeakerBoxLid(){
+    if (Krake_rev2_76mmSPK == 1)
+difference (){
+    translate ([SpeakerPositionX+Thick*5+5, SpeakerPositionY,SpeakerHeight_mm-ScrewLength]){
+        cube ([1.6*SpeakerDiameter_mm,       SpeakerDiameter_mm*1.5+10, Thick], center=true);
+        }
+    AllScrewPockets();
+    }
+}
+
+if (SPKLid==1){
+SpeakerBoxLid();
+}
+
+module CableHole() {
+    if (Krake_rev2_76mmSPK == 1)
+    translate ([1.8*SpeakerDiameter_mm,SpeakerDiameter_mm,3*SpeakerHeight_mm/4]){
+        rotate ([0,90,0]){
+            cylinder (d=10,h=Thick*5,center=true);
+            }
+        }
+    }
+
 module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
     $fn=Resolution;            
     
@@ -1074,26 +1373,57 @@ module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
 }// End of RoundBox Module
 
 
-
 module recessed_module(){
-translate([0,0,9-recess_height])cover_slot();
-reccessed_bottom_f(R_height = recess_height);
-translate([0,0,9-recess_height])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height = 4.57);
+    translate([0,0,-R_height+9]){
+        if (sd_door_on_off == 1){
+            translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);
+            }
+        if(recessed_bottom_on_off == 1)cover_slot();
+    
+        }
+    if(recessed_wall_on_off == 1)reccessed_bottom_f(R_height = R_height);
+    if(recessed_bottom_on_off == 1){
+    translate([0,0,-R_height+9])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height =button_pins_height);
 
-translate([0,0,9-recess_height])difference(){
-   reccesed_f();
-      translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
-    translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
-    translate([AC_button_x+8,AC_button_y,26.5])
-      {
-          cube([17,35,3]);
-          
-          }  
-          
-          translate([45.2,48,0])cube([20.2,4,50]);
-      }      
+    translate([0,0,-R_height+9])difference(){
+        reccesed_f();
+        translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
+        translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
+        translate([AC_button_x+8,AC_button_y,26.5])
+        {
+            cube([17,35,3]);
+        }  
+            translate([45.2,48,10])cube([20.2,4,50]);
+       
+        }      
+      
+    }
+        
   }
+  
+  
 module mp3_player(){
 translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
     }
     
+
+
+module cover_slot() {
+ gap = -10;
+slot_w = 1.3;
+slot_h = 3;
+slot_t = 0.5;
+slot_l = 50;
+
+difference(){union(){
+translate([55.3,90,25.5]){
+
+mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+
+}
+}
+translate([45.2,48,0])cube([20.2,4,50]);
+  
+} 
+}

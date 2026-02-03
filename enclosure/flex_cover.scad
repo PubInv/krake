@@ -21,7 +21,9 @@ n = 21;
 l = 30;
 t = 0.3;
 h =1.5;
-flexiable_cover(n,l,h,g,t);
+
+//flexiable_cover(n,l,h,g,t);
+  flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);      
 module flexiable_cover(n,l,h,g,t) {
   union(){
 

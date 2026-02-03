@@ -14,8 +14,9 @@ use <slot.scad>
 
 //translate([AC_button_x,AC_button_y,25])button_cap_S(5.175,5,60);
 
-translate([33,32,40])rotate([180,0,90])cover_unit();
-cover_slot();
+//translate([33,32,40])rotate([180,0,90])cover_unit();
+//cover_slot();
+/*
 module cover_slot() {
  
 translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);
@@ -36,6 +37,7 @@ translate([45.2,48,0])cube([20.2,4,50]);
   
 } 
 }
+*/
 w_p = 2;
 h_p = 50;
 l_p = 0.5;
@@ -101,7 +103,7 @@ module hh(){
 
 }
 difference(){
-    hh();
+   // hh();
 //cube([50,50,50]);
 }
 //reccesed_f();
@@ -109,7 +111,7 @@ difference(){
 difference()
 {
 union(){
-reccessed_bottom_f();
+//reccessed_bottom_f();
 //reccesed_f();
 }    
  //cube([500,60,80]);   
@@ -134,12 +136,11 @@ rotate([0,180,0])translate([-70.5,43,-38]){translate([-0.1,0.1,0])snap(snap_h,sn
     }
     
 }
-    
+    //add_supp_snap();
     module add_supp_snap(){
     difference(){
     translate([30.5,38,27])supp_snap();
-translate([under_r_x-0.001,under_r_y+15,under_r_z-r_h+3])translate([2,25,5.5])scale([1.15,1.05,1.15])translate([-2,-25,-5.5])snap(snap_h,snap_w,40,snap_l,2);
-          translate([28.8,38,24])cube([2,50,2]);
+translate([under_r_x-0.001,under_r_y+15,under_r_z-r_h-5])translate([2,25,5.5])scale([1.15,1.05,1.15])translate([-2,-25,-5.5])snap(snap_h,snap_w,40,snap_l,2);
         }
     }
         
