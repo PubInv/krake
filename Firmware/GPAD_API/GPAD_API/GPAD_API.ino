@@ -475,7 +475,7 @@ void setup()
   initRotator();
   splashLCD();
 
-  // setupDFPlayer();
+  setupDFPlayer();
   setup_GPAD_menu();
 
 } // end of setup()
