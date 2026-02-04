@@ -322,7 +322,8 @@ Steps:
 - Change the 'baud rate' to 115200
 - Enter '4'- , '5'- , '6' - Speaker into the Serial Monitor
 - After entering 6, the serial monitor will ask for confirmation of audio - enter Y/N to confirm or deny audio and pass or fail test
-  !!enter images of serial monitor output CL
+  <img width="856" height="221" alt="image" src="https://github.com/user-attachments/assets/e23be8e9-5f0f-41c2-9b08-a00cbda09d08" />
+
 
 Finish Assembly: Solder the LCD and LEDs and continue powered testing.
 
