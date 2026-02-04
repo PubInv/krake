@@ -323,7 +323,9 @@ Steps:
 - Enter '4'- , '5'- , '6' - Speaker into the Serial Monitor
 - After entering 6, the serial monitor will ask for confirmation of audio - enter Y/N to confirm or deny audio and pass or fail test
   <img width="856" height="221" alt="image" src="https://github.com/user-attachments/assets/e23be8e9-5f0f-41c2-9b08-a00cbda09d08" />
-
+  
+Video of  upload procedure how to access serial monitor and completion of DF player tests
+https://github.com/user-attachments/assets/768d9384-23f0-49b5-ae81-178c29a44425
 
 Finish Assembly: Solder the LCD and LEDs and continue powered testing.
 
