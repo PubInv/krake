@@ -2303,13 +2303,8 @@
     (property "Distributor 2" "Digikey")
     (property "Distributor 2 PN" "450-1804-ND")
     (property "Family" "Tactile Switches")
-<<<<<<< HEAD
-    (property "MPN" "TE Connectivity 1825910-7")
-    (property "MPN 2" "")
-=======
     (property "MPN" "TE Connectivity 1825910-7,   Dongguan Guangzhu Industrial ")
     (property "MPN 2" "TS6685H-250gf")
->>>>>>> 258-hardware-pwa-mute-switch-needs-correct-keycap-the-openscad-key-cap
     (property "Manufacturer" "TE Connectivity ALCOSWITCH Switches")
     (property "Manufacturer 2" "YE")
     (property "Sheetfile" "PWA_REV2.kicad_sch")
@@ -16191,15 +16186,9 @@
     (property "Cost" "1.6050")
     (property "Description" "250Kbps Transceiver 2/2 SOIC-16 RS232 ICs ROHS MAX3232CDR")
     (property "Distributor 1" "JLCPCB")
-<<<<<<< HEAD
-    (property "Distributor 1 PN" "C354119")
-    (property "MPN" "MAX3232IDWR")
-    (property "MPN 2" "")
-=======
     (property "Distributor 1 PN" "C45843")
     (property "MPN" "MAX3232CDR")
     (property "MPN 2" " MAX3232ID (JLCPCB Part # C354119)")
->>>>>>> 258-hardware-pwa-mute-switch-needs-correct-keycap-the-openscad-key-cap
     (property "Manufacturer" "Texas Instruments")
     (property "Manufacturer 2" "")
     (property "Sheetfile" "RS232.kicad_sch")
@@ -16212,11 +16201,7 @@
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp a1c2f749-256e-4521-ba15-c820d0f18e05)
     )
-<<<<<<< HEAD
-    (fp_text value "MAX3232IDWR" (at 0 6.1) (layer "F.Fab")
-=======
     (fp_text value "MAX3232CDR" (at 0 6.1) (layer "F.Fab")
->>>>>>> 258-hardware-pwa-mute-switch-needs-correct-keycap-the-openscad-key-cap
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 400a59fb-31fe-4524-b9b2-689d1991128a)
     )
