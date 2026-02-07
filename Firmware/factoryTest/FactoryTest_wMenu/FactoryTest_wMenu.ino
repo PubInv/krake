@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "v0.4.2.6"
+#define FIRMWARE_VERSION "v0.4.2.7"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -24,10 +24,12 @@ Revision History:
 | v0.4.2  | 2026-1-1  | N. Kheir      | SPI backloop working and final. DFP debug       |
 |v0.4.2.1 | 2026-1-1  | N. Kheir      | DFplayer cleanup test.                          |
 |v0.4.2.2 | 2026-1-1  | N. Kheir      | SPI cleanup test.                               |
-|v0.4.2.3 | 2026-1-5  | L. Erickson   | Make menu two colums.                           |
+|v0.4.2.3 | 2026-1-5  | L. Erickson   | Make menu two columns.                          |
 |v0.4.2.4 | 2026-1-6  | L. Erickson   | Make volume full, 30.                           |
-|v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                          |
-|v0.4.2.6 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|
+|v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                     |
+|v0.4.2.6 | 2026-1-8  | Yukti         | Fix DFPlayer test to fail cleanly when hardware |
+|         |           |               | is missing; improve error handling              |
+|v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|                      |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -37,10 +39,12 @@ Overview:
   (marks FAIL) and the command runs next.
 - WiFi SSID/PASS input does NOT abort just because SSID starts with A/B/C/D.
   It aborts only when the entire line is exactly one menu key (e.g., "C"+Enter).
+- DFPlayer test now fails cleanly when hardware is missing or unresponsive.
 ------------------------------------------------------------------------------
 Build notes:
 - Adjust pin mapping to match your PCB (especially UART1 pins).
 - If LAMP2 shares DFPlayer BUSY, we skip driving LAMP2 in the LED test.
+- Ensure DF_RXD2 and DF_TXD2 are correctly wired to DFPlayer module.
 ------------------------------------------------------------------------------
 */
 
@@ -109,10 +113,8 @@ static const uint32_t TIMEOUT_MS = 600;
 // DFPlayer bookkeeping + SD cache
 HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
-enum dfState { DF_UNKNOWN,
-               DF_OK,
-               DF_FAIL };
-static bool dfState = DF_UNKNOWN;
+enum dfState_t { DF_UNKNOWN, DF_OK, DF_FAIL };
+static dfState_t dfState = DF_UNKNOWN;
 // SD cache: read file count ONCE during test [5], reuse during test [6]
 static bool g_sdChecked = false;
 static int g_sdFileCount = -999;
@@ -605,84 +607,40 @@ static bool initDFPlayer() {
 
   if (dfState == DF_OK) {
     if (dfPlayerResponding()) return true;
-
-    Serial.println(F("  DFPlayer was OK but no reply now -> clearing cache & re-init..."));
+    Serial.println(F("DFPlayer lost response, clearing cache."));
     clearDFPlayerCache();
   }
 
   if (dfState == DF_FAIL) return false;
 
   Serial.println(F("Initializing DFPlayer (UART2)..."));
+
   pinMode(DF_BUSY_IN, INPUT_PULLUP);
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
   delay(300);
-  dfPlayer.begin(dfSerial, true, true);
-  delay(300);
-  dfPlayer.setTimeOut(1000);  // give replies more time (some modules are slow)
-  delay(300);
-  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
 
-  int version = dfPlayer.available();  //
-  Serial.print("InitDFPlayer, dfPlayer.available(): ");
-  Serial.println(version);
-
-  // doReset=true helps a LOT with SD indexing reliability
   if (!dfPlayer.begin(dfSerial, true, true)) {
-    Serial.println(F("  DFPlayer not detected. Check wiring & power."));
+    Serial.println(F("DFPlayer not detected (begin failed)."));
     dfState = DF_FAIL;
     return false;
   }
 
-  dfPlayer.setTimeOut(1000);  // give replies more time (some modules are slow)
-
-  // Force device selection (important on some clones)
+  dfPlayer.setTimeOut(1000);
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  delay(1200);                     // let TF card mount + index after reset/device select
-  version = dfPlayer.available();  //
-  Serial.print("Afer OutputDevice  InitDFPOlayer, dfPlayer.available(): ");
-  Serial.println(version);
+  delay(1200);
 
-
-  // Optional: verify it actually replies after init
   if (!dfPlayerResponding()) {
-    Serial.println(F("  DFPlayer init done, but still no reply -> FAIL"));
+    Serial.println(F("DFPlayer init completed but no response."));
     dfState = DF_FAIL;
     return false;
   }
 
   dfState = DF_OK;
-  Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
+  Serial.println(F("DFPlayer detected and responding."));
   return true;
 }
-
-
-//  static bool initDFPlayer() {
-//   if (dfState == DF_OK)   return true;
-//   if (dfState == DF_FAIL) return false;
-
-//   Serial.println(F("Initializing DFPlayer (UART2)..."));
-//   pinMode(DF_BUSY_IN, INPUT_PULLUP);
-
-//   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
-//   delay(300);
-
-//   // doReset=true helps a LOT with SD indexing reliability
-//   if (!dfPlayer.begin(dfSerial, true, true)) {
-//     Serial.println(F("  DFPlayer not detected. Check wiring & power."));
-//     dfState = DF_FAIL;
-//     return false;
-//   }else {
-
-//    dfState = DF_OK;
-//    Serial.println(F("  DFPlayer detected and initialized (SD selected)."));
-//   }
-
-//   dfPlayer.setTimeOut(1000);     // give replies more time (some modules are slow)
-//   return true;
-// }
-
-
+  
 // Put this OUTSIDE of runTest_DFPlayer() (global scope).
 // Call it when dfPlayer.available() is true.
 void printDetail(uint8_t type, int value) {
@@ -748,81 +706,33 @@ void printDetail(uint8_t type, int value) {
 
 
 static bool runTest_DFPlayer(bool forceReinit = false) {
-  // If you want live DFPlayer diagnostics, call this elsewhere during waits:
-  // if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
   Serial.println(F("\n[4] DF Player"));
+
   if (forceReinit) {
     clearDFPlayerCache();
   }
 
-  // initDFPlayer();
-  // //Check Mini MP3 Player availability. Works on TD5580A too.
-  // int version = dfPlayer.available();  //
-  // Serial.print("dfPlayer.available(): ");
-  // Serial.println(version);
-
   if (!initDFPlayer()) {
-    Serial.println(F(" DFPlayer initializing Failed (DFPlayer not detected)."));
-    dfState = DF_FAIL;
-    // //Check Mini MP3 Player availability. Works on TD5580A too.
-    delay(1000);
-    int version = dfPlayer.available();  //
-    Serial.print("dfPlayer.available(): ");
-    Serial.println(version);
+    Serial.println(F("DFPlayer test FAIL: module not detected or not responding."));
     return false;
-  } else {
-    // Serial.println(F("\n[6] DFPlayer + Speaker"));
-    Serial.println(F("DFPlayer Mini online."));
-    dfState = DF_OK;
-    int version = dfPlayer.available();  //
-    Serial.print("dfPlayer.available(): ");
-    Serial.println(version);
-    if (dfPlayer.available()) printDetail(dfPlayer.readType(), dfPlayer.read());
   }
 
-
+  Serial.println(F("DFPlayer test PASS: module detected and responding."));
   return true;
-  // Force device selection (important on some clones)
-  dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  delay(1200);  // let TF card mount + index after reset/device select
-
-  bool ok = (dfState);
-  Serial.printf("DFPLAYER Initialized: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
-  return ok;
 }
 
 static bool runTest_SD() {
   Serial.println(F("\n[5] SD (DFPlayer card)"));
 
-  // reset SD cache each time test [5] runs (so it stays consistent per run)
-  // g_sdChecked   = false;
-  // g_sdFileCount = -999;
-
-  g_sdChecked = true;
-  g_sdFileCount = -1;
-
-  // if (!promptYesNo(F("Is the SD card inserted with audio files?"), PROMPT_TIMEOUT_MS, true)) {
-  //   Serial.println(F("SD test: FAIL (operator says SD not inserted)."));
-  //   g_sdChecked   = true;
-  //   g_sdFileCount = -1;
-  //   return false;
-  // }
-
-  initDFPlayer();
-
-  //Check Mini MP3 Player availability. Works on TD5580A too.
-  int version = dfPlayer.available();  //
-  Serial.print("dfPlayer.available(): ");
-  Serial.println(version);
-
-
-
   if (!initDFPlayer()) {
-    Serial.println(F("SD test: FAIL (DFPlayer not detected)."));
+    Serial.println(F("SD test skipped: DFPlayer not present."));
     g_sdChecked = true;
     g_sdFileCount = -1;
     return false;
   }
+
+  g_sdChecked = true;
+  g_sdFileCount = -1;
 
   Serial.println(F("Reading SD file count (once)..."));
   g_sdFileCount = dfPlayer.readFileCounts();
@@ -840,34 +750,24 @@ static bool runTest_SD() {
     Serial.println(F("SD test: FAIL (no readable files)."));
     return false;
   }
+
   return true;
-
-  bool ok = runTest_SD();
-  Serial.printf("SD test: %s\n", ok ? "PASS" : "FAIL");
-
-  void printDetail(uint8_t type, int value);
 }
 
 static bool runTest_Speaker() {
   Serial.println(F("\n[6] Speaker"));
   Serial.println(F("Playing track #1 for ~3 seconds..."));
 
-  // if (!initDFPlayer()) {
-  //   Serial.println(F("Speaker test: FAIL (DFPlayer not detected)."));
-  //   return false;
-  // }
+  if (dfState != DF_OK) {
+    Serial.println(F("Speaker test FAIL: DFPlayer not present."));
+    return false;
+  }
 
-  // if (!g_sdChecked) {
-  //   Serial.println(F("DFPlayer test requires SD test first."));
-  //   Serial.println(F("Run [5] SD test, then run speaker test."));
-  //   return false;
-  // }
+  if (!g_sdChecked || g_sdFileCount <= 0) {
+    Serial.println(F("Speaker test FAIL: SD not ready or no readable files."));
+    return false;
+  }
 
-  // Serial.printf("  Using cached SD file count = %d\n", g_sdFileCount);
-  // if (g_sdFileCount <= 0) {
-  //   Serial.println(F("No readable SD/files -> NOT playing audio. Speaker test FAIL."));
-  //   return false;
-  // }
   const int VOL = 30;
   dfPlayer.volume(VOL);
   Serial.printf("DFPlayer volume set to: %d\n", VOL);
@@ -876,17 +776,15 @@ static bool runTest_Speaker() {
 
   uint32_t start = millis();
   while (millis() - start < 3000) {
-    // Optional: report DFPlayer events while playing
-    if (dfPlayer.available()) {
-      printDetail(dfPlayer.readType(), dfPlayer.read());
-    }
     delay(10);
   }
 
   dfPlayer.stop();
   delay(200);
 
-  bool ok = promptYesNo(F("Did you hear audio from the speaker?"), PROMPT_TIMEOUT_MS, true);
+  bool ok = promptYesNo(F("Did you hear audio from the speaker?"),
+                        PROMPT_TIMEOUT_MS,
+                        true);
   Serial.printf("Speaker test: %s\n", ok ? "PASS" : "FAIL");
   return ok;
 }
@@ -1049,11 +947,6 @@ static bool runTest_SPI() {
     Serial.println("[SPI] PASS: RJ12 loopback OK");
   }
   return pass;
-
-  Serial.printf("SPI sent 0x%02X, received 0x%02X\n", RX, TX);
-  bool ok = runTest_UART0();
-  Serial.printf("SPI loopback test: %s\n", ok ? "PASS" : "FAIL (check jumper)");
-  return ok;
 }
 
 static bool runTest_RS232() {
@@ -1168,14 +1061,6 @@ static void runAllTests() {
 
   for (int i = 0; i < T_COUNT; ++i) {
     if (g_pendingCmd) break;
-
-    // skip audio play if SD failed
-    if (i == T_DFPLAYER && testResults[T_SD] == false) {
-      Serial.println(F("\n[6] DFPlayer + Speaker"));
-      Serial.println(F("Skipping audio play because SD test FAILED."));
-      testResults[T_DFPLAYER] = false;
-      continue;
-    }
 
     testResults[i] = runSingleTestFromIndex(static_cast<TestIndex>(i));
   }
