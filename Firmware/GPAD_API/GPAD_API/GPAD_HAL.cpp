@@ -427,9 +427,10 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     return;
   }
   Command command = static_cast<Command>(buf[0]);
+  char commandChar = static_cast<char>(command);
 
   serialport->print(F("Command: "));
-  serialport->println(F(command));
+  serialport->printf("%c\n", commandChar);
   switch (command)
   {
   case Command::MUTE:
