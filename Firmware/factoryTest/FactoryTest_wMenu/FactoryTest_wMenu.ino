@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "v0.4.2.5"
+#define FIRMWARE_VERSION "v0.4.2.6"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -27,6 +27,7 @@ Revision History:
 |v0.4.2.3 | 2026-1-5  | L. Erickson   | Make menu two colums.                           |
 |v0.4.2.4 | 2026-1-6  | L. Erickson   | Make volume full, 30.                           |
 |v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                          |
+|v0.4.2.6 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -100,6 +101,8 @@ static const uint8_t TEST_PATTERN[] = {
 // RS-232 (UART1) – IMPORTANT: set these to YOUR PCB pins (via MAX3232)
 const int UART1_TXD1 = 2;   // placeholder safe GPIO
 const int UART1_RXD1 = 15;  // placeholder safe GPIO
+const int UART1_RTS1 = 32;   // placeholder safe GPIO, set as output
+const int UART1_CTS1 = 33;  // placeholder safe GPIO, set as input
 const long UART1_BAUD = 115200;
 static const uint32_t TIMEOUT_MS = 600;
 
@@ -1064,6 +1067,13 @@ static bool runTest_RS232() {
   Serial.println(F("Connected RS-232 TX <-> RX at DB9 (pins 2 and 3) via MAX3232."));
   Serial.printf("Using UART1 TXD=%d, RXD=%d, BAUD=%ld\n", UART1_TXD1, UART1_RXD1, UART1_BAUD);
 
+  //Set up UART1
+  
+  pinMode(UART1_RTS1, OUTPUT);
+  pinMode(UART1_CTS1, INPUT);  // NO pull up required because MAX3232 drives.
+  //digitalWrite(UART1_RTS1, HIGH); // will make CTS at DB9 negative voltage through loop back
+  digitalWrite(UART1_RTS1, LOW); // will make CTS at DB9 positive voltage through loop back
+  
   HardwareSerial rs232(1);
   rs232.begin(UART1_BAUD, SERIAL_8N1, UART1_RXD1, UART1_TXD1);
   delay(150);
@@ -1095,6 +1105,13 @@ static bool runTest_RS232() {
   rs232.end();
 
   // Validate
+  if (HIGH == digitalRead(UART1_CTS1)){
+     Serial.print("[rs232] FAIL: FLOW CONTROL. Expected DB9 pin 7 between 3-18V. ");
+    Serial.println("Tip: ensure rs232 RTS<->CTS loopback plug is installed.");
+    return false;
+  }
+
+
   if (rx.length() != n) {
     Serial.printf("[rs232] FAIL: expected %u bytes, got %u\n",
                   (unsigned)n, (unsigned)rx.length());
@@ -1121,7 +1138,7 @@ static bool runTest_RS232() {
   bool ok = (rx == payload);
   Serial.printf("RS-232 loopback test: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
   return ok;
-}
+}//end runTest_RS232()
 
 // ============================================================================
 // Dispatcher / Run All
