@@ -9,6 +9,7 @@ status: "Draft"
 authors:
   - "Forrest Lee Erickson (BS of Science, Physics)"
   - "Nagham Kheir (BE in Electric and Electronics, emphasis on Biomedical)"
+  - "Courtney Ludick (MEng Biomedical Engineering)"
 ---
 
 # ISO Title Page
@@ -390,13 +391,22 @@ Locator for DB9 pins
 ### Typical results and criteria
 
 Typical passing units in the first batch showed:
+| Test Point | Approximate Reading| 
+|--------:|--------|
+| TP102  | ~ 4.5V ||
+| TP103  | ~ 5V ||
+| 5ESP32  | ~ 5V ||
+| TP100  | ~ 3.3V ||
+| TP202  | ~ 3.3V ||
+| TP109  | ~ 3.3V ||
+| TP401  | ~ 5V ||
+| TP501  | ~ 5V ||
+| TP306  | ~ 5V ||
+| TP405  | ~ 2.5V ||
+| TP201  | ~ 5V ||
+| TP205  | ~ 3.3V ||
+| J701  | ~ 6V ||
 
-- Current draw at J101: approximately 150–190 mA at ~8.3–8.4 V.
-- TP100, 3.3 V at U103 regulator output: approximately 3.29–3.32 V.
-- TP202, V3 on U501: approximately 3.18–3.31 V.
-- TP401, VccLCD supply for U301 and U302: approximately 5.0 V.
-- TP501 Mini MP3 Player supply 5VDFP at C505+: approximately 5.0 V.
-- J701 pin 2 (DB9), charge pump output negative: approximately –5.7 V.
 
 Units that deviate significantly from these ranges require investigation (e.g., reflow of regulators, inspection of shorts or opens on the relevant nets).
 
