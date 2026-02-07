@@ -403,13 +403,16 @@ Units that deviate significantly from these ranges require investigation (e.g., 
 The front panel LEDs provide visual alarm and status indication.
 
 1. Identify the LED footprints on the PCB and the corresponding LED colors (e.g., white vs. red).
-2. For each LED:
+  - 5 white LED's (D201-D205)
+  - 1 red LED - Power ((D103) .
+3. For each LED:
    - Note the flat edge on the plastic body indicating the cathode.
+   - <img width="200" height="210" alt="image" src="https://github.com/user-attachments/assets/baf3bd47-3918-4b86-a1b3-03e3834cc087" />
    - Align the flat edge with the flat indicator on the PCB silkscreen.
    - Insert the LED and ensure consistent height above the PCB (a spacer may be used).
    - Solder the leads.
    - Trim the leads carefully, taking care not to damage nearby transistors or other components.
-3. To avoid mixing LED colors:
+4. To avoid mixing LED colors:
    - Install and solder all white LEDs first, then close and set aside their packaging.
    - Open the red LED packaging only when needed; install, solder, and trim them as a separate step.
 
