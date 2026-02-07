@@ -364,8 +364,9 @@ Additional tests verify that voltage is going through the decoupling resistors t
 1. Connect the bench supply to J101 and set:
    - Voltage: between 8 V and 12 V (test values around 8.3–8.4 V are typical).
    - Current limit: less than 1 A, with 200–300 mA used as an initial safety limit.
-2. Power on the device and note the current draw.
-3. Measure:
+2. Power on the device, measure and record the current draw.
+3. On the serial monitor, run the LCD test to get characters on the LCD. Use test, "2 LCD (I2C)". With a small screw driver, adjust RV301 the CONTRAST poetntiometer for good character constrast. The current draw typicaly increases by about 0.02 Amps.
+4. Measure and record:
    - TP102, Vin into the +5V regulator U101.
    - TP103, +5 V from the +5V regulator U101.
    - Test point "5esp32" the input to the 3.3 V regulator (U103 input).
