@@ -284,12 +284,15 @@ Test Points for Unpowered Tests
 - +5 V (TP103) to GND should also appear non-shorted and capacitive, often in the kiloohm range due to load network.
 - V3 and Controller V\(_\mathrm{CC}\) should be non-shorted and may show a few hundred ohms due to on-board circuitry.
 
-Example measurements for units US0001–US0005 showed:
-
-- Vin to GND: >10–14 MΩ.
-- +5 V to GND: approximately 1.09–1.12 kΩ.
-- V3 to GND: approximately 280–350 Ω.
-- Controller V\(_\mathrm{CC}\) to GND: >10–15 MΩ.
+Example measurements for units showed:
+| Test Point | Approximate Reading| 
+|--------:|--------|
+| TP102 -TP101  | > 10MΩ ||
+| TP103–TP101   | 1.09–1.12 kΩ.||
+| TP201–TP101  | 1.00–1.15 kΩ. ||
+| TP202–TP101  | 280–350 Ω ||
+| TP100–TP101  | >10–15 MΩ ||
+| TP302–TP101  | OL ||
 
 If any unit shows significantly lower resistance than these ranges, the board should be inspected and reworked before power is applied.
 
@@ -329,30 +332,6 @@ Video of  upload procedure how to access serial monitor and completion of DF pla
 https://github.com/user-attachments/assets/768d9384-23f0-49b5-ae81-178c29a44425
 
 Finish Assembly: Solder the LCD and LEDs and continue powered testing.
-
-## LCD mounting
-
-1. A quantity of four, nylon 1/8" spacers are placed at the four corners of the LCD sub module. One spacer may need to be trimmed to clear the roatary encoder.
-2. Place the LCD module onto its header footprint, ensuring correct orientation.
-3. Four 4-40 x 3/8" screws with 4-40 x 3/16" nuts go through both boards and are torqued to 3.4 - 4.8 Inch-Pounds. Hold the nut with an approprate wrench or nut driver.
-4. Solder the LCD header pins to the PCB while maintaining the LCD flat and level.
-![HeaderToLCD.jpg](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/HeaderToLCD.jpg)  
- Soldering the LCD pins on the header.
-
-## LED installation
-
-The front panel LEDs provide visual alarm and status indication.
-
-1. Identify the LED footprints on the PCB and the corresponding LED colors (e.g., white vs. red).
-2. For each LED:
-   - Note the flat edge on the plastic body indicating the cathode.
-   - Align the flat edge with the flat indicator on the PCB silkscreen.
-   - Insert the LED and ensure consistent height above the PCB (a spacer may be used).
-   - Solder the leads.
-   - Trim the leads carefully, taking care not to damage nearby transistors or other components.
-3. To avoid mixing LED colors:
-   - Install and solder all white LEDs first, then close and set aside their packaging.
-   - Open the red LED packaging only when needed; install, solder, and trim them as a separate step.
 
 ## Powered DC measurements
 
@@ -409,6 +388,31 @@ Typical passing units in the first batch showed:
 
 
 Units that deviate significantly from these ranges require investigation (e.g., reflow of regulators, inspection of shorts or opens on the relevant nets).
+
+## LCD mounting
+
+1. A quantity of four, nylon 1/8" spacers are placed at the four corners of the LCD sub module. One spacer may need to be trimmed to clear the roatary encoder.
+2. Place the LCD module onto its header footprint, ensuring correct orientation.
+3. Four 4-40 x 3/8" screws with 4-40 x 3/16" nuts go through both boards and are torqued to 3.4 - 4.8 Inch-Pounds. Hold the nut with an approprate wrench or nut driver.
+4. Solder the LCD header pins to the PCB while maintaining the LCD flat and level.
+![HeaderToLCD.jpg](https://github.com/PubInv/general-purpose-alarm-device/blob/main/Hardware/Documentation/HeaderToLCD.jpg)  
+ Soldering the LCD pins on the header.
+
+## LED installation
+
+The front panel LEDs provide visual alarm and status indication.
+
+1. Identify the LED footprints on the PCB and the corresponding LED colors (e.g., white vs. red).
+2. For each LED:
+   - Note the flat edge on the plastic body indicating the cathode.
+   - Align the flat edge with the flat indicator on the PCB silkscreen.
+   - Insert the LED and ensure consistent height above the PCB (a spacer may be used).
+   - Solder the leads.
+   - Trim the leads carefully, taking care not to damage nearby transistors or other components.
+3. To avoid mixing LED colors:
+   - Install and solder all white LEDs first, then close and set aside their packaging.
+   - Open the red LED packaging only when needed; install, solder, and trim them as a separate step.
+
 
 # Operation instructions
 
