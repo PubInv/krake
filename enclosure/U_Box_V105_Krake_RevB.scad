@@ -14,7 +14,19 @@
 // https://www.thingiverse.com/thing:5849866
 include <StudModules.scad>
 
-KrakeEnclosureVersion = 2.5; // change this with each rev
+use <COVER.scad>
+use <recessed.scad>
+use <slot.scad>
+use <flex_cover.scad>
+
+    
+
+AC_button_x = 38.77;
+AC_button_y = 44.44;
+
+
+KrakeEnclosureVersion = 2.6; // change this with each rev
+
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
@@ -25,6 +37,15 @@ if (Krake + GPAD > 1)
     echo("WARNING: More than one project mode active!!!");
 ////////////////////////////////////////////////////////////////////
 // Export Options
+////////////////////////////////////////////////////////////////////
+
+//
+
+GPAD_TShell          = 1;
+GPAD_BShell          = 0;
+GPAD_FPanL           = 0;
+GPAD_BPanL           = 0;
+BButton              = 0;
 GPAD_TShell          = 0;
 GPAD_TShellWithVESA  = 0; //1 back of unit
 GPAD_BShell          = 1; //2 w/LCD 
@@ -44,6 +65,18 @@ PWA                  = 0;
 SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
+Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
+GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
+GPAD_TShellWithVESA  = 1; // Krake TShell 
+
+recessed_module_on_off = 1; // turn on/off the recess moduel only
+
+//// recess sub modules when recess module is on///
+sd_door_on_off = 1;
+recessed_wall_on_off = 1;
+recessed_bottom_on_off = 1;
+//////////////////////////////
+
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
 // Connectors Modifications specific port logic
@@ -86,11 +119,20 @@ Width          = 138 + 13; //y axis axis
 Height         = Krake_76mmSPK_56h? 48 + SpeakerHeight_mm/2 : 28 + SpeakerHeight_mm/2; //z axis was 40
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
-Resolution     = 50;                   // Filet smoothness
+Resolution     = 10;                   // Filet smoothness
 m              = 0.9;                  // Panel/rail tolerance
 PCBFeet        = 1;                    // Enable PCB feet
 Vent           = 1;                    // Enable vents
 Vent_width     = 1.5;
+
+///////// recess paramters //////////
+R_height = Krake_76mmSPK_56h? Height -53: 9;
+button_pins_height = Krake_76mmSPK_56h? 8.85  : 6.85;
+
+Door_recess_x_offset = Krake_rev2_76mmSPK? 71 : -6.3;
+Door_recess_y_offset = Krake_rev2_76mmSPK? 36.5 : 36.5;
+///////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////
 // PCB Parameters - Common
 PCBPosX        = 0 + translationVariable;
@@ -635,20 +677,23 @@ module TShellWithVESA() {
 stud_height_mm = 7.8;
 
 //    h_offset_mm = 1;
-h_offset_mm = 7.8;  //Set flush with Top.
-// Coque haut - Top Shell
-difference() {
-translate([0,Width,Height+0.2]){
-color( Couleur1,1){
-    rotate([0,180,180]){
-        Coque();
+    h_offset_mm = 7.8;  //Set flush with Top.
+        // Coque haut - Top Shell
+    difference() {
+        translate([0,Width,Height+0.2]){
+            color( Couleur1,1){
+                rotate([0,180,180]){
+                    Coque();
+                }
+            }
+        }
+//        translate([Length/2,Width/2,Height+0.2]) 
+        translate([Length/2-35,Width/2,35]) 
+        VESApunch75(stud_height_mm+15,h_offset_mm);
     }
 }
 }
-//        translate([Length/2,Width/2,Height+0.2]) 
-translate([Length/2,Width/2,35]) 
-VESApunch75(stud_height_mm+15,h_offset_mm);
-}
+ 
 
 // Note: The Coque is not centered on the origin,
 // so we have to do some math for that....
@@ -657,22 +702,67 @@ color("blue"){
 VESAmount75(stud_height_mm,h_offset_mm);
 }
 
+    // Note: The Coque is not centered on the origin,
+    // so we have to do some math for that....
+    translate([Length/2-35,Width/2,Height+0.2]) 
+    color("blue"){
+        VESAmount75(stud_height_mm,h_offset_mm);
+    }
+    
 // #VESApunch75(stud_height_mm);
 }
 
-if(GPAD_TShellWithVESA==1){
-TShellWithVESA();
-}
 
 if(GPAD_TShell==1){
-// Coque haut - Top Shell
-translate([0,Width,Height+0.2]){
-color( Couleur1,1){
-rotate([0,180,180]){
-    Coque();
+    
+    difference(){
+    if(GPAD_TShellWithVESA == 1){
+        TShellWithVESA();
+        }
+    else
+    {
+        // Coque haut - Top Shell
+        translate([0,Width,Height+0.2]){
+            color( Couleur1,1){
+                rotate([0,180,180]){
+                    Coque();
+                }
+            }
+        }
+        
+    }
+    if (GPAD_TshellDoorRecess == 1){
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
+        
+    }}
+    
+    
+    
+    
+if (GPAD_TshellDoorRecess == 1){
+    
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
+        
+ rotate([180,0,90]){difference(){cover_unit(); 
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+ 
+
 }
+translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+  
+    }
 }
+
 }
+    
+}
+
+    
+}
+
+
+if(recessed_module_on_off == 1){
+    translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
 }
 
 module centeredHeatSetInsert() {
@@ -808,6 +898,7 @@ rotate([0,0,90])
 
 }} // Fin PCB 
 }
+
 if(PWA_GPAD==1){
 /////////////- PCB only visible in the preview mode - /////////////////////    
 translate([3*Thick+2,Thick+5,Thick+FootHeight+PCBThick/2+.1]){
@@ -839,7 +930,8 @@ translate([Thick+m/2,Thick+m/2,Thick+m/2])
 Panel(Length,Width,Thick,Filet);
 }
 // Module Section
-// RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution = 50);
+ //RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution =50);
+
 module frontPanel(){
 difference() {
 Coque();
@@ -1039,6 +1131,73 @@ SPKBOSS62 (7.8,7.8);
 }
 
 
+module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
+    $fn=Resolution;            
+    
+    
+   translate([f,f,0]) minkowski()
+{
+  cube([Length-(2*f),Width-(2*f),Height-1]);
+  cylinder(r=f,h=1,false);
+}
+    
+}// End of RoundBox Module
+
+
+module recessed_module(){
+    translate([0,0,-R_height+9]){
+        if (sd_door_on_off == 1){
+            translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);
+            }
+        if(recessed_bottom_on_off == 1)cover_slot();
+    
+        }
+    if(recessed_wall_on_off == 1)reccessed_bottom_f(R_height = R_height);
+    if(recessed_bottom_on_off == 1){
+    translate([0,0,-R_height+9])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height =button_pins_height);
+
+    translate([0,0,-R_height+9])difference(){
+        reccesed_f();
+        translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
+        translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
+        translate([AC_button_x+8,AC_button_y,26.5])
+        {
+            cube([17,35,3]);
+        }  
+            translate([45.2,48,10])cube([20.2,4,50]);
+       
+        }      
+      
+    }
+        
+  }
+  
+  
+module mp3_player(){
+translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
+    }
+    
+
+
+module cover_slot() {
+ gap = -10;
+slot_w = 1.3;
+slot_h = 3;
+slot_t = 0.5;
+slot_l = 50;
+
+difference(){union(){
+translate([55.3,90,25.5]){
+
+mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
+
+}
+}
+translate([45.2,48,0])cube([20.2,4,50]);
+  
+} 
+}
 if(SPK==1){
 color(c=[0,0,2.8])
 translate([PCBLength*.91,PCBWidth*.82,3])
