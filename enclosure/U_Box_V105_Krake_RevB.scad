@@ -26,7 +26,7 @@ if (Krake + GPAD > 1)
 ////////////////////////////////////////////////////////////////////
 // Export Options
 GPAD_TShell          = 0;
-GPAD_TShellWithVESA  = 1; //1 back of unit
+GPAD_TShellWithVESA  = 0; //1 back of unit
 GPAD_BShell          = 1; //2 w/LCD 
 GPAD_FPanL           = 1;//3 bottom
 GPAD_BPanL           = 1; //4 top
@@ -83,7 +83,7 @@ translationVariable = Krake_rev2_76mmSPK ? 2.2 * SpeakerHeight_mm -5: 0 ;
 ////////////////////////////////////////////////////////////////////
 Length         = 83.82 + 13 +translationVariable;  //x axis    
 Width          = 138 + 13; //y axis axis            
-Height         = Krake_76mmSPK_56h? 90 + SpeakerHeight_mm/2 : 40 + SpeakerHeight_mm/2; //z axis was 40
+Height         = Krake_76mmSPK_56h? 48 + SpeakerHeight_mm/2 : 28 + SpeakerHeight_mm/2; //z axis was 40
 Thick          = 2;                    // Wall thickness
 Filet          = 2;                    // Corner rounding
 Resolution     = 50;                   // Filet smoothness
@@ -879,14 +879,14 @@ module SpeakerEnclosure (){
 module SpeakerBoxKnife(){
 if (Krake_rev2_76mmSPK == 1)
 translate ([SpeakerPositionX+Thick*5-7, SpeakerPositionY,Height/4+Thick+10]){
-cube ([1.07*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+10, Height], center=true);
+cube ([1.05*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+15, Height+10], center=true);
 }}
 
 module SpeakerBoxOuter (){
 if (Krake_rev2_76mmSPK == 1)
 
-translate ([SpeakerPositionX+Thick*5-7, SpeakerPositionY,Height/4+Thick-2]){
-cube ([1.09*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+20, SpeakerHeight_mm+9.5], center=true);
+translate ([SpeakerPositionX+Thick*5-7, SpeakerPositionY,Height/4+Thick+9]){
+cube ([1.095*SpeakerDiameter_mm,SpeakerDiameter_mm*1.5+20, SpeakerHeight_mm+15.5], center=true);
 }
 }
 difference (){ 
@@ -1031,10 +1031,10 @@ cylinder(h=sh,r=radius,center = false);
 if((Krake_rev2_76mmSPK==1)){
 difference (){ 
 GPAD_BShell();
-translate ([SpeakerPositionX+4,SpeakerPositionY+4,Thick+7.8+.1])
+translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
 SPKBOSSpunch62 (7.8,7.8);
 }
-translate ([SpeakerPositionX+4,SpeakerPositionY+4,Thick+7.8+.1])
+translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
 SPKBOSS62 (7.8,7.8);
 }
 
