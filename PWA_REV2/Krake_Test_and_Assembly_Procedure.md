@@ -3,7 +3,7 @@ title: "Krake Test and Assembly Procedure Document"
 project: "Krake Project"
 document_type: "Test and Assembly procedure"
 document_id: "KRK-DOC-001"
-version: "v0.1.0"
+version: "v0.2.0"
 date: "2025-11-30"
 status: "Draft"
 authors:
@@ -350,20 +350,20 @@ Additional tests verify that voltage is going through the decoupling resistors t
 2. Power on the device, measure and record the current draw.
 3. On the serial monitor, run the LCD test to get characters on the LCD. Use test, "2 LCD (I2C)". With a small screw driver, adjust RV301 the CONTRAST poetntiometer for good character constrast. The current draw typicaly increases by about 0.02 Amps.
 4. Measure and record:
-   - TP102, Vin into the +5V regulator U101.
-   - TP103, +5 V from the +5V regulator U101.
-   - Test point "5esp32" the input to the 3.3 V regulator (U103 input).
-   - TP100, 3.3 V at U103 regulator output.
-   - TP202, V3 on U501.
    - TP109, 3v3Controller supply to U102.
    - TP401, VccLCD supply for U301 and U302.
-   - TP501 Mini MP3 Player supply 5VDFP at C505+.
-   - TP306, +5Vraw for SPI interface.
    - TP405, Vcontrast for the LCD.
-   - TP201, VBus power in on USB connector.
+   - TP100, 3.3 V at U103 regulator output
+   - Test point "5esp32" the input to the 3.3 V regulator (U103 input).
+   - TP103, +5 V from the +5V regulator U101
+   - TP306, +5Vraw for SPI interface
+   - TP501 Mini MP3 Player supply 5VDFP at C505+
    - TP205, 3V3USB power to CH340 USB to UART chip.
+   - TP102, Vin into the +5V regulator U101.
+   - TP201, VBus power in on USB connector
+   - TP202, V3 on U501.
    - J701 pin 2 (DB9), charge pump output negative.
-
+  
 Test points:
 Test Points for Powered Tests  
 <img width="1024"  alt="image" src="https://github.com/user-attachments/assets/7d33534b-6648-4b58-b193-4e33a3443038" />  
@@ -375,18 +375,18 @@ Locator for DB9 pins
 Typical passing units in the first batch showed:
 | Test Point | Approximate Reading| 
 |--------:|--------|
-| TP102  | ~ 4.5V ||
-| TP103  | ~ 5V ||
-| 5ESP32  | ~ 5V ||
-| TP100  | ~ 3.3V ||
-| TP202  | ~ 3.3V ||
 | TP109  | ~ 3.3V ||
 | TP401  | ~ 5V ||
-| TP501  | ~ 5V ||
-| TP306  | ~ 5V ||
 | TP405  | ~ 2.5V ||
-| TP201  | ~ 5V ||
+| TP100  | ~ 3.3V ||
+| 5ESP32  | ~ 5V ||
+| TP103  | ~ 5V ||
+| TP306  | ~ 5V ||
+| TP501  | ~ 5V ||
 | TP205  | ~ 3.3V ||
+| TP102  | ~ 4.5V ||
+| TP201  | ~ 5V ||
+| TP202  | ~ 3.3V ||
 | J701  | ~ 6V ||
 
 
