@@ -34,11 +34,11 @@ echo("WARNING: More than one project mode active!!!");
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
-GPAD_TShell          = 0;
+GPAD_TShell          = 1;
 GPAD_BShell          = 0; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
-sd_door_on_off       = 1;
+sd_door_on_off       = 0;
 recessed_bottom_on_off = 0;
 
 
@@ -58,11 +58,11 @@ SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
-GPAD_TshellDoorRecess = 0; // turn on/off door when krake Tshell is on 
+GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
 GPAD_TShellWithVESA  = 1; // Krake TShell 
 recessed_module_on_off = 1; // turn on/off the recess moduel only
 //// recess sub modules when recess module is on///
-recessed_wall_on_off = 0;
+recessed_wall_on_off = 1;
 //////////////////////////////
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
@@ -1092,7 +1092,19 @@ translate([0,0,-R_height+9]){
     if(recessed_bottom_on_off == 1)cover_slot();
 
     }
-if(recessed_wall_on_off == 1)reccessed_bottom_f(R_height = R_height);
+if(recessed_wall_on_off == 1){
+    difference(){
+        reccessed_bottom_f(R_height = R_height);
+        if(GPAD_TshellDoorRecess){
+         cut_cube_height = 6;
+        cut_cube_x = 24;
+        cut_cube_y = 30;
+        translate([cut_cube_x,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
+        translate([cut_cube_x+45,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
+        }}
+
+
+}
 if(recessed_bottom_on_off == 1){
 translate([0,0,-R_height+9])AC_buttons_pins2(s_t = 0.5, s_w =0.5, B_height =button_pins_height);
 
