@@ -265,12 +265,12 @@ Before applying power, the following resistance measurements are taken between t
 1. Use a digital multimeter capable of measuring resistance into the megaohm range.
 2. Record the make, model, and serial number of the test instrument in the manufacturing log (for example, ASTRO DM6000AR, SSD card/N 2327610969 for units assembled in the USA).
 3. For each device under test (DUT), measure:
-   - TP102–TP101 (Vin to GND).
+   - TP100–TP101 (Controller V\(_\mathrm{CC}\) to GND).
    - TP103–TP101 (+5 V to GND).
+   - TP102–TP101 (Vin to GND).
+   - TP302–TP101 (+12in).
    - TP201–TP101 (VBus to GND).
    - TP202–TP101 (V3 to GND).
-   - TP100–TP101 (Controller V\(_\mathrm{CC}\) to GND).
-   - TP302–TP101 (+12in).
 
 Test point locator:
 
@@ -288,12 +288,14 @@ Test Points for Unpowered Tests
 Example measurements for units showed:
 | Test Point | Approximate Reading| 
 |--------:|--------|
-| TP102 -TP101  | > 10MΩ ||
+| TP100–TP101  | >10–15 MΩ ||
 | TP103–TP101   | 1.09–1.12 kΩ.||
+| TP102 -TP101  | > 10MΩ ||
+| TP302–TP101  | OL ||
 | TP201–TP101  | 1.00–1.15 kΩ. ||
 | TP202–TP101  | 280–350 Ω ||
-| TP100–TP101  | >10–15 MΩ ||
-| TP302–TP101  | OL ||
+
+
 
 If any unit shows significantly lower resistance than these ranges, the board should be inspected and reworked before power is applied.
 
