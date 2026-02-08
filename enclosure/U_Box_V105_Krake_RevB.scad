@@ -34,10 +34,15 @@ echo("WARNING: More than one project mode active!!!");
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
-GPAD_TShell          = 1;
+GPAD_TShell          = 0;
 GPAD_BShell          = 0; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
+sd_door_on_off       = 1;
+recessed_bottom_on_off = 0;
+
+
+
 ////////////////////////////////////////////////////////////////////
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
@@ -45,7 +50,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;//pcb
+PWA_KRAKE            = 0;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -53,13 +58,11 @@ SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
-GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
+GPAD_TshellDoorRecess = 0; // turn on/off door when krake Tshell is on 
 GPAD_TShellWithVESA  = 1; // Krake TShell 
 recessed_module_on_off = 1; // turn on/off the recess moduel only
 //// recess sub modules when recess module is on///
-sd_door_on_off = 1;
-recessed_wall_on_off = 1;
-recessed_bottom_on_off = 1;
+recessed_wall_on_off = 0;
 //////////////////////////////
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
@@ -703,11 +706,10 @@ translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
 
 }
 
+
+
 }
 
-if(recessed_module_on_off == 1){
-translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
-}
 
 module centeredHeatSetInsert() {
 translate([0,-60.05,0])
@@ -1106,7 +1108,9 @@ translate([0,0,-R_height+9])difference(){
     }       
 }
 }
-
+if(recessed_module_on_off == 1){
+translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
+}
 module mp3_player(){
 translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
 }
