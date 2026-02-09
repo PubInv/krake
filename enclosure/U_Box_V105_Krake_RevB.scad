@@ -39,7 +39,7 @@ GPAD_BShell          = 0; //2 w/LCD
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
 sd_door_on_off       = 0;
-recessed_bottom_on_off = 0;
+recessed_bottom_on_off = 1;
 
 
 
@@ -50,7 +50,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;//pcb
+PWA_KRAKE            = 1;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -697,7 +697,7 @@ translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
 
 
 }
-translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])test_locking();
+translate([50,17.5,0]){rotate([0,0,180])mirror([0,0,1])test_locking();
 
 }
 }
@@ -1087,7 +1087,7 @@ cylinder(r=f,h=1,false);
 module recessed_module(){
 translate([0,0,-R_height+9]){
     if (sd_door_on_off == 1){
-        translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 18, h = 1, g = 1.6, t = 0.3);
+        translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 24, h = 1, g = 1.6, t = 0.3);
         }
     if(recessed_bottom_on_off == 1)cover_slot();
 
@@ -1114,9 +1114,9 @@ translate([0,0,-R_height+9])difference(){
     translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
     translate([AC_button_x+8,AC_button_y,26.5])
     {
-        cube([17,35,3]);
+        cube([23,35,3]);
     }  
-        translate([45.2,48,10])cube([20.2,4,50]);
+        translate([45.2,48,10])cube([26.2,4,50]);
     }       
 }
 }
@@ -1128,20 +1128,20 @@ translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
 }
 
 module cover_slot() {
-gap = -10;
+gap = -13;
 slot_w = 1.3;
 slot_h = 3;
 slot_t = 0.5;
 slot_l = 50;
 
 difference(){union(){
-translate([55.3,90,25.5]){
+translate([45.3-gap,90,25.5]){
 
 mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 }
 }
-translate([45.2,48,0])cube([20.2,4,50]);
+translate([45.2,48,0])cube([-gap*2+0.2,4,50]);
 
 } 
 }
