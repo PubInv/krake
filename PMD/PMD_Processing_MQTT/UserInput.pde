@@ -145,6 +145,7 @@ void keyPressed() {
 
       if (mqttBrokerIsConnected) {
         client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);
+        client.publish("adam/out/LEBANON-5", MessageFromProcessing_PMD);  //The ADaB topic
       }
 
       myBackground = color(0, 16, 0);

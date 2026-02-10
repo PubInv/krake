@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.32 ";
+String VERSION = "V0.33 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -34,8 +34,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20250115 Rev 0.29.  Add test 'e' and 'f' for Robert Status in Discord.
 // Date: 20250201 Rev 0.30.  Spaces to formate date and time and ID in message.
 // Date: 20251225 Rev 0.32.  Publish with retain = true.  void client.publish(String topic, byte[] payload, int qos, boolean retained);
-
-
+// Date: 20260210 Rev 0.33.  Publish to an ADaM topic 
 
 
 
@@ -59,6 +58,8 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 StringDict mac_to_NameDict = new StringDict();
 void setupDictionary() {
   
+  mac_to_NameDict.set("adam/out/LEBANON-5", "ADAM_Server");
+  
   
   mac_to_NameDict.set("F024F9F1B874", "KRAKE_LB0001");
   mac_to_NameDict.set("142B2FEB1F00", "KRAKE_LB0002");
@@ -67,6 +68,7 @@ void setupDictionary() {
   mac_to_NameDict.set("F024F9F1B880", "KRAKE_LB0005");
   mac_to_NameDict.set("F4650BC295C0", "KRAKE_LB0006");
   
+  mac_to_NameDict.set("F4650BC0B524", "KRAKE_US0007");
   mac_to_NameDict.set("F4650BC0B52C", "KRAKE_US0006");
   mac_to_NameDict.set("ECC9FF7D8EE8", "KRAKE_US0005");
   mac_to_NameDict.set("ECC9FF7D8EF4", "KRAKE_US0004");
@@ -118,6 +120,8 @@ class Adapter implements MQTTListener {
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_MAC.length; i++) {
       //client.subscribe("F024F9F1B880_ALM");// LB0005  Used to check LWT development.
+      client.subscribe("adam/out/LEBANON-5");// This is an ADaM server
+      
       client.subscribe(KRAKE_MAC[i]+"_ACK");
       //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
       //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
