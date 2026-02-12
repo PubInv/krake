@@ -43,7 +43,7 @@ h_p = 50;
 l_p = 0.5;
 
 
-r_w = 40;
+r_w = 45;
 r_l = 70;
 r_h = 9;
 r_t = 2;
@@ -83,6 +83,16 @@ snap_l = r_h+4.5;
 snap_h = 2;
 snap_w = snap_h/2;
 
+difference(){
+union(){
+translate([0,0,0])reccesed_f();
+reccessed_bottom_f();
+}
+//cube(50);
+//translate([0,70,0])cube(50);
+
+}
+
 module hh(){
   difference(){
     reccesed_f();
@@ -118,18 +128,18 @@ union(){
     }
 
 module reccesed_f(){
-    
-translate([under_r_x+3,under_r_y,under_r_z])cube([r_w-2,r_l,r_t], false);
-    translate([1,0,-0.8])add_supp_snap();
-translate([100+1,0,-0.8])mirror([1,0,0])translate([1,0,0])add_supp_snap();
+R_clearance = 1.75;
+translate([under_r_x+2+(R_clearance/2),under_r_y,under_r_z])cube([r_w-R_clearance,r_l,r_t], false);
+    translate([R_clearance/2,0,-0.8])add_supp_snap();
+translate([62-(R_clearance/2)+r_w,0,-0.8])mirror([1,0,0])translate([1,0,0])add_supp_snap();
 }
  
  module reccessed_bottom_f(R_height = r_h){
     union(){
     translate([30.5,28,38-R_height])reccessed(r_w,r_l,R_height,r_t);
         
-rotate([0,180,0])translate([-70.5,43,-38]){translate([-0.1,0.1,0])snap(snap_h,snap_w,40-0.2,R_height+4.5,1);
-    translate([0.1,0.1,0])mirror([1,0,0])translate([-r_w,0,0]) snap(snap_h,snap_w,40-0.2,R_height+4.5,1);
+rotate([0,180,0])translate([-70.5,43,-38]){translate([40-(r_w)-0.1,0.1,0])snap(snap_h,snap_w,40-0.2,R_height+4.5,1);
+    translate([0.1,0.1,0])mirror([1,0,0])translate([-40,0,0]) snap(snap_h,snap_w,40-0.2,R_height+4.5,1);
     }
     //translate([0,0,15-r_h])add_supp_snap();
     //translate([100+1,0,15-r_h])mirror([1,0,0])translate([0,0,0])add_supp_snap();
@@ -140,7 +150,7 @@ rotate([0,180,0])translate([-70.5,43,-38]){translate([-0.1,0.1,0])snap(snap_h,sn
     module add_supp_snap(){
     difference(){
     translate([30.5,38,27])supp_snap();
-translate([under_r_x-0.001,under_r_y+15,under_r_z-r_h-5])translate([2,25,5.5])scale([1.15,1.05,1.15])translate([-2,-25,-5.5])snap(snap_h,snap_w,40,snap_l,2);
+translate([under_r_x-0.001,under_r_y+15,under_r_z-r_h-5])translate([2,25,6.4])scale([1,1.01,1])translate([-2,-25,-5.5])snap(snap_h,snap_w,40,snap_l,2);
         }
     }
         

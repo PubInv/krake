@@ -29,7 +29,7 @@ linear_extrude(l)polygon(points);
 difference(){cover_unit();
     translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
 }
-translate([50,17.5,0]){rotate([0,0,270])mirror([0,0,1])scale([1,1,1])test_locking();
+translate([50,17.5,0]){rotate([0,0,180])mirror([0,0,1])scale([1,1,1])test_locking();
     }
 
 module round_hull(r,w)
