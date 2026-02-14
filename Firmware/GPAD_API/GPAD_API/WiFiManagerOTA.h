@@ -1,11 +1,8 @@
 #ifndef WIFI_MANAGER_H
 #define WIFI_MANAGER_H
 
-// #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
-#include <FS.h>
-#include <LittleFS.h>
 
 extern const char *DEFAULT_SSID;
 extern String ledState;
@@ -22,12 +19,17 @@ namespace WifiOTA
         void initialize();
         void connect(const char *const accessPointSsid);
         void setConnectedCallback(std::function<void()> callBack);
+        void setApStartedCallback(std::function<void(wifi_mode_t)> callback);
+        wifi_mode_t getMode();
+        // Include a "on wifi mode change" callback
+        // The callback takes a single parameter, it's the WiFi's current mode
 
     private:
         WiFiClass &wifi;
         Print &print;
         WiFiManager wifiManager;
         std::function<void()> connectedCallback;
+        std::function<void(wifi_mode_t)> apStartedCallback;
 
         void ssidSaved();
         void ipSet();
