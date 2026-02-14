@@ -22,7 +22,7 @@ use <flex_cover.scad>
 AC_button_x = 38.77;
 AC_button_y = 44.44;
 
-KrakeEnclosureVersion = 2.6; // change this with each rev
+KrakeEnclosureVersion = 2.8; // change this with each rev
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
@@ -39,7 +39,7 @@ GPAD_BShell          = 0; //2 w/LCD
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
 sd_door_on_off       = 0;
-recessed_bottom_on_off = 1;
+recessed_bottom_on_off = 0;
 
 
 
@@ -50,7 +50,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;//pcb
+PWA_KRAKE            = 0;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -693,11 +693,11 @@ if (GPAD_TshellDoorRecess == 1){
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
     
 rotate([180,0,90]){difference(){cover_unit(); 
-translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+translate([50,17.5,0])translate([0,0,-10])cylinder(h = 22, r = 7.9);
 
 
 }
-translate([50,17.5,0]){rotate([0,0,180])mirror([0,0,1])test_locking();
+translate([50,17.5,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
 
 }
 }

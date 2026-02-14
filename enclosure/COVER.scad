@@ -6,17 +6,17 @@ cover_width = 35;
 cover_thickness = 2.1;
 Resolution = 50;
 
-module test_locking(){
-    //  the source link for the Testpiece.stl file https://www.thingiverse.com/thing:3660535/remixes
-    difference(){
-translate([6,-83,-25])import("Testpiece.stl",convexity=10);
-
-    difference(){
-        translate([0,0,-15])cylinder(h = 30, r = 50);
-        translate([0,0,-16])cylinder(h = 35, r = 8);
-    }
+difference(){cover_unit();
+    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
 }
+translate([50,17.5,0]){rotate([0,0,270])test_locking();
+    }
 
+
+//test_locking();
+
+module test_locking(){
+translate([0,0,5])import("rotating_latch.stl",convexity=10);
 }
 
 module lock(w,h,h2,l,tip){
@@ -26,11 +26,6 @@ linear_extrude(l)polygon(points);
 }
 
 
-difference(){cover_unit();
-    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
-}
-translate([50,17.5,0]){rotate([0,0,180])mirror([0,0,1])scale([1,1,1])test_locking();
-    }
 
 module round_hull(r,w)
 {
@@ -133,9 +128,11 @@ rotate([90,0,0])translate([3.5,4,0])drafted_pin(3+0.15,2+0.15);
 
 color("green"){cover(cover_width,cover_length,cover_thickness);}
 }
+difference(){
+translate([cover_length-17.8,cover_width/2+5,0])rotate([90,0,0])lock(w = 9,h =4.2,h2 = 8.3, l = 15,tip=0.7);
 
-translate([cover_length-16.8,cover_width/2+5,0])rotate([90,0,0])lock(w = 10,h =4.8,h2 = 8, l = 15,tip=0.5);
-
+translate([56,25,8.2])rotate([90,0,0])cylinder(r =3.4,h= 20);
+}
 translate([0.5,0.25,0])color("blue"){cover(cover_width-0.5,cover_length-1.2,cover_thickness);}
 
 
