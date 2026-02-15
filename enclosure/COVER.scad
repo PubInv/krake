@@ -126,7 +126,7 @@ translate([-door_back_gap,0,0])cube([door_back_gap,cover_width,3]);
 translate([0.5,35,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3.5,4,0])drafted_pin(3+0.15,2+0.15);
 
-translate([0,0,0])color("green"){cover(cover_width,cover_length,cover_thickness);}
+translate([0,0,])color("green"){cover(cover_width,cover_length,cover_thickness);}
 }
 difference(){
 translate([cover_length-17.8-5,cover_width/2+5,0])rotate([90,0,0])lock(w = 9,h =4.2,h2 = 8.3, l = 15,tip=0.7);

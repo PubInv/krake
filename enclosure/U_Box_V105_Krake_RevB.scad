@@ -38,7 +38,7 @@ GPAD_TShell          = 1;
 GPAD_BShell          = 0; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
-sd_door_on_off       = 1;
+sd_door_on_off       = 0;
 recessed_bottom_on_off = 1;
 
 
@@ -50,7 +50,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;//pcb
+PWA_KRAKE            = 1;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -1087,7 +1087,7 @@ cylinder(r=f,h=1,false);
 module recessed_module(){
 translate([0,0,-R_height+9]){
     if (sd_door_on_off == 1){
-        translate(v = [46.3+29,44+43,24.8]) rotate([0,0,180])flexiable_cover(n = 23, l = 29, h = 1, g = 1.6, t = 0.3);
+        translate(v = [46.3+29,44+47.5,24.8]) rotate([0,0,180])flexiable_cover(n = 26, l = 29, h = 1, g = 1.6, t = 0.3);
         }
     if(recessed_bottom_on_off == 1)translate([0,5,0])cover_slot();
 
@@ -1114,9 +1114,9 @@ translate([0,0,-R_height+9])difference(){
     translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
     translate([AC_button_x+8,AC_button_y+7,26.5])
     {
-        cube([23+5,35,3]);
+        cube([23+5,40,3]);
     }  
-        translate([45.2,48+5+27.5,10])cube([26.2+5,4,50]);
+        translate([45.2,48+10+27.5,10])cube([26.2+5,4,50]);
     }       
 }
 }
@@ -1141,7 +1141,7 @@ mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = s
 translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 }
 }
-translate([45.2,48+27.5,0])cube([-gap*2+0.2,4,50]);
+translate([45.2,48+27.5+5,0])cube([-gap*2+0.2,4,50]);
 
 } 
 }
