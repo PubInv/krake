@@ -1,15 +1,15 @@
 $fs = 0.1;
 $fn =30;
 
-cover_length = 80;
-cover_width = 35;
+cover_length = 90;
+cover_width = 40;
 cover_thickness = 2.1;
 Resolution = 50;
 
 difference(){cover_unit();
-    translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+    translate([55,20,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
 }
-translate([50,17.5,0]){rotate([0,0,270])test_locking();
+translate([55,20,0]){rotate([0,0,270])test_locking();
     }
 
 
@@ -126,12 +126,14 @@ translate([-door_back_gap,0,0])cube([door_back_gap,cover_width,3]);
 translate([0.5,35,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3.5,4,0])drafted_pin(3+0.15,2+0.15);
 
-color("green"){cover(cover_width,cover_length,cover_thickness);}
+translate([0,0,0])color("green"){cover(cover_width,cover_length,cover_thickness);}
 }
 difference(){
-translate([cover_length-17.8,cover_width/2+5,0])rotate([90,0,0])lock(w = 9,h =4.2,h2 = 8.3, l = 15,tip=0.7);
+translate([cover_length-17.8-5,cover_width/2+5,0])rotate([90,0,0])lock(w = 9,h =4.2,h2 = 8.3, l = 15,tip=0.7);
 
-translate([56,25,8.2])rotate([90,0,0])cylinder(r =3.4,h= 20);
+translate([56+5,30,8.2])rotate([90,0,0])cylinder(r =3.4,h= 22);
+
+translate([56+5,10,0-0.1])cube([10,20,2]);
 }
 translate([0.5,0.25,0])color("blue"){cover(cover_width-0.5,cover_length-1.2,cover_thickness);}
 

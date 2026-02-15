@@ -22,7 +22,7 @@ use <flex_cover.scad>
 AC_button_x = 38.77;
 AC_button_y = 44.44;
 
-KrakeEnclosureVersion = 2.8; // change this with each rev
+KrakeEnclosureVersion = 2.9; // change this with each rev
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
@@ -38,8 +38,8 @@ GPAD_TShell          = 1;
 GPAD_BShell          = 0; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
-sd_door_on_off       = 0;
-recessed_bottom_on_off = 0;
+sd_door_on_off       = 1;
+recessed_bottom_on_off = 1;
 
 
 
@@ -685,7 +685,7 @@ else
     
 }
 if (GPAD_TshellDoorRecess == 1){
-translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
+translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3])cube([90,35+19,10]);
     
 }}
 if (GPAD_TshellDoorRecess == 1){
@@ -693,11 +693,11 @@ if (GPAD_TshellDoorRecess == 1){
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
     
 rotate([180,0,90]){difference(){cover_unit(); 
-translate([50,17.5,0])translate([0,0,-10])cylinder(h = 22, r = 7.9);
+translate([55,20,0])translate([0,0,-10])cylinder(h = 22, r = 7.9);
 
 
 }
-translate([50,17.5,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
+translate([55,20,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
 
 }
 }
@@ -1087,9 +1087,9 @@ cylinder(r=f,h=1,false);
 module recessed_module(){
 translate([0,0,-R_height+9]){
     if (sd_door_on_off == 1){
-        translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 24, h = 1, g = 1.6, t = 0.3);
+        translate(v = [46.3+29,44+43,24.8]) rotate([0,0,180])flexiable_cover(n = 23, l = 29, h = 1, g = 1.6, t = 0.3);
         }
-    if(recessed_bottom_on_off == 1)cover_slot();
+    if(recessed_bottom_on_off == 1)translate([0,5,0])cover_slot();
 
     }
 if(recessed_wall_on_off == 1){
@@ -1100,7 +1100,7 @@ if(recessed_wall_on_off == 1){
         cut_cube_x = 24;
         cut_cube_y = 30;
         translate([cut_cube_x,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
-        translate([cut_cube_x+45,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
+        translate([cut_cube_x+50,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
         }}
 
 
@@ -1112,11 +1112,11 @@ translate([0,0,-R_height+9])difference(){
     reccesed_f();
     translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
     translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
-    translate([AC_button_x+8,AC_button_y,26.5])
+    translate([AC_button_x+8,AC_button_y+7,26.5])
     {
-        cube([23,35,3]);
+        cube([23+5,35,3]);
     }  
-        translate([45.2,48,10])cube([26.2,4,50]);
+        translate([45.2,48+5+27.5,10])cube([26.2+5,4,50]);
     }       
 }
 }
@@ -1128,11 +1128,11 @@ translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
 }
 
 module cover_slot() {
-gap = -13;
+gap = -15.5;
 slot_w = 1.3;
 slot_h = 3;
 slot_t = 0.5;
-slot_l = 50;
+slot_l = 55;
 
 difference(){union(){
 translate([45.3-gap,90,25.5]){
@@ -1141,7 +1141,7 @@ mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = s
 translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 }
 }
-translate([45.2,48,0])cube([-gap*2+0.2,4,50]);
+translate([45.2,48+27.5,0])cube([-gap*2+0.2,4,50]);
 
 } 
 }
