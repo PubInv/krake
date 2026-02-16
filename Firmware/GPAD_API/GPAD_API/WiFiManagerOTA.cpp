@@ -33,40 +33,23 @@ void Manager::connect(const char *const accessPointSsid)
 
   this->wifiManager.setSaveConfigCallback(saveConfigCallback);
 
+  auto apStartedCallback = [this](WiFiManager *wifiManager)
+  {
+    this->apStarted();
+  };
+
+  this->wifiManager.setAPCallback(apStartedCallback);
+
   auto staGotIpCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
   {
-    if (this->wifi.localIP() == INADDR_NONE)
+    if ((this->wifi.localIP() == INADDR_NONE) && (this->getMode() == wifi_mode_t::WIFI_MODE_STA))
     {
       return;
     }
 
-    switch (this->getMode())
-    {
-    case wifi_mode_t::WIFI_MODE_AP:
-      // TODO: output its IP address for AP mode
-      break;
-
-    case wifi_mode_t::WIFI_MODE_STA:
-      this->ipSet();
-
-      break;
-    }
+    this->ipSet();
   };
   this->wifi.onEvent(staGotIpCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
-
-  auto apStartedCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
-  {
-    this->print.print("AP Has Started: ");
-    this->wifi.localIP().printTo(this->print);
-    this->print.print("\n");
-
-    if (this->apStartedCallback)
-    {
-      this->apStartedCallback(this->getMode());
-    }
-  };
-
-  this->wifi.onEvent(apStartedCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_AP_START);
 
   bool connectSuccess = false;
   if (accessPointSsid == "")
@@ -84,7 +67,7 @@ void Manager::setConnectedCallback(std::function<void()> callback)
   this->connectedCallback = callback;
 }
 
-void Manager::setApStartedCallback(std::function<void(wifi_mode_t)> callback)
+void Manager::setApStartedCallback(std::function<void()> callback)
 {
   this->apStartedCallback = callback;
 }
@@ -114,6 +97,18 @@ void Manager::ipSet()
   if (this->connectedCallback)
   {
     this->connectedCallback();
+  }
+}
+
+void Manager::apStarted()
+{
+  this->print.print("AP Has Started: ");
+  this->wifi.softAPIP().printTo(this->print);
+  this->print.print("\n");
+
+  if (this->apStartedCallback)
+  {
+    this->apStartedCallback();
   }
 }
 

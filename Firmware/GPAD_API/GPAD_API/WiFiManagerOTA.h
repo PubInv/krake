@@ -19,7 +19,7 @@ namespace WifiOTA
         void initialize();
         void connect(const char *const accessPointSsid);
         void setConnectedCallback(std::function<void()> callBack);
-        void setApStartedCallback(std::function<void(wifi_mode_t)> callback);
+        void setApStartedCallback(std::function<void()> callback);
         wifi_mode_t getMode();
         // Include a "on wifi mode change" callback
         // The callback takes a single parameter, it's the WiFi's current mode
@@ -29,10 +29,11 @@ namespace WifiOTA
         Print &print;
         WiFiManager wifiManager;
         std::function<void()> connectedCallback;
-        std::function<void(wifi_mode_t)> apStartedCallback;
+        std::function<void()> apStartedCallback;
 
         void ssidSaved();
         void ipSet();
+        void apStarted();
     };
 
     void initLittleFS();
