@@ -77,7 +77,7 @@ void keyPressed() {
     theTimeStamp = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ " "+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second())+ " " + id  ; //time stamp
     int myQOS = 0 ;
     boolean myRetain = false;
-  
+
 
     for (int i = 0; i < KRAKE_MAC.length; i++) { //Need a for loop for all Krakes.
       int keyIndex = -1;
@@ -115,6 +115,12 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a2Lee's browser not responding. Giving up."  + theTimeStamp;
       } else if (key == 'n' ) {    //For Nagham
         MessageFromProcessing_PMD = "a5Nagham is in Discord, " + theTimeStamp ;
+      } else if (key == 'p' ) {
+        myRetain = true;
+        MessageFromProcessing_PMD = "a1 Yehya has left Discord, " + theTimeStamp ;
+      } else if (key == 'q' ) {
+        myRetain = true;
+        MessageFromProcessing_PMD = "a2 Yehya has entered Discord, " + theTimeStamp ;
       } else if (key == 'r' ) {
         MessageFromProcessing_PMD = "a1Lee's closing browser to restart it."  + theTimeStamp;
       } else if (key == 's' ) {
@@ -123,18 +129,24 @@ void keyPressed() {
         MessageFromProcessing_PMD = "a1Test with CR and LF\r\n"  + theTimeStamp;
       } else if (key == 'u' ) {
         MessageFromProcessing_PMD = "u"; //unMute or enable the alarm sound
+      } else if (key == 'v' ) {
+        myRetain = true;
+        MessageFromProcessing_PMD = "a1 Yuktee has left Discord, " + theTimeStamp ;
+      } else if (key == 'w' ) {
+        myRetain = true;
+        MessageFromProcessing_PMD = "a2 Yuktee has entered Discord, " + theTimeStamp ;
       } else if (key == 'X' ) { //Exit the MQTT broker
         exit();
       } else if (key == 'x' ) { //Exit the MQTT broker
         MessageFromProcessing_PMD = "a1 PMD disconnecting MQTT broker."  + theTimeStamp;
 
-//        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);       
-//        void client.publish(String topic, byte[] payload, int qos, boolean retained);
-// works        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD, 0, true); //Set QOS to 0 and retained true.
+        //        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);       
+        //        void client.publish(String topic, byte[] payload, int qos, boolean retained);
+        // works        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD, 0, true); //Set QOS to 0 and retained true.
 
         client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD, myQOS, myRetain); //Set QOS to 0 and retained true.
         myRetain = false; //Reset after publishing.
-              
+
         disconnectMQTTBroker = true;  // Not working
         println("Exit PMT");
         //        exit();

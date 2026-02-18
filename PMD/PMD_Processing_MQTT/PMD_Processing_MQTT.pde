@@ -1,6 +1,6 @@
 
 String PROG_NAME = "PMD_Processing_MQTT";
-String VERSION = "V0.33 ";
+String VERSION = "V0.34 ";
 String PROJECT_URL = "https://github.com/PubInv/krake/tree/main/PMD/PMD_Processing_MQTT"; 
 String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 
@@ -35,6 +35,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20250201 Rev 0.30.  Spaces to formate date and time and ID in message.
 // Date: 20251225 Rev 0.32.  Publish with retain = true.  void client.publish(String topic, byte[] payload, int qos, boolean retained);
 // Date: 20260210 Rev 0.33.  Publish to an ADaM topic 
+// Date: 20260218 Rev 0.34.  Lower alarm level on many of the keyboard user input. Set for retained true for Lee, Nagham and Robert messages. 
 
 
 
