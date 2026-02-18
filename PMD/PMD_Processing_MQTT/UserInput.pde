@@ -82,21 +82,25 @@ void keyPressed() {
     for (int i = 0; i < KRAKE_MAC.length; i++) { //Need a for loop for all Krakes.
       int keyIndex = -1;
       if (key == 'Z') {
-        MessageFromProcessing_PMD = "a5Lee's Browser Not Responding. Might be Internet Provider Problem";
+        MessageFromProcessing_PMD = "a0 Go to sleep, zzzzzzz";
       } else if (key == 'a' ) {
         myRetain = true;
         MessageFromProcessing_PMD = "a1 Lee has left Discord, " + theTimeStamp ;
       } else if (key == 'b' ) {
         myRetain = true;
-        MessageFromProcessing_PMD = "a5 Lee is back in Discord" + theTimeStamp;
+        MessageFromProcessing_PMD = "a2 Lee is back in Discord" + theTimeStamp;
       } else if (key == 'c' ) {
+        myRetain = true;
         MessageFromProcessing_PMD = "a1 Nagham has left Discord, " + theTimeStamp ;
       } else if (key == 'd' ) {
-        MessageFromProcessing_PMD = "a5 Nagam is back in Discord" + theTimeStamp;
+        myRetain = true;
+        MessageFromProcessing_PMD = "a2 Nagam is back in Discord" + theTimeStamp;
       } else if (key == 'e' ) {
+        myRetain = true;
         MessageFromProcessing_PMD = "a1 Robert has left Discord, " + theTimeStamp ;
       } else if (key == 'f' ) {
-        MessageFromProcessing_PMD = "a5 Robert is back in Discord" + theTimeStamp;
+        myRetain = true;
+        MessageFromProcessing_PMD = "a2 Robert is back in Discord" + theTimeStamp;
       } else if (key == 'g' ) {
         MessageFromProcessing_PMD = "a5 time to GET Update Firmware." + theTimeStamp;
       } else if (key == 'h' ) {
@@ -123,10 +127,11 @@ void keyPressed() {
         exit();
       } else if (key == 'x' ) { //Exit the MQTT broker
         MessageFromProcessing_PMD = "a1 PMD disconnecting MQTT broker."  + theTimeStamp;
-//        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);
-        
-        //void client.publish(String topic, byte[] payload, int qos, boolean retained);
+
+//        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD);       
+//        void client.publish(String topic, byte[] payload, int qos, boolean retained);
 // works        client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD, 0, true); //Set QOS to 0 and retained true.
+
         client.publish(KRAKE_MAC[i]+"_ALM", MessageFromProcessing_PMD, myQOS, myRetain); //Set QOS to 0 and retained true.
         myRetain = false; //Reset after publishing.
               
