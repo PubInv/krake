@@ -12,7 +12,7 @@ void checkOverButton() {
   //int buttonHorz = 50;
   //int buttonVert = 160;
   //int arrowHorz = 155;
-  //int arrowVert = 85;
+  //int arrowVert = 85;i
   int arrowHorz = buttonHorz +50 ;
   int arrowVert = buttonVert + 25;
 
@@ -63,7 +63,7 @@ void checkButtons() {
 }
 
 /* Keyboard Event handler for single key.
- Sets digits prefixed with an "a" for alarm.
+ Most sets digits prefixed with an "a" for alarm.
  Alpha as is.
  Suppresses all other keys
  Publishes to all devices, aka topics, KRAKE_DTA_TOPIC[i]

@@ -58,17 +58,17 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Make MAC to Serial number association in this dictionary
 StringDict mac_to_NameDict = new StringDict();
 void setupDictionary() {
-  
+
   mac_to_NameDict.set("adam/out/LEBANON-5", "ADAM_Server");
-  
-  
+
+
   mac_to_NameDict.set("F024F9F1B874", "KRAKE_LB0001");
   mac_to_NameDict.set("142B2FEB1F00", "KRAKE_LB0002");
   mac_to_NameDict.set("142B2FEB1C64", "KRAKE_LB0003");
   mac_to_NameDict.set("142B2FEB1E24", "KRAKE_LB0004");
   mac_to_NameDict.set("F024F9F1B880", "KRAKE_LB0005");
   mac_to_NameDict.set("F4650BC295C0", "KRAKE_LB0006");
-  
+
   mac_to_NameDict.set("F4650BC0B524", "KRAKE_US0007");
   mac_to_NameDict.set("F4650BC0B52C", "KRAKE_US0006");
   mac_to_NameDict.set("ECC9FF7D8EE8", "KRAKE_US0005");
@@ -204,17 +204,22 @@ void draw() {
   checkOverButton();
 
   //Text on draw window
+  final int TEXT_START = 30;
+  final int TEXT_SPACING = 30;
+
   fill(255);
   textSize(25);
-  text("PMD_Message: ", 10, 30);
+  text("PMD_Message: ", 10, TEXT_START); // Vertical at 30
   textSize(15);
   fill(55, 10, 252);
-  text(MessageFromProcessing_PMD, 200, 30);
+  text(MessageFromProcessing_PMD, 200, TEXT_START);
   textSize(20);
-  fill(200);
-  text("Alarms, press digits 0-9, s, u, h", 10, 60);
+  fill(200); //White for instructions.
+  text("Alarms, press digits 0-9, s(Silence), u(unMute), h, i, j, m ", 10, TEXT_START + 1*TEXT_SPACING);
+  text("Lee ab, Nagham cd, Robert ef, Yehya pq , Yuktee vw", 10, TEXT_START + 2*TEXT_SPACING);
+
   fill(252, 10, 55);
-  text(thePayload, 10, 100);
+  text(thePayload, 10, TEXT_START + 3*TEXT_SPACING);
 
   if (mqttBrokerIsConnected) {
     fill(200);
@@ -239,7 +244,7 @@ void draw() {
     save("./data/" + theTimeStamp+"_clientEvent.png");  
     clientStatusChanged = false;
   }
-  
+
   if (disconnectMQTTBroker) {
     disconnectMQTT();
     disconnectMQTTBroker = false;
