@@ -35,11 +35,11 @@ echo("WARNING: More than one project mode active!!!");
 // Export Options
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 1;
-GPAD_BShell          = 0; //2 w/LCD 
-GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           = 0; //4 top
+GPAD_BShell          = 1; //2 w/LCD 
+GPAD_FPanL           = 1;//3 bottom
+GPAD_BPanL           = 1; //4 top
 sd_door_on_off       = 0;
-recessed_bottom_on_off = 1;
+recessed_bottom_on_off = 0;
 
 
 
@@ -50,7 +50,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;//pcb
+PWA_KRAKE            = 0;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -770,7 +770,7 @@ if (PCBFeet==1){// Feet
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //(On/Off, Xpos, Ypos, Diameter)
-for ( i = [-7.5:-2.5] ){
+for ( i = [-6.5:-2.5] ){
     CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1 , switch signs to move downwards ??Question
 }
 //CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power //??Question extra?
@@ -807,6 +807,10 @@ CableHole();
 }
 AllScrewPockets ();
 
+
+}}
+//GPAD_BShell();
+
 /// SPKBOSS62 and SPKBOSSpunch62 integration w Speaker 62mm hole to hole
 if((Krake_rev2_76mmSPK==1)){
 difference (){ 
@@ -817,8 +821,7 @@ SPKBOSSpunch62 (7.8,7.8);
 translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
 SPKBOSS62 (7.8,7.8);
 }
-}}
-//GPAD_BShell();
+
 if(RotaryEncoder ==1){
 //RotaryEncoder
 translate( [3*Thick+2,Thick+5,0])     
