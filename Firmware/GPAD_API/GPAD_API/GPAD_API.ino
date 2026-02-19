@@ -356,9 +356,8 @@ void setup()
   serialSplash();
   // We call this a second time to get the MAC on the screen
   clearLCD();
-  splashLCD();
 
-  // Set LED pins as outputs
+// Set LED pins as outputs
 #if defined(LED_D9)
   pinMode(LED_D9, OUTPUT);
 #endif
@@ -382,7 +381,8 @@ void setup()
   // Setup and present LCD splash screen
   // Setup the SWITCH_MUTE
   // Setup the SWITCH_ENCODER
-  GPAD_HAL_setup(&Serial);
+  IPAddress deviceAddress = wifiManager.getAddress();
+  GPAD_HAL_setup(&Serial, wifiManager.getMode(), deviceAddress);
 
 #if (DEBUG > 0)
   Serial.println("MAC: ");
@@ -457,9 +457,21 @@ void setup()
     {
       reconnect();
     }
+
+    clearLCD();
+    IPAddress currentAddress = wifiManager.getAddress();
+    splashLCD(wifiManager.getMode(), currentAddress);
   };
   wifiManager.setConnectedCallback(connectedCallback);
 #endif
+
+  auto apStartedCallback = [&]()
+  {
+    clearLCD();
+    IPAddress currentAddress = wifiManager.getAddress();
+    splashLCD(wifiManager.getMode(), currentAddress);
+  };
+  wifiManager.setApStartedCallback(apStartedCallback);
 
   wifiManager.connect(setupSsid);
   WifiOTA::initLittleFS();
@@ -473,7 +485,7 @@ void setup()
   digitalWrite(LED_BUILTIN, LOW); // turn the LED off at end of setup
 
   initRotator();
-  splashLCD();
+  splashLCD(wifiManager.getMode(), deviceAddress);
 
   setupDFPlayer();
   setup_GPAD_menu();

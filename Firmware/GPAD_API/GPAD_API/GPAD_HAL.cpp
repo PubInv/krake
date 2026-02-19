@@ -325,7 +325,7 @@ void muteButtonCallback(byte buttonEvent)
   }
 }
 
-void GPAD_HAL_setup(Stream *serialport)
+void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceIp)
 {
   // Setup and present LCD splash screen
   // Setup the SWITCH_MUTE
@@ -344,7 +344,7 @@ void GPAD_HAL_setup(Stream *serialport)
   serialport->println(F("Start LCD splash"));
 #endif
 
-  splashLCD();
+  splashLCD(wifiMode, deviceIp);
 
 #if (DEBUG > 0)
   serialport->println(F("EndLCD splash"));
@@ -581,7 +581,7 @@ void clearLCD(void)
 }
 
 // Splash a message so we can tell the LCD is working
-void splashLCD(void)
+void splashLCD(wifi_mode_t wifiMode, IPAddress &deviceIp)
 {
   lcd.init(); // initialize the lcd
   // Print a message to the LCD.
@@ -602,7 +602,18 @@ void splashLCD(void)
 
   // Line 1
   lcd.setCursor(0, 1);
-  lcd.print("IP: " + WiFi.localIP().toString());
+  switch (wifiMode)
+  {
+  case wifi_mode_t::WIFI_MODE_AP:
+    lcd.print("AP ");
+    break;
+  case wifi_mode_t::WIFI_MODE_STA:
+    lcd.print("STA ");
+    break;
+  }
+
+  lcd.print("IP: ");
+  deviceIp.printTo(lcd);
 
   // Line 2
   lcd.setCursor(0, 2);
