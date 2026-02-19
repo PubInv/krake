@@ -21,8 +21,7 @@ namespace WifiOTA
         void setConnectedCallback(std::function<void()> callBack);
         void setApStartedCallback(std::function<void()> callback);
         wifi_mode_t getMode();
-        // Include a "on wifi mode change" callback
-        // The callback takes a single parameter, it's the WiFi's current mode
+        IPAddress getAddress();
 
     private:
         WiFiClass &wifi;
