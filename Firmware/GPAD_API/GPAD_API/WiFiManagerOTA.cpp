@@ -77,6 +77,19 @@ wifi_mode_t Manager::getMode()
   return this->wifi.getMode();
 }
 
+IPAddress Manager::getAddress()
+{
+  switch (this->getMode())
+  {
+  case wifi_mode_t::WIFI_MODE_AP:
+    return this->wifi.softAPIP();
+  case wifi_mode_t::WIFI_MODE_STA:
+    return this->wifi.localIP();
+  default:
+    return INADDR_NONE;
+  }
+}
+
 void Manager::ssidSaved()
 {
   this->print.print("Network Saved with SSID: ");
