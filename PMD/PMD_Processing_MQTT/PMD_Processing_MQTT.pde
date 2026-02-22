@@ -68,6 +68,8 @@ void setupDictionary() {
   mac_to_NameDict.set("142B2FEB1E24", "KRAKE_LB0004");
   mac_to_NameDict.set("F024F9F1B880", "KRAKE_LB0005");
   mac_to_NameDict.set("F4650BC295C0", "KRAKE_LB0006");
+  mac_to_NameDict.set("F4650BC2959C", "KRAKE_LB0007");
+  
 
   mac_to_NameDict.set("F4650BC0B524", "KRAKE_US0007");
   mac_to_NameDict.set("F4650BC0B52C", "KRAKE_US0006");
