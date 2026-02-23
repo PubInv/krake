@@ -1,4 +1,7 @@
+#define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
+#define PROG_NAME "FactoryTest_wMenu"
 #define FIRMWARE_VERSION "v0.4.2.7"
+
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -47,7 +50,14 @@ Build notes:
 - Ensure DF_RXD2 and DF_TXD2 are correctly wired to DFPlayer module.
 ------------------------------------------------------------------------------
 */
+// Customized this by changing these defines
+#define VERSION " V0.0.1 "
+#define MODEL_NAME "Krake"
+#define LICENSE "GNU Affero General Public License, version 3 "
+#define ORIGIN "LB"
+#define BAUDRATE 115200  //Serial port
 
+  
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -118,6 +128,7 @@ static dfState_t dfState = DF_UNKNOWN;
 // SD cache: read file count ONCE during test [5], reuse during test [6]
 static bool g_sdChecked = false;
 static int g_sdFileCount = -999;
+
 
 // ============================================================================
 // Test bookkeeping
@@ -285,6 +296,19 @@ static void printBanner() {
   Serial.println();
 }
 
+void splashserial(void) {
+  //Serial splash
+  Serial.println(F("===================== Serial Splash ===================="));
+  Serial.println(PROG_NAME);
+  Serial.print(VERSION);
+  Serial.println(MODEL_NAME);
+  Serial.println(DEVICE_UNDER_TEST);
+  Serial.print(F("Compiled at: "));
+  Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+  Serial.println(LICENSE);
+  Serial.println(F("======================================================="));
+ }
+
 static void printSummary() {
   Serial.println();
   Serial.println(F("========== FACTORY TEST SUMMARY =========="));
@@ -323,7 +347,7 @@ static void printMenu() {
   Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
   Serial.println(F(" R Reboot"));
   Serial.println();
-  Serial.print(F("Enter command: "));
+  Serial.println(F("Enter command: "));
 }
 
 // ============================================================================
@@ -1103,7 +1127,9 @@ static void handleCommand(char c) {
   }
 
   if (recognized && c != 'P' && c != 'R') printSummary();
+  splashserial();
   printMenu();
+  
 }
 
 // ============================================================================
@@ -1121,8 +1147,10 @@ void setup() {
   delay(50);
 
   printBanner();
+  splashserial();
   printSummary();
   printMenu();
+  
 }
 
 void loop() {
