@@ -35,9 +35,9 @@ echo("WARNING: More than one project mode active!!!");
 // Export Options
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 1;
-GPAD_BShell          = 1; //2 w/LCD 
-GPAD_FPanL           = 1;//3 bottom
-GPAD_BPanL           = 1; //4 top
+GPAD_BShell          = 0; //2 w/LCD 
+GPAD_FPanL           = 0;//3 bottom
+GPAD_BPanL           = 0; //4 top
 sd_door_on_off       = 0;
 recessed_bottom_on_off = 0;
 
@@ -812,6 +812,7 @@ AllScrewPockets ();
 //GPAD_BShell();
 
 /// SPKBOSS62 and SPKBOSSpunch62 integration w Speaker 62mm hole to hole
+if((GPAD_BShell==1)){
 if((Krake_rev2_76mmSPK==1)){
 difference (){ 
 GPAD_BShell();
@@ -821,7 +822,7 @@ SPKBOSSpunch62 (7.8,7.8);
 translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
 SPKBOSS62 (7.8,7.8);
 }
-
+}
 if(RotaryEncoder ==1){
 //RotaryEncoder
 translate( [3*Thick+2,Thick+5,0])     
