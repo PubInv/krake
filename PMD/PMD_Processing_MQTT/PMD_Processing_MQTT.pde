@@ -69,6 +69,7 @@ void setupDictionary() {
   mac_to_NameDict.set("F024F9F1B880", "KRAKE_LB0005");
   mac_to_NameDict.set("F4650BC295C0", "KRAKE_LB0006");
   mac_to_NameDict.set("F4650BC2959C", "KRAKE_LB0007");
+  mac_to_NameDict.set("F4650BC295AC", "KRAKE_LB0008");
   
 
   mac_to_NameDict.set("F4650BC0B524", "KRAKE_US0007");
@@ -90,6 +91,9 @@ void setupDictionary() {
   mac_to_NameDict.set("10061C684D28", "20240421_LEB5");
   mac_to_NameDict.set("A0B765F51E28", "MockingKrake_LEB");
   mac_to_NameDict.set("3C61053DC954", "Not Homework2, Maryville TN");
+  mac_to_NameDict.set("3C61053EE100", "MinKrakeLeeE100, Maryville TN");
+  
+  
 }//end setup mac_to_NameDict
 
 // Makes an array out of the dictionary keys. 
