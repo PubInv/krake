@@ -123,7 +123,7 @@ translate([0,cover_width,0])mirror([0,1,0]){translate([-2,-10,2])cube([10,10,6.5
 door_back_gap = 0.4;
 translate([-door_back_gap,0,0])cube([door_back_gap,cover_width,3]);
 
-translate([0.5,35,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
+translate([0.5,cover_width,0])mirror([0,1,0])rotate([90,0,0])translate([3,4,0])drafted_pin(3+0.15,2+0.15); 
 rotate([90,0,0])translate([3.5,4,0])drafted_pin(3+0.15,2+0.15);
 
 translate([0,0,])color("green"){cover(cover_width,cover_length,cover_thickness);}
