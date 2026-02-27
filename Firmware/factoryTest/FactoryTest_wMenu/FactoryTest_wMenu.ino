@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "v0.4.2.7"
+#define FIRMWARE_VERSION "v0.4.2.8"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -140,18 +140,18 @@ enum TestIndex {
 };
 
 const char* TEST_NAMES[T_COUNT] = {
-  "0 Power / ID",
-  "1 Inputs (Encoder / Button)",
-  "2 LCD (I2C)",
-  "3 LEDs / Lamps",
-  "4 DFPlayer ",
-  "5 SD (DFPlayer card)",
-  "6 Speaker",
-  "7 Wi-Fi AP",
-  "8 Wi-Fi STA (manual SSID/PASS)",
-  "A LittleFS R/W",
-  "B UART0 (USB Serial)",
-  "C SPI loopback",
+    "0 Power / ID",
+    "1 Inputs (Encoder / Button)",
+    "2 LCD (I2C)",
+    "3 LEDs / Lamps",
+    "4 DFPlayer ",
+    "5 SD (DFPlayer card)",
+    "6 Speaker",
+    "7 Wi-Fi AP",
+    "8 Wi-Fi STA (manual SSID/PASS)",
+    "A LittleFS R/W",
+    "B UART0 (USB Serial)",
+    "C SPI loopback",
   "D RS-232 loopback"
 };
 
@@ -163,7 +163,26 @@ bool testResults[T_COUNT] = { false };
 
 static char g_pendingCmd = 0;
 
-static char up(char c) {
+// -----------------------------------------------------------------------------
+// GLOBAL EXIT SUPPORT
+// If user types "exit" (any case), abort current operation and return to menu.
+// -----------------------------------------------------------------------------
+static volatile bool g_globalExitRequested = false;
+
+// Case-insensitive check for exact string "exit"
+static bool isExitCommand(const String &s)
+{
+  if (s.length() != 4)
+    return false;
+
+  return (tolower(s[0]) == 'e' &&
+          tolower(s[1]) == 'x' &&
+          tolower(s[2]) == 'i' &&
+          tolower(s[3]) == 't');
+}
+
+static char up(char c)
+{
   return (char)toupper((unsigned char)c);
 }
 
@@ -187,6 +206,14 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
 
       if (c == '\n' || c == '\r') {
         out.trim();
+        // --- GLOBAL EXIT CHECK ---
+        // If user typed "exit", trigger global abort
+        if (isExitCommand(out))
+        {
+          g_globalExitRequested = true;
+          out = "";
+          return false; // abort current prompt
+        }
 
         if (out.length() == 1 && isMenuKey(out[0])) {
           g_pendingCmd = up(out[0]);
@@ -224,7 +251,16 @@ static bool promptYesNo(const __FlashStringHelper* question,
 
       if (c == '\n' || c == '\r') {
         buf.trim();
-        if (buf.length() == 0) continue;
+        // --- GLOBAL EXIT CHECK ---
+        // If user typed "exit", abort test and return to menu
+        if (isExitCommand(buf))
+        {
+          g_globalExitRequested = true;
+          Serial.println(F("\nGlobal EXIT requested."));
+          return false;
+        }
+        if (buf.length() == 0)
+          continue;
 
         char k = up(buf[0]);
         if (k == 'Y') return true;
@@ -292,16 +328,16 @@ static void printSummary() {
 
     // Left column
     Serial.printf(
-      "%-33s : %-4s",
-      TEST_NAMES[i],
-      testResults[i] ? "PASS" : "FAIL");
+        "%-33s : %-4s",
+        TEST_NAMES[i],
+        testResults[i] ? "PASS" : "FAIL");
 
     // Right column (if present)
     if (i + 1 < T_COUNT) {
       Serial.printf(
-        "    %-33s : %-4s",
-        TEST_NAMES[i + 1],
-        testResults[i + 1] ? "PASS" : "FAIL");
+          "    %-33s : %-4s",
+          TEST_NAMES[i + 1],
+          testResults[i + 1] ? "PASS" : "FAIL");
     }
 
     Serial.println();
@@ -503,9 +539,9 @@ static bool runTest_LCD() {
 
   // STEP 3: Deterministic pattern test
   const char* patterns[4] = {
-    "####################",
-    "ABCDEFGHIJKLMNOPQRST",
-    "abcdefghijklmnopqrst",
+      "####################",
+      "ABCDEFGHIJKLMNOPQRST",
+      "abcdefghijklmnopqrst",
     "12345678901234567890"
   };
 
@@ -516,8 +552,8 @@ static bool runTest_LCD() {
 
   // STEP 4: Operator optical confirmation
   bool visible = promptYesNo(
-    F("Do you see 4 FULL lines, aligned, no garbage characters?"),
-    PROMPT_TIMEOUT_MS,
+      F("Do you see 4 FULL lines, aligned, no garbage characters?"),
+      PROMPT_TIMEOUT_MS,
     false
   );
 
@@ -540,11 +576,11 @@ static bool runTest_LEDs() {
 
   const int pins[] = { LAMP1, LAMP2, LAMP3, LAMP4, LAMP5, LED_Status };
   const char* names[] = {
-    "LAMP1",
-    "LAMP2 (LAMP2)",
-    "LAMP3 (LAMP3)",
-    "LAMP4 (LAMP4)",
-    "LAMP5 (LAMP5)",
+      "LAMP1",
+      "LAMP2 (LAMP2)",
+      "LAMP3 (LAMP3)",
+      "LAMP4 (LAMP4)",
+      "LAMP5 (LAMP5)",
     "LED_Status (LED_Status)"
   };
 
@@ -639,7 +675,7 @@ static bool initDFPlayer() {
   Serial.println(F("DFPlayer detected and responding."));
   return true;
 }
-  
+
 // Put this OUTSIDE of runTest_DFPlayer() (global scope).
 // Call it when dfPlayer.available() is true.
 void printDetail(uint8_t type, int value) {
@@ -960,12 +996,12 @@ static bool runTest_RS232() {
   Serial.printf("Using UART1 TXD=%d, RXD=%d, BAUD=%ld\n", UART1_TXD1, UART1_RXD1, UART1_BAUD);
 
   //Set up UART1
-  
+
   pinMode(UART1_RTS1, OUTPUT);
   pinMode(UART1_CTS1, INPUT);  // NO pull up required because MAX3232 drives.
   //digitalWrite(UART1_RTS1, HIGH); // will make CTS at DB9 negative voltage through loop back
   digitalWrite(UART1_RTS1, LOW); // will make CTS at DB9 positive voltage through loop back
-  
+
   HardwareSerial rs232(1);
   rs232.begin(UART1_BAUD, SERIAL_8N1, UART1_RXD1, UART1_TXD1);
   delay(150);
@@ -998,7 +1034,7 @@ static bool runTest_RS232() {
 
   // Validate
   if (HIGH == digitalRead(UART1_CTS1)){
-     Serial.print("[rs232] FAIL: FLOW CONTROL. Expected DB9 pin 7 between 3-18V. ");
+    Serial.print("[rs232] FAIL: FLOW CONTROL. Expected DB9 pin 7 between 3-18V. ");
     Serial.println("Tip: ensure rs232 RTS<->CTS loopback plug is installed.");
     return false;
   }
@@ -1125,6 +1161,19 @@ void setup() {
 }
 
 void loop() {
+
+  // ---------------------------------------------------------------------------
+  // GLOBAL EXIT HANDLER
+  // If "exit" was detected inside any prompt/test,
+  // abort and return to main menu safely.
+  // ---------------------------------------------------------------------------
+  if (g_globalExitRequested) {
+    g_globalExitRequested = false;
+    Serial.println(F("\n[GLOBAL EXIT] Aborting current operation."));
+    printMenu();
+    return;
+  }
+
   // If a menu key was pressed during a prompt, execute it now.
   if (g_pendingCmd) {
     char c = g_pendingCmd;
@@ -1137,10 +1186,27 @@ void loop() {
   }
 
   if (Serial.available()) {
-    char c = Serial.read();
-    if (c == '\r' || c == '\n') return;
 
-    Serial.println(up(c));  // echo
-    handleCommand(c);
+    static String lineBuf;
+    char c = Serial.read();
+
+    if (c == '\r' || c == '\n') {
+      lineBuf.trim();
+
+      // --- GLOBAL EXIT CHECK (main menu level) ---
+      if (isExitCommand(lineBuf)) {
+        Serial.println(F("\n[GLOBAL EXIT]"));
+        printMenu();
+      }
+      else if (lineBuf.length() == 1) {
+        Serial.println(up(lineBuf[0]));
+        handleCommand(lineBuf[0]);
+      }
+
+      lineBuf = "";
+      return;
+    }
+
+    lineBuf += c;
   }
 }
