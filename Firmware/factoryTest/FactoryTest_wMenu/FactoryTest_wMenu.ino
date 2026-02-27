@@ -99,8 +99,7 @@ const int SPI_CS_PIN = 5;
 // ===== TEST PARAMETERS =====
 static const uint32_t SPI_SPEED = 1000000;  // 1 MHz (safe for factory)
 static const uint8_t TEST_PATTERN[] = {
-  0x55, 0xAA, 0x00, 0xFF, 0x12, 0x34, 0xA5
-};
+    0x55, 0xAA, 0x00, 0xFF, 0x12, 0x34, 0xA5};
 
 // RS-232 (UART1) – IMPORTANT: set these to YOUR PCB pins (via MAX3232)
 const int UART1_TXD1 = 2;   // placeholder safe GPIO
