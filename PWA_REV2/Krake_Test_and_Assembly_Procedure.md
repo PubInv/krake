@@ -349,7 +349,8 @@ Additional tests verify that voltage is going through the decoupling resistors t
    - Current limit: less than 1 A, with 200–300 mA used as an initial safety limit.
 2. Power on the device, measure and record the current draw.
 3. On the serial monitor, run the LCD test to get characters on the LCD. Use test, "2 LCD (I2C)". With a small screw driver, adjust RV301 the CONTRAST poetntiometer for good character constrast. The current draw typicaly increases by about 0.02 Amps.
-4. Measure and record:
+4. On the serial monitor, run the RS-232 test to get a negative voltage on TX, COM port pin 2, please see image "Locator for DB9 pins". Use test, "D RS-232 loopback".
+5. Measure and record:
    - TP109, 3v3Controller supply to U102.
    - TP401, VccLCD supply for U301 and U302.
    - TP405, Vcontrast for the LCD.
@@ -387,7 +388,7 @@ Typical passing units in the first batch showed:
 | TP102  | ~ 4.5V ||
 | TP201  | ~ 5V ||
 | TP202  | ~ 3.3V ||
-| J701  | ~ 6V ||
+| J701 pin 2 | ~ 6V ||
 
 
 Units that deviate significantly from these ranges require investigation (e.g., reflow of regulators, inspection of shorts or opens on the relevant nets).
