@@ -33,8 +33,13 @@ Revision History:
 |v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                     |
 |v0.4.2.6 | 2026-1-8  | Yukti         | Fix DFPlayer test to fail cleanly when hardware |
 |         |           |               | is missing; improve error handling              |
+<<<<<<< HEAD
 |v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port| 
 |v0.4.2.x | 2026-2-23 | N. Kheir      | Adding a splash serial           |
+=======
+|v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|
+|v0.4.2.8 | 2026-1-8  | Yukti         | add global 'exit' command to abort any test     |
+>>>>>>> 0ef503e ( Added global exit to runAllTests() based on codex review)
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -1121,6 +1126,12 @@ static void runAllTests() {
   Serial.println(F("\n[P] Running ALL tests (1 -> D) in order..."));
 
   for (int i = 0; i < T_COUNT; ++i) {
+
+    if (g_globalExitRequested) {
+      Serial.println(F("[Run-All aborted by GLOBAL EXIT]"));
+      return;
+    }
+
     if (g_pendingCmd) break;
 
     testResults[i] = runSingleTestFromIndex(static_cast<TestIndex>(i));
