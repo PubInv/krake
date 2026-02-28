@@ -12,12 +12,12 @@
 
 // Thanks to RonRN18 for this Creative Commons Attribution set of Heat-set insert:
 // https://www.thingiverse.com/thing:5849866
-include <StudModules.scad>
+include <imported_scadModels/StudModules.scad>
 
-use <COVER.scad>
-use <recessed.scad>
-use <slot.scad>
-use <flex_cover.scad>
+use <imported_scadModels/COVER.scad>
+use <imported_scadModels/recessed.scad>
+use <imported_scadModels/slot.scad>
+use <imported_scadModels/flex_cover.scad>
 
 AC_button_x = 38.77;
 AC_button_y = 44.44;
@@ -179,7 +179,7 @@ Door_recess_y_offset = Krake_rev2_76mmSPK? PCBWidth  -93.5: 36.5;
 if(BOSSScrew ==1){
 translate ([PCBLength-70.74,12.24,25]) //is this just to reposition the screw to the correct place?, where are these numbers from?
 //translate ([0,0,FootHeight+ScrewLenght+1])
-import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
+import("parts_toPrint/MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
 module RoundBox($a=Length, $b=Width, $c=Height){// Cube bords arrondis
@@ -524,7 +524,7 @@ linear_extrude(height = 0.7){
 }
 }
 
-include <dsub.scad>
+include <imported_scadModels/dsub.scad>
 ////////////////////// <- New module Panel -> //////////////////////
 module FPanL(){
 
@@ -713,7 +713,7 @@ translate([55,20,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
 
 module centeredHeatSetInsert() {
 translate([0,-60.05,0])
-import( "flanged insert M4 D7.1 H9.11.stl",convexity=1);
+import( "imported_scadModels/flanged insert M4 D7.1 H9.11.stl",convexity=1);
 }
 
 if(HEAT_SET_INSERTS==1){
@@ -872,7 +872,7 @@ translate([3*Thick+2  + translationVariable,Thick+5,Thick+FootHeight+PCBThick/2-
 rotate([0,0,90])translate([0,0,PCBThick-0.2]);
 rotate([0,0,90])translate([-55.88,17.78,0])
 color(Couleur3)
-import("KRAKE_PWArev1.stl", convexity=3);
+import("imported_scadModels/KRAKE_PWArev2.stl", convexity=3);
 }}
 // Panneau avant - Front panel  <<<<<< Text and holes only on this one.
 //rotate([0,-90,-90]) 
@@ -903,22 +903,22 @@ union(){ //sides holes
 $fn=50;
 translate([3*Thick+11,0,Height/2+4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }
 }
 translate([Length-((3*Thick)+11),0,Height/2+4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }
 }
 translate([3*Thick+11,Width-5,Height/2-4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }
 }
 translate([Length-((3*Thick)+11),Width-5,Height/2-4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }}}}//fin de sides holes
 //////////////////////////////////////////////////////////////////////////
 /////////// speaker expansion Courtney ////////////
@@ -1153,7 +1153,7 @@ if(SPK==1){
 color(c=[0,0,2.8])
 translate([PCBLength*.91,PCBWidth*.82,3])
 
-import("Speaker2W-SpeakerOutline.stl");
+import("imported_scadModels/Speaker2W-SpeakerOutline.stl");
 }
 module grill_pattern() {
 
