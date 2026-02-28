@@ -173,13 +173,7 @@ static volatile bool g_globalExitRequested = false;
 // Case-insensitive check for exact string "exit"
 static bool isExitCommand(const String &s)
 {
-  if (s.length() != 4)
-    return false;
-
-  return (tolower(s[0]) == 'e' &&
-          tolower(s[1]) == 'x' &&
-          tolower(s[2]) == 'i' &&
-          tolower(s[3]) == 't');
+  return s.equalsIgnoreCase("exit");
 }
 
 static char up(char c)
