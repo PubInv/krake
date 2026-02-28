@@ -437,6 +437,7 @@ static bool runTest_Inputs() {
 
   unsigned long start = millis();
   while (millis() - start < 10000UL) {
+    if (g_globalBreakRequested) return false;
     int clk = digitalRead(ENC_CLK);
     if (clk != lastCLK) {
       if (digitalRead(ENC_DT) != clk) {
@@ -858,6 +859,10 @@ static bool runTest_Speaker() {
 
   uint32_t start = millis();
   while (millis() - start < 3000) {
+    if (g_globalBreakRequested) {
+    dfPlayer.stop();
+    return false;
+  }
     delay(10);
   }
 
@@ -931,6 +936,10 @@ static bool runTest_WifiSTA() {
 
   uint32_t start = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_CONNECT_MS) {
+    if (g_globalBreakRequested) {
+    WiFi.disconnect(true, true);
+    return false;
+  }
     delay(500);
     Serial.print('.');
   }
@@ -1071,6 +1080,10 @@ static bool runTest_RS232() {
   String rx;
   uint32_t t0 = millis();
   while (millis() - t0 < TIMEOUT_MS && rx.length() < n) {
+    if (g_globalBreakRequested) {
+    rs232.end();
+    return false;
+  }
     while (rs232.available()) {
       char c = (char)rs232.read();
       rx += c;
@@ -1109,10 +1122,7 @@ static bool runTest_RS232() {
   Serial.print(rx);
   Serial.println("[rs232] PASS: UART1 loopback OK");
   return true;
-
-  bool ok = (rx == payload);
-  Serial.printf("RS-232 loopback test: %s\n", ok ? "PASS" : "FAIL (wiring/MAX3232/pins)");
-  return ok;
+//removed dead code  
 }//end runTest_RS232()
 
 // ============================================================================
@@ -1144,6 +1154,7 @@ static void runAllTests() {
   for (int i = 0; i < T_COUNT; ++i) {
 
     if (g_globalBreakRequested) {
+      g_pendingCmd = 0;
       Serial.println(F("[Run-All aborted by GLOBAL BREAK]"));
       return;
     }
