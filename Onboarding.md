@@ -100,9 +100,12 @@ Install the NTPClient library: Download the library from &lt;&lt;Link: a GitHub 
 
 * p5.js sketch link:
   [https://editor.p5js.org/ForrestErickson/sketches/UC5tnT2si](https://editor.p5js.org/ForrestErickson/sketches/UC5tnT2si)
+* p5.js playlist:
+  https://www.youtube.com/playlist?list=PLRqwX-V7Uu6Zy51Q-x9tMWIv9cueOFTFA
 * ml5 sound classifier reference:
   [https://docs.ml5js.org/#/reference/sound-classifier](https://docs.ml5js.org/#/reference/sound-classifier)
-
+* ml5.js playlist:
+  https://www.youtube.com/playlist?list=PLRqwX-V7Uu6YPSwT06y_AEYTqIwbeam3y
 ---
  
  
