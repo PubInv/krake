@@ -42,9 +42,72 @@ Digital electronics still contains **analog behavior** inside real components. P
 
 ---
 
+## Track 2 — Embedded/Firmware Checklist (condensed, de-duplicated)
+
+
+When asking for help, provide:
+
+* Exact board/module + purchase link + correct schematic
+* Exact part numbers + datasheets for all parts
+* What test equipment you have (multimeter, scope, PSU, etc.)
+* Full project or minimal reproducible example
+
+Learning path reminders:
+
+* Start with UNO/ATmega328 basics, then ESP32 (3.3V differences)
+* Learn “no delay()” multitasking style:
+  [https://learn.adafruit.com/multi-tasking-the-arduino-part-1](https://learn.adafruit.com/multi-tasking-the-arduino-part-1)
+* Interrupts (UNO) repo example:
+  [https://github.com/ForrestErickson/ManyInterupts](https://github.com/ForrestErickson/ManyInterupts)
+* Random Nerd Tutorials (Arduino + ESP32 projects):
+  [https://randomnerdtutorials.com/projects-arduino/](https://randomnerdtutorials.com/projects-arduino/)
+  [https://randomnerdtutorials.com/projects-esp32/](https://randomnerdtutorials.com/projects-esp32/)
+
+MQTT essentials (HiveMQ):
+
+* [https://www.hivemq.com/info/mqtt-essentials/#essential-guide](https://www.hivemq.com/info/mqtt-essentials/#essential-guide)
+* Topics & wildcards: [https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/)
+  Key features: Last Will, Retained, QoS
+
+
+
+
+  
+## NTP for ESP32 (time stamping messages)
+
+More for you to learn. Network Time Protocol, aka NTP.
+ 
+The NTP is a feature you could add to the PMD so that it could time stamp medical messages.
+
+Using the NTPClient library:
+Install the NTPClient library: Download the library from &lt;&lt;Link: a GitHub repository https://github.com/arduino-libraries/NTPClient&gt;&gt; or via the Arduino Library Manager.
+
+
+-  https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
+-  https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
+-  https://randomnerdtutorials.com/esp32-ntp-client-date-time-arduino-ide/
+-  https://forum.arduino.cc/t/which-library-for-time-operations/1016669
+-  https://forum.arduino.cc/t/getting-time-from-ntp-service-using-nodemcu-1-0-esp-12e/702333
+-  https://esp32.com/viewtopic.php?t=5188&start=10
+-  https://forum.arduino.cc/t/yet-another-esp32-ntp-question-looping-update-interval/1367219
+-  https://randomnerdtutorials.com/esp32-weather-station-pcb/
+-  https://docs.arduino.cc/libraries/esp32time/
+-  https://basic-starter-kit-for-arduino-uno-r4-wifi.readthedocs.io/en/latest/Extension_Project/Real-time_Weather_OLED.html
+
  
 
-## Track 2 — PCB Design (KiCad + Review + Fabrication)
+## p5.js + ml5.js voice commands 
+
+* p5.js sketch link:
+  [https://editor.p5js.org/ForrestErickson/sketches/UC5tnT2si](https://editor.p5js.org/ForrestErickson/sketches/UC5tnT2si)
+* ml5 sound classifier reference:
+  [https://docs.ml5js.org/#/reference/sound-classifier](https://docs.ml5js.org/#/reference/sound-classifier)
+
+---
+ 
+ 
+
+## Track 3 — PCB Design (KiCad + Review + Fabrication)
 
 ### Useful tool
 - Wokwi (quick prototyping/simulation): http://wokwi.com/
@@ -77,7 +140,15 @@ Digital electronics still contains **analog behavior** inside real components. P
 
 ---
 
-## Track 3 — Documentation (Markdown + Diagrams + LaTeX)
+## Track 4 — OpenSCAD
+
+[Openscad cheatsheet](https://openscad.org/cheatsheet/index.html?version=2021.01)
+ 
+OpenSCAD preview navigation (“three types of movement”):
+[https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/First_Steps/Opening_an_existing_example_model](https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/First_Steps/Opening_an_existing_example_model)
+
+---
+## Track 5 — Documentation (Markdown + Diagrams + LaTeX)
 
 ### Github Syntax
 [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
@@ -100,8 +171,6 @@ Digital electronics still contains **analog behavior** inside real components. P
 | 1 | <img width="300" alt="image1" src=""> | <img width="300" alt="image2" src=""> |
 | 2 | <img width="300" alt="image3" src=""> | <img width="300" alt="image4" src=""> |
 ```
-
-
 
 ### LaTeX / Overleaf
 
@@ -127,4 +196,8 @@ Digital electronics still contains **analog behavior** inside real components. P
 
 * Workflow Procedure
   * [help us help you contribute](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
- 
+
+
+
+
+
