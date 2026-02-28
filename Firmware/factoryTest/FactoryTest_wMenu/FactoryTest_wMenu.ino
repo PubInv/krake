@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "v0.4.2.8"
+#define FIRMWARE_VERSION "v0.4.2.9"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -31,6 +31,8 @@ Revision History:
 |         |           |               | is missing; improve error handling              |
 |v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|
 |v0.4.2.8 | 2026-1-8  | Yukti         | add global 'exit' command to abort any test     |
+|         |           |               | and return to menu.                             |
+|v0.4.2.9 | 2026-1-9  | Yukti         |  updated code and firmware ver. based on review |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
