@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
 #define FIRMWARE_VERSION "v0.4.2.8" // (Added global exit command to abort tests)
@@ -11,6 +12,9 @@
 =======
 #define FIRMWARE_VERSION "v0.4.3.2"
 >>>>>>> 957fab9 ( changed exit to break for consistency)
+=======
+#define FIRMWARE_VERSION "v0.4.3.3"
+>>>>>>> fce74c5 ( updated firmware version for exit/break changes)
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -61,7 +65,11 @@ Revision History:
 |         |           |               | and return to menu.                             |
 |v0.4.3.1 | 2026-2-28 | Yukti         | updated code and firmware ver. based on review  |
 |v0.4.3.2 | 2026-2-28 | Yukti         | changed 'exit' to 'break'                       |
+<<<<<<< HEAD
 >>>>>>> 957fab9 ( changed exit to break for consistency)
+=======
+|v0.4.3.3 | 2026-2-29 | Yukti   | added global break support to all tests         |
+>>>>>>> fce74c5 ( updated firmware version for exit/break changes)
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
