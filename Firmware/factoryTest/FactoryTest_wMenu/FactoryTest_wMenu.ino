@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "v0.4.2.9"
+#define FIRMWARE_VERSION "v0.4.3.2"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -29,10 +29,12 @@ Revision History:
 |v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                     |
 |v0.4.2.6 | 2026-1-8  | Yukti         | Fix DFPlayer test to fail cleanly when hardware |
 |         |           |               | is missing; improve error handling              |
-|v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|
-|v0.4.2.8 | 2026-1-8  | Yukti         | add global 'exit' command to abort any test     |
+|v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-  |
+|                                       flow-control-test-for-com-port                  |
+|v0.4.3.0 | 2026-2-27 | Yukti         | add global 'exit' command to abort any test     |
 |         |           |               | and return to menu.                             |
-|v0.4.2.9 | 2026-1-9  | Yukti         |  updated code and firmware ver. based on review |
+|v0.4.3.1 | 2026-2-28 | Yukti         | updated code and firmware ver. based on review  |
+|v0.4.3.2 | 2026-2-28 | Yukti         | changed 'exit' to 'break'                       |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -167,15 +169,15 @@ bool testResults[T_COUNT] = { false };
 static char g_pendingCmd = 0;
 
 // -----------------------------------------------------------------------------
-// GLOBAL EXIT SUPPORT
-// If user types "exit" (any case), abort current operation and return to menu.
+// GLOBAL BREAK SUPPORT
+// If user types "break" (any case), abort current operation and return to menu.
 // -----------------------------------------------------------------------------
-static volatile bool g_globalExitRequested = false;
+static volatile bool g_globalBreakRequested = false;
 
-// Case-insensitive check for exact string "exit"
-static bool isExitCommand(const String &s)
+// Case-insensitive check for exact string "break"
+static bool isBreakCommand(const String &s)
 {
-  return s.equalsIgnoreCase("exit");
+  return s.equalsIgnoreCase("break");
 }
 
 static char up(char c)
@@ -203,11 +205,11 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
 
       if (c == '\n' || c == '\r') {
         out.trim();
-        // --- GLOBAL EXIT CHECK ---
-        // If user typed "exit", trigger global abort
-        if (isExitCommand(out))
+        // --- GLOBAL BREAK CHECK ---
+        // If user typed "break", trigger global abort
+        if (isBreakCommand(out))
         {
-          g_globalExitRequested = true;
+          g_globalBreakRequested = true;
           out = "";
           return false; // abort current prompt
         }
@@ -248,12 +250,12 @@ static bool promptYesNo(const __FlashStringHelper* question,
 
       if (c == '\n' || c == '\r') {
         buf.trim();
-        // --- GLOBAL EXIT CHECK ---
-        // If user typed "exit", abort test and return to menu
-        if (isExitCommand(buf))
+        // --- GLOBAL BREAK CHECK ---
+        // If user typed "break", abort test and return to menu
+        if (isBreakCommand(buf))
         {
-          g_globalExitRequested = true;
-          Serial.println(F("\nGlobal EXIT requested."));
+          g_globalBreakRequested = true;
+          Serial.println(F("\nGlobal BREAK requested."));
           return false;
         }
         if (buf.length() == 0)
@@ -1093,8 +1095,8 @@ static void runAllTests() {
 
   for (int i = 0; i < T_COUNT; ++i) {
 
-    if (g_globalExitRequested) {
-      Serial.println(F("[Run-All aborted by GLOBAL EXIT]"));
+    if (g_globalBreakRequested) {
+      Serial.println(F("[Run-All aborted by GLOBAL BREAK]"));
       return;
     }
 
@@ -1166,13 +1168,13 @@ void setup() {
 void loop() {
 
   // ---------------------------------------------------------------------------
-  // GLOBAL EXIT HANDLER
-  // If "exit" was detected inside any prompt/test,
+  // GLOBAL BREAK HANDLER
+  // If "break" was detected inside any prompt/test,
   // abort and return to main menu safely.
   // ---------------------------------------------------------------------------
-  if (g_globalExitRequested) {
-    g_globalExitRequested = false;
-    Serial.println(F("\n[GLOBAL EXIT] Aborting current operation."));
+  if (g_globalBreakRequested) {
+    g_globalBreakRequested = false;
+    Serial.println(F("\n[GLOBAL BREAK] Aborting current operation."));
     printMenu();
     return;
   }
@@ -1196,9 +1198,9 @@ void loop() {
     if (c == '\r' || c == '\n') {
       lineBuf.trim();
 
-      // --- GLOBAL EXIT CHECK (main menu level) ---
-      if (isExitCommand(lineBuf)) {
-        Serial.println(F("\n[GLOBAL EXIT]"));
+      // --- GLOBAL BREAK CHECK (main menu level) ---
+      if (isBreakCommand(lineBuf)) {
+        Serial.println(F("\n[GLOBAL BREAK]"));
         printMenu();
       }
       else if (lineBuf.length() == 1) {
