@@ -22,7 +22,7 @@ use <imported_scadModels/flex_cover.scad>
 AC_button_x = 38.77;
 AC_button_y = 44.44;
 
-KrakeEnclosureVersion = 2.9; // change this with each rev
+KrakeEnclosureVersion = 3; // change this with each rev
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
