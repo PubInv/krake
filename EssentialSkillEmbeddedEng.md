@@ -1,5 +1,6 @@
 
-# Onboarding: “Help Us Help You”.  
+# Essential Skills for Embedded Eng: 
+These are public referrances that we can all reffer to, to develop below skills. 
 
 ## Track 1 — Electronics Foundations (Basic + Digital)
 
