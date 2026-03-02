@@ -237,35 +237,45 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
 
 static bool promptYesNo(const __FlashStringHelper* question,
                         uint32_t timeoutMs = PROMPT_TIMEOUT_MS,
-                        bool defaultNo = true) {
+                        bool defaultNo = true)
+{
   Serial.println(question);
   Serial.println(F("Press Y to PASS or N to FAIL (Enter optional)."));
   Serial.println(F("(Menu keys abort this step and run next.)"));
   Serial.print(F("> "));
 
   uint32_t start = millis();
-  String buf;
+
+  char buf[16];          // fixed buffer
+  uint8_t idx = 0;
 
   while (millis() - start < timeoutMs) {
+
     while (Serial.available()) {
+
       char c = Serial.read();
 
+      // --- ENTER pressed ---
       if (c == '\n' || c == '\r') {
-        buf.trim();
-        // --- GLOBAL BREAK CHECK ---
-        // If user typed "break", abort test and return to menu
-        if (isBreakCommand(buf))
-        {
+
+        buf[idx] = '\0';   // null terminate
+
+        // GLOBAL BREAK CHECK
+        if (isBreakCommand(buf)) {
           g_globalBreakRequested = true;
           Serial.println(F("\nGlobal BREAK requested."));
           return false;
         }
-        if (buf.length() == 0)
-          continue;
+
+        if (idx == 0) {
+          continue;  // ignore empty line
+        }
 
         char k = up(buf[0]);
+
         if (k == 'Y') return true;
         if (k == 'N') return false;
+
         if (isMenuKey(k)) {
           g_pendingCmd = k;
           Serial.println(F("\nAborted -> FAIL."));
@@ -276,12 +286,14 @@ static bool promptYesNo(const __FlashStringHelper* question,
         return false;
       }
 
-      if (buf.length() == 0 && isMenuKey(c)) {
+      // Immediate single-key abort (first char only)
+      if (idx == 0 && isMenuKey(c)) {
         g_pendingCmd = up(c);
         Serial.println(F("\nAborted -> FAIL."));
         return false;
       }
 
+      // Immediate Y/N without Enter
       char u = up(c);
       if (u == 'Y') {
         Serial.println(F("Y"));
@@ -292,12 +304,18 @@ static bool promptYesNo(const __FlashStringHelper* question,
         return false;
       }
 
-      buf += c;
+      // Append safely
+      if (idx < sizeof(buf) - 1) {
+        buf[idx++] = c;
+      }
     }
+
     delay(5);
   }
 
-  Serial.println(defaultNo ? F("\nNo response -> FAIL") : F("\nNo response -> PASS"));
+  Serial.println(defaultNo ? F("\nNo response -> FAIL")
+                           : F("\nNo response -> PASS"));
+
   return !defaultNo;
 }
 
