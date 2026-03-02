@@ -218,9 +218,17 @@ static char g_pendingCmd = 0;
 static volatile bool g_globalBreakRequested = false;
 
 // Case-insensitive check for exact string "break"
-static bool isBreakCommand(const String &s)
+static bool isBreakCommand(const char* s)
 {
-  return s.equalsIgnoreCase("break");
+  if (!s) return false;
+
+  return
+    (tolower(s[0]) == 'b') &&
+    (tolower(s[1]) == 'r') &&
+    (tolower(s[2]) == 'e') &&
+    (tolower(s[3]) == 'a') &&
+    (tolower(s[4]) == 'k') &&
+    (s[5] == '\0');
 }
 
 static char up(char c)
@@ -1240,8 +1248,6 @@ void loop() {
 
   // ---------------------------------------------------------------------------
   // GLOBAL BREAK HANDLER
-  // If "break" was detected inside any prompt/test,
-  // abort and return to main menu safely.
   // ---------------------------------------------------------------------------
   if (g_globalBreakRequested) {
     g_globalBreakRequested = false;
@@ -1250,7 +1256,9 @@ void loop() {
     return;
   }
 
-  // If a menu key was pressed during a prompt, execute it now.
+  // ---------------------------------------------------------------------------
+  // Pending menu command from aborted prompt
+  // ---------------------------------------------------------------------------
   if (g_pendingCmd) {
     char c = g_pendingCmd;
     g_pendingCmd = 0;
@@ -1261,28 +1269,40 @@ void loop() {
     return;
   }
 
+  // ---------------------------------------------------------------------------
+  // Main menu serial input (fixed buffer, no String)
+  // ---------------------------------------------------------------------------
   if (Serial.available()) {
 
-    static String lineBuf;
+    static char lineBuf[32];   // fixed-size buffer
+    static uint8_t idx = 0;    // current write index
+
     char c = Serial.read();
 
+    // If newline -> process full line
     if (c == '\r' || c == '\n') {
-      lineBuf.trim();
 
-      // --- GLOBAL BREAK CHECK (main menu level) ---
+      lineBuf[idx] = '\0';  // null-terminate
+
+      // GLOBAL BREAK CHECK
       if (isBreakCommand(lineBuf)) {
         Serial.println(F("\n[GLOBAL BREAK]"));
         printMenu();
       }
-      else if (lineBuf.length() == 1) {
-        Serial.println(up(lineBuf[0]));
-        handleCommand(lineBuf[0]);
+      // Single-character command
+      else if (idx == 1) {
+        char cmd = up(lineBuf[0]);
+        Serial.println(cmd);
+        handleCommand(cmd);
       }
 
-      lineBuf = "";
+      idx = 0;  // reset buffer
       return;
     }
 
-    lineBuf += c;
+    // Append character safely
+    if (idx < sizeof(lineBuf) - 1) {
+      lineBuf[idx++] = c;
+    }
   }
 }
