@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "v0.4.3.3"
+#define FIRMWARE_VERSION "v0.4.3.4"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -35,7 +35,10 @@ Revision History:
 |         |           |               | and return to menu.                             |
 |v0.4.3.1 | 2026-2-28 | Yukti         | updated code and firmware ver. based on review  |
 |v0.4.3.2 | 2026-2-28 | Yukti         | changed 'exit' to 'break'                       |
-|v0.4.3.3 | 2026-2-29 | Yukti   | added global break support to all tests         |
+|v0.4.3.3 | 2026-2-29 | Yukti         | added global break support to all tests         |
+|v0.4.3.4 | 2026-03-01| Yukti         | Refactor GLOBAL BREAK handling; remove dynamic  |
+|                     |               | String usage from interactive paths; add        |
+|                     |               | cooperative break checks in long-running loops  |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
