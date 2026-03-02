@@ -62,6 +62,7 @@ Build notes:
 #include <LittleFS.h>
 #include <LiquidCrystal_I2C.h>
 #include <DFRobotDFPlayerMini.h>
+#include <strings.h>
 
 // ============================================================================
 // Configuration
@@ -178,15 +179,7 @@ static volatile bool g_globalBreakRequested = false;
 // Case-insensitive check for exact string "break"
 static bool isBreakCommand(const char* s)
 {
-  if (!s) return false;
-
-  return
-    (tolower(s[0]) == 'b') &&
-    (tolower(s[1]) == 'r') &&
-    (tolower(s[2]) == 'e') &&
-    (tolower(s[3]) == 'a') &&
-    (tolower(s[4]) == 'k') &&
-    (s[5] == '\0');
+  return (s != nullptr) && (strcasecmp(s, "break") == 0);
 }
 
 static char up(char c)
