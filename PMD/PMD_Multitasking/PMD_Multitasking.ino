@@ -71,15 +71,8 @@ public:
 //functions defined below
 
 void serialSplash() {
-  //Serial splash
   Serial.println();
-  Serial.print(F("=============="));    
-  Serial.print(" ");
-  Serial.print(__FILE_NAME__); 
-  Serial.print(" ");
-  Serial.print(VERSION);
-  Serial.println(F("============"));    
-  
+  Serial.println(F("======== " __FILE_NAME__ " " VERSION "========"));    
   Serial.println(MODEL_NAME);
   Serial.println(ESP.getChipModel()); // Prints "ESP32-S3", etc.
   Serial.print(F("Compiler: "));
@@ -87,9 +80,9 @@ void serialSplash() {
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
-  Serial.println(F("==================================="));
+  Serial.println(F("==================================================="));
   Serial.println();
-}
+}// end serialSplash()
 
 //Defining the behavior
 // Flasher led1(ledpin#, on time, off time);
