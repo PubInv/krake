@@ -72,11 +72,18 @@ public:
 
 void serialSplash() {
   //Serial splash
-  Serial.println(F("==================================="));
-  Serial.print(PROG_NAME);
-  Serial.println(VERSION);
+  Serial.println();
+  Serial.print(F("=============="));    
+  Serial.print(" ");
+  Serial.print(__FILE_NAME__); 
+  Serial.print(" ");
+  Serial.print(VERSION);
+  Serial.println(F("============"));    
+  
   Serial.println(MODEL_NAME);
-  Serial.println(DEVICE_UNDER_TEST);
+  Serial.println(ESP.getChipModel()); // Prints "ESP32-S3", etc.
+  Serial.print(F("Compiler: "));
+  Serial.println(__cplusplus); // Defined when the C++ compiler is in use
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
