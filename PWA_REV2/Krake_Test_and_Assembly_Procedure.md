@@ -439,17 +439,34 @@ This section covers basic procedures for powering Krake and verifying that the a
    - 5 V regulator output (~5.0 V).
    - 3.3 V regulator output (~3.3 V).
    - LCD backlight and any power/status LEDs.
+  
+  - Navigate to krake\Firmware\factoryTest\FactoryTest_wMenu and open  `FactoryTest_wMenu.ino`
+- Using USB to USB C cable to connect the PCB to the computer
+- Using device manager identify which port the PCB is connected to.
+- When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
+- Proceed to select the board - esp32 dev board
+- Upload to the board and allow missing libraries to be identified, library specifications are below
+  PubSubClient by Nick O'Leary
+  Aruinojson by Benoit Blanchon
+  LiquidCrystal I2C by Frank de Brabander
+  ESPEssentials by Stephan Rumswinkel
+  LittleFS_esp32 by lorol
+  RotaryEncoder by Matthais Hertel
+  DFRobotDFPlayerMini by DFRobot
+- One upload is complete, navigate to the Serial Monitor within Arduino IDE
+- Change the 'baud rate' to 115200
+- Enter 'P' into the Serial Monitor
+- After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks
+- **CL add details here of the tasks**
+
+
 
 ## DFPlayer functional check
+**CL check this can be removed - df player tested previously**
 
 With the DFPlayer test firmware loaded (see below), the operator can perform a quick functional audio test:
 
-1. Load a microSD card with the standard Krake audio files. Audio file names must start with a three- or four-digit number:
-   - **Prefix:** *DFPlayer Mini* only looks at the file name prefix, which must be numerical. The remainder of the file name is ignored.
-   - **Number of Digits:** *DFPlayer Mini* expects either **three** or **four** digits, depending on where you store the file.
-   - **Extension:** *DFPlayer Mini* automatically looks for the file extensions `mp3`, `wav`, and `wma`.  
-     Examples: `0001.mp3`, `0023.wav`, `1097 my song.mp3`, `0345 another song.wma`.
-
+1. Load a microSD card with the standard Krake audio files.
 2. Insert the card into the DFPlayer module.
 3. Connect the external test speaker to the Krake speaker output.
 4. Load the firmware `DFPlayerTD5580ATest` onto the ESP32 (via USB–UART or OTA).
