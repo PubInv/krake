@@ -3,6 +3,9 @@
 
 namespace protocol
 {
+    union Command;
+    class ProtocolMessage;
+
     enum class CommandType : char
     {
         MUTE = 's',
@@ -23,23 +26,53 @@ namespace protocol
 
     class AlarmCommand
     {
+
+    private:
+        friend union Command;
+
     private:
         AlarmLevel level;
-
-        explicit AlarmCommand();
-        explicit AlarmCommand(AlarmLevel level);
+        const char const *alarm;
 
     public:
-        static AlarmCommand deserialize();
+        explicit AlarmCommand(AlarmLevel level, const char *const alarmMessage);
+        static AlarmCommand deserialize(const char *const messageBytes);
     };
 
     class InfoCommand
     {
     private:
-        explicit InfoCommand();
+        friend union Command;
+        friend class ProtocolMessage;
 
     public:
-        static InfoCommand deserialize();
+        explicit InfoCommand();
+        static InfoCommand deserialize(const char *const messageBytes);
+    };
+
+    union Command
+    {
+        AlarmCommand alarm;
+        InfoCommand info;
+
+    public:
+        explicit Command(const InfoCommand infoCommand);
+        explicit Command(const AlarmCommand alarmCommand);
+    };
+
+    class ProtocolMessage
+    {
+        // Methods
+    private:
+        explicit ProtocolMessage(CommandType commandType, Command command);
+
+        // Data members
+    private:
+        CommandType commandType;
+        Command command;
+
+    public:
+        static ProtocolMessage deserialize(const char *const messageBytes);
     };
 }
 
