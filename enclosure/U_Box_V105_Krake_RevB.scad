@@ -12,17 +12,17 @@
 
 // Thanks to RonRN18 for this Creative Commons Attribution set of Heat-set insert:
 // https://www.thingiverse.com/thing:5849866
-include <StudModules.scad>
+include <imported_scadModels/StudModules.scad>
 
-use <COVER.scad>
-use <recessed.scad>
-use <slot.scad>
-use <flex_cover.scad>
+use <imported_scadModels/COVER.scad>
+use <imported_scadModels/recessed.scad>
+use <imported_scadModels/slot.scad>
+use <imported_scadModels/flex_cover.scad>
 
 AC_button_x = 38.77;
 AC_button_y = 44.44;
 
-KrakeEnclosureVersion = 2.6; // change this with each rev
+KrakeEnclosureVersion = 3; // change this with each rev
 
 /* Project Selector */
 Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
@@ -34,13 +34,13 @@ echo("WARNING: More than one project mode active!!!");
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
-GPAD_TShell          = 1;
+GPAD_TShell          = 0;
 GPAD_BShell          = 0; //2 w/LCD 
-GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           = 0; //4 top
+GPAD_FPanL           = 1;//3 bottom
+GPAD_BPanL           = 1; //4 top
 sd_door_on_off       = 0;
-recessed_bottom_on_off = 1;
-
+recessed_bottom_on_off = 0;// turn on/off the recess moduel only
+//// recess sub modules when recess module is on///
 
 
 ////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 1;//pcb
+PWA_KRAKE            = 0;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -60,8 +60,6 @@ SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
 GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
 GPAD_TShellWithVESA  = 1; // Krake TShell 
-recessed_module_on_off = 1; // turn on/off the recess moduel only
-//// recess sub modules when recess module is on///
 recessed_wall_on_off = 1;
 //////////////////////////////
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
@@ -179,7 +177,7 @@ Door_recess_y_offset = Krake_rev2_76mmSPK? PCBWidth  -93.5: 36.5;
 if(BOSSScrew ==1){
 translate ([PCBLength-70.74,12.24,25]) //is this just to reposition the screw to the correct place?, where are these numbers from?
 //translate ([0,0,FootHeight+ScrewLenght+1])
-import("MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
+import("parts_toPrint/MCMaster_Carr_Pan_Head_Screw_99461a941.stl");
 }
 /////////// - Boitier générique bord arrondis - Generic rounded box - //////////
 module RoundBox($a=Length, $b=Width, $c=Height){// Cube bords arrondis
@@ -524,7 +522,7 @@ linear_extrude(height = 0.7){
 }
 }
 
-include <dsub.scad>
+include <imported_scadModels/dsub.scad>
 ////////////////////// <- New module Panel -> //////////////////////
 module FPanL(){
 
@@ -685,7 +683,7 @@ else
     
 }
 if (GPAD_TshellDoorRecess == 1){
-translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3]) cube([80+2,35+19,10]);
+translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3])cube([90,35+19,10]);
     
 }}
 if (GPAD_TshellDoorRecess == 1){
@@ -693,11 +691,11 @@ if (GPAD_TshellDoorRecess == 1){
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
     
 rotate([180,0,90]){difference(){cover_unit(); 
-translate([50,17.5,0])translate([0,0,-16])cylinder(h = 22, r = 7.9);
+translate([55,20,0])translate([0,0,-10])cylinder(h = 22, r = 7.9);
 
 
 }
-translate([50,17.5,0]){rotate([0,0,180])mirror([0,0,1])test_locking();
+translate([55,20,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
 
 }
 }
@@ -713,7 +711,7 @@ translate([50,17.5,0]){rotate([0,0,180])mirror([0,0,1])test_locking();
 
 module centeredHeatSetInsert() {
 translate([0,-60.05,0])
-import( "flanged insert M4 D7.1 H9.11.stl",convexity=1);
+import( "imported_scadModels/flanged insert M4 D7.1 H9.11.stl",convexity=1);
 }
 
 if(HEAT_SET_INSERTS==1){
@@ -770,7 +768,7 @@ if (PCBFeet==1){// Feet
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //(On/Off, Xpos, Ypos, Diameter)
-for ( i = [-7.5:-2.5] ){
+for ( i = [-6.5:-2.5] ){
     CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1 , switch signs to move downwards ??Question
 }
 //CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power //??Question extra?
@@ -807,7 +805,12 @@ CableHole();
 }
 AllScrewPockets ();
 
+
+}}
+//GPAD_BShell();
+
 /// SPKBOSS62 and SPKBOSSpunch62 integration w Speaker 62mm hole to hole
+if((GPAD_BShell==1)){
 if((Krake_rev2_76mmSPK==1)){
 difference (){ 
 GPAD_BShell();
@@ -817,8 +820,7 @@ SPKBOSSpunch62 (7.8,7.8);
 translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
 SPKBOSS62 (7.8,7.8);
 }
-}}
-//GPAD_BShell();
+}
 if(RotaryEncoder ==1){
 //RotaryEncoder
 translate( [3*Thick+2,Thick+5,0])     
@@ -868,7 +870,7 @@ translate([3*Thick+2  + translationVariable,Thick+5,Thick+FootHeight+PCBThick/2-
 rotate([0,0,90])translate([0,0,PCBThick-0.2]);
 rotate([0,0,90])translate([-55.88,17.78,0])
 color(Couleur3)
-import("KRAKE_PWArev1.stl", convexity=3);
+import("imported_scadModels/KRAKE_PWArev2.stl", convexity=3);
 }}
 // Panneau avant - Front panel  <<<<<< Text and holes only on this one.
 //rotate([0,-90,-90]) 
@@ -899,22 +901,22 @@ union(){ //sides holes
 $fn=50;
 translate([3*Thick+11,0,Height/2+4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }
 }
 translate([Length-((3*Thick)+11),0,Height/2+4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }
 }
 translate([3*Thick+11,Width-5,Height/2-4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }
 }
 translate([Length-((3*Thick)+11),Width-5,Height/2-4]){
 rotate([90,0,0]){
-import("MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
+import("parts_toPrint/MCMaster_Carr_Torx_Roundhead_Screw_99397A324.stl");
 }}}}//fin de sides holes
 //////////////////////////////////////////////////////////////////////////
 /////////// speaker expansion Courtney ////////////
@@ -1087,9 +1089,9 @@ cylinder(r=f,h=1,false);
 module recessed_module(){
 translate([0,0,-R_height+9]){
     if (sd_door_on_off == 1){
-        translate(v = [46.3,44,24.8]) flexiable_cover(n = 23, l = 24, h = 1, g = 1.6, t = 0.3);
+        translate(v = [46.3+29,44+47.5,24.8]) rotate([0,0,180])flexiable_cover(n = 26, l = 29, h = 1, g = 1.6, t = 0.3);
         }
-    if(recessed_bottom_on_off == 1)cover_slot();
+    if(recessed_bottom_on_off == 1)translate([0,5,0])cover_slot();
 
     }
 if(recessed_wall_on_off == 1){
@@ -1100,7 +1102,7 @@ if(recessed_wall_on_off == 1){
         cut_cube_x = 24;
         cut_cube_y = 30;
         translate([cut_cube_x,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
-        translate([cut_cube_x+45,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
+        translate([cut_cube_x+50,cut_cube_y,Height-30-cut_cube_height])cube([10,10,cut_cube_height]);
         }}
 
 
@@ -1112,11 +1114,11 @@ translate([0,0,-R_height+9])difference(){
     reccesed_f();
     translate([AC_button_x,AC_button_y,26.8])cylinder(r=6,h=10);
     translate([AC_button_x,AC_button_y+29.67,26.8])cylinder(r=6,h=10);
-    translate([AC_button_x+8,AC_button_y,26.5])
+    translate([AC_button_x+8,AC_button_y+7,26.5])
     {
-        cube([23,35,3]);
+        cube([23+5,40,3]);
     }  
-        translate([45.2,48,10])cube([26.2,4,50]);
+        translate([45.2,48+10+27.5,10])cube([26.2+5,4,50]);
     }       
 }
 }
@@ -1128,11 +1130,11 @@ translate([44,42.5,19+4.8])cube([20.7,20.7,8.6]);
 }
 
 module cover_slot() {
-gap = -13;
+gap = -15.5;
 slot_w = 1.3;
 slot_h = 3;
 slot_t = 0.5;
-slot_l = 50;
+slot_l = 55;
 
 difference(){union(){
 translate([45.3-gap,90,25.5]){
@@ -1141,7 +1143,7 @@ mirror(v = [1,0,0]) translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = s
 translate([gap,0,0]) rotate([90,0,0]) slot(w = slot_w, h = slot_h, t = slot_t, l = slot_l);
 }
 }
-translate([45.2,48,0])cube([-gap*2+0.2,4,50]);
+translate([45.2,48+27.5+5,0])cube([-gap*2+0.2,4,50]);
 
 } 
 }
@@ -1149,7 +1151,7 @@ if(SPK==1){
 color(c=[0,0,2.8])
 translate([PCBLength*.91,PCBWidth*.82,3])
 
-import("Speaker2W-SpeakerOutline.stl");
+import("imported_scadModels/Speaker2W-SpeakerOutline.stl");
 }
 module grill_pattern() {
 
