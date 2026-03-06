@@ -33,11 +33,23 @@ void Manager::connect(const char *const accessPointSsid)
 
   this->wifiManager.setSaveConfigCallback(saveConfigCallback);
 
-  auto apStaConnectedCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
+  auto apStartedCallback = [this](WiFiManager *wifiManager)
   {
+    this->apStarted();
+  };
+
+  this->wifiManager.setAPCallback(apStartedCallback);
+
+  auto staGotIpCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
+  {
+    if ((this->wifi.localIP() == INADDR_NONE) && (this->getMode() == wifi_mode_t::WIFI_MODE_STA))
+    {
+      return;
+    }
+
     this->ipSet();
   };
-  this->wifi.onEvent(apStaConnectedCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  this->wifi.onEvent(staGotIpCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 
   bool connectSuccess = false;
   if (accessPointSsid == "")
@@ -53,6 +65,29 @@ void Manager::connect(const char *const accessPointSsid)
 void Manager::setConnectedCallback(std::function<void()> callback)
 {
   this->connectedCallback = callback;
+}
+
+void Manager::setApStartedCallback(std::function<void()> callback)
+{
+  this->apStartedCallback = callback;
+}
+
+wifi_mode_t Manager::getMode()
+{
+  return this->wifi.getMode();
+}
+
+IPAddress Manager::getAddress()
+{
+  switch (this->getMode())
+  {
+  case wifi_mode_t::WIFI_MODE_AP:
+    return this->wifi.softAPIP();
+  case wifi_mode_t::WIFI_MODE_STA:
+    return this->wifi.localIP();
+  default:
+    return INADDR_NONE;
+  }
 }
 
 void Manager::ssidSaved()
@@ -75,6 +110,18 @@ void Manager::ipSet()
   if (this->connectedCallback)
   {
     this->connectedCallback();
+  }
+}
+
+void Manager::apStarted()
+{
+  this->print.print("AP Has Started: ");
+  this->wifi.softAPIP().printTo(this->print);
+  this->print.print("\n");
+
+  if (this->apStartedCallback)
+  {
+    this->apStartedCallback();
   }
 }
 
