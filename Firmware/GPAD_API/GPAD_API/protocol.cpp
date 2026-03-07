@@ -2,11 +2,14 @@
 
 using namespace protocol;
 
-AlarmCommand::AlarmCommand(AlarmLevel alarmLevel, std::array<char, 80> alarmMessage) : level(alarmLevel), message(alarmMessage) {}
+AlarmCommand::AlarmCommand(const AlarmCommand::Level alarmLevel, const std::array<char, 80> alarmMessage) : level(alarmLevel), message(alarmMessage) {}
 
 AlarmCommand AlarmCommand::deserialize(const char *const messageBytes)
 {
-    AlarmLevel level = AlarmLevel::Level1;
+    // TODO: Throw error if there is no 0th element;
+    const auto level = static_cast<AlarmCommand::Level>(messageBytes[0]);
+
+    const auto level = AlarmCommand::Level::Level1;
     return AlarmCommand(level, std::array<char, 80>());
 }
 
@@ -21,8 +24,16 @@ InfoCommand InfoCommand::deserialize(const char *const messageBytes)
 
 const ProtocolMessage ProtocolMessage::deserialize(const char *const messageBytes)
 {
-    ProtocolMessage protocolMessage = ProtocolMessage();
-    protocolMessage.info = InfoCommand();
+    // TODO: This should be wrapped in a try/catch if there isn't a 0th element
+    auto commandType = static_cast<CommandType>(messageBytes[0]);
 
-    return protocolMessage;
+    auto remainingBytes = messageBytes + 1;
+
+    switch (commandType)
+    {
+    case CommandType::ALARM:
+        return ProtocolMessage(AlarmCommand::deserialize(remainingBytes));
+    case CommandType::INFO:
+        return ProtocolMessage(InfoCommand::deserialize(remainingBytes));
+    }
 }
