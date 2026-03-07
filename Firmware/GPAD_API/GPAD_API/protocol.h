@@ -1,6 +1,8 @@
 #ifndef _PROTOCOL_H
 #define _PROTOCOL_H
 
+#include <array>
+
 namespace protocol
 {
     union Command;
@@ -28,51 +30,66 @@ namespace protocol
     {
 
     private:
-        friend union Command;
+        AlarmCommand();
+        friend struct ProtocolMessage;
 
     private:
         AlarmLevel level;
-        const char const *alarm;
+        std::array<char, 80> message;
 
     public:
-        explicit AlarmCommand(AlarmLevel level, const char *const alarmMessage);
+        explicit AlarmCommand(AlarmLevel level, std::array<char, 80> message);
+
+        AlarmCommand(AlarmCommand &&other) = default;
+        AlarmCommand operator=(AlarmCommand &&other)
+        {
+            return std::move(other);
+        }
+        AlarmCommand(AlarmCommand &other) = delete;
+
         static AlarmCommand deserialize(const char *const messageBytes);
     };
 
     class InfoCommand
     {
     private:
-        friend union Command;
-        friend class ProtocolMessage;
+        InfoCommand();
+        friend struct ProtocolMessage;
 
     public:
-        explicit InfoCommand();
+        InfoCommand(InfoCommand &&other) = default;
+        InfoCommand operator=(InfoCommand &&other)
+        {
+            return std::move(other);
+        }
+        InfoCommand(InfoCommand &other) = delete;
+
         static InfoCommand deserialize(const char *const messageBytes);
     };
 
-    union Command
+    struct ProtocolMessage final
     {
-        AlarmCommand alarm;
-        InfoCommand info;
+    private:
+        enum
+        {
+            ALARM,
+            INFO
+        } command;
+
+        union
+        {
+            AlarmCommand alarm;
+            InfoCommand info;
+        };
 
     public:
-        explicit Command(const InfoCommand infoCommand);
-        explicit Command(const AlarmCommand alarmCommand);
-    };
+        ProtocolMessage(ProtocolMessage &&other) = default;
 
-    class ProtocolMessage
-    {
-        // Methods
+        ProtocolMessage(ProtocolMessage &other) = delete;
+        static const ProtocolMessage deserialize(const char *const messageBytes);
+
     private:
-        explicit ProtocolMessage(CommandType commandType, Command command);
-
-        // Data members
-    private:
-        CommandType commandType;
-        Command command;
-
-    public:
-        static ProtocolMessage deserialize(const char *const messageBytes);
+        ProtocolMessage();
     };
 }
 
