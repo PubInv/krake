@@ -17,75 +17,82 @@ namespace protocol
         INFO = 'i',
     };
 
-    enum class AlarmLevel : char
-    {
-        Level1 = 1,
-        Level2 = 2,
-        Level3 = 3,
-        Level4 = 4,
-        Level5 = 5,
-    };
-
     class AlarmCommand
     {
 
+    public:
+        enum class Level : char
+        {
+            Level1 = 1,
+            Level2 = 2,
+            Level3 = 3,
+            Level4 = 4,
+            Level5 = 5,
+        };
+
     private:
-        AlarmCommand();
+        const Level level;
+        const std::array<char, 80> message;
+
+    private:
         friend struct ProtocolMessage;
 
-    private:
-        AlarmLevel level;
-        std::array<char, 80> message;
+        // TODO: Throw error if the message cannot be deserialized from the bytes
+        static AlarmCommand deserialize(const char *const messageBytes);
 
     public:
-        explicit AlarmCommand(AlarmLevel level, std::array<char, 80> message);
+        explicit AlarmCommand(const Level level, const std::array<char, 80> message);
 
         AlarmCommand(AlarmCommand &&other) = default;
-        AlarmCommand operator=(AlarmCommand &&other)
+        AlarmCommand operator=(AlarmCommand &&other) noexcept
         {
             return std::move(other);
         }
+        AlarmCommand() = delete;
         AlarmCommand(AlarmCommand &other) = delete;
-
-        static AlarmCommand deserialize(const char *const messageBytes);
     };
 
     class InfoCommand
     {
     private:
-        InfoCommand();
         friend struct ProtocolMessage;
+
+        InfoCommand();
+        // TODO: Throw error if the message cannot be deserialized from the bytes
+        static InfoCommand deserialize(const char *const messageBytes);
 
     public:
         InfoCommand(InfoCommand &&other) = default;
-        InfoCommand operator=(InfoCommand &&other)
+        InfoCommand operator=(InfoCommand &&other) noexcept
         {
             return std::move(other);
         }
         InfoCommand(InfoCommand &other) = delete;
-
-        static InfoCommand deserialize(const char *const messageBytes);
     };
 
     struct ProtocolMessage final
     {
     private:
-        enum
-        {
-            ALARM,
-            INFO
-        } command;
-
-        union
+        const union
         {
             AlarmCommand alarm;
             InfoCommand info;
         };
 
+        const CommandType commandType;
+
     public:
+        ProtocolMessage(AlarmCommand alarmCommand) : commandType(CommandType::ALARM), alarm(std::move(alarmCommand)) {}
+        ProtocolMessage(InfoCommand infoCommand) : commandType(CommandType::INFO), info(std::move(infoCommand)) {}
+
         ProtocolMessage(ProtocolMessage &&other) = default;
+        ProtocolMessage operator=(ProtocolMessage &&other) noexcept
+        {
+            return std::move(other);
+        }
 
         ProtocolMessage(ProtocolMessage &other) = delete;
+        // TODO: This needs to through an error if the message could not be deserialized
         static const ProtocolMessage deserialize(const char *const messageBytes);
 
     private:
