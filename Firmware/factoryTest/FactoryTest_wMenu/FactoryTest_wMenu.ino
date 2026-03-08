@@ -212,7 +212,7 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
         out.trim();
         // --- GLOBAL BREAK CHECK ---
         // If user typed "break", trigger global abort
-        if (isBreakCommand(out))
+        if (isBreakCommand(out.c_str()))
         {
           g_globalBreakRequested = true;
           out = "";
