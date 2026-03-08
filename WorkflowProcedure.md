@@ -1,5 +1,5 @@
-
-# Krake Workflow 
+# Krake 
+## Workflow
 
 ## Goals
 
@@ -135,10 +135,32 @@ On GitHub:
 
 **PR checklist (paste into PR):**
 
-* [ ] Closes #<issue>
-* [ ] Validation steps written & artifacts attached
-* [ ] Only related files changed
-* [ ] Correct folder structure
+## PR Template: 
+
+
+```
+
+## Links
+- [ ] Closes #<issue>
+
+## What & Why
+-
+
+## Validation / How to Verify
+1.
+2.
+
+## Artifacts (attach if relevant)
+- [ ] Screenshots / PDFs / STLs
+- [ ] Logs
+
+## Checklist
+- [ ] Only related changes
+- [ ] Folder structure respected, work directory. 
+- [ ] Validation steps written
+```
+
+ 
 
 Use **Draft PR** if not ready.
 
@@ -190,27 +212,3 @@ git fetch --prune
 
 * Block force pushes
 > Prevent users with push access from force pushing to refs.
-
-## PR Template: 
-
-
-```
-## What & Why
--
-
-## Validation / How to Verify
-1.
-2.
-
-## Artifacts (attach if relevant)
-- [ ] Screenshots / PDFs / STLs
-- [ ] Logs
-
-## Links
-Closes #<issue>
-
-## Checklist
-- [ ] Only related changes
-- [ ] Folder structure respected
-- [ ] Validation steps written
-```
