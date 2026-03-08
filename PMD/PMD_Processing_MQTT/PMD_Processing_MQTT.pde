@@ -36,6 +36,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 // Date: 20251225 Rev 0.32.  Publish with retain = true.  void client.publish(String topic, byte[] payload, int qos, boolean retained);
 // Date: 20260210 Rev 0.33.  Publish to an ADaM topic 
 // Date: 20260218 Rev 0.34.  Lower alarm level on many of the keyboard user input. Set for retained true for Lee, Nagham and Robert messages. 
+// Date: 20260308 Rev 0.35.  Rem out Publish/Subscribe to AdaM at "adam/out/LEBANON-5" 
 
 
 
@@ -59,7 +60,7 @@ String BROKER_URL = "mqtt://public:public@public.cloud.shiftr.io";
 StringDict mac_to_NameDict = new StringDict();
 void setupDictionary() {
 
-  mac_to_NameDict.set("adam/out/LEBANON-5", "ADAM_Server");
+//  mac_to_NameDict.set("adam/out/LEBANON-5", "ADAM_Server");
 
 
   mac_to_NameDict.set("F024F9F1B874", "KRAKE_LB0001");
@@ -126,7 +127,7 @@ class Adapter implements MQTTListener {
 
     mqttBrokerIsConnected = true;
     for (int i = 0; i < KRAKE_MAC.length; i++) {
-      client.subscribe("adam/out/LEBANON-5");// This is an ADaM server
+//      client.subscribe("adam/out/LEBANON-5");// This is an ADaM server
       client.subscribe(KRAKE_MAC[i]+"_ACK");
       //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
       //      client.setWill(KRAKE_MAC[i]+"_ACK", KRAKE_MAC[i]+" Has disconnected.");
@@ -134,7 +135,10 @@ class Adapter implements MQTTListener {
     }//end for i
   }// end clientCOnnect
 
-  void messageReceived(String topic, byte[] payload) {    
+  void messageReceived(String topic, byte[] payload) {  
+//    println(topic + ", " + thePayload);  // Raw topic and payload
+
+    //Friendly and Formated and time stamped
     topic = topic.substring(0, 12); //Check shorten topic for a match to a MAC
     thePayload = str(year())+ String.format("%02d", month())+ String.format("%02d", day())+ "_"+ String.format("%02d", hour())+ String.format("%02d", minute())+ String.format("%02d", second()) ; //time stamp
     thePayload = thePayload + " " + "Msg_recd: " + mac_to_NameDict.get(topic) + " - " + new String(payload);
