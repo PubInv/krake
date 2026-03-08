@@ -23,7 +23,7 @@ Revision History:
 | v0.4.1  | 2025-12-27| N. Kheir      | Cleanup: remove duplicate DF flags, fix         |
 |         |           |               | LCD allow-list loop, clean line input parsing   |
 |v0.4.1.1 | 2025-12-30| N. Kheir      | UART1 backloop working and final.               |
-| v0.4.2  | 2026-1-1  | N. Kheir      | SPI backloop working and final. DFP debug       |
+|v0.4.2.0 | 2026-1-1  | N. Kheir      | SPI backloop working and final. DFP debug       |
 |v0.4.2.1 | 2026-1-1  | N. Kheir      | DFplayer cleanup test.                          |
 |v0.4.2.2 | 2026-1-1  | N. Kheir      | SPI cleanup test.                               |
 |v0.4.2.3 | 2026-1-5  | L. Erickson   | Make menu two columns.                          |
@@ -31,47 +31,19 @@ Revision History:
 |v0.4.2.5 | 2026-1-7  | L. Erickson   | Use myDFPlayer.getVersion()                     |
 |v0.4.2.6 | 2026-1-8  | Yukti         | Fix DFPlayer test to fail cleanly when hardware |
 |         |           |               | is missing; improve error handling              |
-<<<<<<< HEAD
-<<<<<<< HEAD
-|v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port| 
-|v0.4.2.x | 2026-2-23 | N. Kheir      | Adding a splash serial           |
-=======
-|v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-flow-control-test-for-com-port|
-|v0.4.2.8 | 2026-1-8  | Yukti         | add global 'exit' command to abort any test     |
-<<<<<<< HEAD
->>>>>>> 0ef503e ( Added global exit to runAllTests() based on codex review)
-=======
-|         |           |               | and return to menu.                             |
-|v0.4.2.9 | 2026-1-9  | Yukti         |  updated code and firmware ver. based on review |
->>>>>>> 045ae68 ( updated firmware version)
-=======
 |v0.4.2.7 | 2026-2-7  | L. Erickson   | bugfix/356-firmware-factory-test-bring-up-add-  |
 |                                       flow-control-test-for-com-port                  |
+|v0.4.2.x | 2026-2-23 | N. Kheir      | Adding a splash serial                          |
 |v0.4.3.0 | 2026-2-27 | Yukti         | add global 'exit' command to abort any test     |
 |         |           |               | and return to menu.                             |
 |v0.4.3.1 | 2026-2-28 | Yukti         | updated code and firmware ver. based on review  |
 |v0.4.3.2 | 2026-2-28 | Yukti         | changed 'exit' to 'break'                       |
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 957fab9 ( changed exit to break for consistency)
-=======
-|v0.4.3.3 | 2026-2-29 | Yukti   | added global break support to all tests         |
->>>>>>> fce74c5 ( updated firmware version for exit/break changes)
-=======
-|v0.4.3.3 | 2026-2-29 | Yukti         | added global break support to all tests         |
-|v0.4.3.4 | 2026-03-01| Yukti         | Refactor GLOBAL BREAK handling; remove dynamic  |
-|                     |               | String usage from interactive paths; add        |
-|                     |               | cooperative break checks in long-running loops  |
->>>>>>> 30dfc8f (updated firmware version)
-=======
 |v0.4.3.3 | 2026-3-01 | Yukti         | added global break support to all tests         |
 |v0.4.3.4 | 2026-3-01 | Yukti         | Refactor GLOBAL BREAK handling; remove dynamic  |
 |         |           |               | String usage from interactive paths; add        |
 |         |           |               | cooperative break checks in long-running loops  |
 |v0.4.3.5 | 2026-3-08 | Yukti         | Changed abort keyword from 'break' to 'q'       |
 |         |           |               | to fix collision with menu keys B and R         |
->>>>>>> a5e0f84 (changed 'break' to 'q' and removed old code related to the same)
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
