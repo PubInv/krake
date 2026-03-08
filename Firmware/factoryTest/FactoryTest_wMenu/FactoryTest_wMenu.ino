@@ -1,6 +1,6 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.3.4" //updated firmware version
+#define FIRMWARE_VERSION "v0.4.3.5"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -53,6 +53,7 @@ Revision History:
 |v0.4.3.2 | 2026-2-28 | Yukti         | changed 'exit' to 'break'                       |
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 957fab9 ( changed exit to break for consistency)
 =======
 |v0.4.3.3 | 2026-2-29 | Yukti   | added global break support to all tests         |
@@ -63,6 +64,14 @@ Revision History:
 |                     |               | String usage from interactive paths; add        |
 |                     |               | cooperative break checks in long-running loops  |
 >>>>>>> 30dfc8f (updated firmware version)
+=======
+|v0.4.3.3 | 2026-3-01 | Yukti         | added global break support to all tests         |
+|v0.4.3.4 | 2026-3-01 | Yukti         | Refactor GLOBAL BREAK handling; remove dynamic  |
+|         |           |               | String usage from interactive paths; add        |
+|         |           |               | cooperative break checks in long-running loops  |
+|v0.4.3.5 | 2026-3-08 | Yukti         | Changed abort keyword from 'break' to 'q'       |
+|         |           |               | to fix collision with menu keys B and R         |
+>>>>>>> a5e0f84 (changed 'break' to 'q' and removed old code related to the same)
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -96,7 +105,6 @@ Build notes:
 #include <LittleFS.h>
 #include <LiquidCrystal_I2C.h>
 #include <DFRobotDFPlayerMini.h>
-#include <strings.h>
 
 // ============================================================================
 // Configuration
@@ -205,18 +213,6 @@ bool testResults[T_COUNT] = { false };
 
 static char g_pendingCmd = 0;
 
-// -----------------------------------------------------------------------------
-// GLOBAL BREAK SUPPORT
-// If user types "break" (any case), abort current operation and return to menu.
-// -----------------------------------------------------------------------------
-static volatile bool g_globalBreakRequested = false;
-
-// Case-insensitive check for exact string "break"
-static bool isBreakCommand(const char* s)
-{
-  return (s != nullptr) && (strcasecmp(s, "break") == 0);
-}
-
 static char up(char c)
 {
   return (char)toupper((unsigned char)c);
@@ -224,7 +220,7 @@ static char up(char c)
 
 static bool isMenuKey(char c) {
   c = up(c);
-  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'D') || c == 'P' || c == 'R';
+  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'D') || c == 'P' || c == 'R' || c == 'Q';
 }
 
 static void flushSerialRx() {
@@ -242,15 +238,6 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
 
       if (c == '\n' || c == '\r') {
         out.trim();
-        // --- GLOBAL BREAK CHECK ---
-        // If user typed "break", trigger global abort
-        if (isBreakCommand(out.c_str()))
-        {
-          g_globalBreakRequested = true;
-          out = "";
-          return false; // abort current prompt
-        }
-
         if (out.length() == 1 && isMenuKey(out[0])) {
           g_pendingCmd = up(out[0]);
           out = "";
@@ -276,7 +263,7 @@ static bool promptYesNo(const __FlashStringHelper* question,
 {
   Serial.println(question);
   Serial.println(F("Press Y to PASS or N to FAIL (Enter optional)."));
-  Serial.println(F("(Menu keys abort this step and run next.)"));
+  Serial.println(F("(Type 'q' to quit and return to menu.)"));
   Serial.print(F("> "));
 
   uint32_t start = millis();
@@ -294,13 +281,6 @@ static bool promptYesNo(const __FlashStringHelper* question,
       if (c == '\n' || c == '\r') {
 
         buf[idx] = '\0';   // null terminate
-
-        // GLOBAL BREAK CHECK
-        if (isBreakCommand(buf)) {
-          g_globalBreakRequested = true;
-          Serial.println(F("\nGlobal BREAK requested."));
-          return false;
-        }
 
         if (idx == 0) {
           continue;  // ignore empty line
@@ -423,7 +403,7 @@ static void printMenu() {
   Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
   Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
   Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
-  Serial.println(F(" R Reboot"));
+  Serial.println(F(" R Reboot                        Q Quit current test"));
   Serial.println();
   Serial.println(F("Enter command: "));
 }
@@ -457,7 +437,6 @@ static bool runTest_Inputs() {
 
   unsigned long start = millis();
   while (millis() - start < 10000UL) {
-    if (g_globalBreakRequested) return false;
     int clk = digitalRead(ENC_CLK);
     if (clk != lastCLK) {
       if (digitalRead(ENC_DT) != clk) {
@@ -879,10 +858,6 @@ static bool runTest_Speaker() {
 
   uint32_t start = millis();
   while (millis() - start < 3000) {
-    if (g_globalBreakRequested) {
-    dfPlayer.stop();
-    return false;
-  }
     delay(10);
   }
 
@@ -956,10 +931,6 @@ static bool runTest_WifiSTA() {
 
   uint32_t start = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_CONNECT_MS) {
-    if (g_globalBreakRequested) {
-    WiFi.disconnect(true, true);
-    return false;
-  }
     delay(500);
     Serial.print('.');
   }
@@ -1100,10 +1071,6 @@ static bool runTest_RS232() {
   String rx;
   uint32_t t0 = millis();
   while (millis() - t0 < TIMEOUT_MS && rx.length() < n) {
-    if (g_globalBreakRequested) {
-    rs232.end();
-    return false;
-  }
     while (rs232.available()) {
       char c = (char)rs232.read();
       rx += c;
@@ -1173,12 +1140,6 @@ static void runAllTests() {
 
   for (int i = 0; i < T_COUNT; ++i) {
 
-    if (g_globalBreakRequested) {
-      g_pendingCmd = 0;
-      Serial.println(F("[Run-All aborted by GLOBAL BREAK]"));
-      return;
-    }
-
     if (g_pendingCmd) break;
 
     testResults[i] = runSingleTestFromIndex(static_cast<TestIndex>(i));
@@ -1210,15 +1171,19 @@ static void handleCommand(char c) {
     case 'C': testResults[T_SPI]        = runTest_SPI();        break;
     case 'D': testResults[T_RS232]      = runTest_RS232();      break;
     case 'P': runAllTests();                                     break;
-  case 'R':
-    Serial.println(F("Rebooting..."));
-    delay(200);
-    ESP.restart();
-    break;
-  default:
-    recognized = false;
-    Serial.println(F("Unknown command."));
-    break;
+    case 'Q':
+      Serial.println(F("Returning to menu."));
+      printMenu();
+      return;
+    case 'R':
+      Serial.println(F("Rebooting..."));
+      delay(200);
+      ESP.restart();
+      break;
+    default:
+      recognized = false;
+      Serial.println(F("Unknown command."));
+      break;
   }
 
   if (recognized && c != 'P' && c != 'R') printSummary();
@@ -1251,16 +1216,6 @@ void setup() {
 void loop() {
 
   // ---------------------------------------------------------------------------
-  // GLOBAL BREAK HANDLER
-  // ---------------------------------------------------------------------------
-  if (g_globalBreakRequested) {
-    g_globalBreakRequested = false;
-    Serial.println(F("\n[GLOBAL BREAK] Aborting current operation."));
-    printMenu();
-    return;
-  }
-
-  // ---------------------------------------------------------------------------
   // Pending menu command from aborted prompt
   // ---------------------------------------------------------------------------
   if (g_pendingCmd) {
@@ -1288,13 +1243,8 @@ void loop() {
 
       lineBuf[idx] = '\0';  // null-terminate
 
-      // GLOBAL BREAK CHECK
-      if (isBreakCommand(lineBuf)) {
-        Serial.println(F("\n[GLOBAL BREAK]"));
-        printMenu();
-      }
       // Single-character command
-      else if (idx == 1) {
+      if (idx == 1) {
         char cmd = up(lineBuf[0]);
         Serial.println(cmd);
         handleCommand(cmd);
