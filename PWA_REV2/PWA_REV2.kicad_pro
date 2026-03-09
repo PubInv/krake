@@ -559,7 +559,6 @@
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.25,
-        "tuning_profile": "",
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 10
@@ -578,7 +577,6 @@
         "priority": 0,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.25,
-        "tuning_profile": "",
         "via_diameter": 1.27,
         "via_drill": 0.4318,
         "wire_width": 10
@@ -597,7 +595,6 @@
         "priority": 1,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.35,
-        "tuning_profile": "",
         "via_diameter": 1.27,
         "via_drill": 0.4318,
         "wire_width": 10
@@ -616,14 +613,13 @@
         "priority": 2,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.25,
-        "tuning_profile": "",
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 10
       }
     ],
     "meta": {
-      "version": 5
+      "version": 4
     },
     "net_colors": null,
     "netclass_assignments": null,
@@ -652,8 +648,10 @@
       "idf": "",
       "netlist": "",
       "plot": "",
+      "pos_files": "",
       "specctra_dsn": "",
       "step": "../Enclosure/KRAKE_PWArev2.step",
+      "svg": "",
       "vrml": ""
     },
     "page_layout_descr_file": ""
