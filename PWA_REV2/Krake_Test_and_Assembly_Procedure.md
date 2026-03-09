@@ -412,7 +412,7 @@ The front panel LEDs provide visual alarm and status indication.
    - Note the flat edge on the plastic body indicating the cathode.
    - <img width="200" height="210" alt="image" src="https://github.com/user-attachments/assets/baf3bd47-3918-4b86-a1b3-03e3834cc087" />
    - Align the flat edge with the flat indicator on the PCB silkscreen.
-   - Insert the LED and ensure consistent height above the PCB (a spacer may be used).
+   - Insert the LED and ensure consistent height above the PCB - to do this 3D print and use 6 of the LED spacer files "U_Box_V105_GPAD_LED_Standoff_single.stl" within enclosure/parts_toPrint
    - Solder the leads.
    - Trim the leads carefully, taking care not to damage nearby transistors or other components.
 4. To avoid mixing LED colors:
