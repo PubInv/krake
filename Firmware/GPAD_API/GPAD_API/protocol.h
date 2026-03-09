@@ -23,7 +23,8 @@ namespace protocol
         static const size_t MAX_SIZE = 80;
 
     private:
-        std::array<char, AlarmMessage::MAX_SIZE> messageBytes;
+        std::array<char, AlarmMessage::MAX_SIZE> message;
+        size_t messageLength;
 
     public:
         AlarmMessage(const char *const messageBytes, const size_t numBytes);
@@ -33,7 +34,10 @@ namespace protocol
         {
             return std::move(other);
         }
-        AlarmMessage(const AlarmMessage &&other) : messageBytes(std::move(other.messageBytes)) {}
+        AlarmMessage(const AlarmMessage &&other)
+            : message(std::move(other.message)), messageLength(other.messageLength)
+        {
+        }
         const AlarmMessage operator=(const AlarmMessage &&other)
         {
             return std::move(other);
@@ -42,6 +46,42 @@ namespace protocol
         AlarmMessage() = delete;
         AlarmMessage(AlarmMessage &other) = delete;
         AlarmMessage(const AlarmMessage &other) = delete;
+    };
+
+    class AlarmMessageId final
+    {
+    public:
+        static const size_t MAX_LENGTH = 10;
+        static const char ID_START_CHARACTER = '{';
+        static const char ID_END_CHARACTER = '}';
+
+    private:
+        const size_t idLength;
+        const std::array<char, AlarmMessageId::MAX_LENGTH> id;
+
+    private:
+        explicit AlarmMessageId(const size_t idLength, const std::array<char, AlarmMessageId::MAX_LENGTH> id)
+            : idLength(idLength),
+              id(std::move(id))
+        {
+        }
+
+    public:
+        static AlarmMessageId deserialize(const char *const bytes, const size_t numBytes);
+
+        AlarmMessageId(AlarmMessageId &&other) = default;
+        AlarmMessageId(const AlarmMessageId &&other)
+            : id(std::move(other.id)), idLength(other.idLength)
+        {
+        }
+        AlarmMessageId operator=(AlarmMessageId &&other)
+        {
+            return std::move(other);
+        }
+        AlarmMessageId operator=(const AlarmMessageId &&other)
+        {
+            return std::move(other);
+        }
     };
 
     class AlarmCommand
@@ -59,6 +99,7 @@ namespace protocol
 
     private:
         const Level level;
+        const AlarmMessageId messageId;
         const AlarmMessage message;
 
     private:
@@ -68,15 +109,21 @@ namespace protocol
         static AlarmCommand deserialize(const char *const messageBytes, const size_t numBytes);
 
     public:
-        explicit AlarmCommand(const Level level, const AlarmMessage message);
+        explicit AlarmCommand(const AlarmCommand::Level alarmLevel, const AlarmMessage alarmMessage, const AlarmMessageId messageId)
+            : level(alarmLevel), message(std::move(alarmMessage)), messageId(std::move(messageId))
+        {
+        }
 
         AlarmCommand(AlarmCommand &&other) = default;
-        AlarmCommand(const AlarmCommand &&other) : level(other.level), message(std::move(other.message)) {}
+        AlarmCommand(const AlarmCommand &&other)
+            : level(other.level), message(std::move(other.message)), messageId(std::move(other.messageId))
+        {
+        }
         AlarmCommand operator=(AlarmCommand &&other) noexcept
         {
             return std::move(other);
         }
-        const AlarmCommand operator=(const AlarmCommand &&other)
+        AlarmCommand operator=(const AlarmCommand &&other)
         {
             return std::move(other);
         }
@@ -103,7 +150,7 @@ namespace protocol
         InfoCommand(const InfoCommand &&other)
         {
         }
-        const InfoCommand operator=(const InfoCommand &&other)
+        InfoCommand operator=(const InfoCommand &&other)
         {
             return std::move(other);
         }
@@ -153,7 +200,7 @@ namespace protocol
         ProtocolMessage(ProtocolMessage &other) = delete;
 
         // TODO: This needs to through an error if the message could not be deserialized
-        static const ProtocolMessage deserialize(const char *const messageBytes, const size_t numBytes);
+        static ProtocolMessage deserialize(const char *const messageBytes, const size_t numBytes);
 
     private:
         ProtocolMessage();
