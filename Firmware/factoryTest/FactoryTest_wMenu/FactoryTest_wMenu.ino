@@ -1,13 +1,13 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.3.5"
+#define FIRMWARE_VERSION "v0.4.4.0"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.1
+Version:         v0.4.4.0
 Date:            2025-12-27
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -44,6 +44,11 @@ Revision History:
 |         |           |               | cooperative break checks in long-running loops  |
 |v0.4.3.5 | 2026-3-08 | Yukti         | Changed abort keyword from 'break' to 'q'       |
 |         |           |               | to fix collision with menu keys B and R         |
+|v0.4.4.0 | 2026-3-10 | Yukti         | Add ElegantOTA + LittleFS OTA background        |
+|         |           |               | service; mount LittleFS at boot; add T_OTA      |
+|         |           |               | test (key E) for operator browser verification  |
+|         |           |               | Requires: AsyncTCP, ESPAsyncWebServer,          |
+|         |           |               | ElegantOTA libs from Arduino Library Manager    |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -77,6 +82,9 @@ Build notes:
 #include <LittleFS.h>
 #include <LiquidCrystal_I2C.h>
 #include <DFRobotDFPlayerMini.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <ElegantOTA.h>
 
 // ============================================================================
 // Configuration
@@ -139,6 +147,10 @@ static dfState_t dfState = DF_UNKNOWN;
 static bool g_sdChecked = false;
 static int g_sdFileCount = -999;
 
+// OTA server instance and state flags
+static AsyncWebServer otaServer(80);
+static bool g_otaServerStarted = false;  // true once ElegantOTA is running
+static bool g_littleFsMounted  = false;  // true once LittleFS is mounted at boot
 
 // ============================================================================
 // Test bookkeeping
@@ -158,6 +170,7 @@ enum TestIndex {
   T_UART0,
   T_SPI,
   T_RS232,
+  T_OTA,  
   T_COUNT
 };
 
@@ -174,7 +187,8 @@ const char* TEST_NAMES[T_COUNT] = {
     "A LittleFS R/W",
     "B UART0 (USB Serial)",
     "C SPI loopback",
-  "D RS-232 loopback"
+    "D RS-232 loopback",
+    "E ElegantOTA"
 };
 
 bool testResults[T_COUNT] = { false };
@@ -192,7 +206,7 @@ static char up(char c)
 
 static bool isMenuKey(char c) {
   c = up(c);
-  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'D') || c == 'P' || c == 'R' || c == 'Q';
+  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'E') || c == 'P' || c == 'R' || c == 'Q';
 }
 
 static void flushSerialRx() {
@@ -374,8 +388,9 @@ static void printMenu() {
   Serial.println(F(" 6 Speaker                       7 Wi-Fi AP"));
   Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
   Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
-  Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
-  Serial.println(F(" R Reboot                        Q Quit current test"));
+  Serial.println(F(" D RS-232 loopback               E ElegantOTA"));
+  Serial.println(F(" P Run ALL (1 -> E)              R Reboot"));
+  Serial.println(F(" Q Quit current test"));
   Serial.println();
   Serial.println(F("Enter command: "));
 }
@@ -843,6 +858,23 @@ static bool runTest_Speaker() {
   return ok;
 }
 
+// [v0.4.4.0] Helper: start ElegantOTA server once Wi-Fi is up (AP or STA).
+// Safe to call multiple times; does nothing if already started.
+static void startOTAServerIfNeeded() {
+  if (g_otaServerStarted) return;
+
+  otaServer.on("/", HTTP_GET, [](AsyncWebServerRequest* req) {
+    req->send(200, "text/plain",
+              "KRAKE Factory Test OTA. Go to /update to upload firmware.");
+  });
+
+  ElegantOTA.begin(&otaServer);  // mounts the /update endpoint
+  otaServer.begin();
+  g_otaServerStarted = true;
+
+  Serial.println(F("ElegantOTA server started. Browse to http://<IP>/update"));
+}
+
 static bool runTest_WifiAP() {
   Serial.println(F("\n[7] Wi-Fi AP"));
 
@@ -863,6 +895,8 @@ static bool runTest_WifiAP() {
   Serial.print(F("AP IP:   "));
   Serial.println(ip);
   Serial.println(F("Operator: verify AP is visible from phone/PC."));
+
+  startOTAServerIfNeeded();  //start OTA now that AP is up
   return true;
 }
 
@@ -918,13 +952,21 @@ static bool runTest_WifiSTA() {
   Serial.println(WiFi.localIP());
   Serial.print(F("RSSI: "));
   Serial.println(WiFi.RSSI());
+
+  startOTAServerIfNeeded();  //start OTA now that STA is connected
   return true;
 }
 
 static bool runTest_LittleFS() {
   Serial.println(F("\n[A] LittleFS R/W"));
 
-  if (!LittleFS.begin(true)) {
+  //LittleFS is mounted at boot; skip remount if already up
+  if (!g_littleFsMounted) {
+    Serial.println(F("  LittleFS not mounted at boot, attempting mount now..."));
+    g_littleFsMounted = LittleFS.begin(true);
+  }
+
+  if (!g_littleFsMounted) {
     Serial.println(F("LittleFS mount FAILED."));
     return false;
   }
@@ -1084,6 +1126,35 @@ static bool runTest_RS232() {
 //removed dead code  
 }//end runTest_RS232()
 
+//ElegantOTA test: verify OTA server is reachable in a browser.
+// Operator must run Wi-Fi AP (7) or Wi-Fi STA (8) first.
+static bool runTest_OTA() {
+  Serial.println(F("\n[E] ElegantOTA"));
+
+  if (!g_littleFsMounted) {
+    Serial.println(F("  WARNING: LittleFS not mounted. ElegantOTA may not serve files."));
+  }
+
+  if (!g_otaServerStarted) {
+    Serial.println(F("  ElegantOTA server not running."));
+    Serial.println(F("  Run Wi-Fi AP (7) or Wi-Fi STA (8) first, then retry E."));
+    return false;
+  }
+
+  IPAddress ip = (WiFi.getMode() == WIFI_AP) ? WiFi.softAPIP() : WiFi.localIP();
+  Serial.print(F("  OTA endpoint: http://"));
+  Serial.print(ip);
+  Serial.println(F("/update"));
+
+  bool ok = promptYesNo(
+      F("Open http://<IP>/update in a browser. Do you see the ElegantOTA upload page?"),
+      PROMPT_TIMEOUT_MS,
+      true);
+
+  Serial.printf("ElegantOTA test: %s\n", ok ? "PASS" : "FAIL");
+  return ok;
+}
+
 // ============================================================================
 // Dispatcher / Run All
 // ============================================================================
@@ -1103,12 +1174,13 @@ static bool runSingleTestFromIndex(TestIndex idx) {
     case T_UART0: return runTest_UART0();
     case T_SPI: return runTest_SPI();
     case T_RS232: return runTest_RS232();
+    case T_OTA: return runTest_OTA();
     default: return false;
   }
 }
 
 static void runAllTests() {
-  Serial.println(F("\n[P] Running ALL tests (1 -> D) in order..."));
+  Serial.println(F("\n[P] Running ALL tests (1 -> E) in order..."));
 
   for (int i = 0; i < T_COUNT; ++i) {
 
@@ -1142,6 +1214,7 @@ static void handleCommand(char c) {
     case 'B': testResults[T_UART0]      = runTest_UART0();      break;
     case 'C': testResults[T_SPI]        = runTest_SPI();        break;
     case 'D': testResults[T_RS232]      = runTest_RS232();      break;
+    case 'E': testResults[T_OTA]        = runTest_OTA();        break;
     case 'P': runAllTests();                                     break;
     case 'Q':
       Serial.println(F("Returning to menu."));
@@ -1175,6 +1248,14 @@ void setup() {
   uint32_t t0 = millis();
   while (!Serial && (millis() - t0 < 2000)) delay(10);
 
+  //Mount LittleFS at boot so ElegantOTA can use it immediately
+  g_littleFsMounted = LittleFS.begin(true);
+  if (!g_littleFsMounted) {
+    Serial.println(F("WARNING: LittleFS mount failed at boot."));
+  } else {
+    Serial.println(F("LittleFS mounted OK."));
+  }
+
   WiFi.mode(WIFI_OFF);
   delay(50);
 
@@ -1186,6 +1267,8 @@ void setup() {
 }
 
 void loop() {
+
+  ElegantOTA.loop();  //must be called regularly to handle OTA transfers
 
   // ---------------------------------------------------------------------------
   // Pending menu command from aborted prompt
