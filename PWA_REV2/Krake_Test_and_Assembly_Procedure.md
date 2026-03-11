@@ -391,6 +391,9 @@ Typical passing units in the first batch showed:
 
 
 Units that deviate significantly from these ranges require investigation (e.g., reflow of regulators, inspection of shorts or opens on the relevant nets).
+Spreadsheet to input results calculate averages , variation and deviance which can help identify if any results are anomalies.
+[DC Powered Test - Spreadsheet Template.xlsx](https://github.com/user-attachments/files/25909312/DC.Powered.Test.-.Spreadsheet.Template.xlsx)
+
 
 ## LCD mounting
 
