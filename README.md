@@ -4,8 +4,8 @@ _At the top for team members convienence. Move this link down to references as w
 
 
 # Krake™ 
-Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device, an enunciator. 
-Krake: 
+Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device, an enunciator.  
+
 * The ESP32 baised microcontroler provides WiFi connectivity. Krake is an IOT Device.
 * Hardware provides RS232 COM port, and an SPI Peripherial as well as a USB UART interface for debug.
 * Flashes lights.
