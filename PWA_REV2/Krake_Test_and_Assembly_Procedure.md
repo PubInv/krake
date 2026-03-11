@@ -457,10 +457,43 @@ This section covers basic procedures for powering Krake and verifying that the a
 - Change the 'baud rate' to 115200
 - Enter 'P' into the Serial Monitor
 - After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks
-- **CL add details here of the tasks**
+ <img width="888" height="214" alt="image" src="https://github.com/user-attachments/assets/0f988ad9-3904-459f-8b19-d57f6a253674" />
+[1] Inputs (Encoder / Button)
+Rotate encoder CLOCKWISE, then COUNTER-CLOCKWISE,
+then PRESS the encoder button within 10 seconds.
+[2] LCD (I2C)
+Do you see 4 FULL lines, aligned, no garbage characters?
+Press Y to PASS or N to FAIL (Enter optional).
+[3] LEDs / Lamps
+  -> LAMP1 blink
+  -> Skipping LAMP2 drive (BUSY shared safety)
+  -> LAMP3 (LAMP3) blink
+  -> LAMP4 (LAMP4) blink
+  -> LAMP5 (LAMP5) blink
+  -> LED_Status (LED_Status) blink
+Did you see the LEDs/Lamps blink as expected?
+Press Y to PASS or N to FAIL (Enter optional).
+[4] DF PLayer & [5] SD (DFPLayer card)
+no input required
+[6] Speaker
+Did you hear audio from the speaker?
+Press Y to PASS or N to FAIL (Enter optional).
+[7] Wi-Fi AP
+  No input required - check SSID visible from phone /PC
+[8] Wi-Fi STA (manual SSID/PASS)
+  Enter the name of your WiFi then enter password for your Wi-Fi
+[A] LittleFS R/W
+**INFO REQ**
+[B] UART10 (USB Serial)
+Confirm prompt can be seen
+[C]SPI loopback
+**INFO REQ**
+[D] RS-232 loopback
+use a short wire to connect pins 2-3 on RS232 
+use a short wire to connect pins 7-8 on RS232
+<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
-
-
+  
 ## DFPlayer functional check
 **CL check this can be removed - df player tested previously**
 
