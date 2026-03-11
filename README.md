@@ -1,9 +1,22 @@
-## [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
+## [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)  
+_At the top for team members convienence. Move this link down to references as we release the Krake for publication._
 ----
 
 
 # Krake™ 
-Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device. It flashes lights, and on a speaker plays audio files such as speech, music and alarm sounds. The Krake adds to the GPAD functionality a rotary encoder.
+Based upon the Public Invention, General Purpose Alarm Device (aka GPAD), the Krake is a wireless alarm device, an enunciator. 
+Krake: 
+* The ESP32 baised microcontroler provides WiFi connectivity. Krake is an IOT Device.
+* Hardware provides RS232 COM port, and an SPI Peripherial as well as a USB UART interface for debug.
+* Flashes lights.
+* On a speaker plays audio files such as speech, music and alarm sounds. 
+* Provides a Mute button for the aduio.
+* Has a 20x4 character display for alarm levels and messages.
+* A rotary encoder for user input (alarm acknolegment shelving and navigation of a menu for user settings).
+
+## Krake™  Specifications Documents
+[The User/Operator Manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?pli=1&tab=t.0#heading=h.wxbfbyr25edt)  
+[The Alarm Developer's Technical Manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?pli=1&tab=t.0#heading=h.qygltmza7ufl)  
 
 ## Krake™  rev2 
 ![Image](https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb)
