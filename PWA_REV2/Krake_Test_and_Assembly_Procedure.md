@@ -317,7 +317,7 @@ Steps:
 - Using device manager identify which port the PCB is connected to.
 - When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
 - Proceed to select the board - esp32 dev board
-- Upload to the board and allow missing libraries to be identified, library specifications are below
+- Upload to the board and allow missing libraries to be identified, library specifications are below and discussed in issue #274
   PubSubClient by Nick O'Leary
   Aruinojson by Benoit Blanchon
   LiquidCrystal I2C by Frank de Brabander
@@ -329,8 +329,8 @@ Steps:
 - Change the 'baud rate' to 115200
 - Enter '4'- , '5'- , '6' - Speaker into the Serial Monitor
 - After entering 6, the serial monitor will ask for confirmation of audio - enter Y/N to confirm or deny audio and pass or fail test
-  <img width="856" height="221" alt="image" src="https://github.com/user-attachments/assets/e23be8e9-5f0f-41c2-9b08-a00cbda09d08" />
-  
+ <img width="874" height="209" alt="image" src="https://github.com/user-attachments/assets/2b67964e-029c-44fd-adaf-f737748ea2a9" />
+
 Video of  upload procedure how to access serial monitor and completion of DF player tests
 https://github.com/user-attachments/assets/768d9384-23f0-49b5-ae81-178c29a44425
 
