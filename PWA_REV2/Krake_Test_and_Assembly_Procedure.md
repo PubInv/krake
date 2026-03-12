@@ -495,6 +495,10 @@ use a short wire to connect pins 2-3 on RS232
 use a short wire to connect pins 7-8 on RS232
 <img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
+## Enclosure Assembly Procedure
+To be added - CL 
+Parts to print: "krake\enclosure\parts_toPrint"
+
 ## Basic user interface check
 
 Once a final or near-final firmware build (e.g., `GPAD_API`) is loaded:
