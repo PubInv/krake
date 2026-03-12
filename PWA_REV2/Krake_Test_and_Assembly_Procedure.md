@@ -496,6 +496,7 @@ use a short wire to connect pins 7-8 on RS232
 <img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
 Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
+Upload .bin files "firmware_0.47.bin" & "littlefs_0.47.bin" using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information 
 
 ## Basic user interface check
 
