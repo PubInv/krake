@@ -318,13 +318,13 @@ Steps:
 - When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
 - Proceed to select the board - esp32 dev board
 - Upload to the board and allow missing libraries to be identified, library specifications are below and discussed in issue #274
-  PubSubClient by Nick O'Leary
-  Aruinojson by Benoit Blanchon
-  LiquidCrystal I2C by Frank de Brabander
-  ESPEssentials by Stephan Rumswinkel
-  LittleFS_esp32 by lorol
-  RotaryEncoder by Matthais Hertel
-  DFRobotDFPlayerMini by DFRobot
+    + PubSubClient by Nick O'Leary
+    + Aruinojson by Benoit Blanchon
+    + LiquidCrystal I2C by Frank de Brabander
+    + ESPEssentials by Stephan Rumswinkel
+    + LittleFS_esp32 by lorol
+    + RotaryEncoder by Matthais Hertel
+    + DFRobotDFPlayerMini by DFRobot
 - One upload is complete, navigate to the Serial Monitor within Arduino IDE
 - Change the 'baud rate' to 115200
 - Enter '4'- , '5'- , '6' - Speaker into the Serial Monitor
@@ -441,62 +441,83 @@ This section covers basic procedures for powering Krake and verifying that the a
    - 5 V regulator output (~5.0 V).
    - 3.3 V regulator output (~3.3 V).
    - LCD backlight and any power/status LEDs.
-  
-  - Navigate to krake\Firmware\factoryTest\FactoryTest_wMenu and open  `FactoryTest_wMenu.ino`
-- Using USB to USB C cable to connect the PCB to the computer
-- Using device manager identify which port the PCB is connected to.
-- When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
-- Proceed to select the board - esp32 dev board
-- Upload to the board and allow missing libraries to be identified, library specifications are below and within issue #274
+     
+  ## Factory Test Procedure
+1. Navigate to krake\Firmware\factoryTest\FactoryTest_wMenu and open  `FactoryTest_wMenu.ino`
+2. Using USB to USB C cable to connect the PCB to the computer
+3. Using device manager identify which port the PCB is connected to - this may involve disconnecting and reconnecting the PCB to see which ports appear.
+4.  When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
+5.  Proceed to select the board - esp32 dev board
+6.  Upload to the board and allow missing libraries to be identified, library specifications are below and within issue #274
   **format req CL**
-  PubSubClient by Nick O'Leary
-  Aruinojson by Benoit Blanchon
-  LiquidCrystal I2C by Frank de Brabander
-  ESPEssentials by Stephan Rumswinkel
-  LittleFS_esp32 by lorol
-  RotaryEncoder by Matthais Hertel
-  DFRobotDFPlayerMini by DFRobot
-- One upload is complete, navigate to the Serial Monitor within Arduino IDE
-- Change the 'baud rate' to 115200
-- Enter 'P' into the Serial Monitor
-- After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks
- <img width="888" height="214" alt="image" src="https://github.com/user-attachments/assets/0f988ad9-3904-459f-8b19-d57f6a253674" />
-  **format req CL**
-  [1] Inputs (Encoder / Button)
-  Rotate encoder CLOCKWISE, then COUNTER-CLOCKWISE, then PRESS the encoder button within 10 seconds.
-[2] LCD (I2C)
-  Do you see 4 FULL lines, aligned, no garbage characters? Press Y to PASS or N to FAIL (Enter optional).
-[3] LEDs / Lamps
-  -> LAMP1 blink
-  -> Skipping LAMP2 drive (BUSY shared safety)
-  -> LAMP3 (LAMP3) blink
-  -> LAMP4 (LAMP4) blink
-  -> LAMP5 (LAMP5) blink
-  -> LED_Status (LED_Status) blink
-Did you see the LEDs/Lamps blink as expected?
-Press Y to PASS or N to FAIL (Enter optional).
-[4] DF PLayer & [5] SD (DFPLayer card)
-no input required
-[6] Speaker
-Did you hear audio from the speaker?
-Press Y to PASS or N to FAIL (Enter optional).
-[7] Wi-Fi AP
-  No input required - check SSID visible from phone /PC
-[8] Wi-Fi STA (manual SSID/PASS)
-  Enter the name of your WiFi then enter password for your Wi-Fi
-[A] LittleFS R/W
-**INFO REQ**
-[B] UART10 (USB Serial)
-Confirm prompt can be seen
-[C]SPI loopback
-**INFO REQ**
-  [D] RS-232 loopback
-use a short wire to connect pins 2-3 on RS232 
-use a short wire to connect pins 7-8 on RS232
-<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
+  + PubSubClient by Nick O'Leary
+  + Aruinojson by Benoit Blanchon
+  + LiquidCrystal I2C by Frank de Brabander
+  + ESPEssentials by Stephan Rumswinkel
+  + LittleFS_esp32 by lorol
+  + RotaryEncoder by Matthais Hertel
+  + DFRobotDFPlayerMini by DFRobot
+  + AsyncTCP by esp32Async
+  + ESPAsyncWebServer by esp32Async
+  + ElegantOTA by Ayush Sharma
+7. One upload is complete, navigate to the Serial Monitor within Arduino IDE
+8. Change the 'baud rate' to 115200
+9. Enter 'P' into the Serial Monitor
+10. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks
+ <img width="888" height="214" alt="image" src="https://github.com/user-attachments/assets/0f988ad9-3904-459f-8b19-d57f6a253674" />  
+ 
+The Tests are as below - please read prior to performing tests to ensure you have all relevant information at hand (**format req**)  
+- [1] Inputs (Encoder / Button)
+  - Rotate encoder CLOCKWISE
+  - Rotate encoder COUNTER-CLOCKWISE
+  - Press the encoder button within 10 seconds
+  - 
+- [2] LCD (I2C)
+  - Do you see **4 FULL lines**, aligned, with no garbage characters?
+  - Press **Y** to PASS or **N** to FAIL (Enter optional).
 
-Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
-Upload .bin files "firmware_0.47.bin" & "littlefs_0.47.bin" using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information 
+- [3] LEDs / Lamps
+  - LAMP1 blink
+  - Skipping LAMP2 drive (BUSY shared safety)
+  - LAMP3 (LAMP3) blink
+  - LAMP4 (LAMP4) blink
+  - LAMP5 (LAMP5) blink
+  - LED_Status (LED_Status) blink
+  - Did you see the LEDs/Lamps blink as expected?
+  - Press **Y** to PASS or **N** to FAIL (Enter optional).
+
+- [4] DF Player & [5] SD (DFPlayer card)
+  - No input required.
+
+- [6] Speaker
+  - Did you hear audio from the speaker?
+  - Press **Y** to PASS or **N** to FAIL (Enter optional).
+
+- [7] Wi-Fi AP
+  - No input required.
+  - Check SSID visible from phone / PC.
+
+- [8] Wi-Fi STA (manual SSID/PASS)
+  - Enter the name of your Wi-Fi.
+  - Enter the password for your Wi-Fi.
+
+- [A] LittleFS R/W
+  - **INFO REQ**
+
+- [B] UART10 (USB Serial)
+  - Confirm prompt can be seen.
+
+- [C] SPI loopback
+  - **INFO REQ**
+
+- [D] RS-232 loopback
+  - Use a short wire to connect **pins 2–3** on RS232.
+  - Use a short wire to connect **pins 7–8** on RS232.
+
+<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />  
+
+11. Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
+12. Upload .bin files "firmware_0.47.bin" & "littlefs_0.47.bin" using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information 
 
 ## Basic user interface check
 
