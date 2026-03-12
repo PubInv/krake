@@ -496,21 +496,6 @@ use a short wire to connect pins 2-3 on RS232
 use a short wire to connect pins 7-8 on RS232
 <img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
-  
-## DFPlayer functional check
-**CL check this can be removed - df player tested previously**
-
-With the DFPlayer test firmware loaded (see below), the operator can perform a quick functional audio test:
-
-1. Load a microSD card with the standard Krake audio files.
-2. Insert the card into the DFPlayer module.
-3. Connect the external test speaker to the Krake speaker output.
-4. Load the firmware `DFPlayerTD5580ATest` onto the ESP32 (via USB–UART or OTA).
-5. Reset the device.
-6. Confirm that:
-   - The test audio files play in the expected sequence.
-   - The volume and sound quality are appropriate and free from severe distortion at nominal test levels.
-
 ## Basic user interface check
 
 Once a final or near-final firmware build (e.g., `GPAD_API`) is loaded:
