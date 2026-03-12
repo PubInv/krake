@@ -495,9 +495,7 @@ use a short wire to connect pins 2-3 on RS232
 use a short wire to connect pins 7-8 on RS232
 <img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
-## Enclosure Assembly Procedure
-To be added - CL 
-Parts to print: "krake\enclosure\parts_toPrint"
+Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
 
 ## Basic user interface check
 
@@ -509,6 +507,7 @@ Once a final or near-final firmware build (e.g., `GPAD_API`) is loaded:
 4. Press the mute button and verify that:
    - Audible alarms are silenced or attenuated according to the intended logic.
    - Any mute indicator LED behaves as specified.
+   - 
 
 ## Final firmware validation
 
@@ -527,6 +526,10 @@ For each serial number:
    - At least one network interaction (e.g., connection to test Wi-Fi and MQTT broker if available).
 
 Units that pass all steps above are considered ready for integration into larger Krake deployments or experimental setups.
+
+## Enclosure Assembly Procedure
+**To be added - CL **
+Parts to print: "krake\enclosure\parts_toPrint"
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
