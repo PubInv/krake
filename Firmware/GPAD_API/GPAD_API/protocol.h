@@ -84,9 +84,35 @@ namespace protocol
         }
     };
 
-    class AlarmCommand
+    class AlarmTypeDesignator final
     {
+    public:
+        static const size_t DESIGNATOR_LENGTH = 3;
 
+    private:
+        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
+
+    public:
+        AlarmTypeDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator);
+
+        AlarmTypeDesignator(AlarmTypeDesignator &&other) = default;
+        AlarmTypeDesignator(const AlarmTypeDesignator &&other) : designator(std::move(other.designator)) {}
+        AlarmTypeDesignator operator=(AlarmTypeDesignator &&source)
+        {
+            return std::move(source);
+        }
+        AlarmTypeDesignator operator=(const AlarmTypeDesignator &&source)
+        {
+            return std::move(source);
+        }
+
+        AlarmTypeDesignator() = delete;
+        AlarmTypeDesignator(AlarmTypeDesignator &other) = delete;
+        AlarmTypeDesignator(const AlarmTypeDesignator &other) = delete;
+    };
+
+    class AlarmCommand final
+    {
     public:
         enum class Level : char
         {
@@ -100,6 +126,7 @@ namespace protocol
     private:
         const Level level;
         const AlarmMessageId messageId;
+        const AlarmTypeDesignator typeDesignator;
         const AlarmMessage message;
 
     private:
@@ -109,14 +136,24 @@ namespace protocol
         static AlarmCommand deserialize(const char *const messageBytes, const size_t numBytes);
 
     public:
-        explicit AlarmCommand(const AlarmCommand::Level alarmLevel, const AlarmMessage alarmMessage, const AlarmMessageId messageId)
-            : level(alarmLevel), message(std::move(alarmMessage)), messageId(std::move(messageId))
+        explicit AlarmCommand(
+            const AlarmCommand::Level alarmLevel,
+            const AlarmMessage alarmMessage,
+            const AlarmMessageId messageId,
+            const AlarmTypeDesignator typeDesignator)
+            : level(alarmLevel),
+              message(std::move(alarmMessage)),
+              messageId(std::move(messageId)),
+              typeDesignator(std::move(typeDesignator))
         {
         }
 
         AlarmCommand(AlarmCommand &&other) = default;
         AlarmCommand(const AlarmCommand &&other)
-            : level(other.level), message(std::move(other.message)), messageId(std::move(other.messageId))
+            : level(other.level),
+              message(std::move(other.message)),
+              messageId(std::move(other.messageId)),
+              typeDesignator(std::move(other.typeDesignator))
         {
         }
         AlarmCommand operator=(AlarmCommand &&other) noexcept
@@ -131,7 +168,7 @@ namespace protocol
         AlarmCommand(AlarmCommand &other) = delete;
     };
 
-    class InfoCommand
+    class InfoCommand final
     {
     private:
         friend struct ProtocolMessage;

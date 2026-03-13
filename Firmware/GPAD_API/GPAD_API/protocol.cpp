@@ -1,5 +1,7 @@
 #include <protocol.h>
 
+#include <algorithm>
+
 using namespace protocol;
 
 AlarmMessage::AlarmMessage(const char *const messageBytes, const size_t numBytes)
@@ -60,6 +62,21 @@ AlarmMessageId AlarmMessageId::deserialize(const char *const bytes, const size_t
     }();
 
     return AlarmMessageId(idLength, id);
+}
+
+AlarmTypeDesignator::AlarmTypeDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator) : designator(designator)
+{
+    bool allDigits = std::all_of(
+        this->designator.cbegin(),
+        this->designator.cend(),
+        [](char c)
+        { return isdigit(c); });
+
+    // if the characters are not all digits we want to throw
+    if (!allDigits)
+    {
+        throw;
+    }
 }
 
 AlarmCommand AlarmCommand::deserialize(const char *const messageBytes, const size_t numBytes)
