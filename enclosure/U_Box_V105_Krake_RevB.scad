@@ -36,10 +36,11 @@ echo("WARNING: More than one project mode active!!!");
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 0;
 GPAD_BShell          = 0; //2 w/LCD 
-GPAD_FPanL           = 1;//3 bottom
-GPAD_BPanL           = 1; //4 top
-sd_door_on_off       = 0;
+GPAD_FPanL           = 0;//3 bottom
+GPAD_BPanL           = 0; //4 top
+sd_door_on_off       = 1;
 recessed_bottom_on_off = 0;// turn on/off the recess moduel only
+recessed_module_on_off =1;
 //// recess sub modules when recess module is on///
 
 
@@ -60,7 +61,7 @@ SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
 GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
 GPAD_TShellWithVESA  = 1; // Krake TShell 
-recessed_wall_on_off = 1;
+recessed_wall_on_off = 0;
 //////////////////////////////
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
