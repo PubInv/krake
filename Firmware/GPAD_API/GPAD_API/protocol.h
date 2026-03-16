@@ -20,14 +20,15 @@ namespace protocol
     class AlarmMessage final
     {
     public:
-        static const size_t MAX_SIZE = 80;
+        static const size_t MAX_LENGTH = 80;
 
     private:
-        std::array<char, AlarmMessage::MAX_SIZE> message;
+        std::array<char, AlarmMessage::MAX_LENGTH> message;
         size_t messageLength;
 
     public:
-        AlarmMessage(const char *const messageBytes, const size_t numBytes);
+        explicit AlarmMessage(const std::array<char, AlarmMessage::MAX_LENGTH> message)
+            : message(std::move(message)) {};
 
         AlarmMessage(AlarmMessage &&other) = default;
         AlarmMessage operator=(AlarmMessage &&other)
@@ -51,6 +52,7 @@ namespace protocol
     class AlarmMessageId final
     {
     public:
+        // TODO: Find out what this value is SUPPOSED to be.
         static const size_t MAX_LENGTH = 10;
         static const char ID_START_CHARACTER = '{';
         static const char ID_END_CHARACTER = '}';
@@ -59,16 +61,8 @@ namespace protocol
         const size_t idLength;
         const std::array<char, AlarmMessageId::MAX_LENGTH> id;
 
-    private:
-        explicit AlarmMessageId(const size_t idLength, const std::array<char, AlarmMessageId::MAX_LENGTH> id)
-            : idLength(idLength),
-              id(std::move(id))
-        {
-        }
-
     public:
-        static AlarmMessageId deserialize(const char *const bytes, const size_t numBytes);
-
+        explicit AlarmMessageId(const size_t idLength, const std::array<char, AlarmMessageId::MAX_LENGTH> id);
         AlarmMessageId(AlarmMessageId &&other) = default;
         AlarmMessageId(const AlarmMessageId &&other)
             : id(std::move(other.id)), idLength(other.idLength)
@@ -82,12 +76,18 @@ namespace protocol
         {
             return std::move(other);
         }
+
+        AlarmMessageId() = delete;
+        AlarmMessageId(AlarmMessageId &other) = delete;
+        AlarmMessageId(const AlarmMessageId &other) = delete;
     };
 
     class AlarmTypeDesignator final
     {
     public:
         static const size_t DESIGNATOR_LENGTH = 3;
+        static const char DESIGNATOR_START_CHARACTER = '{';
+        static const char DESIGNATOR_END_CHARACTER = '}';
 
     private:
         const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
@@ -129,12 +129,6 @@ namespace protocol
         const AlarmTypeDesignator typeDesignator;
         const AlarmMessage message;
 
-    private:
-        friend struct ProtocolMessage;
-
-        // TODO: Throw error if the message cannot be deserialized from the bytes
-        static AlarmCommand deserialize(const char *const messageBytes, const size_t numBytes);
-
     public:
         explicit AlarmCommand(
             const AlarmCommand::Level alarmLevel,
@@ -164,20 +158,16 @@ namespace protocol
         {
             return std::move(other);
         }
+
         AlarmCommand() = delete;
         AlarmCommand(AlarmCommand &other) = delete;
+        AlarmCommand(const AlarmCommand &other) = delete;
     };
 
     class InfoCommand final
     {
-    private:
-        friend struct ProtocolMessage;
-
-        InfoCommand();
-        // TODO: Throw error if the message cannot be deserialized from the bytes
-        static InfoCommand deserialize(const char *const messageBytes, const size_t numBytes);
-
     public:
+        explicit InfoCommand() = default;
         InfoCommand(InfoCommand &&other) = default;
         InfoCommand operator=(InfoCommand &&other) noexcept
         {
@@ -193,6 +183,7 @@ namespace protocol
         }
 
         InfoCommand(InfoCommand &other) = delete;
+        InfoCommand(const InfoCommand &other) = delete;
     };
 
     struct ProtocolMessage final
@@ -206,6 +197,13 @@ namespace protocol
 
         const CommandType commandType;
 
+        // Methods and static functions
+    private:
+        static AlarmCommand deserializeAlarmCommand(const char *const buffer, const size_t numBytes);
+        static AlarmMessageId deserializeAlarmMessageId(const char *const buffer, const size_t numBytes);
+        static AlarmTypeDesignator deserializeAlarmTypeDesignator(const char *const buffer, const size_t numBytes);
+
+        // Constructors and operator overloads
     public:
         ProtocolMessage(AlarmCommand alarmCommand) : commandType(CommandType::ALARM), alarm(std::move(alarmCommand)) {}
         ProtocolMessage(InfoCommand infoCommand) : commandType(CommandType::INFO), info(std::move(infoCommand))
