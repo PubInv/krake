@@ -518,7 +518,7 @@ The Tests are as below - please read prior to performing tests to ensure you hav
 <img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />  
 
 11. Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
-12. Upload .bin files "firmware_0.47.bin" & "littlefs_0.47.bin" using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information 
+12. Upload .bin files "firmware_X.XX.bin" & "littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found **Location TBC**) using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information.
 
 ## Basic user interface check
 
