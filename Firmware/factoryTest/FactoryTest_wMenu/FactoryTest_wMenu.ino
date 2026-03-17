@@ -1,14 +1,14 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.4.0"
+#define FIRMWARE_VERSION "v0.4.5.0"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.4.0
-Date:            2025-12-27
+Version:         v0.4.5.0
+Date:            2026-03-17
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
 ------------------------------------------------------------------------------
@@ -49,6 +49,13 @@ Revision History:
 |         |           |               | test (key E) for operator browser verification  |
 |         |           |               | Requires: AsyncTCP, ESPAsyncWebServer,          |
 |         |           |               | ElegantOTA libs from Arduino Library Manager    |
+|v0.4.5.0 | 2026-3-17 | Yukti         | Add T_MUTE_BTN test (key F): tests S601 mute    |
+|         |           |               | push button GPIO and LED_Status toggle.         |
+|         |           |               | Uses OneButton for press-duration handling:      |
+|         |           |               | too-short ignored, too-long warns operator.     |
+|         |           |               | active-LOW, external pull-up R603, hardware     |
+|         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
+|         |           |               | Requires: OneButton lib from Library Manager.   |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -64,6 +71,10 @@ Build notes:
 - Adjust pin mapping to match your PCB (especially UART1 pins).
 - If LAMP2 shares DFPlayer BUSY, we skip driving LAMP2 in the LED test.
 - Ensure DF_RXD2 and DF_TXD2 are correctly wired to DFPlayer module.
+- MUTE_BTN_PIN: confirm GPIO number from ESP32 net connection sheet.
+  Schematic shows active-LOW with external pull-up R603 and RC debounce C602.
+  Do NOT enable internal pull-up; R603 is the pull-up.
+- OneButton library required: install from Arduino Library Manager.
 ------------------------------------------------------------------------------
 */
 // Customized this by changing these defines
@@ -73,7 +84,7 @@ Build notes:
 #define ORIGIN "LB"
 #define BAUDRATE 115200  //Serial port
 
-  
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -85,6 +96,7 @@ Build notes:
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
+#include <OneButton.h>
 
 // ============================================================================
 // Configuration
@@ -138,6 +150,26 @@ const int UART1_CTS1 = 33;  // placeholder safe GPIO, set as input
 const long UART1_BAUD = 115200;
 static const uint32_t TIMEOUT_MS = 600;
 
+// ----------------------------------------------------------------------------
+// Mute button (S601) — hardware notes from schematic:
+//   - Active LOW: pressing connects GPIO to GND
+//   - External pull-up via R603 to 3v3 (do NOT enable internal pull-up)
+//   - Hardware RC debounce via C602 (100nF) already on PCB
+//   - MUTE_BTN_PIN: confirm GPIO number from ESP32 net connection sheet
+// ----------------------------------------------------------------------------
+const int MUTE_BTN_PIN = 35;
+
+static const uint32_t MUTE_DEBOUNCE_MS  =  20;   // low because C602 handles HW debounce
+static const uint32_t MUTE_LONGPRESS_MS = 800;   // above this = held too long
+static const uint32_t MUTE_WAIT_MS      = 15000; // operator press window per phase
+
+// activeLow=true, internalPullup=false (R603 is the external pull-up on PCB)
+static OneButton muteBtn(MUTE_BTN_PIN, true, false);
+
+// Callback flags: set inside callbacks, read+cleared inside test
+static volatile bool g_muteBtnClicked     = false;
+static volatile bool g_muteBtnHeldTooLong = false;
+
 // DFPlayer bookkeeping + SD cache
 HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
@@ -170,7 +202,8 @@ enum TestIndex {
   T_UART0,
   T_SPI,
   T_RS232,
-  T_OTA,  
+  T_OTA,
+  T_MUTE_BTN,
   T_COUNT
 };
 
@@ -188,7 +221,8 @@ const char* TEST_NAMES[T_COUNT] = {
     "B UART0 (USB Serial)",
     "C SPI loopback",
     "D RS-232 loopback",
-    "E ElegantOTA"
+    "E ElegantOTA",
+    "F Mute Button + LED"
 };
 
 bool testResults[T_COUNT] = { false };
@@ -206,7 +240,7 @@ static char up(char c)
 
 static bool isMenuKey(char c) {
   c = up(c);
-  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'E') || c == 'P' || c == 'R' || c == 'Q';
+  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'F') || c == 'P' || c == 'R' || c == 'Q';
 }
 
 static void flushSerialRx() {
@@ -308,7 +342,7 @@ static bool promptYesNo(const __FlashStringHelper* question,
       // Append safely
       if (idx < sizeof(buf) - 1) {
         buf[idx++] = c;
-      }
+    }
     }
 
     delay(5);
@@ -351,7 +385,7 @@ void splashserial(void) {
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
   Serial.println(F("======================================================="));
- }
+}
 
 static void printSummary() {
   Serial.println();
@@ -389,7 +423,8 @@ static void printMenu() {
   Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
   Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
   Serial.println(F(" D RS-232 loopback               E ElegantOTA"));
-  Serial.println(F(" P Run ALL (1 -> E)              R Reboot"));
+  Serial.println(F(" F Mute Button + LED"));
+  Serial.println(F(" P Run ALL (0 -> F)              R Reboot"));
   Serial.println(F(" Q Quit current test"));
   Serial.println();
   Serial.println(F("Enter command: "));
@@ -627,8 +662,7 @@ static bool runTest_LEDs() {
 
   for (int i = 0; i < 6; ++i) {
     if (SKIP_DRIVING_LAMP2 && pins[i] == LAMP2) {
-      Serial.println(F("  -> Skipping LAMP2 drive (BUSY shared safety)"));
-      continue;
+      Serial.println(F("  -> Skipping LAMP2 drive (BUSY shared safety)")); continue;
     }
     Serial.print(F("  -> "));
     Serial.print(names[i]);
@@ -735,14 +769,14 @@ void printDetail(uint8_t type, int value) {
   case DFPlayerUSBRemoved:
     Serial.println("USB Removed!");
     break;
-  case DFPlayerPlayFinished:
+    case DFPlayerPlayFinished:
     Serial.print(F("Number:"));
     Serial.print(value);
     Serial.println(F(" Play Finished!"));
     break;
-  case DFPlayerError:
-    Serial.print(F("DFPlayerError:"));
-    switch (value) {
+    case DFPlayerError:
+      Serial.print(F("DFPlayerError:"));
+      switch (value) {
     case Busy:
       Serial.println(F("Card not found"));
       break;
@@ -766,8 +800,8 @@ void printDetail(uint8_t type, int value) {
       break;
     default:
       break;
-    }
-    break;
+      }
+      break;
   default:
     break;
   }
@@ -1156,6 +1190,85 @@ static bool runTest_OTA() {
 }
 
 // ============================================================================
+// [F] Mute Button + LED Test
+// ============================================================================
+// Tests S601 mute push button (MUTE_BTN_PIN) and LED_Status toggle.
+//
+// Hardware: active LOW, external pull-up R603, RC debounce C602 (100 nF).
+// OneButton handles press duration:
+//   - Too short (< MUTE_DEBOUNCE_MS) : silently ignored, operator retries
+//   - Valid click                     : toggles mute state + LED
+//   - Too long  (> MUTE_LONGPRESS_MS): prints warning, operator retries
+//
+// PASS: two valid presses detected, LED ON after first, LED OFF after second.
+// ============================================================================
+static bool runTest_MuteButton() {
+  Serial.println(F("\n[F] Mute Button + LED"));
+  Serial.printf("  Button: GPIO %d  |  LED: GPIO %d (LED_Status)\n",
+                MUTE_BTN_PIN, LED_Status);
+
+  // Configure OneButton
+  muteBtn.setDebounceTicks(MUTE_DEBOUNCE_MS);
+  muteBtn.setClickTicks(MUTE_LONGPRESS_MS);
+  muteBtn.attachClick([]()         { g_muteBtnClicked     = true; });
+  muteBtn.attachLongPressStop([]() { g_muteBtnHeldTooLong = true; });
+
+  pinMode(LED_Status, OUTPUT);
+  digitalWrite(LED_Status, LOW);  // start: unmuted, LED off
+
+  Serial.println(F("  Press the mute button twice. (q to quit)"));
+  Serial.println(F("  Short tap = ignored (accidental push)."));
+  Serial.println(F("  Hold too long = warning, try again."));
+
+  for (int presses = 0; presses < 2; presses++) {
+
+    g_muteBtnClicked     = false;
+    g_muteBtnHeldTooLong = false;
+    bool gotPress = false;
+    uint32_t start = millis();
+
+    Serial.printf("\n  Waiting for press %d of 2...\n", presses + 1);
+
+    while (millis() - start < MUTE_WAIT_MS) {
+      muteBtn.tick();
+
+      if (g_muteBtnHeldTooLong) {
+        g_muteBtnHeldTooLong = false;
+        Serial.println(F("  WARNING: Held too long. Release and press briefly."));
+      }
+
+      if (g_muteBtnClicked) {
+        g_muteBtnClicked = false;
+        gotPress = true;
+        bool muted = (presses == 0);
+        digitalWrite(LED_Status, muted ? HIGH : LOW);
+        Serial.printf("  Press %d detected -> %s\n",
+                      presses + 1, muted ? "MUTED   (LED ON)" : "UNMUTED (LED OFF)");
+        break;
+      }
+
+      if (Serial.available() && up((char)Serial.peek()) == 'Q') {
+        (void)Serial.read();
+        g_pendingCmd = 'Q';
+        digitalWrite(LED_Status, LOW);
+        return false;
+      }
+
+      delay(5);
+    }
+
+    if (!gotPress) {
+      Serial.println(F("  FAIL: Timed out waiting for valid press."));
+      digitalWrite(LED_Status, LOW);
+      return false;
+    }
+  }
+
+  Serial.println(F("Mute Button + LED test: PASS"));
+  return true;
+}
+
+// ============================================================================
 // Dispatcher / Run All
 // ============================================================================
 
@@ -1267,6 +1380,8 @@ void setup() {
 }
 
 void loop() {
+  ElegantOTA.loop();  // must be called regularly to handle OTA transfers
+  muteBtn.tick();     // advance OneButton state machine for mute button
 
   ElegantOTA.loop();  //must be called regularly to handle OTA transfers
 
@@ -1312,6 +1427,6 @@ void loop() {
     // Append character safely
     if (idx < sizeof(lineBuf) - 1) {
       lineBuf[idx++] = c;
-    }
   }
+}
 }
