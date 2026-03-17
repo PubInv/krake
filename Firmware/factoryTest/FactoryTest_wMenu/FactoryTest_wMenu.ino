@@ -1288,12 +1288,13 @@ static bool runSingleTestFromIndex(TestIndex idx) {
     case T_SPI: return runTest_SPI();
     case T_RS232: return runTest_RS232();
     case T_OTA: return runTest_OTA();
+    case T_MUTE_BTN: return runTest_MuteButton();
     default: return false;
   }
 }
 
 static void runAllTests() {
-  Serial.println(F("\n[P] Running ALL tests (1 -> E) in order..."));
+  Serial.println(F("\n[P] Running ALL tests (0 -> F) in order..."));
 
   for (int i = 0; i < T_COUNT; ++i) {
 
@@ -1328,6 +1329,7 @@ static void handleCommand(char c) {
     case 'C': testResults[T_SPI]        = runTest_SPI();        break;
     case 'D': testResults[T_RS232]      = runTest_RS232();      break;
     case 'E': testResults[T_OTA]        = runTest_OTA();        break;
+    case 'F': testResults[T_MUTE_BTN]   = runTest_MuteButton(); break;
     case 'P': runAllTests();                                     break;
     case 'Q':
       Serial.println(F("Returning to menu."));
@@ -1382,8 +1384,6 @@ void setup() {
 void loop() {
   ElegantOTA.loop();  // must be called regularly to handle OTA transfers
   muteBtn.tick();     // advance OneButton state machine for mute button
-
-  ElegantOTA.loop();  //must be called regularly to handle OTA transfers
 
   // ---------------------------------------------------------------------------
   // Pending menu command from aborted prompt
