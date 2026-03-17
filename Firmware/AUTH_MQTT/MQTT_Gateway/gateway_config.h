@@ -4,8 +4,10 @@
 #define MG_DEBUG 1
 
 // ── WiFi ──────────────────────────────────────
-#define GW_WIFI_SSID       "WE_NET"
-#define GW_WIFI_PASSWORD   "AymanSH@2025_**"
+#define GW_WIFI_SSID       "Galaxy A53 5GD5E1"
+#define GW_WIFI_PASSWORD   "1234567888*"
+// #define GW_WIFI_SSID       "WE_NET"
+// #define GW_WIFI_PASSWORD   "AymanSH@2025_**"
 
 // ── MQTT ──────────────────────────────────────
 #define GW_MQTT_BROKER     "broker.hivemq.com"

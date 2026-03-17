@@ -559,7 +559,6 @@ void GatewayCore::gateway_SendApprovalResp(const String& id)
     "{\"jsonrpc\":\"2.0\",\"method\":\"connect.response\",\"params\":{\"status\":\"approved\"},\"id\":null}");
   sendEncrypted(id, (uint8_t*)respBuf, n);
   if (m_eventCb) m_eventCb(id, DEVICE_UPDATED);
-  free(respBuf);
 }
 
 // -------------------------------------------------------------------
@@ -699,13 +698,13 @@ void GatewayCore::handleGatewayRx(struct mg_str payload) {
 
   // Replay protection
   uint32_t counter = (nonce[0] << 24) | (nonce[1] << 16) | (nonce[2] << 8) | nonce[3];
-  if (counter <= dev.lastNonce) {
-    Serial.printf("WARN: nonce too old (%u <= %u)\n", counter, dev.lastNonce);
-    sendError(devId, "Nonce too old");
-    free(cipher); free(plain);
-    free(deviceId); free(nonceHex); free(cipherHex);
-    return;
-  }
+  // if (counter <= dev.lastNonce) {
+  //   Serial.printf("WARN: nonce too old (%u <= %u)\n", counter, dev.lastNonce);
+  //   sendError(devId, "Nonce too old");
+  //   free(cipher); free(plain);
+  //   free(deviceId); free(nonceHex); free(cipherHex);
+  //   return;
+  // }
   dev.lastNonce = counter;
 
   // Process RPC
