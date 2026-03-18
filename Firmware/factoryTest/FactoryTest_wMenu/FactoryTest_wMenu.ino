@@ -49,6 +49,7 @@ Revision History:
 |         |           |               | test (key E) for operator browser verification  |
 |         |           |               | Requires: AsyncTCP, ESPAsyncWebServer,          |
 |         |           |               | ElegantOTA libs from Arduino Library Manager    |
+|v0.4.4.1 | 2026-3-18 | Yukti         | Added automatic Wifi Testing inside OTA test    |
 |v0.4.5.0 | 2026-3-17 | Yukti         | Add T_MUTE_BTN test (key F): tests S601 mute    |
 |         |           |               | push button GPIO and LED_Status toggle.         |
 |         |           |               | Uses OneButton for press-duration handling:      |
@@ -56,7 +57,6 @@ Revision History:
 |         |           |               | active-LOW, external pull-up R603, hardware     |
 |         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
 |         |           |               | Requires: OneButton lib from Library Manager.   |
-|v0.4.4.1 | 2026-3-18 | Yukti         | Added automatic Wifi Testing inside OTA test    |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -1175,7 +1175,7 @@ static bool runTest_OTA() {
         return false;
       }
     }
-  }
+  
 
   if (!g_littleFsMounted) {
     Serial.println(F("  WARNING: LittleFS not mounted. ElegantOTA may not serve files."));
