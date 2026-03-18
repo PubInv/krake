@@ -1,13 +1,13 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.4.0"
+#define FIRMWARE_VERSION "v0.4.4.01"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.4.0
+Version:         v0.4.4.1
 Date:            2025-12-27
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -49,6 +49,7 @@ Revision History:
 |         |           |               | test (key E) for operator browser verification  |
 |         |           |               | Requires: AsyncTCP, ESPAsyncWebServer,          |
 |         |           |               | ElegantOTA libs from Arduino Library Manager    |
+|v0.4.4.1 | 2026-3-18 | Yukti         | Added automatic Wifi Testing inside OTA test    |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -1127,18 +1128,23 @@ static bool runTest_RS232() {
 }//end runTest_RS232()
 
 //ElegantOTA test: verify OTA server is reachable in a browser.
-// Operator must run Wi-Fi AP (7) or Wi-Fi STA (8) first.
 static bool runTest_OTA() {
   Serial.println(F("\n[E] ElegantOTA"));
 
-  if (!g_littleFsMounted) {
-    Serial.println(F("  WARNING: LittleFS not mounted. ElegantOTA may not serve files."));
+  // Auto-run Wi-Fi STA first, fall back to AP if STA fails
+  if (!g_otaServerStarted) {
+    Serial.println(F("  Wi-Fi not up. Trying Wi-Fi STA first..."));
+    testResults[T_WIFI_STA] = runTest_WifiSTA();
+
+      if (!testResults[T_WIFI_STA]) {
+        Serial.println(F(" STA  failed. ElegantOTA test FAIL."));
+        return false;
+      }
+    }
   }
 
-  if (!g_otaServerStarted) {
-    Serial.println(F("  ElegantOTA server not running."));
-    Serial.println(F("  Run Wi-Fi AP (7) or Wi-Fi STA (8) first, then retry E."));
-    return false;
+  if (!g_littleFsMounted) {
+    Serial.println(F("  WARNING: LittleFS not mounted. ElegantOTA may not serve files."));
   }
 
   IPAddress ip = (WiFi.getMode() == WIFI_AP) ? WiFi.softAPIP() : WiFi.localIP();
