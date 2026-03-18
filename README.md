@@ -131,15 +131,6 @@ Please refer to our [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on
 
 ---
 
-## References
-
-- [GPAD API Documentation](https://github.com/PubInv/general-purpose-alarm-device/tree/main/Firmware/GPAD_API)
-- [MQTT Protocol](https://mqtt.org/)
-- **Firmware Development Resources**:
-  - [Multi-tasking with Arduino](https://learn.adafruit.com/multi-tasking-the-arduino-part-1)
-  - [ESP32 Wi-Fi Manager Tutorial](https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/)
-
----
 
 ### Acknowledgments
 - Developed by **Nagham Kheir** with mentorship from **Lee Erickson**.
@@ -150,8 +141,14 @@ Please refer to our [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on
 ## About Krake™
 Krake™ is a trademark of **Public Invention** and is an open-source project aimed at providing a simple, customizable alarm device for use in critical situations. It is designed to be easy to set up, reliable in operation, and flexible in its application across various industries.
 
-# References
-Hollifield, Bill R., and Eddie Habibi. Alarm management: A comprehensive guide. Isa, 2010.
+## References
+- Hollifield, Bill R., and Eddie Habibi. Alarm management: A comprehensive guide. Isa, 2010.
+- [GPAD API Documentation](https://github.com/PubInv/general-purpose-alarm-device/tree/main/Firmware/GPAD_API)
+- [MQTT Protocol](https://mqtt.org/)
+- **Firmware Development Resources**:
+  - [Multi-tasking with Arduino](https://learn.adafruit.com/multi-tasking-the-arduino-part-1)
+  - [ESP32 Wi-Fi Manager Tutorial](https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/)
+
 
 ## Firmware Development Resournces
 We found the following articles very helpfull for our development
