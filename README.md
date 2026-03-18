@@ -151,9 +151,9 @@ We found the following articles very helpfull for our development
   - [ESP32 Wi-Fi Manager Tutorial](https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/)
   - Multi-tasking the Arduino, three parts the first of which is at: https://learn.adafruit.com/multi-tasking-the-arduino-part-1: 
   - Random Nerd Tutorials
-1. ESP32: Create a Wi-Fi Manager (AsyncWebServer library) https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/
-2. ESP32 OTA (Over-the-Air) Updates – ElegantOTA Library with Arduino IDE:  https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/#comment-1018613
-3. Arduino IDE 2: Install ESP32 LittleFS Uploader (Upload Files to the Filesystem) 
+    - 1. ESP32: Create a Wi-Fi Manager (AsyncWebServer library) https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/
+    - 2. ESP32 OTA (Over-the-Air) Updates – ElegantOTA Library with Arduino IDE:  https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/#comment-1018613
+    - 3. Arduino IDE 2: Install ESP32 LittleFS Uploader (Upload Files to the Filesystem) 
 
 # License
 
