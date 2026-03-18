@@ -138,24 +138,19 @@ Please refer to our [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on
 
 ---
 
-## About Krake™
+## About the name: Krake™
 Krake™ is a trademark of **Public Invention** and is an open-source project aimed at providing a simple, customizable alarm device for use in critical situations. It is designed to be easy to set up, reliable in operation, and flexible in its application across various industries.
 
 ## References
 - Hollifield, Bill R., and Eddie Habibi. Alarm management: A comprehensive guide. Isa, 2010.
 - [GPAD API Documentation](https://github.com/PubInv/general-purpose-alarm-device/tree/main/Firmware/GPAD_API)
 - [MQTT Protocol](https://mqtt.org/)
-- **Firmware Development Resources**:
+### Firmware Development Resources:
+We found the following articles very helpfull for our development
   - [Multi-tasking with Arduino](https://learn.adafruit.com/multi-tasking-the-arduino-part-1)
   - [ESP32 Wi-Fi Manager Tutorial](https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/)
-
-
-## Firmware Development Resournces
-We found the following articles very helpfull for our development
-
-Multi-tasking the Arduino, three parts the first of which is at: https://learn.adafruit.com/multi-tasking-the-arduino-part-1: 
-
-## Random Nerd Tutorials
+  - Multi-tasking the Arduino, three parts the first of which is at: https://learn.adafruit.com/multi-tasking-the-arduino-part-1: 
+  - Random Nerd Tutorials
 1. ESP32: Create a Wi-Fi Manager (AsyncWebServer library) https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/
 2. ESP32 OTA (Over-the-Air) Updates – ElegantOTA Library with Arduino IDE:  https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/#comment-1018613
 3. Arduino IDE 2: Install ESP32 LittleFS Uploader (Upload Files to the Filesystem) 
