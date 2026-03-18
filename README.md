@@ -7,8 +7,6 @@ Our latest, finished design:
 
 ![Full Krake](https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb)
 
-![Krake Device](https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07)
-
 ---
 
 ## Key Features
