@@ -551,7 +551,18 @@ Units that pass all steps above are considered ready for integration into larger
 
 ## Enclosure Assembly Procedure
 **To be added - CL **
-Parts to print: "krake\enclosure\parts_toPrint"
+1. To begin the enclosure assembly navigate to "krake\enclosure\parts_toPrint", The following files within this folder are to be printed to assemble the enclosure. PLA or PETG at 0.2mm is recommended. 
+  - "knob_Dshaft_15mmx6mmv1.3.stl"
+  - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_FPanL_V3.3mf.stl"
+  - "U_Box_V105_Krake_RevB_BSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_BPanL_V3.3mf.stl"
+  - "U_Box_V104_General_Alarm_Device_button"
+  - "Recess_bottom.stl"
+  - "SD_door.stl"
+2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
+  - **insert information about tools etc for threaded inserts**
+3. Diagram to show how parts correlate to eachother and what bolts, and screws are required
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
