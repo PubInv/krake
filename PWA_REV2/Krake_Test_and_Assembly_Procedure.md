@@ -450,8 +450,7 @@ This section covers basic procedures for powering Krake and verifying that the a
 4.  When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
 5.  Proceed to select the board - esp32 dev board
 6.  Upload to the board and allow missing libraries to be identified, library specifications are below and within issue #274
-  **format req CL**
-  + PubSubClient by Nick O'Leary
+    + PubSubClient by Nick O'Leary
   + Aruinojson by Benoit Blanchon
   + LiquidCrystal I2C by Frank de Brabander
   + ESPEssentials by Stephan Rumswinkel
@@ -461,23 +460,28 @@ This section covers basic procedures for powering Krake and verifying that the a
   + AsyncTCP by esp32Async
   + ESPAsyncWebServer by esp32Async
   + ElegantOTA by Ayush Sharma
+  + OneButton.h by Matthias Hertel
 7. One upload is complete, navigate to the Serial Monitor within Arduino IDE
 8. Change the 'baud rate' to 115200
 9. Enter 'P' into the Serial Monitor
-10. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks
- <img width="888" height="214" alt="image" src="https://github.com/user-attachments/assets/0f988ad9-3904-459f-8b19-d57f6a253674" />  
+10. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
+<img width="611" height="316" alt="image" src="https://github.com/user-attachments/assets/94affc1e-c702-4151-a7dc-2bc3370afdd9" />
+
  
-The Tests are as below - please read prior to performing tests to ensure you have all relevant information at hand (**format req**)  
+The Tests are as below - please read prior to performing tests to ensure you have all relevant information at hand  
+- [0] Power/ ID 
+  - No input required / no prompt message
+     
 - [1] Inputs (Encoder / Button)
   - Rotate encoder CLOCKWISE
   - Rotate encoder COUNTER-CLOCKWISE
   - Press the encoder button within 10 seconds
-  - 
+  
 - [2] LCD (I2C)
+  - Adjust the potentiometer (above the Power LED , labelled "CONTRAST") to adjust the constrast of the LCD to display the text using a small flathead screwdriver 
   - Do you see **4 FULL lines**, aligned, with no garbage characters?
   - Press **Y** to PASS or **N** to FAIL (Enter optional).
-  - adjust the potentiometer (above the Power LED , labelled "CONTRAST") to adjust the constrast of the LCD to display the text using a small flathead screwdriver 
-  
+
 - [3] LEDs / Lamps
   - LAMP1 blink
   - Skipping LAMP2 drive (BUSY shared safety)
@@ -504,36 +508,30 @@ The Tests are as below - please read prior to performing tests to ensure you hav
   - Enter the password for your Wi-Fi.
 
 - [A] LittleFS R/W
-  - **INFO REQ**
+  - no input required
 
 - [B] UART10 (USB Serial)
   - Confirm prompt can be seen.
 
 - [C] SPI loopback
-  - **INFO REQ**
+  - **INFO REQ - NK** 
 
 - [D] RS-232 loopback
   - Use a short wire to connect **pins 2–3** on RS232.
   - Use a short wire to connect **pins 7–8** on RS232.
+<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
-<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />  
-
-11. Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
-12. Upload .bin files "firmware_X.XX.bin" & "littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found **Location TBC**) using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information.
-
-## Basic user interface check
-
-Once a final or near-final firmware build (e.g., `GPAD_API`) is loaded:
-
-1. Confirm that the LCD powers on and displays legible text.
-2. Rotate the rotary encoder and verify that menu items or values change accordingly.
-3. Press the encoder push-switch and verify that selections or actions are triggered.
-4. Press the mute button and verify that:
-   - Audible alarms are silenced or attenuated according to the intended logic.
-   - Any mute indicator LED behaves as specified.
-   - 
-
-## Final firmware validation
+- [E] ElegantOTA 
+  - Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
+  - Upload .bin files "firmware_X.XX.bin" & "littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found **Location TBC - NK**) using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information.
+    
+- [F] Mute Button + LED
+  - Button: GPIO 35  |  LED: GPIO 13 (LED_Status))
+  - Press the mute button twice. (q to quit)
+  - Short tap = ignored (accidental push).
+  - Hold too long = warning, try again.
+     
+## Final firmware validation - NK
 
 After completing electrical and audio tests, each unit is loaded with the intended final firmware (e.g., `GPAD_API`) for field or system testing.
 
@@ -552,7 +550,6 @@ For each serial number:
 Units that pass all steps above are considered ready for integration into larger Krake deployments or experimental setups.
 
 ## Enclosure Assembly Procedure
-**To be added - CL **
 1. To begin the enclosure assembly navigate to "krake\enclosure\parts_toPrint", The following files within this folder are to be printed to assemble the enclosure. PLA or PETG at 0.2mm is recommended. 
   - "knob_Dshaft_15mmx6mmv1.3.stl"
   - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
@@ -564,7 +561,16 @@ Units that pass all steps above are considered ready for integration into larger
   - "SD_door.stl"
 2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
   - **insert information about tools etc for threaded inserts**
-3. Diagram to show how parts correlate to eachother and what bolts, and screws are required
+3. To assemble the enclosure the following is required:
+  - "knob_Dshaft_15mmx6mmv1.3.stl"
+  - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_FPanL_V3.3mf.stl"
+  - "U_Box_V105_Krake_RevB_BSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_BPanL_V3.3mf.stl"
+  - "U_Box_V104_General_Alarm_Device_button"
+  - "Recess_bottom.stl"
+  - "SD_door.stl
+  -  Diagram to show how parts correlate to eachother and what bolts, and screws are required
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
