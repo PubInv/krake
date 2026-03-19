@@ -476,7 +476,8 @@ The Tests are as below - please read prior to performing tests to ensure you hav
 - [2] LCD (I2C)
   - Do you see **4 FULL lines**, aligned, with no garbage characters?
   - Press **Y** to PASS or **N** to FAIL (Enter optional).
-
+  - adjust the potentiometer (above the Power LED , labelled "CONTRAST") to adjust the constrast of the LCD to display the text using a small flathead screwdriver 
+  
 - [3] LEDs / Lamps
   - LAMP1 blink
   - Skipping LAMP2 drive (BUSY shared safety)
