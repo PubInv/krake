@@ -1,4 +1,5 @@
-#include "src/gateway.h"
+#include <Arduino.h>
+#include "gateway.h"
 
 void setup()
 {

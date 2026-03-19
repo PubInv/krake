@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include "mongoose.h"
-#include "../gateway_config.h"
+// #include "gateway_config.h"
 #include "gateway_utils.h"
 #include <WiFi.h>
 
