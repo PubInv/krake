@@ -107,6 +107,9 @@ void keyPressed() {
         MessageFromProcessing_PMD = "h";
       } else if (key == 'i' ) {
         MessageFromProcessing_PMD = "i";
+      } else if (key == 'J' ) {  //Publish a GPAP message.
+        //MessageFromProcessing_PMD = "a2{12AB}[123]Current Version: 0.1.1";
+        MessageFromProcessing_PMD = "a2{12AB}[123]The quick brown fox jumped over the lazy dog.";
       } else if (key == 'j' ) {  //Request information in JSON format.
         MessageFromProcessing_PMD = "j";
       } else if (key == 'l' ) {
