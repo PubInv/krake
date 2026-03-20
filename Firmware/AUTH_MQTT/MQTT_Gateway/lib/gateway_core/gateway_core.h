@@ -35,6 +35,9 @@ public:
   enum Event { DEVICE_ADDED, DEVICE_UPDATED, DEVICE_REMOVED };
   void onEvent(EventCallback cb) { m_eventCb = cb; }
 
+  using MqttCallback = std::function<void(const char *)>;
+  void setMqttCallback(MqttCallback cb) { m_mqttCallback = cb; }
+
   struct mg_mgr* getMgr() { return &m_mgr; }
 
 private:
@@ -46,6 +49,7 @@ private:
   GatewayDevice m_devices;
   
   EventCallback m_eventCb;
+  MqttCallback m_mqttCallback;
   // Preferences prefs;  // removed
   // LittleFS is used directly
 
@@ -59,6 +63,7 @@ private:
   
   static void rpcPing(struct mg_rpc_req *r);
   static void rpcRequestConnect(struct mg_rpc_req *r);
+  static void rpcCommand(struct mg_rpc_req *r);
 
   void sendError(const String& deviceId, const char* msg);
   void sendEncrypted(const String& deviceId, const uint8_t* plaintext, size_t len);

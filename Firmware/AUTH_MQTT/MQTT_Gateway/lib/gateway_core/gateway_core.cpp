@@ -621,7 +621,13 @@ void GatewayCore::rpcPing(struct mg_rpc_req *r) {
 void GatewayCore::rpcRequestConnect(struct mg_rpc_req *r) {
   mg_rpc_err(r, -32601, "\"Method not found\"");
 }
-
+static void rpcCommand(struct mg_rpc_req *r)
+{
+    command_callback(mg_json_get_str(r->frame, "$.params.message"));
+    mg_rpc_ok(r, "{%m:true,%m:%lu}",
+            MG_ESC("recived"), MG_ESC("uptime_ms"), (unsigned long)millis());
+}
+  
 // -------------------------------------------------------------------
 // Device management
 // -------------------------------------------------------------------
