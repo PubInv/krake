@@ -1,4 +1,4 @@
-m#include <unity.h>
+#include <unity.h>
 #include "gateway_device.h"   // found via -I lib/gateway_core
 
 // ── Helpers ───────────────────────────────────────────────────────────
