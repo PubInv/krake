@@ -1,8 +1,7 @@
 #include <unity.h>
-#include "gateway_device.h"   // found via -I lib/gateway_core
+#include "gateway_device.h"
 
 // ── Helpers ───────────────────────────────────────────────────────────
-
 // Builds a valid JSON device file the way saveDevice() would write it
 static void write_device_file(const char* id, const char* name,
                                const char* type, int status,
