@@ -5,7 +5,6 @@
 #include <map>
 #include <functional>
 #include "mongoose.h"
-#include "gateway_private.h"
 #include "gateway_device.h"
 #include "gateway_utils.h"
 
