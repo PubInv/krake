@@ -189,7 +189,7 @@ namespace protocol
 
     struct ProtocolMessage final
     {
-    private:
+    public:
         const union
         {
             AlarmCommand alarm;
@@ -238,10 +238,6 @@ namespace protocol
 
         // TODO: This needs to throw an error if the message could not be deserialized
         static ProtocolMessage deserialize(const char *const messageBytes, const size_t numBytes);
-
-    public:
-        CommandType getCommandType() const;
-        void processAlarmCommand(std::function<void(const AlarmCommand &)>) const;
     };
 }
 

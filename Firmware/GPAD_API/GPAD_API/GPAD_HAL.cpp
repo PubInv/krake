@@ -430,16 +430,10 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
   const auto protocolMessage = protocol::ProtocolMessage::deserialize(buf, rlen);
 
-  switch (protocolMessage.getCommandType())
+  switch (protocolMessage.commandType)
   {
   case protocol::CommandType::ALARM:
-    protocolMessage.processAlarmCommand(
-        [buf, serialport](const protocol::AlarmCommand &alarmCommand)
-        {
-          serialport->print("The received command: ");
-          serialport->print(buf);
-          serialport->print("\n");
-        });
+
     break;
   }
 

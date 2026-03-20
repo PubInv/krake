@@ -163,16 +163,3 @@ ProtocolMessage ProtocolMessage::deserialize(const char *const messageBytes, con
     // In the event the switch falls through, throw an error
     throw;
 }
-
-CommandType ProtocolMessage::getCommandType() const
-{
-    return this->commandType;
-}
-
-void ProtocolMessage::processAlarmCommand(std::function<void(const AlarmCommand &)> callback) const
-{
-    if (this->commandType == CommandType::ALARM)
-    {
-        callback(this->alarm);
-    }
-}
