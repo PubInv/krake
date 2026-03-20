@@ -520,11 +520,8 @@ The Tests are as below - please read prior to performing tests to ensure you hav
 <img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/a5555051-7165-4dc1-916e-cbe89315409d" />
 <img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/78e43602-270e-4509-8fed-89d6df922124" />
 
-  -   The final step is to connect the API connector and run the test using the [C] command in the command window.
+    -   The final step is to connect the SPI connector and run the test using the [C] command in the command window.
 <img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/b1d02212-f62c-433f-974a-70180530508c" />
-
-
-
 
 
 
@@ -532,12 +529,16 @@ The Tests are as below - please read prior to performing tests to ensure you hav
 - [D] RS-232 loopback
   - Use a short wire to connect **pins 2–3** on RS232.
   - Use a short wire to connect **pins 7–8** on RS232.
-<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
+<img height="534" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
 - [E] ElegantOTA 
-  - Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
-  - Upload .bin files "firmware_X.XX.bin" & "littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found **Location TBC - NK**) using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information.
-    
+  - Once factory test is complete copy ip address given during factory test into browser, ElegantOTA server will start. Browse to http://IP/update:
+   > If the wifi needs to be setup: then you will go through: step [8] Wi-Fi STA (manual SSID/PASS)
+  -  After Wi-Fi STA connected successfully. ElegantOTA server will start. Browse to http://IP/update:
+  Example:  OTA endpoint: http://192.168.10.234/update
+  -   Verify that you see the ElegantOTA upload page:
+  <img  height="534" alt="Screenshot 2026-03-20 at 11 10 33" src="https://github.com/user-attachments/assets/4e69fa86-88dd-4bc0-a620-96ef6637fd53" />
+
 - [F] Mute Button + LED
   - Button: GPIO 35  |  LED: GPIO 13 (LED_Status))
   - Press the mute button twice. (q to quit)
@@ -550,7 +551,8 @@ After completing electrical and audio tests, each unit is loaded with the intend
 
 For each serial number:
 
-1. Load the final firmware.
+1. Load the final firmware:   - Upload .bin files "Krake_fw_vx.x.x.bin" & "Krake_littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found at /releases  (Root Level).
+
 2. Record:
    - Firmware version string.
    - MCU MAC address.
