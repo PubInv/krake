@@ -22,6 +22,13 @@ int gw_psk_to_key(const char *psk, size_t psk_len, uint8_t *key) {
   return 0;
 }
 
+void gw_bytes_to_hex(const uint8_t* bytes, size_t len, char* hex) {
+  for (size_t i = 0; i < len; i++) {
+    sprintf(&hex[i*2], "%02x", bytes[i]);
+  }
+  hex[len*2] = '\0';
+}
+
 // ---------------------------------------------------------------------------
 // gw_verify_auth
 //

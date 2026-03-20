@@ -7,6 +7,7 @@
 // Convert hex string to bytes.  Returns byte count on success, -1 on error.
 int  gw_hex_to_bytes(const char *hex, uint8_t *dst, size_t hex_len);
 
+void gw_bytes_to_hex(const uint8_t* bytes, size_t len, char* hex);
 // Derive a 32-byte encryption key from a PSK string via SHA-256.
 int  gw_psk_to_key(const char *psk, size_t psk_len, uint8_t *key);
 

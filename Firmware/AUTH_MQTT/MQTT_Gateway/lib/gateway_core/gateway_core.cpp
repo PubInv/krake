@@ -8,12 +8,6 @@
 // -------------------------------------------------------------------
 // Utility
 // -------------------------------------------------------------------
-static void bytes_to_hex(const uint8_t* bytes, size_t len, char* hex) {
-  for (size_t i = 0; i < len; i++) {
-    sprintf(&hex[i*2], "%02x", bytes[i]);
-  }
-  hex[len*2] = '\0';
-}
 
 static String safeString(const char* str) {
   if (str == nullptr) return String();
@@ -50,7 +44,7 @@ void GatewayCore::begin() {
     Serial.println("LittleFS mounted");
   }
 
-  loadDevices();
+  m_devices.loadDevices();
   setupRpc();
 
   mg_timer_add(&m_mgr, GW_MQTT_RECONNECT_MS, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW,
@@ -174,8 +168,8 @@ void GatewayCore::sendError(const String& deviceId, const char* msg) {
 // -------------------------------------------------------------------
 void GatewayCore::sendEncrypted(const String& deviceId, const uint8_t* plaintext, size_t len) {
   if (plaintext == nullptr || len == 0) return;
-  auto it = m_devices.find(deviceId);
-  if (it == m_devices.end()) {
+  auto it = m_devices.devices.find(deviceId);
+  if (it == m_devices.devices.end()) {
     Serial.printf("sendEncrypted: device %s not found\n", deviceId.c_str());
     return;
   }
@@ -218,7 +212,7 @@ void GatewayCore::sendEncrypted(const String& deviceId, const uint8_t* plaintext
   // FIX: avoid VLA on the stack (encLen is runtime-determined).
   // Allocate hex buffers on the heap instead.
   char nonceHex[25];   // nonce is always 12 bytes → 24 hex chars + NUL, safe as fixed array
-  bytes_to_hex(nonce, 12, nonceHex);
+  gw_bytes_to_hex(nonce, 12, nonceHex);
 
   char* cipherHex = (char*)malloc(encLen * 2 + 1);
   if (!cipherHex) {
@@ -226,7 +220,7 @@ void GatewayCore::sendEncrypted(const String& deviceId, const uint8_t* plaintext
     free(cipher);
     return;
   }
-  bytes_to_hex(cipher, encLen, cipherHex);
+  gw_bytes_to_hex(cipher, encLen, cipherHex);
 
   char out[512];
   int outLen = mg_snprintf(out, sizeof(out),
@@ -239,117 +233,6 @@ void GatewayCore::sendEncrypted(const String& deviceId, const uint8_t* plaintext
   dev.lastNonce = counter;
 }
 
-// -------------------------------------------------------------------
-// Persistent storage helpers (LittleFS)
-// -------------------------------------------------------------------
-String GatewayCore::safeFilename(const String& id) {
-  String safe = id;
-  safe.replace("/", "_");
-  safe.replace("\\", "_");
-  safe.replace(":", "_");
-  safe.replace("*", "_");
-  safe.replace("?", "_");
-  safe.replace("\"", "_");
-  safe.replace("<", "_");
-  safe.replace(">", "_");
-  safe.replace("|", "_");
-  return safe;
-}
-
-void GatewayCore::loadDevices() {
-  Serial.println("Loading devices from LittleFS...");
-  File root = LittleFS.open("/devices");
-  if (!root || !root.isDirectory()) {
-    LittleFS.mkdir("/devices");
-    Serial.println("Created /devices directory");
-    return;
-  }
-
-  File file;
-  while ((file = root.openNextFile())) {
-    if (!file.isDirectory()) {
-      String filename = file.name();
-      if (filename.startsWith("dev_")) {
-        String id = filename.substring(4);
-        Serial.printf("Reading device file: %s\n", filename.c_str());
-        String jsonStr = file.readString();
-        file.close();
-
-        struct mg_str s = mg_str(jsonStr.c_str());
-        Device dev;
-        char* idStr = mg_json_get_str(s, "$.id");
-        if (idStr) dev.id = idStr; else dev.id = id;
-        free(idStr);
-        char* nameStr = mg_json_get_str(s, "$.name");
-        if (nameStr) dev.name = nameStr; else dev.name = id;
-        free(nameStr);
-        char* typeStr = mg_json_get_str(s, "$.type");
-        if (typeStr) dev.type = typeStr; else dev.type = "unknown";
-        free(typeStr);
-        dev.status = (DeviceStatus)mg_json_get_long(s, "$.status", DEV_PENDING);
-        dev.lastNonce = mg_json_get_long(s, "$.lastNonce", 0);
-        dev.firstSeen = mg_json_get_long(s, "$.firstSeen", 0);
-        dev.lastSeen = mg_json_get_long(s, "$.lastSeen", 0);
-        dev.messageCount = mg_json_get_long(s, "$.messageCount", 0);
-        bool permPing = false;
-        mg_json_get_bool(s, "$.permPing", &permPing);
-        dev.permPing = permPing;
-
-        char* keyHex = mg_json_get_str(s, "$.key");
-        if (keyHex && strlen(keyHex) == 64) {
-          if (gw_hex_to_bytes(keyHex, dev.enc_key, 64) == 32) {
-            dev.keySet = true;
-          } else {
-            Serial.println("Failed to decode key hex");
-          }
-        }
-        free(keyHex);
-
-        dev.has_pending = false;
-        m_devices[dev.id] = dev;
-        Serial.printf("Loaded device %s from flash\n", dev.id.c_str());
-      }
-    }
-  }
-  root.close();
-  Serial.printf("Loaded %d devices from LittleFS\n", m_devices.size());
-}
-
-void GatewayCore::saveDevice(const Device& dev) {
-  char keyHex[65] = "";
-  if (dev.keySet) {
-    bytes_to_hex(dev.enc_key, 32, keyHex);
-  }
-
-  char buf[512];
-  int n = mg_snprintf(buf, sizeof(buf),
-    "{\"id\":\"%s\",\"name\":\"%s\",\"type\":\"%s\",\"status\":%d,\"lastNonce\":%lu,"
-    "\"firstSeen\":%lu,\"lastSeen\":%lu,\"messageCount\":%d,\"permPing\":%s,\"key\":\"%s\"}",
-    dev.id.c_str(), dev.name.c_str(), dev.type.c_str(), (int)dev.status,
-    (unsigned long)dev.lastNonce, dev.firstSeen, dev.lastSeen, dev.messageCount,
-    dev.permPing ? "true" : "false", keyHex);
-
-  String safeId = safeFilename(dev.id);
-  String path = "/devices/dev_" + safeId;
-  File f = LittleFS.open(path, "w");
-  if (f) {
-    f.print(buf);
-    f.close();
-    Serial.printf("Saved device %s to flash\n", dev.id.c_str());
-  } else {
-    Serial.printf("Failed to save device %s\n", dev.id.c_str());
-  }
-}
-
-void GatewayCore::removeDevice(const String& id) {
-  String safeId = safeFilename(id);
-  String path = "/devices/dev_" + safeId;
-  if (LittleFS.remove(path)) {
-    Serial.printf("Removed device %s from flash\n", id.c_str());
-  } else {
-    Serial.printf("Failed to remove device %s\n", id.c_str());
-  }
-}
 
 // -------------------------------------------------------------------
 // Handle connect request (encrypted)
@@ -381,8 +264,8 @@ void GatewayCore::handleGatewayConnect(struct mg_str payload) {
   Serial.printf("nonce len: %d, cipher len: %d\n", strlen(nonceHex), strlen(cipherHex));
 
   String devId(deviceId);
-  auto it = m_devices.find(devId);
-  if (it == m_devices.end()) {
+  auto it = m_devices.devices.find(devId);
+  if (it == m_devices.devices.end()) {
     // New device – create pending record
     Device dev;
     dev.id = devId;
@@ -394,7 +277,7 @@ void GatewayCore::handleGatewayConnect(struct mg_str payload) {
     dev.has_pending = true;
     dev.pending_nonce = safeString(nonceHex);
     dev.pending_cipher = safeString(cipherHex);
-    m_devices[devId] = dev;
+    m_devices.devices[devId] = dev;
     if (m_eventCb) m_eventCb(devId, DEVICE_ADDED);
     Serial.printf("New device %s added as PENDING\n", deviceId);
   } else {
@@ -425,8 +308,8 @@ bool GatewayCore::authorizeDevice(const String& id, const char* psk) {
     Serial.println("ERROR: psk is null");
     return false;
   }
-  auto it = m_devices.find(id);
-  if (it == m_devices.end()) {
+  auto it = m_devices.devices.find(id);
+  if (it == m_devices.devices.end()) {
     Serial.println("ERROR: device not found");
     return false;
   }
@@ -540,7 +423,7 @@ bool GatewayCore::authorizeDevice(const String& id, const char* psk) {
   dev.has_pending = false;
   dev.pending_nonce = "";
   dev.pending_cipher = "";
-  saveDevice(dev);
+  m_devices.saveDevice(dev);
 
   free(cipher); free(plain);
   free(deviceName); free(deviceType);
@@ -589,8 +472,8 @@ void GatewayCore::handleGatewayRx(struct mg_str payload) {
   }
 
   String devId(deviceId);
-  auto it = m_devices.find(devId);
-  if (it == m_devices.end()) {
+  auto it = m_devices.devices.find(devId);
+  if (it == m_devices.devices.end()) {
     Serial.printf("ERROR: device %s not found\n", deviceId);
     sendError(devId, "Device not found");
     free(deviceId); free(nonceHex); free(cipherHex);
@@ -743,13 +626,13 @@ void GatewayCore::rpcRequestConnect(struct mg_rpc_req *r) {
 // Device management
 // -------------------------------------------------------------------
 Device* GatewayCore::getDevice(const String& id) {
-  auto it = m_devices.find(id);
-  return (it != m_devices.end()) ? &it->second : nullptr;
+  auto it = m_devices.devices.find(id);
+  return (it != m_devices.devices.end()) ? &it->second : nullptr;
 }
 
 void GatewayCore::approveDevice(const String& id, const DevicePerms& perms, const char* psk) {
-  auto it = m_devices.find(id);
-  if (it == m_devices.end()) return;
+  auto it = m_devices.devices.find(id);
+  if (it == m_devices.devices.end()) return;
   Device &dev = it->second;
   dev.status = DEV_APPROVED;
   dev.permPing = perms.ping;
@@ -757,15 +640,15 @@ void GatewayCore::approveDevice(const String& id, const DevicePerms& perms, cons
     gw_psk_to_key(psk, strlen(psk), dev.enc_key);
     dev.keySet = true;
   }
-  saveDevice(dev);
+  m_devices.saveDevice(dev);
   if (m_eventCb) m_eventCb(id, DEVICE_UPDATED);
 }
 
 void GatewayCore::denyDevice(const String& id) {
-  auto it = m_devices.find(id);
-  if (it == m_devices.end()) return;
+  auto it = m_devices.devices.find(id);
+  if (it == m_devices.devices.end()) return;
   it->second.status = DEV_DENIED;
-  saveDevice(it->second);
+  m_devices.saveDevice(it->second);
   if (m_eventCb) m_eventCb(id, DEVICE_UPDATED);
 }
 
@@ -777,7 +660,7 @@ void GatewayCore::addDevice(const String& id, const String& name, const String& 
   dev.firstSeen = millis();
   dev.lastSeen = millis();
   dev.status = DEV_PENDING;
-  m_devices[id] = dev;
+  m_devices.devices[id] = dev;
   if (m_eventCb) m_eventCb(id, DEVICE_ADDED);
 }
 
@@ -785,13 +668,13 @@ void GatewayCore::addDevice(const String& id, const String& name, const String& 
 // Delete helpers (called from dashboard)
 // -------------------------------------------------------------------
 bool GatewayCore::deleteDevice(const String& id) {
-  auto it = m_devices.find(id);
-  if (it == m_devices.end()) {
+  auto it = m_devices.devices.find(id);
+  if (it == m_devices.devices.end()) {
     Serial.printf("deleteDevice: device %s not found\n", id.c_str());
     return false;
   }
-  m_devices.erase(it);
-  removeDevice(id);                          // delete LittleFS file
+  m_devices.devices.erase(it);
+  m_devices.removeDevice(id);                          // delete LittleFS file
   if (m_eventCb) m_eventCb(id, DEVICE_REMOVED);
   Serial.printf("Deleted device %s\n", id.c_str());
   return true;
@@ -800,12 +683,12 @@ bool GatewayCore::deleteDevice(const String& id) {
 void GatewayCore::deleteAllDevices() {
   // Collect IDs first to avoid invalidating the iterator inside the loop
   std::vector<String> ids;
-  ids.reserve(m_devices.size());
-  for (auto& pair : m_devices) ids.push_back(pair.first);
+  ids.reserve(m_devices.devices.size());
+  for (auto& pair : m_devices.devices) ids.push_back(pair.first);
 
   for (auto& id : ids) {
-    m_devices.erase(id);
-    removeDevice(id);
+    m_devices.devices.erase(id);
+    m_devices.removeDevice(id);
     if (m_eventCb) m_eventCb(id, DEVICE_REMOVED);
   }
   Serial.printf("Deleted all %d devices\n", (int)ids.size());

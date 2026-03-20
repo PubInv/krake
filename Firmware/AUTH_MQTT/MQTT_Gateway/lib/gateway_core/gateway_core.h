@@ -4,9 +4,10 @@
 #include <Arduino.h>
 #include <map>
 #include <functional>
-#include <LittleFS.h>                   // new
 #include "mongoose.h"
 #include "gateway_private.h"
+#include "gateway_device.h"
+#include "gateway_utils.h"
 
 class GatewayCore {
 public:
@@ -17,7 +18,7 @@ public:
   void poll();
 
   Device* getDevice(const String& id);
-  const std::map<String, Device>& getAllDevices() const { return m_devices; }
+  const std::map<String, Device>& getAllDevices() const { return m_devices.devices; }
   void approveDevice(const String& id, const DevicePerms& perms, const char* psk = nullptr);
   void denyDevice(const String& id);
   void addDevice(const String& id, const String& name, const String& type);
@@ -41,7 +42,9 @@ private:
   struct mg_connection *m_mqttConn;
   struct mg_rpc *m_rpcHead;
 
-  std::map<String, Device> m_devices;
+  // std::map<String, Device> m_devices;
+  GatewayDevice m_devices;
+  
   EventCallback m_eventCb;
   // Preferences prefs;  // removed
   // LittleFS is used directly
@@ -60,10 +63,6 @@ private:
   void sendError(const String& deviceId, const char* msg);
   void sendEncrypted(const String& deviceId, const uint8_t* plaintext, size_t len);
 
-  void loadDevices();                      // scan /devices directory
-  void saveDevice(const Device& dev);       // write to /devices/<id>
-  void removeDevice(const String& id);      // delete file
-  String safeFilename(const String& id);    // sanitize for filename
 };
 
 #endif
