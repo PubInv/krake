@@ -179,7 +179,7 @@ void DashboardServer::begin(int port) {
     MG_INFO(("Dashboard started on port %d", port));
   }
 
-  // Subscribe to core events
+  // Subscribe to core events using a lambda and pointer capture
   m_core.onEvent([this](const String& id, int event) {
     const char* status = nullptr;
     auto dev = m_core.getDevice(id);
@@ -305,6 +305,14 @@ void DashboardServer::sendDeviceList(struct mg_connection *c) {
   mg_ws_send(c, json.c_str(), json.length(), WEBSOCKET_OP_TEXT);
 }
 
+/**
+ * Send a WebSocket message to all connected clients to update
+ * the status of a device. The message is in the following format:
+ * {"type":"device_update","device":{"id":"<deviceId>","status":"<status>"}}
+ *
+ * @param deviceId The ID of the device to update.
+ * @paramstatus The new status of the device (e.g. "APPROVED", "PENDING", etc.)
+ */
 void DashboardServer::broadcastDeviceUpdate(const String& deviceId, const char* status) {
   for (auto client : m_wsClients) {
     mg_ws_printf(client, WEBSOCKET_OP_TEXT,
