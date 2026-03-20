@@ -25,6 +25,7 @@
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
+#include "protocol.h"
 
 using namespace gpad_hal;
 
@@ -426,6 +427,22 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     printError(serialport);
     return;
   }
+
+  const auto protocolMessage = protocol::ProtocolMessage::deserialize(buf, rlen);
+
+  switch (protocolMessage.getCommandType())
+  {
+  case protocol::CommandType::ALARM:
+    protocolMessage.processAlarmCommand(
+        [buf, serialport](const protocol::AlarmCommand &alarmCommand)
+        {
+          serialport->print("The received command: ");
+          serialport->print(buf);
+          serialport->print("\n");
+        });
+    break;
+  }
+
   Command command = static_cast<Command>(buf[0]);
   char commandChar = static_cast<char>(command);
 
