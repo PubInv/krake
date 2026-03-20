@@ -2,8 +2,6 @@
   "name": "gateway_core",
   "version": "1.0.0",
   "build": {
-    "srcFilter": [
-      "+<gateway_device.cpp>"
-    ]
+    "extraScript": "build_filter.py"
   }
 }
