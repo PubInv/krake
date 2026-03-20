@@ -513,7 +513,21 @@ The Tests are as below - please read prior to performing tests to ensure you hav
   - Confirm prompt can be seen.
 
 - [C] SPI loopback
-  - **INFO REQ - NK** 
+  > Verify SPI communication by connecting the Master Out Slave In (MOSI) pin directly to the Master In Slave Out (MISO) pin.
+  > Physical Loopback (Hardware): Connect a jumper wire directly between the MOSI and MISO pins on your connector.
+  - Connect MOSI <-> MISO on SPI header for automatic test: We will cut one of the rj12 connectors and then we short pins 6 and 2, check below image
+<img width="378" height="202" alt="Screenshot 2026-03-20 at 09 47 13" src="https://github.com/user-attachments/assets/b646a572-56c5-4894-9467-157a3f091bda" />
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/a5555051-7165-4dc1-916e-cbe89315409d" />
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/78e43602-270e-4509-8fed-89d6df922124" />
+
+  -   The final step is to connect the API connector and run the test using the [C] command in the command window.
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/b1d02212-f62c-433f-974a-70180530508c" />
+
+
+
+
+
+
 
 - [D] RS-232 loopback
   - Use a short wire to connect **pins 2–3** on RS232.
