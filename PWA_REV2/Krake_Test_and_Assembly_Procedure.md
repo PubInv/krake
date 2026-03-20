@@ -317,20 +317,20 @@ Steps:
 - Using device manager identify which port the PCB is connected to.
 - When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
 - Proceed to select the board - esp32 dev board
-- Upload to the board and allow missing libraries to be identified, library specifications are below
-  PubSubClient by Nick O'Leary
-  Aruinojson by Benoit Blanchon
-  LiquidCrystal I2C by Frank de Brabander
-  ESPEssentials by Stephan Rumswinkel
-  LittleFS_esp32 by lorol
-  RotaryEncoder by Matthais Hertel
-  DFRobotDFPlayerMini by DFRobot
+- Upload to the board and allow missing libraries to be identified, library specifications are below and discussed in issue #274
+    + PubSubClient by Nick O'Leary
+    + Aruinojson by Benoit Blanchon
+    + LiquidCrystal I2C by Frank de Brabander
+    + ESPEssentials by Stephan Rumswinkel
+    + LittleFS_esp32 by lorol
+    + RotaryEncoder by Matthais Hertel
+    + DFRobotDFPlayerMini by DFRobot
 - One upload is complete, navigate to the Serial Monitor within Arduino IDE
 - Change the 'baud rate' to 115200
 - Enter '4'- , '5'- , '6' - Speaker into the Serial Monitor
 - After entering 6, the serial monitor will ask for confirmation of audio - enter Y/N to confirm or deny audio and pass or fail test
-  <img width="856" height="221" alt="image" src="https://github.com/user-attachments/assets/e23be8e9-5f0f-41c2-9b08-a00cbda09d08" />
-  
+ <img width="874" height="209" alt="image" src="https://github.com/user-attachments/assets/2b67964e-029c-44fd-adaf-f737748ea2a9" />
+
 Video of  upload procedure how to access serial monitor and completion of DF player tests
 https://github.com/user-attachments/assets/768d9384-23f0-49b5-ae81-178c29a44425
 
@@ -392,6 +392,9 @@ Typical passing units in the first batch showed:
 
 
 Units that deviate significantly from these ranges require investigation (e.g., reflow of regulators, inspection of shorts or opens on the relevant nets).
+Spreadsheet to input results calculate averages , variation and deviance which can help identify if any results are anomalies.
+[DC Powered Test - Spreadsheet Template.xlsx](https://github.com/user-attachments/files/25909312/DC.Powered.Test.-.Spreadsheet.Template.xlsx)
+
 
 ## LCD mounting
 
@@ -413,7 +416,7 @@ The front panel LEDs provide visual alarm and status indication.
    - Note the flat edge on the plastic body indicating the cathode.
    - <img width="200" height="210" alt="image" src="https://github.com/user-attachments/assets/baf3bd47-3918-4b86-a1b3-03e3834cc087" />
    - Align the flat edge with the flat indicator on the PCB silkscreen.
-   - Insert the LED and ensure consistent height above the PCB (a spacer may be used).
+   - Insert the LED and ensure consistent height above the PCB - to do this 3D print and use 6 of the LED spacer files "U_Box_V105_GPAD_LED_Standoff_single.stl" within enclosure/parts_toPrint
    - Solder the leads.
    - Trim the leads carefully, taking care not to damage nearby transistors or other components.
 4. To avoid mixing LED colors:
@@ -439,37 +442,96 @@ This section covers basic procedures for powering Krake and verifying that the a
    - 5 V regulator output (~5.0 V).
    - 3.3 V regulator output (~3.3 V).
    - LCD backlight and any power/status LEDs.
+     
+  ## Factory Test Procedure
+1. Navigate to krake\Firmware\factoryTest\FactoryTest_wMenu and open  `FactoryTest_wMenu.ino`
+2. Using USB to USB C cable to connect the PCB to the computer
+3. Using device manager identify which port the PCB is connected to - this may involve disconnecting and reconnecting the PCB to see which ports appear.
+4.  When in Arduino IDE, navigate to Tools-Port- select port the PCB is connected to
+5.  Proceed to select the board - esp32 dev board
+6.  Upload to the board and allow missing libraries to be identified, library specifications are below and within issue #274
+    + PubSubClient by Nick O'Leary
+  + Aruinojson by Benoit Blanchon
+  + LiquidCrystal I2C by Frank de Brabander
+  + ESPEssentials by Stephan Rumswinkel
+  + LittleFS_esp32 by lorol
+  + RotaryEncoder by Matthais Hertel
+  + DFRobotDFPlayerMini by DFRobot
+  + AsyncTCP by esp32Async
+  + ESPAsyncWebServer by esp32Async
+  + ElegantOTA by Ayush Sharma
+  + OneButton.h by Matthias Hertel
+7. One upload is complete, navigate to the Serial Monitor within Arduino IDE
+8. Change the 'baud rate' to 115200
+9. Enter 'P' into the Serial Monitor
+10. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
+<img width="611" height="316" alt="image" src="https://github.com/user-attachments/assets/94affc1e-c702-4151-a7dc-2bc3370afdd9" />
 
-## DFPlayer functional check
+ 
+The Tests are as below - please read prior to performing tests to ensure you have all relevant information at hand  
+- [0] Power/ ID 
+  - No input required / no prompt message
+     
+- [1] Inputs (Encoder / Button)
+  - Rotate encoder CLOCKWISE
+  - Rotate encoder COUNTER-CLOCKWISE
+  - Press the encoder button within 10 seconds
+  
+- [2] LCD (I2C)
+  - Adjust the potentiometer (above the Power LED , labelled "CONTRAST") to adjust the constrast of the LCD to display the text using a small flathead screwdriver 
+  - Do you see **4 FULL lines**, aligned, with no garbage characters?
+  - Press **Y** to PASS or **N** to FAIL (Enter optional).
 
-With the DFPlayer test firmware loaded (see below), the operator can perform a quick functional audio test:
+- [3] LEDs / Lamps
+  - LAMP1 blink
+  - Skipping LAMP2 drive (BUSY shared safety)
+  - LAMP3 (LAMP3) blink
+  - LAMP4 (LAMP4) blink
+  - LAMP5 (LAMP5) blink
+  - LED_Status (LED_Status) blink
+  - Did you see the LEDs/Lamps blink as expected?
+  - Press **Y** to PASS or **N** to FAIL (Enter optional).
 
-1. Load a microSD card with the standard Krake audio files. Audio file names must start with a three- or four-digit number:
-   - **Prefix:** *DFPlayer Mini* only looks at the file name prefix, which must be numerical. The remainder of the file name is ignored.
-   - **Number of Digits:** *DFPlayer Mini* expects either **three** or **four** digits, depending on where you store the file.
-   - **Extension:** *DFPlayer Mini* automatically looks for the file extensions `mp3`, `wav`, and `wma`.  
-     Examples: `0001.mp3`, `0023.wav`, `1097 my song.mp3`, `0345 another song.wma`.
+- [4] DF Player & [5] SD (DFPlayer card)
+  - No input required.
 
-2. Insert the card into the DFPlayer module.
-3. Connect the external test speaker to the Krake speaker output.
-4. Load the firmware `DFPlayerTD5580ATest` onto the ESP32 (via USB–UART or OTA).
-5. Reset the device.
-6. Confirm that:
-   - The test audio files play in the expected sequence.
-   - The volume and sound quality are appropriate and free from severe distortion at nominal test levels.
+- [6] Speaker
+  - Did you hear audio from the speaker?
+  - Press **Y** to PASS or **N** to FAIL (Enter optional).
 
-## Basic user interface check
+- [7] Wi-Fi AP
+  - No input required.
+  - Check SSID visible from phone / PC.
 
-Once a final or near-final firmware build (e.g., `GPAD_API`) is loaded:
+- [8] Wi-Fi STA (manual SSID/PASS)
+  - Enter the name of your Wi-Fi.
+  - Enter the password for your Wi-Fi.
 
-1. Confirm that the LCD powers on and displays legible text.
-2. Rotate the rotary encoder and verify that menu items or values change accordingly.
-3. Press the encoder push-switch and verify that selections or actions are triggered.
-4. Press the mute button and verify that:
-   - Audible alarms are silenced or attenuated according to the intended logic.
-   - Any mute indicator LED behaves as specified.
+- [A] LittleFS R/W
+  - no input required
 
-## Final firmware validation
+- [B] UART10 (USB Serial)
+  - Confirm prompt can be seen.
+
+- [C] SPI loopback
+  - **INFO REQ - NK** 
+
+- [D] RS-232 loopback
+  - Use a short wire to connect **pins 2–3** on RS232.
+  - Use a short wire to connect **pins 7–8** on RS232.
+<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
+
+- [E] ElegantOTA 
+  - Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
+  - Upload .bin files "firmware_X.XX.bin" & "littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found **Location TBC - NK**) using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information.
+    
+- [F] Mute Button + LED
+  - Button: GPIO 35  |  LED: GPIO 13 (LED_Status))
+  - Press the mute button twice. (q to quit)
+  - Short tap = ignored (accidental push).
+  - Hold too long = warning, try again.
+     
+## Final firmware validation - NK
 
 After completing electrical and audio tests, each unit is loaded with the intended final firmware (e.g., `GPAD_API`) for field or system testing.
 
@@ -486,6 +548,29 @@ For each serial number:
    - At least one network interaction (e.g., connection to test Wi-Fi and MQTT broker if available).
 
 Units that pass all steps above are considered ready for integration into larger Krake deployments or experimental setups.
+
+## Enclosure Assembly Procedure
+1. To begin the enclosure assembly navigate to "krake\enclosure\parts_toPrint", The following files within this folder are to be printed to assemble the enclosure. PLA or PETG at 0.2mm is recommended. 
+  - "knob_Dshaft_15mmx6mmv1.3.stl"
+  - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_FPanL_V3.3mf.stl"
+  - "U_Box_V105_Krake_RevB_BSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_BPanL_V3.3mf.stl"
+  - "U_Box_V104_General_Alarm_Device_button"
+  - "Recess_bottom.stl"
+  - "SD_door.stl"
+2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
+  - **insert information about tools etc for threaded inserts**
+3. To assemble the enclosure the following is required:
+  - "knob_Dshaft_15mmx6mmv1.3.stl"
+  - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_FPanL_V3.3mf.stl"
+  - "U_Box_V105_Krake_RevB_BSHELL_V3.stl"
+  - "U_Box_V105_Krake_RevB_BPanL_V3.3mf.stl"
+  - "U_Box_V104_General_Alarm_Device_button"
+  - "Recess_bottom.stl"
+  - "SD_door.stl
+  -  Diagram to show how parts correlate to eachother and what bolts, and screws are required
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*

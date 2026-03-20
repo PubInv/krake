@@ -1,14 +1,14 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.3.5"
+#define FIRMWARE_VERSION "v0.4.5.0"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.1
-Date:            2025-12-27
+Version:         v0.4.5.0
+Date:            2026-03-17
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
 ------------------------------------------------------------------------------
@@ -44,6 +44,19 @@ Revision History:
 |         |           |               | cooperative break checks in long-running loops  |
 |v0.4.3.5 | 2026-3-08 | Yukti         | Changed abort keyword from 'break' to 'q'       |
 |         |           |               | to fix collision with menu keys B and R         |
+|v0.4.4.0 | 2026-3-10 | Yukti         | Add ElegantOTA + LittleFS OTA background        |
+|         |           |               | service; mount LittleFS at boot; add T_OTA      |
+|         |           |               | test (key E) for operator browser verification  |
+|         |           |               | Requires: AsyncTCP, ESPAsyncWebServer,          |
+|         |           |               | ElegantOTA libs from Arduino Library Manager    |
+|v0.4.4.1 | 2026-3-18 | Yukti         | Added automatic Wifi Testing inside OTA test    |
+|v0.4.5.0 | 2026-3-17 | Yukti         | Add T_MUTE_BTN test (key F): tests S601 mute    |
+|         |           |               | push button GPIO and LED_Status toggle.         |
+|         |           |               | Uses OneButton for press-duration handling:      |
+|         |           |               | too-short ignored, too-long warns operator.     |
+|         |           |               | active-LOW, external pull-up R603, hardware     |
+|         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
+|         |           |               | Requires: OneButton lib from Library Manager.   |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -59,6 +72,10 @@ Build notes:
 - Adjust pin mapping to match your PCB (especially UART1 pins).
 - If LAMP2 shares DFPlayer BUSY, we skip driving LAMP2 in the LED test.
 - Ensure DF_RXD2 and DF_TXD2 are correctly wired to DFPlayer module.
+- MUTE_BTN_PIN: confirm GPIO number from ESP32 net connection sheet.
+  Schematic shows active-LOW with external pull-up R603 and RC debounce C602.
+  Do NOT enable internal pull-up; R603 is the pull-up.
+- OneButton library required: install from Arduino Library Manager.
 ------------------------------------------------------------------------------
 */
 // Customized this by changing these defines
@@ -68,7 +85,7 @@ Build notes:
 #define ORIGIN "LB"
 #define BAUDRATE 115200  //Serial port
 
-  
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -77,6 +94,10 @@ Build notes:
 #include <LittleFS.h>
 #include <LiquidCrystal_I2C.h>
 #include <DFRobotDFPlayerMini.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <ElegantOTA.h>
+#include <OneButton.h>
 
 // ============================================================================
 // Configuration
@@ -130,6 +151,26 @@ const int UART1_CTS1 = 33;  // placeholder safe GPIO, set as input
 const long UART1_BAUD = 115200;
 static const uint32_t TIMEOUT_MS = 600;
 
+// ----------------------------------------------------------------------------
+// Mute button (S601) — hardware notes from schematic:
+//   - Active LOW: pressing connects GPIO to GND
+//   - External pull-up via R603 to 3v3 (do NOT enable internal pull-up)
+//   - Hardware RC debounce via C602 (100nF) already on PCB
+//   - MUTE_BTN_PIN: confirm GPIO number from ESP32 net connection sheet
+// ----------------------------------------------------------------------------
+const int MUTE_BTN_PIN = 35;
+
+static const uint32_t MUTE_DEBOUNCE_MS  =  20;   // low because C602 handles HW debounce
+static const uint32_t MUTE_LONGPRESS_MS = 800;   // above this = held too long
+static const uint32_t MUTE_WAIT_MS      = 15000; // operator press window per phase
+
+// activeLow=true, internalPullup=false (R603 is the external pull-up on PCB)
+static OneButton muteBtn(MUTE_BTN_PIN, true, false);
+
+// Callback flags: set inside callbacks, read+cleared inside test
+static volatile bool g_muteBtnClicked     = false;
+static volatile bool g_muteBtnHeldTooLong = false;
+
 // DFPlayer bookkeeping + SD cache
 HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
@@ -139,6 +180,10 @@ static dfState_t dfState = DF_UNKNOWN;
 static bool g_sdChecked = false;
 static int g_sdFileCount = -999;
 
+// OTA server instance and state flags
+static AsyncWebServer otaServer(80);
+static bool g_otaServerStarted = false;  // true once ElegantOTA is running
+static bool g_littleFsMounted  = false;  // true once LittleFS is mounted at boot
 
 // ============================================================================
 // Test bookkeeping
@@ -158,6 +203,8 @@ enum TestIndex {
   T_UART0,
   T_SPI,
   T_RS232,
+  T_OTA,
+  T_MUTE_BTN,
   T_COUNT
 };
 
@@ -174,7 +221,9 @@ const char* TEST_NAMES[T_COUNT] = {
     "A LittleFS R/W",
     "B UART0 (USB Serial)",
     "C SPI loopback",
-  "D RS-232 loopback"
+    "D RS-232 loopback",
+    "E ElegantOTA",
+    "F Mute Button + LED"
 };
 
 bool testResults[T_COUNT] = { false };
@@ -192,7 +241,7 @@ static char up(char c)
 
 static bool isMenuKey(char c) {
   c = up(c);
-  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'D') || c == 'P' || c == 'R' || c == 'Q';
+  return (c >= '1' && c <= '8') || (c >= 'A' && c <= 'F') || c == 'P' || c == 'R' || c == 'Q';
 }
 
 static void flushSerialRx() {
@@ -294,7 +343,7 @@ static bool promptYesNo(const __FlashStringHelper* question,
       // Append safely
       if (idx < sizeof(buf) - 1) {
         buf[idx++] = c;
-      }
+    }
     }
 
     delay(5);
@@ -337,7 +386,7 @@ void splashserial(void) {
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
   Serial.println(F("======================================================="));
- }
+}
 
 static void printSummary() {
   Serial.println();
@@ -374,8 +423,10 @@ static void printMenu() {
   Serial.println(F(" 6 Speaker                       7 Wi-Fi AP"));
   Serial.println(F(" 8 Wi-Fi STA (manual SSID/PASS)  A LittleFS R/W"));
   Serial.println(F(" B UART0 (USB Serial)            C SPI loopback"));
-  Serial.println(F(" D RS-232 loopback               P Run ALL (1 -> D)"));
-  Serial.println(F(" R Reboot                        Q Quit current test"));
+  Serial.println(F(" D RS-232 loopback               E ElegantOTA"));
+  Serial.println(F(" F Mute Button + LED"));
+  Serial.println(F(" P Run ALL (0 -> F)              R Reboot"));
+  Serial.println(F(" Q Quit current test"));
   Serial.println();
   Serial.println(F("Enter command: "));
 }
@@ -612,8 +663,7 @@ static bool runTest_LEDs() {
 
   for (int i = 0; i < 6; ++i) {
     if (SKIP_DRIVING_LAMP2 && pins[i] == LAMP2) {
-      Serial.println(F("  -> Skipping LAMP2 drive (BUSY shared safety)"));
-      continue;
+      Serial.println(F("  -> Skipping LAMP2 drive (BUSY shared safety)")); continue;
     }
     Serial.print(F("  -> "));
     Serial.print(names[i]);
@@ -720,14 +770,14 @@ void printDetail(uint8_t type, int value) {
   case DFPlayerUSBRemoved:
     Serial.println("USB Removed!");
     break;
-  case DFPlayerPlayFinished:
+    case DFPlayerPlayFinished:
     Serial.print(F("Number:"));
     Serial.print(value);
     Serial.println(F(" Play Finished!"));
     break;
-  case DFPlayerError:
-    Serial.print(F("DFPlayerError:"));
-    switch (value) {
+    case DFPlayerError:
+      Serial.print(F("DFPlayerError:"));
+      switch (value) {
     case Busy:
       Serial.println(F("Card not found"));
       break;
@@ -751,8 +801,8 @@ void printDetail(uint8_t type, int value) {
       break;
     default:
       break;
-    }
-    break;
+      }
+      break;
   default:
     break;
   }
@@ -843,6 +893,23 @@ static bool runTest_Speaker() {
   return ok;
 }
 
+// [v0.4.4.0] Helper: start ElegantOTA server once Wi-Fi is up (AP or STA).
+// Safe to call multiple times; does nothing if already started.
+static void startOTAServerIfNeeded() {
+  if (g_otaServerStarted) return;
+
+  otaServer.on("/", HTTP_GET, [](AsyncWebServerRequest* req) {
+    req->send(200, "text/plain",
+              "KRAKE Factory Test OTA. Go to /update to upload firmware.");
+  });
+
+  ElegantOTA.begin(&otaServer);  // mounts the /update endpoint
+  otaServer.begin();
+  g_otaServerStarted = true;
+
+  Serial.println(F("ElegantOTA server started. Browse to http://<IP>/update"));
+}
+
 static bool runTest_WifiAP() {
   Serial.println(F("\n[7] Wi-Fi AP"));
 
@@ -863,6 +930,8 @@ static bool runTest_WifiAP() {
   Serial.print(F("AP IP:   "));
   Serial.println(ip);
   Serial.println(F("Operator: verify AP is visible from phone/PC."));
+
+  startOTAServerIfNeeded();  //start OTA now that AP is up
   return true;
 }
 
@@ -918,13 +987,21 @@ static bool runTest_WifiSTA() {
   Serial.println(WiFi.localIP());
   Serial.print(F("RSSI: "));
   Serial.println(WiFi.RSSI());
+
+  startOTAServerIfNeeded();  //start OTA now that STA is connected
   return true;
 }
 
 static bool runTest_LittleFS() {
   Serial.println(F("\n[A] LittleFS R/W"));
 
-  if (!LittleFS.begin(true)) {
+  //LittleFS is mounted at boot; skip remount if already up
+  if (!g_littleFsMounted) {
+    Serial.println(F("  LittleFS not mounted at boot, attempting mount now..."));
+    g_littleFsMounted = LittleFS.begin(true);
+  }
+
+  if (!g_littleFsMounted) {
     Serial.println(F("LittleFS mount FAILED."));
     return false;
   }
@@ -1084,6 +1161,119 @@ static bool runTest_RS232() {
 //removed dead code  
 }//end runTest_RS232()
 
+//ElegantOTA test: verify OTA server is reachable in a browser.
+static bool runTest_OTA() {
+  Serial.println(F("\n[E] ElegantOTA"));
+
+  // Auto-run Wi-Fi STA first, fall back to AP if STA fails
+  if (!g_otaServerStarted) {
+    Serial.println(F("  Wi-Fi not up. Trying Wi-Fi STA first..."));
+    testResults[T_WIFI_STA] = runTest_WifiSTA();
+
+      if (!testResults[T_WIFI_STA]) {
+        Serial.println(F(" STA  failed. ElegantOTA test FAIL."));
+        return false;
+      }
+    }
+  
+
+  if (!g_littleFsMounted) {
+    Serial.println(F("  WARNING: LittleFS not mounted. ElegantOTA may not serve files."));
+  }
+
+  IPAddress ip = (WiFi.getMode() == WIFI_AP) ? WiFi.softAPIP() : WiFi.localIP();
+  Serial.print(F("  OTA endpoint: http://"));
+  Serial.print(ip);
+  Serial.println(F("/update"));
+
+  bool ok = promptYesNo(
+      F("Open http://<IP>/update in a browser. Do you see the ElegantOTA upload page?"),
+      PROMPT_TIMEOUT_MS,
+      true);
+
+  Serial.printf("ElegantOTA test: %s\n", ok ? "PASS" : "FAIL");
+  return ok;
+}
+
+// ============================================================================
+// [F] Mute Button + LED Test
+// ============================================================================
+// Tests S601 mute push button (MUTE_BTN_PIN) and LED_Status toggle.
+//
+// Hardware: active LOW, external pull-up R603, RC debounce C602 (100 nF).
+// OneButton handles press duration:
+//   - Too short (< MUTE_DEBOUNCE_MS) : silently ignored, operator retries
+//   - Valid click                     : toggles mute state + LED
+//   - Too long  (> MUTE_LONGPRESS_MS): prints warning, operator retries
+//
+// PASS: two valid presses detected, LED ON after first, LED OFF after second.
+// ============================================================================
+static bool runTest_MuteButton() {
+  Serial.println(F("\n[F] Mute Button + LED"));
+  Serial.printf("  Button: GPIO %d  |  LED: GPIO %d (LED_Status)\n",
+                MUTE_BTN_PIN, LED_Status);
+
+  // Configure OneButton
+  muteBtn.setDebounceTicks(MUTE_DEBOUNCE_MS);
+  muteBtn.setClickTicks(MUTE_LONGPRESS_MS);
+  muteBtn.attachClick([]()         { g_muteBtnClicked     = true; });
+  muteBtn.attachLongPressStop([]() { g_muteBtnHeldTooLong = true; });
+
+  pinMode(LED_Status, OUTPUT);
+  digitalWrite(LED_Status, LOW);  // start: unmuted, LED off
+
+  Serial.println(F("  Press the mute button twice. (q to quit)"));
+  Serial.println(F("  Short tap = ignored (accidental push)."));
+  Serial.println(F("  Hold too long = warning, try again."));
+
+  for (int presses = 0; presses < 2; presses++) {
+
+    g_muteBtnClicked     = false;
+    g_muteBtnHeldTooLong = false;
+    bool gotPress = false;
+    uint32_t start = millis();
+
+    Serial.printf("\n  Waiting for press %d of 2...\n", presses + 1);
+
+    while (millis() - start < MUTE_WAIT_MS) {
+      muteBtn.tick();
+
+      if (g_muteBtnHeldTooLong) {
+        g_muteBtnHeldTooLong = false;
+        Serial.println(F("  WARNING: Held too long. Release and press briefly."));
+      }
+
+      if (g_muteBtnClicked) {
+        g_muteBtnClicked = false;
+        gotPress = true;
+        bool muted = (presses == 0);
+        digitalWrite(LED_Status, muted ? HIGH : LOW);
+        Serial.printf("  Press %d detected -> %s\n",
+                      presses + 1, muted ? "MUTED   (LED ON)" : "UNMUTED (LED OFF)");
+        break;
+      }
+
+      if (Serial.available() && up((char)Serial.peek()) == 'Q') {
+        (void)Serial.read();
+        g_pendingCmd = 'Q';
+        digitalWrite(LED_Status, LOW);
+        return false;
+      }
+
+      delay(5);
+    }
+
+    if (!gotPress) {
+      Serial.println(F("  FAIL: Timed out waiting for valid press."));
+      digitalWrite(LED_Status, LOW);
+      return false;
+    }
+  }
+
+  Serial.println(F("Mute Button + LED test: PASS"));
+  return true;
+}
+
 // ============================================================================
 // Dispatcher / Run All
 // ============================================================================
@@ -1103,12 +1293,14 @@ static bool runSingleTestFromIndex(TestIndex idx) {
     case T_UART0: return runTest_UART0();
     case T_SPI: return runTest_SPI();
     case T_RS232: return runTest_RS232();
+    case T_OTA: return runTest_OTA();
+    case T_MUTE_BTN: return runTest_MuteButton();
     default: return false;
   }
 }
 
 static void runAllTests() {
-  Serial.println(F("\n[P] Running ALL tests (1 -> D) in order..."));
+  Serial.println(F("\n[P] Running ALL tests (0 -> F) in order..."));
 
   for (int i = 0; i < T_COUNT; ++i) {
 
@@ -1142,6 +1334,8 @@ static void handleCommand(char c) {
     case 'B': testResults[T_UART0]      = runTest_UART0();      break;
     case 'C': testResults[T_SPI]        = runTest_SPI();        break;
     case 'D': testResults[T_RS232]      = runTest_RS232();      break;
+    case 'E': testResults[T_OTA]        = runTest_OTA();        break;
+    case 'F': testResults[T_MUTE_BTN]   = runTest_MuteButton(); break;
     case 'P': runAllTests();                                     break;
     case 'Q':
       Serial.println(F("Returning to menu."));
@@ -1175,6 +1369,14 @@ void setup() {
   uint32_t t0 = millis();
   while (!Serial && (millis() - t0 < 2000)) delay(10);
 
+  //Mount LittleFS at boot so ElegantOTA can use it immediately
+  g_littleFsMounted = LittleFS.begin(true);
+  if (!g_littleFsMounted) {
+    Serial.println(F("WARNING: LittleFS mount failed at boot."));
+  } else {
+    Serial.println(F("LittleFS mounted OK."));
+  }
+
   WiFi.mode(WIFI_OFF);
   delay(50);
 
@@ -1186,6 +1388,8 @@ void setup() {
 }
 
 void loop() {
+  ElegantOTA.loop();  // must be called regularly to handle OTA transfers
+  muteBtn.tick();     // advance OneButton state machine for mute button
 
   // ---------------------------------------------------------------------------
   // Pending menu command from aborted prompt
@@ -1229,6 +1433,6 @@ void loop() {
     // Append character safely
     if (idx < sizeof(lineBuf) - 1) {
       lineBuf[idx++] = c;
-    }
   }
+}
 }
