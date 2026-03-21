@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "mongoose.h"
 
 // Convert hex string to bytes.  Returns byte count on success, -1 on error.
 int  gw_hex_to_bytes(const char *hex, uint8_t *dst, size_t hex_len);

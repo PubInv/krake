@@ -1,8 +1,5 @@
 #include "gateway_utils.h"
-#include "mongoose.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+
 
 // ---------------------------------------------------------------------------
 int gw_hex_to_bytes(const char *hex, uint8_t *dst, size_t hex_len) {
