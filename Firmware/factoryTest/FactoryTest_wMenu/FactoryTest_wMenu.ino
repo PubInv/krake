@@ -52,7 +52,7 @@ Revision History:
 |v0.4.4.1 | 2026-3-18 | Yukti         | Added automatic Wifi Testing inside OTA test    |
 |v0.4.5.0 | 2026-3-17 | Yukti         | Add T_MUTE_BTN test (key F): tests S601 mute    |
 |         |           |               | push button GPIO and LED_Status toggle.         |
-|         |           |               | Uses OneButton for press-duration handling:      |
+|         |           |               | Uses OneButton for press-duration handling:     |
 |         |           |               | too-short ignored, too-long warns operator.     |
 |         |           |               | active-LOW, external pull-up R603, hardware     |
 |         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
@@ -724,7 +724,7 @@ static bool initDFPlayer() {
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
   delay(300);
 
-  if (!dfPlayer.begin(dfSerial, true, true)) {
+  if (!dfPlayer.begin(dfSerial, false, true)) {
     Serial.println(F("DFPlayer not detected (begin failed)."));
     dfState = DF_FAIL;
     return false;
