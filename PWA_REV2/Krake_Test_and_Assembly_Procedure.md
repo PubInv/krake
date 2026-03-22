@@ -585,7 +585,20 @@ Units that pass all steps above are considered ready for integration into larger
   - "U_Box_V104_General_Alarm_Device_button"
   - "Recess_bottom.stl"
   - "SD_door.stl
-  -  Diagram to show how parts correlate to eachother and what bolts, and screws are required
+  - 2 x "enclosure bolts & nutes" **NK please can you add actual name?**
+  - 4 x M3 screws (minimum M3 x 8 )
+  - 4 x "screws for speaker mount" **NK what size will these need to be?**
+  - 4 x " Enclosure screws" **what size will these need to be?**
+4. Begin by mounting the base plate (with the cut outs for COM, USB, Remote and DG) to the PCB using 2 x "enclosure nuts and bolts " onto the RS 232
+5. Mount the rotary encoder knob and mute button onto the PCB
+6. Using the rails inside the TSHELL slide the PCB and base plate into the TSHELL ensuring the LCD, LED, mute button and rotary encoder line up with the corresponding cut outs.
+7. Secure the PCB with 4 x M3 bolts
+8. Using the rails at the top of the enclosure slide the top blank plate into place
+9. Taking the speaker , align it with the holes within the speaker box and guide the cable through the hole to attach to the PCB
+10. Taking 4 x bolts for the speaker mount , secure the speaker to the TSHELL
+11. Slide the SD_door into the Recess_ Bottom ensuring the prongs and the lip on the door extrude in opposite directions
+12. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
+13. Proceed to mount the BSHELL & TSHELL together using "???"
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
