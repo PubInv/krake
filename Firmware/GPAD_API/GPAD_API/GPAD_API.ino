@@ -132,7 +132,7 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
 // MQTT Broker
-#define USE_HIVEMQ
+//#define USE_HIVEMQ
 #ifdef USE_HIVEMQ
 const char *mqtt_broker_name = "broker.hivemq.com";
 const char *mqtt_user = "";
