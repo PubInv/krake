@@ -132,9 +132,16 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
 // MQTT Broker
+#define USE_HIVEMQ
+#ifdef USE_HIVEMQ
+const char *mqtt_broker_name = "broker.hivemq.com";
+const char *mqtt_user = "";
+const char *mqtt_password = "";
+#else
 const char *mqtt_broker_name = "public.cloud.shiftr.io";
 const char *mqtt_user = "public";
 const char *mqtt_password = "public";
+#endif
 
 const size_t MAC_ADDRESS_STRING_LENGTH = 13;
 // MQTT Topics, MAC plus an extention
@@ -390,7 +397,7 @@ void setup()
 #endif
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
-  client.setServer(mqtt_broker_name, 1883); // Default MQTT port
+  client.setServer(mqtt_broker_name, 1883); // Default MQTT port, this is a TCP port.
   client.setCallback(callback);
 
 #if (DEBUG > 0)
