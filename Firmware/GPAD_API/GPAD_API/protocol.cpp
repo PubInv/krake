@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <Print.h>
+
 using namespace protocol;
 
 AlarmMessageId::AlarmMessageId(const size_t idLength, const std::array<char, AlarmMessageId::MAX_LENGTH> id)
@@ -32,20 +34,76 @@ AlarmMessageId::AlarmMessageId(const size_t idLength, const std::array<char, Ala
     }
 }
 
-AlarmTypeDesignator::AlarmTypeDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator) : designator(designator)
+AlarmTypeDesignator::AlarmTypeDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator)
+    : designator(AlarmTypeDesignator::validateDesignator(designator))
 {
+
+    // bool allDigits = std::all_of(
+    //     this->designator.cbegin(),
+    //     this->designator.cend(),
+    //     [](char c)
+    //     {
+    //         return isdigit(c);
+    //     });
+
+    // // if the characters are not all digits we want to throw
+    // if (!allDigits)
+    // {
+    //     throw;
+    // }
+}
+
+AlarmTypeDesignator::~AlarmTypeDesignator() = default;
+
+const char *const AlarmTypeDesignator::getValue() const
+{
+    return this->designator.data();
+}
+
+size_t AlarmTypeDesignator::printTo(Print &print) const
+{
+    return print.print(this->getValue());
+}
+
+std::array<char, AlarmTypeDesignator::TOTAL_DESIGNATOR_LENGTH>
+AlarmTypeDesignator::validateDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> inputDesignator)
+{
+    std::array<char, AlarmTypeDesignator::TOTAL_DESIGNATOR_LENGTH> designator = {};
+    auto designatorIterator = designator.begin();
+
     bool allDigits = std::all_of(
-        this->designator.cbegin(),
-        this->designator.cend(),
-        [](char c)
+        inputDesignator.cbegin(),
+        inputDesignator.cend(),
+        [&](char inputCharacter)
         {
-            return isdigit(c);
+            *designatorIterator = inputCharacter;
+            designatorIterator = std::next(designatorIterator, 1);
+            return isdigit(inputCharacter);
         });
 
     // if the characters are not all digits we want to throw
     if (!allDigits)
     {
         throw;
+    }
+
+    return {};
+}
+
+char AlarmCommand::alarmLevelIntoChar() const
+{
+    switch (this->level)
+    {
+    case AlarmCommand::Level::Level1:
+        return 1;
+    case AlarmCommand::Level::Level2:
+        return 2;
+    case AlarmCommand::Level::Level3:
+        return 3;
+    case AlarmCommand::Level::Level4:
+        return 4;
+    case AlarmCommand::Level::Level5:
+        return 5;
     }
 }
 

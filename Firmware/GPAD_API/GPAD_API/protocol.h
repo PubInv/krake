@@ -4,6 +4,8 @@
 #include <array>
 #include <functional>
 
+#include <Printable.h>
+
 namespace protocol
 {
     union Command;
@@ -83,15 +85,16 @@ namespace protocol
         AlarmMessageId(const AlarmMessageId &other) = delete;
     };
 
-    class AlarmTypeDesignator final
+    class AlarmTypeDesignator final : Printable
     {
     public:
         static const size_t DESIGNATOR_LENGTH = 3;
-        static const char DESIGNATOR_START_CHARACTER = '{';
-        static const char DESIGNATOR_END_CHARACTER = '}';
+        static const char DESIGNATOR_START_CHARACTER = '[';
+        static const char DESIGNATOR_END_CHARACTER = ']';
 
     private:
-        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
+        static const size_t TOTAL_DESIGNATOR_LENGTH = AlarmTypeDesignator::DESIGNATOR_LENGTH + 1;
+        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH + 1> designator;
 
     public:
         AlarmTypeDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator);
@@ -110,6 +113,16 @@ namespace protocol
         AlarmTypeDesignator() = delete;
         AlarmTypeDesignator(AlarmTypeDesignator &other) = delete;
         AlarmTypeDesignator(const AlarmTypeDesignator &other) = delete;
+
+        virtual ~AlarmTypeDesignator();
+        // Methods
+    public:
+        const char *const getValue() const;
+
+        size_t printTo(Print &print) const override;
+
+    private:
+        static std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH + 1> validateDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>);
     };
 
     class AlarmCommand final
@@ -124,7 +137,6 @@ namespace protocol
             Level5 = 5,
         };
 
-    private:
         const Level level;
         const AlarmMessageId messageId;
         const AlarmTypeDesignator typeDesignator;
@@ -163,6 +175,8 @@ namespace protocol
         AlarmCommand() = delete;
         AlarmCommand(AlarmCommand &other) = delete;
         AlarmCommand(const AlarmCommand &other) = delete;
+
+        char alarmLevelIntoChar() const;
     };
 
     class InfoCommand final
@@ -235,6 +249,10 @@ namespace protocol
 
         ProtocolMessage() = delete;
         ProtocolMessage(ProtocolMessage &other) = delete;
+
+        ~ProtocolMessage()
+        {
+        }
 
         // TODO: This needs to throw an error if the message could not be deserialized
         static ProtocolMessage deserialize(const char *const messageBytes, const size_t numBytes);
