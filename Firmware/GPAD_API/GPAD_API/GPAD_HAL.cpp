@@ -428,15 +428,6 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     return;
   }
 
-  const auto protocolMessage = protocol::ProtocolMessage::deserialize(buf, rlen);
-
-  switch (protocolMessage.commandType)
-  {
-  case protocol::CommandType::ALARM:
-
-    break;
-  }
-
   Command command = static_cast<Command>(buf[0]);
   char commandChar = static_cast<char>(command);
 

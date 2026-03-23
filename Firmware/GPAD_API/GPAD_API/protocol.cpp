@@ -3,26 +3,37 @@
 #include <algorithm>
 
 #include <Print.h>
+#include <Arduino.h>
 
 using namespace protocol;
 
 AlarmMessageId::AlarmMessageId(const size_t idLength, const std::array<char, AlarmMessageId::MAX_LENGTH> id)
-    : idLength(idLength), id(std::move(id))
+    : idLength(idLength), id(AlarmMessageId::validateId(idLength, id))
 {
+}
+
+std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH>
+AlarmMessageId::validateId(const size_t idLength, const std::array<char, AlarmMessageId::MAX_LENGTH> id)
+{
+    std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> validatedId = {};
+    auto validatedIdIterator = validatedId.begin();
+
     // The recorded real-length of the message ID cannot me more than the max number of elements
-    if (this->idLength > this->id.size())
+    if (idLength > id.size())
     {
         throw;
     }
 
-    auto startIterator = this->id.cbegin();
-    auto endIterator = this->id.cbegin() + this->idLength;
+    auto startIterator = id.cbegin();
+    auto endIterator = id.cbegin() + idLength;
 
     bool allHex = std::all_of(
         startIterator,
         endIterator,
-        [](char hexChar)
+        [&validatedIdIterator](char hexChar)
         {
+            *validatedIdIterator = hexChar;
+            validatedIdIterator = std::next(validatedIdIterator, 1);
             return isxdigit(hexChar);
         });
 
@@ -32,25 +43,14 @@ AlarmMessageId::AlarmMessageId(const size_t idLength, const std::array<char, Ala
     {
         throw;
     }
+
+    *validatedIdIterator = '\0';
+    return validatedId;
 }
 
 AlarmTypeDesignator::AlarmTypeDesignator(const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator)
     : designator(AlarmTypeDesignator::validateDesignator(designator))
 {
-
-    // bool allDigits = std::all_of(
-    //     this->designator.cbegin(),
-    //     this->designator.cend(),
-    //     [](char c)
-    //     {
-    //         return isdigit(c);
-    //     });
-
-    // // if the characters are not all digits we want to throw
-    // if (!allDigits)
-    // {
-    //     throw;
-    // }
 }
 
 AlarmTypeDesignator::~AlarmTypeDesignator() = default;
@@ -87,7 +87,9 @@ AlarmTypeDesignator::validateDesignator(const std::array<char, AlarmTypeDesignat
         throw;
     }
 
-    return {};
+    *designatorIterator = '\0';
+
+    return designator;
 }
 
 char AlarmCommand::alarmLevelIntoChar() const
@@ -95,27 +97,36 @@ char AlarmCommand::alarmLevelIntoChar() const
     switch (this->level)
     {
     case AlarmCommand::Level::Level1:
-        return 1;
+        return '1';
     case AlarmCommand::Level::Level2:
-        return 2;
+        return '2';
     case AlarmCommand::Level::Level3:
-        return 3;
+        return '3';
     case AlarmCommand::Level::Level4:
-        return 4;
+        return '4';
     case AlarmCommand::Level::Level5:
-        return 5;
+        return '5';
     }
+
+    Serial.println("End of the level to char method");
+    return '0';
 }
 
-AlarmMessageId ProtocolMessage::deserializeAlarmMessageId(const char *const bytes, const size_t numBytes)
+AlarmMessageId ProtocolMessage::deserializeAlarmMessageId(ProtocolBuffer::const_iterator start, const ProtocolBuffer::const_iterator end)
 {
+    if (*start != AlarmMessageId::ID_START_CHARACTER)
+    {
+        throw;
+    }
+
+    ++start;
+
     auto idLength = 0;
     std::array<char, AlarmMessageId::MAX_LENGTH> id = {};
 
-    auto foundStart = false;
     auto foundEnd = false;
 
-    for (auto index = 0; index < numBytes; ++index)
+    for (; index < numBytes; ++index)
     {
         if (foundEnd || idLength > AlarmMessageId::MAX_LENGTH)
         {
@@ -139,81 +150,90 @@ AlarmMessageId ProtocolMessage::deserializeAlarmMessageId(const char *const byte
     return AlarmMessageId(idLength, id);
 }
 
-AlarmTypeDesignator ProtocolMessage::deserializeAlarmTypeDesignator(const char *const bytes, const size_t numBytes)
+AlarmTypeDesignator ProtocolMessage::deserializeAlarmTypeDesignator(ProtocolBuffer::const_iterator start, const ProtocolBuffer::const_iterator end)
 {
-    // The bytes length is 2 more than the designator length due to do the '[' and ']'
-    // characters
-    static const size_t BYTES_LENGTH = AlarmTypeDesignator::DESIGNATOR_LENGTH + 2;
+    // // The bytes length is 2 more than the designator length due to do the '[' and ']'
+    // // characters
+    // static const size_t BYTES_LENGTH = AlarmTypeDesignator::DESIGNATOR_LENGTH + 2;
 
-    // If the number of bytes is not equal to the exact length of the designator we throw an error
-    if (numBytes != BYTES_LENGTH)
-    {
-        throw;
-    }
+    // // If the number of bytes is not equal to the exact length of the designator we throw an error
+    // if (numBytes != BYTES_LENGTH || bytes[0] != AlarmTypeDesignator::DESIGNATOR_START_CHARACTER)
+    // {
+    //     throw;
+    // }
 
-    auto idLength = 0;
-    std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> id = {};
+    // auto idLength = 0;
+    // std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> id = {};
 
-    auto foundStart = false;
-    auto foundEnd = false;
+    // auto foundEnd = false;
 
-    for (auto index = 0; index < numBytes; ++index)
-    {
-        if (foundEnd || idLength > AlarmTypeDesignator::DESIGNATOR_LENGTH)
-        {
-            break;
-        }
-        else if (foundStart)
-        {
-            id.at(idLength) = bytes[index];
-            idLength += 1;
-        }
-        else if (bytes[index] == AlarmTypeDesignator::DESIGNATOR_START_CHARACTER)
-        {
-            foundStart = true;
-        }
-        else if (bytes[index] == AlarmTypeDesignator::DESIGNATOR_END_CHARACTER)
-        {
-            foundEnd = true;
-        }
-    }
+    // for (auto index = 0; index < numBytes; ++index)
+    // {
+    //     if (foundEnd || idLength >= AlarmTypeDesignator::DESIGNATOR_LENGTH)
+    //     {
+    //         break;
+    //     }
+    //     else if (bytes[index] == AlarmTypeDesignator::DESIGNATOR_END_CHARACTER)
+    //     {
+    //         foundEnd = true;
+    //     }
+    //     else
+    //     {
+    //         id.at(idLength) = bytes[index];
+    //         idLength += 1;
+    //     }
+    // }
 
-    return AlarmTypeDesignator(id);
+    // if (!foundEnd)
+    // {
+    //     throw;
+    // }
+
+    return AlarmTypeDesignator({'1', '2', '3'});
 }
 
-AlarmCommand ProtocolMessage::deserializeAlarmCommand(const char *const bytes, const size_t numBytes)
+AlarmCommand ProtocolMessage::deserializeAlarmCommand(ProtocolBuffer::const_iterator start, const ProtocolBuffer::const_iterator end)
 {
     // TODO: This will throw if either there is no 0th element or the static cast fails
     // Those should be differentiated into 2 exceptions for traceability
-    const auto level = static_cast<AlarmCommand::Level>(bytes[0]);
+    const auto level = static_cast<AlarmCommand::Level>(*start);
+    ++start;
+
+    std::array<char, AlarmMessageId::MAX_LENGTH> id = {};
 
     // Parse message id. >= 1 characters indicating a hex value.
     // Parse alarm type designator. == 3 digits
 
     // Characters a + b + c + d + 1 + 2 + 3 = 7 charactersf
     const auto idLength = 7;
-    std::array<char, AlarmMessageId::MAX_LENGTH> id = {'a', 'b', 'c', 'd', 1, 2, 3};
     const std::array<char, AlarmMessage::MAX_LENGTH> message = {
         'T', 'h', 'i', 's', ' ',
         'i', 's', ' ',
         't', 'h', 'e', ' ',
         'm', 'e', 's', 's', 'a', 'g', 'e', '.'};
-    const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator = {};
+    const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator = {'1', '2', '3'};
 
-    return AlarmCommand(level, AlarmMessage(message), AlarmMessageId(idLength, id), AlarmTypeDesignator(designator));
+    // TODO: Catch error from message ID
+    const auto messageId = ProtocolMessage::deserializeAlarmMessageId(start, end);
+
+    // TODO: Catch error from type designator
+    const auto typeDesignator = ProtocolMessage::deserializeAlarmTypeDesignator(start, end);
+
+    return AlarmCommand(level, AlarmMessage(message), std::move(messageId), std::move(typeDesignator));
 }
 
-ProtocolMessage ProtocolMessage::deserialize(const char *const messageBytes, const size_t numBytes)
+ProtocolMessage ProtocolMessage::deserialize(const std::array<char, ProtocolMessage::BUFFER_LENGTH> buffer)
 {
-    // TODO: This should be wrapped in a try/catch if there isn't a 0th element
-    auto commandType = static_cast<CommandType>(messageBytes[0]);
+    auto bufferIterator = buffer.cbegin();
+    const auto bufferIteratorEnd = buffer.cend();
 
-    auto remainingBytes = messageBytes + 1;
+    // TODO: This should be wrapped in a try/catch if there isn't a 0th element
+    auto commandType = static_cast<CommandType>(*bufferIterator);
 
     switch (commandType)
     {
     case CommandType::ALARM:
-        return ProtocolMessage(ProtocolMessage::deserializeAlarmCommand(remainingBytes, numBytes));
+        return ProtocolMessage(ProtocolMessage::deserializeAlarmCommand(bufferIterator += 1, bufferIteratorEnd));
     case CommandType::INFO:
         return ProtocolMessage(InfoCommand());
     }
