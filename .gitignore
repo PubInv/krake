@@ -99,3 +99,6 @@ fp-info-cache
 
 #Ignore build files.
 *build
+
+# Platformio 
+platformio_override.ini
