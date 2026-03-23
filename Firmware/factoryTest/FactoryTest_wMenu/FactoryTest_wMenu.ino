@@ -1,13 +1,13 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.5.0"
+#define FIRMWARE_VERSION "v0.4.5.1"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.5.0
+Version:         v0.4.5.1
 Date:            2026-03-17
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -57,6 +57,7 @@ Revision History:
 |         |           |               | active-LOW, external pull-up R603, hardware     |
 |         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
 |         |           |               | Requires: OneButton lib from Library Manager.   |
+|v0.4.5.1 | 2026-3-23 | Yukti         | Fixed DFPlayer ACK handling                     |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -731,6 +732,7 @@ static bool initDFPlayer() {
   }
 
   dfPlayer.setTimeOut(1000);
+  dfPlayer.enableACK();          // ← restore ACK for the rest of the session
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   delay(1200);
 
