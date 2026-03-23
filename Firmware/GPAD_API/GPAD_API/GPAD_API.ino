@@ -521,7 +521,8 @@ void loop()
 #if defined HMWK || defined KRAKE
 
 if (!client.loop()) {
-  Serial.print("Lost MQTT at: ");
+  Serial.print(mqtt_broker_name);
+  Serial.print(" lost MQTT at: ");
   Serial.println(millis());
     reconnect();
 }
