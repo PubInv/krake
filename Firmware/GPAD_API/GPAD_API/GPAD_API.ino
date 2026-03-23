@@ -244,10 +244,13 @@ void reconnect()
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES)
   {
     n++;
-    Serial.print("Attempting MQTT connection...");
+    Serial.print("Attempting MQTT connection at: ");
+    Serial.print(millis() );
+    Serial.print("..... ");
     if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
     {
-      Serial.println("success!");
+      Serial.print("success at");
+      Serial.println(millis());
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
     }
     else
@@ -516,7 +519,14 @@ bool menu_just_exited = false;
 void loop()
 {
 #if defined HMWK || defined KRAKE
-  client.loop();
+
+if (!client.loop()) {
+  Serial.print(mqtt_broker_name);
+  Serial.print(" lost MQTT at: ");
+  Serial.println(millis());
+    reconnect();
+}
+
   publishOnLineMsg();
   wink(); // The builtin LED
 #endif
