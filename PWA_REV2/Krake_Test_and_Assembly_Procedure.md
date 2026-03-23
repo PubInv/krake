@@ -462,10 +462,11 @@ This section covers basic procedures for powering Krake and verifying that the a
   + OneButton.h by Matthias Hertel
 7. One upload is complete, navigate to the Serial Monitor within Arduino IDE
 8. Change the 'baud rate' to 115200
-9. Enter 'P' into the Serial Monitor
-10. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
+9. Test response by sending [R] in the command window
+10. Record MCU MAC address & factory firmware test version **To do: add screenshot CL & NK **
+11. Enter [P] into the Serial Monitor
+12. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
 <img width="611" height="316" alt="image" src="https://github.com/user-attachments/assets/94affc1e-c702-4151-a7dc-2bc3370afdd9" />
-
  
 The Tests are as below - please read prior to performing tests to ensure you have all relevant information at hand  
 - [0] Power/ ID 
@@ -516,15 +517,11 @@ The Tests are as below - please read prior to performing tests to ensure you hav
   > Verify SPI communication by connecting the Master Out Slave In (MOSI) pin directly to the Master In Slave Out (MISO) pin.
   > Physical Loopback (Hardware): Connect a jumper wire directly between the MOSI and MISO pins on your connector.
   - Connect MOSI <-> MISO on SPI header for automatic test: We will cut one of the rj12 connectors and then we short pins 6 and 2, check below image
+  - The final step is to connect the SPI connector and run the test using the [C] command in the command window
 <img width="378" height="202" alt="Screenshot 2026-03-20 at 09 47 13" src="https://github.com/user-attachments/assets/b646a572-56c5-4894-9467-157a3f091bda" />
 <img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/a5555051-7165-4dc1-916e-cbe89315409d" />
 <img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/78e43602-270e-4509-8fed-89d6df922124" />
-
-    -   The final step is to connect the SPI connector and run the test using the [C] command in the command window.
 <img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/b1d02212-f62c-433f-974a-70180530508c" />
-
-
-
 
 - [D] RS-232 loopback
   - Use a short wire to connect **pins 2–3** on RS232.
@@ -551,11 +548,10 @@ After completing electrical and audio tests, each unit is loaded with the intend
 
 For each serial number:
 
-1. Load the final firmware:   - Upload .bin files "Krake_fw_vx.x.x.bin" & "Krake_littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found at /releases  (Root Level).
+1. Load the final firmware:   - Upload .bin files "Krake_fw_vx.x.x.bin" & "Krake_littlefs_X.XX.bin" using the ElegantOTA platform (X.XX references the version number of the files, please use the most recent version which can be found at /releases  (Root Level).
 
 2. Record:
    - Firmware version string.
-   - MCU MAC address.
    - Date of final test and tester initials.
 3. Perform a brief smoke test of:
    - Power-up behavior and LCD initialization.
@@ -575,7 +571,10 @@ Units that pass all steps above are considered ready for integration into larger
   - "Recess_bottom.stl"
   - "SD_door.stl"
 2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
-  - **insert information about tools etc for threaded inserts**
+  - **insert information about tools etc for threaded inserts - NK pictures & instructions?**
+  - Using M4 Threaded Inserts
+  - <img width="728" height="548" alt="image" src="https://github.com/user-attachments/assets/d047879c-d173-45ce-bdac-6abd16ee2677" />
+
 3. To assemble the enclosure the following is required:
   - "knob_Dshaft_15mmx6mmv1.3.stl"
   - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
@@ -585,20 +584,20 @@ Units that pass all steps above are considered ready for integration into larger
   - "U_Box_V104_General_Alarm_Device_button"
   - "Recess_bottom.stl"
   - "SD_door.stl
-  - 2 x "enclosure bolts & nutes" **NK please can you add actual name?**
-  - 4 x M3 screws (minimum M3 x 8 )
-  - 4 x "screws for speaker mount" **NK what size will these need to be?**
-  - 4 x " Enclosure screws" **what size will these need to be?**
+  - 2 x D-Sub jack screws
+  - 4 x M3 screws (minimum M3 x 8)
+  - 4 x M4 
+  - 4 x MACH SCREW PAN PHILLIPS #2-32
 4. Begin by mounting the base plate (with the cut outs for COM, USB, Remote and DG) to the PCB using 2 x "enclosure nuts and bolts " onto the RS 232
 5. Mount the rotary encoder knob and mute button onto the PCB
 6. Using the rails inside the TSHELL slide the PCB and base plate into the TSHELL ensuring the LCD, LED, mute button and rotary encoder line up with the corresponding cut outs.
 7. Secure the PCB with 4 x M3 bolts
 8. Using the rails at the top of the enclosure slide the top blank plate into place
 9. Taking the speaker , align it with the holes within the speaker box and guide the cable through the hole to attach to the PCB
-10. Taking 4 x bolts for the speaker mount , secure the speaker to the TSHELL
+10. Taking 4 x M4 bolts for the speaker mount , secure the speaker to the TSHELL
 11. Slide the SD_door into the Recess_ Bottom ensuring the prongs and the lip on the door extrude in opposite directions
 12. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
-13. Proceed to mount the BSHELL & TSHELL together using "???"
+13. Proceed to mount the BSHELL & TSHELL together using the 4 MACH SCREW PAN PHILLIPS #2-32
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
