@@ -118,24 +118,24 @@ Start with receiving the subassembly KRK-PL-0002 (Krake Rev2.1 PCB, plus BOM-TBD
 
 | Qty | Reference(s) | Value | Datasheet | Cost | Description |
 |---:|---|---|---|---:|---|
-| 1 | KRK-PL-0001 | Subassembly, Krake Contract Manufacture | ~ | 1,000 | As built from parts list PCBWay |
-| 1 | BZ601 | Speaker | ~ | 1 | 8 Ohm 2W Speaker, 28mm |
-| 1 | J603 | DFPlayermini | [DFPlayer Mini Manual](https://image.dfrobot.com/image/data/DFR0299/DFPlayer%20Mini%20Manul.pdf) | 3 | Mini MP3 Player |
-| 1 | SD601 | Micro_SD_Card_16GB | -- | 7 | SanDisk 16GB SDHC SDSDB-016G |
-| 1 | D105 | LED_RED | [Lite-On RED LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 0 | LED RED CLEAR T-1 3/4 |
-| 5 | D201–D205 | LED_WHITE | [Lite-On WHITE LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 1 | LED WHITE CLEAR T-1 3/4 |
+| 1 | KRK-PL-0001 | Subassembly, Krake Contract Manufacture | ~ | 217 $ /5 | As built from parts list PCBWay |
+| 1 | BZ601 | Speaker | ~ | 1 $ | 8 Ohm 2W Speaker, 28mm |
+| 1 | J603 | DFPlayermini | [DFPlayer Mini Manual](https://image.dfrobot.com/image/data/DFR0299/DFPlayer%20Mini%20Manul.pdf) | 3.5 $ | Mini MP3 Player |
+| 1 | SD601 | Micro_SD_Card_16GB | -- | 7 $ | SanDisk 16GB SDHC SDSDB-016G |
+| 1 | D105 | LED_RED | [Lite-On RED LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 0.2 $ | LED RED CLEAR T-1 3/4 |
+| 5 | D201–D205 | LED_WHITE | [Lite-On WHITE LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 1 $ | LED WHITE CLEAR T-1 3/4 |
 | 4 | MF403, MF406, MF409, MF412 | Nut_4-40_0.1875 | [Keyelco Datasheet](https://www.keyelco.com/userAssets/file/M65p135.pdf) | $0.10 | #4-40 Hex Nut, 3/16\" Steel |
-| 1 | U302 | LCD_20x4_Character | -- | 5 | LCD 2004 20x4 Module |
-| 4 | MF401, MF404, MF407, MF410 | Screw_4-40_0.375 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 | 4-40 Phillips Pan Head, 3/8\" |
-| 4 | MF402, MF405, MF408, MF411 | Spacer_0.1875x0.125 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 | Nylon Spacer, 1/8\" Length |
+| 1 | U302 | LCD_20x4_Character | -- | 5 $ | LCD 2004 20x4 Module |
+| 4 | MF401, MF404, MF407, MF410 | Screw_4-40_0.375 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 1 $ | 4-40 Phillips Pan Head, 3/8\" |
+| 4 | MF402, MF405, MF408, MF411 | Spacer_0.1875x0.125 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 1 $ | Nylon Spacer, 1/8\" Length |
 | 6 | MF103, MF601–MF605 | LED_Standoff | -- | NA | General Alarm LED Standoffs |
-| 1 | MF801 | ENCLOSURE_KRAKE_VER1 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 1000000 | Plastic Enclosure |
-| 1 | MF802 | PCB_KRAKE_VER1 | Gerbers2501181555.zip | 1000000 | PCB for Krake Rev 2.1 |
+| 1 | MF801 | ENCLOSURE_KRAKE_VER1 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 $ | Plastic Enclosure |
+| 1 | MF802 | PCB_KRAKE_VER1 | Gerbers2501181555.zip | 35 $ /5 | PCB for Krake Rev 2.1 |
 | 2 | MF701, MF702 | Jackscrews_4-40 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 | Male–Female Cylinder Jackscrew |
 | 1 each | ENC801–ENC806 | Enclosure Parts | -- | -- | Top/bottom/front/rear panels, knob, mute cap |
-| 4 | MF807–MF810 | Screw_#6x1/2 | -- | -- | PanTorx Self-Tapping |
-| 4 | MF803–MF806 | Screw_2-32x3/8 | -- | -- | Self-Tapping Phillips Pan Head |
-| 1 | LB801 | Krake_Model_Serial | -- | -- | Serial Number Label |
+| 4 | MF807–MF810 | Screw_#6x1/2 | -- | 0.5 $ | PanTorx Self-Tapping |
+| 4 | MF803–MF806 | Screw_2-32x3/8 | -- | 0.5 $ | Self-Tapping Phillips Pan Head |
+| 1 | LB801 | Krake_Model_Serial | -- | 0 $ | Serial Number Label |
 
 *Additional details may be found in the source design files. Material types and categories can be added in extended tables as needed.*
 
