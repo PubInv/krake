@@ -1,14 +1,20 @@
 .~lock*
 .DS_Store
+Thumbs.db
+ehthumbs.db
+
 *.gz
 *.vs
 *.vscode*
 __pycache__
+*.pyc
+Private
 
-// Eagle PCB temp files
+# Eagle PCB temp files
 *.b#*
 *.s#*
 
+# General editor / backup files
 *~
 \#*\#
 /.emacs.desktop
@@ -18,6 +24,7 @@ auto-save-list
 tramp
 .\#*
 *-backups/
+/*-backups/
 
 # Org-mode
 .org-id-locations
@@ -49,7 +56,7 @@ flycheck_*.el
 # server auth directory
 /server/
 
-# projectiles files
+# projectile files
 .projectile
 
 # directory configuration
@@ -58,47 +65,70 @@ flycheck_*.el
 # network security
 /network-security.data
 
-
-# For FreeCAD projects
-
-# Back up file(s) for FreeCAD
-*.pyc
+# FreeCAD
 *.fcstd1
 *.FCStd1
 *.fcstd2
 *.FCStd2
 *.FCBak
-Private
 
-
-# For PCBs designed using KiCad: https://www.kicad.org/
-# Format documentation: https://kicad.org/help/file-formats/
-
-# Temporary files
+# KiCad / PCB files
 *.000
 *.bak
 *.bck
 *.kicad_pcb-bak
 *.kicad_sch-bak
-*-backups
 *.kicad_prl
 *.sch-bak
-*~
 _autosave-*
+.autosave
 *.tmp
 *-save.pro
 *-save.kicad_pcb
-fp-info-cache
+.history/
 
-# Netlist files (exported from Eeschema)
+# Output / fabrication files
+*.drl
+*.gbr
+*.fab
 *.net
+*.xml
+*.csv
+*.txt
+*.pos
+*.pnp
 
-# Autorouter files (exported from Pcbnew)
+# Simulation / generated files
+*.cir
+*.log
+*.dat
+*.out
+*.raw
+*.sra
+*.st
+*-cache.wrl
+*-cache.png
+
+# Session / router / reports
 *.dsn
 *.ses
+*.lck
+*.drc
+*.erc
 
-#Ignore build files.
+# Local project caches / config
+fp-info-cache
+sym-info-cache
+kicad_pro.user
+kicad_wks.user
+
+# Ignore build files
 *build
 
-# Platformio 
+# PlatformIO
 platformio_override.ini
+
+# Optional generated docs
+# *.pdf
+# *.ps
+# *.svg

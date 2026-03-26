@@ -1,13 +1,13 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.5.0"
+#define FIRMWARE_VERSION "v0.4.5.1"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.5.0
+Version:         v0.4.5.1
 Date:            2026-03-17
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -52,11 +52,12 @@ Revision History:
 |v0.4.4.1 | 2026-3-18 | Yukti         | Added automatic Wifi Testing inside OTA test    |
 |v0.4.5.0 | 2026-3-17 | Yukti         | Add T_MUTE_BTN test (key F): tests S601 mute    |
 |         |           |               | push button GPIO and LED_Status toggle.         |
-|         |           |               | Uses OneButton for press-duration handling:      |
+|         |           |               | Uses OneButton for press-duration handling:     |
 |         |           |               | too-short ignored, too-long warns operator.     |
 |         |           |               | active-LOW, external pull-up R603, hardware     |
 |         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
 |         |           |               | Requires: OneButton lib from Library Manager.   |
+|v0.4.5.1 | 2026-3-23 | Yukti         | Fixed DFPlayer ACK handling                     |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -724,13 +725,14 @@ static bool initDFPlayer() {
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
   delay(300);
 
-  if (!dfPlayer.begin(dfSerial, true, true)) {
+  if (!dfPlayer.begin(dfSerial, false, true)) {
     Serial.println(F("DFPlayer not detected (begin failed)."));
     dfState = DF_FAIL;
     return false;
   }
 
   dfPlayer.setTimeOut(1000);
+  dfPlayer.enableACK();          // ← restore ACK for the rest of the session
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   delay(1200);
 
