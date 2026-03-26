@@ -588,16 +588,23 @@ Units that pass all steps above are considered ready for integration into larger
   - 4 x M3 screws (minimum M3 x 8)
   - 4 x M4 
   - 4 x MACH SCREW PAN PHILLIPS #2-32
-4. Begin by mounting the base plate (with the cut outs for COM, USB, Remote and DG) to the PCB using 2 x "enclosure nuts and bolts " onto the RS 232
+4. Begin by mounting the base plate (with the cut outs for COM, USB, Remote and DG) to the PCB using 2 x D-Sub jack screws onto the RS 232
+  ![WhatsApp Image 2026-03-26 at 9 51 07 AM](https://github.com/user-attachments/assets/31fe52c2-3f31-4758-b556-1396be904d39)
 5. Mount the rotary encoder knob and mute button onto the PCB
+ ![WhatsApp Image 2026-03-26 at 9 51 07 AM (1)](https://github.com/user-attachments/assets/1819caad-e89a-4d90-852c-3fa224ccc668)
 6. Using the rails inside the TSHELL slide the PCB and base plate into the TSHELL ensuring the LCD, LED, mute button and rotary encoder line up with the corresponding cut outs.
 7. Secure the PCB with 4 x M3 bolts
+ ![WhatsApp Image 2026-03-26 at 9 51 08 AM](https://github.com/user-attachments/assets/dc1cd65b-87cf-47d2-ad0f-a11f94b64c5e)
 8. Using the rails at the top of the enclosure slide the top blank plate into place
 9. Taking the speaker , align it with the holes within the speaker box and guide the cable through the hole to attach to the PCB
 10. Taking 4 x M4 bolts for the speaker mount , secure the speaker to the TSHELL
+  ![WhatsApp Image 2026-03-26 at 9 51 08 AM (5)](https://github.com/user-attachments/assets/92b44d6d-7278-4989-b76a-e4b2b3e8b870)
 11. Slide the SD_door into the Recess_ Bottom ensuring the prongs and the lip on the door extrude in opposite directions
-12. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
-13. Proceed to mount the BSHELL & TSHELL together using the 4 MACH SCREW PAN PHILLIPS #2-32
+    ![WhatsApp Image 2026-03-26 at 9 51 08 AM (3)](https://github.com/user-attachments/assets/ca6dadea-8d0c-44b2-8832-c1a3e15250ca)
+  ![WhatsApp Image 2026-03-26 at 9 51 08 AM (2)](https://github.com/user-attachments/assets/a1dd9f7b-964d-4e2f-bac1-19c5b36227f1)
+13. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
+    ![WhatsApp Image 2026-03-26 at 9 51 08 AM (4)](https://github.com/user-attachments/assets/ce2b5fbc-80a9-42e4-b131-1e6b9030b869)
+14. Proceed to mount the BSHELL & TSHELL together using the 4 MACH SCREW PAN PHILLIPS #2-32
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
