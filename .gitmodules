@@ -1,0 +1,3 @@
+[submodule "Firmware/AUTH_MQTT/MQTT_Gateway/externals/mongoose"]
+	path = Firmware/AUTH_MQTT/MQTT_Gateway/externals/mongoose
+	url = https://github.com/cesanta/mongoose.git
