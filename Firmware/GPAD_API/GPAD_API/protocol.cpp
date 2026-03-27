@@ -119,32 +119,17 @@ AlarmMessageId ProtocolMessage::deserializeAlarmMessageId(ProtocolBuffer::const_
         throw;
     }
 
-    ++start;
-
     auto idLength = 0;
     std::array<char, AlarmMessageId::MAX_LENGTH> id = {};
 
-    auto foundEnd = false;
-
-    for (; index < numBytes; ++index)
+    ++start;
+    while ((idLength < AlarmMessageId::MAX_LENGTH) && (start != end) && (*start != AlarmMessageId::ID_END_CHARACTER))
     {
-        if (foundEnd || idLength > AlarmMessageId::MAX_LENGTH)
-        {
-            break;
-        }
-        else if (foundStart)
-        {
-            id.at(idLength) = bytes[index];
-            idLength += 1;
-        }
-        else if (bytes[index] == AlarmMessageId::ID_START_CHARACTER)
-        {
-            foundStart = true;
-        }
-        else if (bytes[index] == AlarmMessageId::ID_END_CHARACTER)
-        {
-            foundEnd = true;
-        }
+        Serial.printf("Current Message Id char: %c\n", *start);
+        id.at(idLength) = *start;
+        idLength += 1;
+
+        ++start;
     }
 
     return AlarmMessageId(idLength, id);
@@ -233,7 +218,7 @@ ProtocolMessage ProtocolMessage::deserialize(const std::array<char, ProtocolMess
     switch (commandType)
     {
     case CommandType::ALARM:
-        return ProtocolMessage(ProtocolMessage::deserializeAlarmCommand(bufferIterator += 1, bufferIteratorEnd));
+        return ProtocolMessage(ProtocolMessage::deserializeAlarmCommand(++bufferIterator, bufferIteratorEnd));
     case CommandType::INFO:
         return ProtocolMessage(InfoCommand());
     }
