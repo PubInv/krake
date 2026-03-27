@@ -25,14 +25,15 @@ namespace protocol
   public:
     static const size_t MAX_LENGTH = 80;
 
+    using Buffer = std::array<char, AlarmMessage::MAX_LENGTH>;
+
   private:
-    std::array<char, AlarmMessage::MAX_LENGTH> message;
-    size_t messageLength;
+    const size_t messageLength;
+    const std::array<char, AlarmMessage::MAX_LENGTH> message;
 
   public:
-    explicit AlarmMessage(
-        const std::array<char, AlarmMessage::MAX_LENGTH> message)
-        : message(std::move(message)) {};
+    explicit AlarmMessage(const size_t messageLength, const Buffer message)
+        : messageLength(messageLength), message(std::move(message)) {};
 
     AlarmMessage(AlarmMessage &&other) = default;
     AlarmMessage operator=(AlarmMessage &&other) { return std::move(other); }
@@ -53,20 +54,18 @@ namespace protocol
   public:
     // TODO: Find out what this value is SUPPOSED to be.
     static const size_t MAX_LENGTH = 10;
-    static const char ID_START_CHARACTER = '{';
-    static const char ID_END_CHARACTER = '}';
+
+    using Buffer = std::array<char, AlarmMessageId::MAX_LENGTH>;
 
   private:
     static const size_t TOTAL_MAX_LENGTH = AlarmMessageId::MAX_LENGTH + 1;
 
-  private:
+  public:
     const size_t idLength;
     const std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> id;
 
   public:
-    explicit AlarmMessageId(
-        const size_t idLength,
-        const std::array<char, AlarmMessageId::MAX_LENGTH> id);
+    explicit AlarmMessageId(const size_t idLength, const Buffer id);
     AlarmMessageId(AlarmMessageId &&other) = default;
     AlarmMessageId(const AlarmMessageId &&other)
         : id(std::move(other.id)), idLength(other.idLength) {}
@@ -83,29 +82,27 @@ namespace protocol
   private:
     static std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH>
     validateId(const size_t idLength,
-               const std::array<char, AlarmMessageId::MAX_LENGTH>);
+               const Buffer);
   };
 
   class AlarmTypeDesignator final : Printable
   {
   public:
     static const size_t DESIGNATOR_LENGTH = 3;
-    static const char DESIGNATOR_START_CHARACTER = '[';
-    static const char DESIGNATOR_END_CHARACTER = ']';
+    using Buffer = std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>;
 
   private:
     static const size_t TOTAL_DESIGNATOR_LENGTH =
         AlarmTypeDesignator::DESIGNATOR_LENGTH + 1;
     const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH + 1> designator;
+    const bool empty;
 
   public:
-    AlarmTypeDesignator(
-        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>
-            designator);
+    AlarmTypeDesignator(const Buffer designator, const bool empty);
 
     AlarmTypeDesignator(AlarmTypeDesignator &&other) = default;
     AlarmTypeDesignator(const AlarmTypeDesignator &&other)
-        : designator(std::move(other.designator)) {}
+        : designator(std::move(other.designator)), empty(other.empty) {}
     AlarmTypeDesignator operator=(AlarmTypeDesignator &&source)
     {
       return std::move(source);
@@ -128,8 +125,7 @@ namespace protocol
 
   private:
     static std::array<char, AlarmTypeDesignator::TOTAL_DESIGNATOR_LENGTH>
-    validateDesignator(
-        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>);
+    validateDesignator(const Buffer buffer, const bool empty);
   };
 
   class AlarmCommand final
@@ -211,18 +207,6 @@ namespace protocol
 
     using ProtocolBuffer = std::array<char, ProtocolMessage::BUFFER_LENGTH>;
 
-    // Methods and static functions
-  private:
-    static AlarmCommand
-    deserializeAlarmCommand(ProtocolBuffer::const_iterator start,
-                            const ProtocolBuffer::const_iterator end);
-    static AlarmMessageId
-    deserializeAlarmMessageId(ProtocolBuffer::const_iterator start,
-                              const ProtocolBuffer::const_iterator end);
-    static AlarmTypeDesignator
-    deserializeAlarmTypeDesignator(ProtocolBuffer::const_iterator start,
-                                   const ProtocolBuffer::const_iterator end);
-
     // Constructors and operator overloads
   public:
     ProtocolMessage(AlarmCommand alarmCommand)
@@ -259,7 +243,49 @@ namespace protocol
 
     // TODO: This needs to throw an error if the message could not be deserialized
     static ProtocolMessage
-    deserialize(const std::array<char, ProtocolMessage::BUFFER_LENGTH> buffer);
+    deserialize(const char *const buffer, const size_t numBytes);
+  };
+
+  class AlarmCommandBuilder final
+  {
+  private:
+    static const char ID_START_CHARACTER = '{';
+    static const char ID_END_CHARACTER = '}';
+
+    static const char DESIGNATOR_START_CHARACTER = '[';
+    static const char DESIGNATOR_END_CHARACTER = ']';
+
+  private:
+    AlarmCommand::Level level;
+
+    size_t idLength;
+    AlarmMessageId::Buffer idBuffer;
+
+    size_t designatorLength;
+    AlarmTypeDesignator::Buffer designatorBuffer;
+
+    size_t messageLength;
+    AlarmMessage::Buffer messageBuffer;
+
+  private:
+    AlarmCommandBuilder();
+
+    size_t deserializeLevelBytes(const char *const buffer, size_t numBytes);
+    size_t deserializeIdBytes(const char *const buffer, const size_t numBytes);
+    size_t deserializeTypeDesignatorBytes(const char *const buffer, const size_t numBytes);
+    size_t deserializeMessageBytes(const char *const buffer, const size_t numBytes);
+
+  public:
+    static AlarmCommand buildAlarmCommand(const char *const buffer, const size_t numBytes);
+
+    AlarmCommandBuilder(AlarmCommandBuilder &&other) = default;
+    AlarmCommandBuilder operator=(AlarmCommandBuilder &&other)
+    {
+      return std::move(other);
+    }
+
+    AlarmCommandBuilder(AlarmCommandBuilder &other) = delete;
+    AlarmCommandBuilder operator=(AlarmCommandBuilder &other) = delete;
   };
 
 } // namespace protocol
