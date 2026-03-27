@@ -8,7 +8,7 @@ Our latest, finished design:
 
 ![Full Krake](https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb)
 
-OSHWA Cerfified UID: US002818
+The Krake is OSHWA certified with UID: US002818
 
 <img width="549" height="442" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" />
 
