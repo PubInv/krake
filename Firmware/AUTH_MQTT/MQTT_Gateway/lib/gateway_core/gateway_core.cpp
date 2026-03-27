@@ -90,9 +90,12 @@ void GatewayCore::mqttTimerFn(void* arg) {
   opts.version   = 4;
 
   self->m_mqttConn = mg_mqtt_connect(&self->m_mgr, url, &opts, mqttEventHandler, self);
+  
   // self->m_mqttConn = mg_mqtt_connect(&self->m_mgr, url, &opts, mqttEventHandler, NULL);
   if (self->m_mqttConn == nullptr) {
     Serial.println("mg_mqtt_connect returned null (check memory/broker)");
+  }else{
+    Serial.printf("MQTT connected: %s \n", cid);
   }
 }
 
