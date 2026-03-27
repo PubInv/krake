@@ -1,7 +1,6 @@
 #include "gateway_core.h"
 #include "gateway_config.h"
 #include "gateway_utils.h"
-#include "chacha20.h"
 #include <WiFi.h>
 #include <time.h>
 #include <vector>
@@ -203,7 +202,7 @@ void GatewayCore::sendEncrypted(const String& deviceId, const uint8_t* plaintext
   // device_id is used as AAD when encrypting. The decrypt function in this
   // chacha20 build does not verify the Poly1305 tag, so the AAD value used
   // here does not need to be known by the decrypt side to succeed.
-  size_t encLen = chacha20_poly1305_encrypt(cipher, dev.enc_key, nonce,
+  size_t encLen = mg_chacha20_poly1305_encrypt(cipher, dev.enc_key, nonce,
                                             (uint8_t*)deviceId.c_str(), deviceId.length(),
                                             plaintext, len);
   if (encLen == (size_t)-1) {
@@ -368,9 +367,8 @@ bool GatewayCore::authorizeDevice(const String& id, const char* psk) {
     return false;
   }
 
-  // No AAD: chacha20_poly1305_decrypt() in this build does not accept AAD.
   // Python must also encrypt with aad=b"" (no AAD) to keep both sides symmetric.
-  size_t decLen = chacha20_poly1305_decrypt(
+  size_t decLen = mg_chacha20_poly1305_decrypt(
       plain, key, nonce,
       cipher, cipherLen);
   if (decLen == (size_t)-1) {
@@ -537,7 +535,7 @@ void GatewayCore::handleGatewayRx(struct mg_str payload) {
   }
 
   // No AAD: same as authorizeDevice — must match Python's aad=b"" encryption.
-  size_t decLen = chacha20_poly1305_decrypt(
+  size_t decLen = mg_chacha20_poly1305_decrypt(
       plain, dev.enc_key, nonce,
       cipher, cipherLen);
   if (decLen == (size_t)-1) {
