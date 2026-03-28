@@ -192,6 +192,18 @@ namespace protocol
     InfoCommand(const InfoCommand &other) = delete;
   };
 
+  class MuteCommand final
+  {
+  };
+
+  class UnmuteCommand final
+  {
+  };
+
+  class HelpCommand final
+  {
+  };
+
   struct ProtocolMessage final
   {
   public:
@@ -201,6 +213,9 @@ namespace protocol
     {
       AlarmCommand alarm;
       InfoCommand info;
+      MuteCommand mute;
+      UnmuteCommand unmute;
+      HelpCommand help;
     };
 
     const CommandType commandType;
@@ -209,10 +224,16 @@ namespace protocol
 
     // Constructors and operator overloads
   public:
-    ProtocolMessage(AlarmCommand alarmCommand)
+    ProtocolMessage(AlarmCommand alarmCommand) noexcept
         : commandType(CommandType::ALARM), alarm(std::move(alarmCommand)) {}
-    ProtocolMessage(InfoCommand infoCommand)
+    ProtocolMessage(InfoCommand infoCommand) noexcept
         : commandType(CommandType::INFO), info(std::move(infoCommand)) {}
+    ProtocolMessage(MuteCommand muteCommand) noexcept
+        : commandType(CommandType::MUTE), mute(std::move(muteCommand)) {}
+    ProtocolMessage(UnmuteCommand unmuteCommand) noexcept
+        : commandType(CommandType::UNMUTE), unmute(std::move(unmuteCommand)) {}
+    ProtocolMessage(HelpCommand helpCommand) noexcept
+        : commandType(CommandType::HELP), help(std::move(helpCommand)) {}
 
     ProtocolMessage operator=(ProtocolMessage &&other) noexcept
     {
@@ -228,6 +249,15 @@ namespace protocol
         break;
       case CommandType::INFO:
         this->info = std::move(other.info);
+        break;
+      case CommandType::MUTE:
+        this->mute = std::move(other.mute);
+        break;
+      case CommandType::UNMUTE:
+        this->unmute = std::move(other.unmute);
+        break;
+      case CommandType::HELP:
+        this->help = std::move(other.help);
         break;
       }
     }

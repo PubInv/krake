@@ -131,20 +131,24 @@ ProtocolMessage ProtocolMessage::deserialize(const char *const buffer, const siz
     switch (commandType)
     {
     case CommandType::ALARM:
-        if ((numBytes - 1) >= 1)
-        {
-            return ProtocolMessage(AlarmCommandBuilder::buildAlarmCommand(buffer + 1, numBytes - 1));
-        }
-        else
+        if ((numBytes - 1) == 0)
         {
             throw;
         }
+        return ProtocolMessage(AlarmCommandBuilder::buildAlarmCommand(buffer + 1, numBytes - 1));
+
     case CommandType::INFO:
         return ProtocolMessage(InfoCommand());
-    }
 
-    // In the event the switch falls through, throw an error
-    throw;
+    case CommandType::MUTE:
+        return ProtocolMessage(MuteCommand());
+
+    case CommandType::UNMUTE:
+        return ProtocolMessage(UnmuteCommand());
+
+    case CommandType::HELP:
+        return ProtocolMessage(HelpCommand());
+    }
 }
 
 AlarmCommandBuilder::AlarmCommandBuilder()
@@ -247,7 +251,13 @@ size_t AlarmCommandBuilder::deserializeTypeDesignatorBytes(const char *const buf
 
 size_t AlarmCommandBuilder::deserializeMessageBytes(const char *const buffer, const size_t numBytes)
 {
-    return 0;
+    auto messageLength = 0;
+    for (; messageLength < numBytes; ++messageLength)
+    {
+        this->messageBuffer.at(messageLength) = buffer[messageLength];
+    }
+
+    return messageLength;
 }
 
 AlarmCommand AlarmCommandBuilder::buildAlarmCommand(const char *const buffer, const size_t numBytes)
