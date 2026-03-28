@@ -58,7 +58,8 @@ Revision History:
 |         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
 |         |           |               | Requires: OneButton lib from Library Manager.   |
 |v0.4.5.1 | 2026-3-23 | Yukti         | Fixed DFPlayer ACK handling                     |
-|v0.4.6.0 | 2026-3-31 | Yukti         | Migrate to PlatformIO                           |
+|v0.4.5.2 | 2026-3-24 | Yukti         | Added MAC address display to splash screen      |
+|v0.4.6.0 | 2026-3-31 | Yukti         | Migrate to PlatformIO (#352)                    |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -378,7 +379,6 @@ static void printBanner() {
 }
 
 void splashserial(void) {
-  //Serial splash
   Serial.println(F("===================== Serial Splash ===================="));
   Serial.println(PROG_NAME);
   Serial.print(VERSION);
@@ -387,6 +387,8 @@ void splashserial(void) {
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
+  Serial.print(F("MAC (STA): "));
+  Serial.println(WiFi.macAddress());
   Serial.println(F("======================================================="));
 }
 
@@ -1379,12 +1381,11 @@ void setup() {
 
   //Mount LittleFS at boot so ElegantOTA can use it immediately
   g_littleFsMounted = LittleFS.begin(true);
-  if (!g_littleFsMounted) {
-    Serial.println(F("WARNING: LittleFS mount failed at boot."));
-  } else {
-    Serial.println(F("LittleFS mounted OK."));
-  }
+  Serial.println(g_littleFsMounted ? F("[boot] LittleFS... OK") : F("[boot] WARNING: LittleFS mount failed."));
 
+  WiFi.mode(WIFI_STA);
+  delay(100);
+  Serial.println(F("[boot] WiFi init... OK"));
   WiFi.mode(WIFI_OFF);
   delay(50);
 
