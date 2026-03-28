@@ -7,8 +7,6 @@
 
 namespace protocol
 {
-
-  union Command;
   class ProtocolMessage;
 
   enum class CommandType : char
@@ -171,8 +169,6 @@ namespace protocol
     AlarmCommand() = delete;
     AlarmCommand(AlarmCommand &other) = delete;
     AlarmCommand(const AlarmCommand &other) = delete;
-
-    char alarmLevelIntoChar() const;
   };
 
   class InfoCommand final

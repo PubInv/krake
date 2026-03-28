@@ -410,6 +410,8 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
 // the Hardware Abstraction Layer.
 void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client)
 {
+  using namespace protocol;
+
   if (rlen < 1)
   {
     printError(serialport);
@@ -428,25 +430,31 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     return;
   }
 
-  Command command = static_cast<Command>(buf[0]);
-  char commandChar = static_cast<char>(command);
+  const auto protocolMessage = ProtocolMessage::deserialize(buf, rlen);
 
   serialport->print(F("Command: "));
-  serialport->printf("%c\n", commandChar);
-  switch (command)
+  serialport->printf("%c\n", protocolMessage.commandType);
+
+  switch (protocolMessage.commandType)
   {
-  case Command::MUTE:
+  case CommandType::MUTE:
+  {
     serialport->println(F("Muting Case!"));
     currentlyMuted = true;
     break;
-  case Command::UNMUTE:
+  }
+  case CommandType::UNMUTE:
+  {
     serialport->println(F("UnMuting Case!"));
     currentlyMuted = false;
     break;
-  case Command::HELP: // help
+  }
+  case CommandType::HELP:
+  {
     printInstructions(serialport);
     break;
-  case Command::ALARM:
+  }
+  case CommandType::ALARM:
   {
     // In the case of an alarm state, the rest of the buffer is a message.
     // we will read up to 60 characters from this buffer for display on our
@@ -467,7 +475,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break;
   }
-  case Command::INFO: // Information. Firmware Version, Mute Status,
+  case CommandType::INFO:
   {
     // Firmware Version
     //  81+23 = Maximum string length
@@ -552,8 +560,10 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     break; // end of 'i'
   }
   default:
+  {
     serialport->println(F("Unknown Command"));
     break;
+  }
   }
   serialport->print(F("currentlyMuted : "));
   serialport->println(currentlyMuted);
