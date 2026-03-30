@@ -1,4 +1,4 @@
-#include "GPAP.h"
+#include "GPAPMessage.h"
 #include "Deserialize/AlarmMessageBuilder/AlarmMessageBuilder.h"
 
 using namespace gpap_message;
@@ -22,17 +22,16 @@ GPAPMessage GPAPMessage::deserialize(const char *const buffer, const size_t numB
         }
         return std::move(GPAPMessage(deserialize::AlarmMessageBuilder::buildAlarmMessage(buffer + 1, numBytes - 1)));
 
-        // case MessageType::INFO:
-        //     return ProtocolMessage(InfoCommand());
+    case MessageType::INFO:
+        return GPAPMessage(InfoMessage());
 
-        // case MessageType::MUTE:
-        //     return ProtocolMessage(MuteCommand());
+    case MessageType::MUTE:
+        return GPAPMessage(MuteMessage());
 
-        // case MessageType::UNMUTE:
-        //     return ProtocolMessage(UnmuteCommand());
+    case MessageType::UNMUTE:
+        return GPAPMessage(UnmuteMessage());
 
-        // case MessageType::HELP:
-        //     return ProtocolMessage(HelpCommand());
-        // }
+    case MessageType::HELP:
+        return GPAPMessage(HelpMessage());
     }
 }

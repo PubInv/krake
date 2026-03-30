@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include "AlarmMessageBuilder.h"
 
 using namespace gpap_message::alarm;
@@ -18,7 +20,30 @@ size_t AlarmMessageBuilder::deserializeLevelBytes(const char *const buffer,
         throw;
     }
 
+    Serial.printf("The alarm level: %c\n", buffer[0]);
+
     this->level = static_cast<AlarmMessage::Level>(buffer[0]);
+
+    Serial.println("Inside ::deserializeLevelBytes()");
+    switch (this->level)
+    {
+    case AlarmMessage::Level::Level1:
+        Serial.println("Level 1");
+        break;
+    case AlarmMessage::Level::Level2:
+        Serial.println("Level 2");
+        break;
+    case AlarmMessage::Level::Level3:
+        Serial.println("Level 3");
+        break;
+    case AlarmMessage::Level::Level4:
+        Serial.println("Level 4");
+        break;
+    case AlarmMessage::Level::Level5:
+        Serial.println("Level 5");
+        break;
+    }
+    Serial.println("Finish ::deserializeLevelBytes()");
 
     return 1;
 }
@@ -132,6 +157,9 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 
     auto totalBytes = builder.deserializeLevelBytes(buffer, numBytes);
 
+    // Iterate through buffer multiple times to find the elements/components
+    // remove Bytes from the function names
+
     if ((numBytes - totalBytes) > 0)
     {
         totalBytes +=
@@ -146,7 +174,6 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 
     if ((numBytes - totalBytes) > 0)
     {
-
         totalBytes += builder.deserializeMessageBytes(buffer + totalBytes,
                                                       numBytes - totalBytes);
     }
@@ -158,6 +185,29 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
     const auto content =
         AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
 
-    return AlarmMessage(builder.level, std::move(content), std::move(messageId),
-                        std::move(typeDesignator));
+    auto alarmMessage = AlarmMessage(builder.level, std::move(content), std::move(messageId),
+                                     std::move(typeDesignator));
+
+    Serial.println("Inside ::buildAlarmMessage()");
+    switch (alarmMessage.level)
+    {
+    case AlarmMessage::Level::Level1:
+        Serial.println("Level 1");
+        break;
+    case AlarmMessage::Level::Level2:
+        Serial.println("Level 2");
+        break;
+    case AlarmMessage::Level::Level3:
+        Serial.println("Level 3");
+        break;
+    case AlarmMessage::Level::Level4:
+        Serial.println("Level 4");
+        break;
+    case AlarmMessage::Level::Level5:
+        Serial.println("Level 5");
+        break;
+    }
+    Serial.println("Finish ::buildAlarmMessage()");
+
+    return alarmMessage;
 }

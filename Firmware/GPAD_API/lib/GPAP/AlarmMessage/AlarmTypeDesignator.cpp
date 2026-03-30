@@ -39,14 +39,14 @@ AlarmTypeDesignator::validateDesignator(
 
     auto designatorIterator = designator.begin();
 
-    bool allDigits = std::all_of(inputDesignator.cbegin(), inputDesignator.cend(),
-                                 [&](char inputCharacter)
-                                 {
-                                     *designatorIterator = inputCharacter;
-                                     designatorIterator =
-                                         std::next(designatorIterator, 1);
-                                     return isdigit(inputCharacter);
-                                 });
+    const bool allDigits = std::all_of(inputDesignator.cbegin(), inputDesignator.cend(),
+                                       [&](char inputCharacter)
+                                       {
+                                           *designatorIterator = inputCharacter;
+                                           designatorIterator =
+                                               std::next(designatorIterator, 1);
+                                           return isdigit(inputCharacter);
+                                       });
 
     // if the characters are not all digits we want to throw
     if (!allDigits)

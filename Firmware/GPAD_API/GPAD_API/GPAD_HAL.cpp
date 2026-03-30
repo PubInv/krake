@@ -25,7 +25,7 @@
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
-#include "GPAP.h"
+#include "GPAPMessage.h"
 
 using namespace gpad_hal;
 

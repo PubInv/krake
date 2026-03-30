@@ -26,7 +26,7 @@ std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> AlarmMessageId::validateId(
     auto startIterator = id.cbegin();
     auto endIterator = id.cbegin() + idLength;
 
-    bool allHex = std::all_of(
+    const bool allHex = std::all_of(
         startIterator, endIterator, [&validatedIdIterator](char hexChar)
         {
         *validatedIdIterator = hexChar;

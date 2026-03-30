@@ -55,6 +55,7 @@
 #include "gpad_utility.h"
 #include "gpad_serial.h"
 #include "Wink.h"
+#include "GPAPMessage.h"
 #include <math.h>
 
 #include <WiFi.h>
@@ -132,7 +133,7 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
 // MQTT Broker
-//#define USE_HIVEMQ
+// #define USE_HIVEMQ
 #ifdef USE_HIVEMQ
 const char *mqtt_broker_name = "broker.hivemq.com";
 const char *mqtt_user = "";
@@ -245,7 +246,7 @@ void reconnect()
   {
     n++;
     Serial.print("Attempting MQTT connection at: ");
-    Serial.print(millis() );
+    Serial.print(millis());
     Serial.print("..... ");
     if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
     {
@@ -456,6 +457,45 @@ void setup()
   char setupSsid[SETUP_SSID_LENGTH] = "Krake_";
   strcat(setupSsid, macAddressString);
 
+  const char *const testMessage = "a5{a4ab}[444]Test message";
+
+  const auto gpapMessage = gpap_message::GPAPMessage::deserialize(testMessage, 25);
+
+  switch (gpapMessage.messageType)
+  {
+  case gpap_message::MessageType::ALARM:
+    using gpap_message::alarm::AlarmMessage;
+    const gpap_message::alarm::AlarmMessage &alarm = gpapMessage.alarm;
+    Serial.println("Parsing Alarm Command");
+
+    switch (alarm.level)
+    {
+    case AlarmMessage::Level::Level1:
+      Serial.println("Level 1");
+      break;
+    case AlarmMessage::Level::Level2:
+      Serial.println("Level 2");
+      break;
+    case AlarmMessage::Level::Level3:
+      Serial.println("Level 3");
+      break;
+    case AlarmMessage::Level::Level4:
+      Serial.println("Level 4");
+      break;
+    case AlarmMessage::Level::Level5:
+      Serial.println("Level 5");
+      break;
+    }
+
+    Serial.printf("Alarm Level: %c\n", alarm.level);
+
+    Serial.print("Alarm Type Designator: ");
+    alarm.typeDesignator.printTo(Serial);
+    Serial.print("\n");
+
+    break;
+  }
+
   // We call this a second time to get the MAC on the screen
   //  clearLCD();
   // req for Wifi Man and OTA
@@ -520,12 +560,13 @@ void loop()
 {
 #if defined HMWK || defined KRAKE
 
-if (!client.loop()) {
-  Serial.print(mqtt_broker_name);
-  Serial.print(" lost MQTT at: ");
-  Serial.println(millis());
+  if (!client.loop())
+  {
+    Serial.print(mqtt_broker_name);
+    Serial.print(" lost MQTT at: ");
+    Serial.println(millis());
     reconnect();
-}
+  }
 
   publishOnLineMsg();
   wink(); // The builtin LED

@@ -1,7 +1,7 @@
 #ifndef _ALARM_MESSAGE_BUILDER_H
 #define _ALARM_MESSAGE_BUILDER_H
 
-#include "AlarmMessage/AlarmMessage.h"
+#include "AlarmMessage.h"
 
 namespace gpap_message::deserialize
 {

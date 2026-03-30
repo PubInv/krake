@@ -1,7 +1,11 @@
 #ifndef _GPAP_MESSAGE_H
 #define _GPAP_MESSAGE_H
 
-#include "AlarmMessage/AlarmMessage.h"
+#include "AlarmMessage.h"
+#include "HelpMessage.h"
+#include "InfoMessage.h"
+#include "MuteMessage.h"
+#include "UnmuteMessage.h"
 
 namespace gpap_message
 {
@@ -22,10 +26,10 @@ namespace gpap_message
         const union
         {
             alarm::AlarmMessage alarm;
-            // InfoCommand info;
-            // MuteCommand mute;
-            // UnmuteCommand unmute;
-            // HelpCommand help;
+            InfoMessage info;
+            MuteMessage mute;
+            UnmuteMessage unmute;
+            HelpMessage help;
         };
 
         const MessageType messageType;
@@ -36,14 +40,14 @@ namespace gpap_message
     public:
         GPAPMessage(alarm::AlarmMessage alarmMessage) noexcept
             : messageType(MessageType::ALARM), alarm(std::move(alarmMessage)) {}
-        // ProtocolMessage(InfoCommand infoCommand) noexcept
-        //     : commandType(CommandType::INFO), info(std::move(infoCommand)) {}
-        // ProtocolMessage(MuteCommand muteCommand) noexcept
-        //     : commandType(CommandType::MUTE), mute(std::move(muteCommand)) {}
-        // ProtocolMessage(UnmuteCommand unmuteCommand) noexcept
-        //     : commandType(CommandType::UNMUTE), unmute(std::move(unmuteCommand)) {}
-        // ProtocolMessage(HelpCommand helpCommand) noexcept
-        //     : commandType(CommandType::HELP), help(std::move(helpCommand)) {}
+        GPAPMessage(InfoMessage infoMessage) noexcept
+            : messageType(MessageType::INFO), info(std::move(infoMessage)) {}
+        GPAPMessage(MuteMessage muteMessage) noexcept
+            : messageType(MessageType::MUTE), mute(std::move(muteMessage)) {}
+        GPAPMessage(UnmuteMessage unmuteCommand) noexcept
+            : messageType(MessageType::UNMUTE), unmute(std::move(unmuteCommand)) {}
+        GPAPMessage(HelpMessage helpCommand) noexcept
+            : messageType(MessageType::HELP), help(std::move(helpCommand)) {}
 
         GPAPMessage operator=(GPAPMessage &&other) noexcept
         {
@@ -57,18 +61,18 @@ namespace gpap_message
             case MessageType::ALARM:
                 this->alarm = std::move(other.alarm);
                 break;
-                // case CommandType::INFO:
-                //     this->info = std::move(other.info);
-                //     break;
-                // case CommandType::MUTE:
-                //     this->mute = std::move(other.mute);
-                //     break;
-                // case CommandType::UNMUTE:
-                //     this->unmute = std::move(other.unmute);
-                //     break;
-                // case CommandType::HELP:
-                //     this->help = std::move(other.help);
-                //     break;
+            case MessageType::INFO:
+                this->info = std::move(other.info);
+                break;
+            case MessageType::MUTE:
+                this->mute = std::move(other.mute);
+                break;
+            case MessageType::UNMUTE:
+                this->unmute = std::move(other.unmute);
+                break;
+            case MessageType::HELP:
+                this->help = std::move(other.help);
+                break;
             }
         }
         const GPAPMessage operator=(const GPAPMessage &&other)

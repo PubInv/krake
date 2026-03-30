@@ -1,9 +1,9 @@
 #ifndef _ALARM_MESSAGE_H
 #define _ALARM_MESSAGE_H
 
-#include "AlarmMessageId.h"
-#include "AlarmTypeDesignator.h"
-#include "AlarmContent.h"
+#include "AlarmMessage/AlarmMessageId.h"
+#include "AlarmMessage/AlarmTypeDesignator.h"
+#include "AlarmMessage/AlarmContent.h"
 
 namespace gpap_message::alarm
 {
@@ -12,6 +12,7 @@ namespace gpap_message::alarm
     public:
         enum class Level : char
         {
+            Level0 = '0',
             Level1 = '1',
             Level2 = '2',
             Level3 = '3',
