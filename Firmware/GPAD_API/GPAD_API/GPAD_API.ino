@@ -249,14 +249,14 @@ void reconnect()
     Serial.print("..... ");
     if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
     {
-      Serial.print("success at");
+      Serial.print("success at: ");
       Serial.println(millis());
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
     }
     else
     {
       Serial.print("failed, rc=");
-      Serial.print(client.state());
+      Serial.println(client.state());
       delay(1000);
     }
   }
@@ -484,22 +484,41 @@ void setup()
   wifiManager.setApStartedCallback(apStartedCallback);
 
   wifiManager.connect(setupSsid);
-  WifiOTA::initLittleFS();
-  server.begin(); // Start server web socket to render pages
-  ElegantOTA.begin(&server);
-  setupOTA();
 
-  // Need this to work here:   printInstructions(serialport);
+  Serial.println(F("WiFi Manager connected."));
+
+  WifiOTA::initLittleFS();
+
+  Serial.println(F("initLiffleFS"));
+
+  server.begin(); // Start server web socket to render pages
+  
+  Serial.println(F("iStart server web socket to render pages"));
+
+  ElegantOTA.begin(&server);
+  Serial.println(F("ElegantOTA.begin"));
+
+  setupOTA();
+  Serial.println(F("setupOTA"));
+
+
+  initRotator();
+  Serial.println(F("initRotator"));
+  splashLCD(wifiManager.getMode(), deviceAddress);
+
+  Serial.println(F("splashLCD"));
+
+  setupDFPlayer();
+  Serial.println(F("setupDFPlayer"));
+
+  setup_GPAD_menu();
+
+  Serial.println(F("setupGPAD_menu"));
+
+    // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
   turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW); // turn the LED off at end of setup
-
-  initRotator();
-  splashLCD(wifiManager.getMode(), deviceAddress);
-
-  setupDFPlayer();
-  setup_GPAD_menu();
-
 } // end of setup()
 
 unsigned long last_ms = 0;
