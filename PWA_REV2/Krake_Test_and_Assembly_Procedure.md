@@ -602,8 +602,8 @@ Units that pass all steps above are considered ready for integration into larger
 11. Slide the SD_door into the Recess_ Bottom ensuring the prongs and the lip on the door extrude in opposite directions
     ![WhatsApp Image 2026-03-26 at 9 51 08 AM (3)](https://github.com/user-attachments/assets/ca6dadea-8d0c-44b2-8832-c1a3e15250ca)
   ![WhatsApp Image 2026-03-26 at 9 51 08 AM (2)](https://github.com/user-attachments/assets/a1dd9f7b-964d-4e2f-bac1-19c5b36227f1)
-13. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
-    ![WhatsApp Image 2026-03-26 at 9 51 08 AM (4)](https://github.com/user-attachments/assets/ce2b5fbc-80a9-42e4-b131-1e6b9030b869)
+12. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
+    <img width="320" height="240" alt="image" src="https://github.com/user-attachments/assets/de4985c2-0883-4371-8e4e-ed05de24c107" />
 14. Proceed to mount the BSHELL & TSHELL together using the 4 MACH SCREW PAN PHILLIPS #2-32
 
 **Ethics statements**  
