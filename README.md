@@ -1,4 +1,5 @@
 
+
 # Krake™: A General Purpose Wireless Alarm Device
 
 Krake™ is a **wireless alarm device** designed to alert human operators to important conditions through both **visual** (flashing lights) and **auditory** (alarm sounds, music, or speech) cues. Developed by **Public Invention**, Krake adds functionality to the **General Purpose Alarm Device (GPAD)** by incorporating a **rotary encoder** for easy interaction and configuration.
@@ -6,6 +7,11 @@ Krake™ is a **wireless alarm device** designed to alert human operators to imp
 Our latest, finished design:
 
 ![Full Krake](https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb)
+
+The Krake is OSHWA certified with UID: US002818
+
+<img width="549" height="442" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" />
+
 
 ---
 
