@@ -468,25 +468,6 @@ void setup()
     const gpap_message::alarm::AlarmMessage &alarm = gpapMessage.alarm;
     Serial.println("Parsing Alarm Command");
 
-    switch (alarm.level)
-    {
-    case AlarmMessage::Level::Level1:
-      Serial.println("Level 1");
-      break;
-    case AlarmMessage::Level::Level2:
-      Serial.println("Level 2");
-      break;
-    case AlarmMessage::Level::Level3:
-      Serial.println("Level 3");
-      break;
-    case AlarmMessage::Level::Level4:
-      Serial.println("Level 4");
-      break;
-    case AlarmMessage::Level::Level5:
-      Serial.println("Level 5");
-      break;
-    }
-
     Serial.printf("Alarm Level: %c\n", alarm.level);
 
     Serial.print("Alarm Type Designator: ");

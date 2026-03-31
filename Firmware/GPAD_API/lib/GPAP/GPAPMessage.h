@@ -38,22 +38,18 @@ namespace gpap_message
 
         // Constructors and operator overloads
     public:
-        GPAPMessage(alarm::AlarmMessage alarmMessage) noexcept
+        explicit GPAPMessage(alarm::AlarmMessage alarmMessage) noexcept
             : messageType(MessageType::ALARM), alarm(std::move(alarmMessage)) {}
-        GPAPMessage(InfoMessage infoMessage) noexcept
+        explicit GPAPMessage(InfoMessage infoMessage) noexcept
             : messageType(MessageType::INFO), info(std::move(infoMessage)) {}
-        GPAPMessage(MuteMessage muteMessage) noexcept
+        explicit GPAPMessage(MuteMessage muteMessage) noexcept
             : messageType(MessageType::MUTE), mute(std::move(muteMessage)) {}
-        GPAPMessage(UnmuteMessage unmuteCommand) noexcept
+        explicit GPAPMessage(UnmuteMessage unmuteCommand) noexcept
             : messageType(MessageType::UNMUTE), unmute(std::move(unmuteCommand)) {}
-        GPAPMessage(HelpMessage helpCommand) noexcept
+        explicit GPAPMessage(HelpMessage helpCommand) noexcept
             : messageType(MessageType::HELP), help(std::move(helpCommand)) {}
 
-        GPAPMessage operator=(GPAPMessage &&other) noexcept
-        {
-            return std::move(other);
-        }
-        GPAPMessage(const GPAPMessage &&other)
+        GPAPMessage(const GPAPMessage &&other) noexcept
             : messageType(other.messageType)
         {
             switch (this->messageType)

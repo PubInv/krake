@@ -12,44 +12,21 @@ AlarmMessageBuilder::AlarmMessageBuilder()
 {
 }
 
-size_t AlarmMessageBuilder::deserializeLevelBytes(const char *const buffer,
-                                                  const size_t numBytes)
+size_t AlarmMessageBuilder::deserializeLevel(const char *const buffer,
+                                             const size_t numBytes)
 {
     if (numBytes == 0)
     {
         throw;
     }
 
-    Serial.printf("The alarm level: %c\n", buffer[0]);
-
     this->level = static_cast<AlarmMessage::Level>(buffer[0]);
-
-    Serial.println("Inside ::deserializeLevelBytes()");
-    switch (this->level)
-    {
-    case AlarmMessage::Level::Level1:
-        Serial.println("Level 1");
-        break;
-    case AlarmMessage::Level::Level2:
-        Serial.println("Level 2");
-        break;
-    case AlarmMessage::Level::Level3:
-        Serial.println("Level 3");
-        break;
-    case AlarmMessage::Level::Level4:
-        Serial.println("Level 4");
-        break;
-    case AlarmMessage::Level::Level5:
-        Serial.println("Level 5");
-        break;
-    }
-    Serial.println("Finish ::deserializeLevelBytes()");
 
     return 1;
 }
 
-size_t AlarmMessageBuilder::deserializeIdBytes(const char *const buffer,
-                                               const size_t numBytes)
+size_t AlarmMessageBuilder::deserializeId(const char *const buffer,
+                                          const size_t numBytes)
 {
     if (numBytes == 0 || (buffer[0] != AlarmMessageBuilder::ID_START_CHARACTER))
     {
@@ -94,8 +71,8 @@ size_t AlarmMessageBuilder::deserializeIdBytes(const char *const buffer,
 }
 
 size_t
-AlarmMessageBuilder::deserializeTypeDesignatorBytes(const char *const buffer,
-                                                    const size_t numBytes)
+AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer,
+                                               const size_t numBytes)
 {
     if ((numBytes == 0) ||
         buffer[0] != AlarmMessageBuilder::DESIGNATOR_START_CHARACTER)
@@ -138,8 +115,8 @@ AlarmMessageBuilder::deserializeTypeDesignatorBytes(const char *const buffer,
     }
 }
 
-size_t AlarmMessageBuilder::deserializeMessageBytes(const char *const buffer,
-                                                    const size_t numBytes)
+size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer,
+                                               const size_t numBytes)
 {
     auto messageLength = 0;
     for (; messageLength < numBytes; ++messageLength)
@@ -155,7 +132,7 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 {
     AlarmMessageBuilder builder = AlarmMessageBuilder();
 
-    auto totalBytes = builder.deserializeLevelBytes(buffer, numBytes);
+    auto totalBytes = builder.deserializeLevel(buffer, numBytes);
 
     // Iterate through buffer multiple times to find the elements/components
     // remove Bytes from the function names
@@ -163,19 +140,19 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
     if ((numBytes - totalBytes) > 0)
     {
         totalBytes +=
-            builder.deserializeIdBytes(buffer + totalBytes, numBytes - totalBytes);
+            builder.deserializeId(buffer + totalBytes, numBytes - totalBytes);
     }
 
     if ((numBytes - totalBytes) > 0)
     {
-        totalBytes += builder.deserializeTypeDesignatorBytes(buffer + totalBytes,
-                                                             numBytes - totalBytes);
+        totalBytes += builder.deserializeTypeDesignator(buffer + totalBytes,
+                                                        numBytes - totalBytes);
     }
 
     if ((numBytes - totalBytes) > 0)
     {
-        totalBytes += builder.deserializeMessageBytes(buffer + totalBytes,
-                                                      numBytes - totalBytes);
+        totalBytes += builder.deserializeMessage(buffer + totalBytes,
+                                                 numBytes - totalBytes);
     }
 
     const auto messageId =
@@ -185,29 +162,7 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
     const auto content =
         AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
 
-    auto alarmMessage = AlarmMessage(builder.level, std::move(content), std::move(messageId),
-                                     std::move(typeDesignator));
-
-    Serial.println("Inside ::buildAlarmMessage()");
-    switch (alarmMessage.level)
-    {
-    case AlarmMessage::Level::Level1:
-        Serial.println("Level 1");
-        break;
-    case AlarmMessage::Level::Level2:
-        Serial.println("Level 2");
-        break;
-    case AlarmMessage::Level::Level3:
-        Serial.println("Level 3");
-        break;
-    case AlarmMessage::Level::Level4:
-        Serial.println("Level 4");
-        break;
-    case AlarmMessage::Level::Level5:
-        Serial.println("Level 5");
-        break;
-    }
-    Serial.println("Finish ::buildAlarmMessage()");
-
-    return alarmMessage;
+    const auto alarmMessage = AlarmMessage(builder.level, std::move(content), std::move(messageId),
+                                           std::move(typeDesignator));
+    return std::move(alarmMessage);
 }

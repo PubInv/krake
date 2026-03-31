@@ -11,7 +11,7 @@ GPAPMessage GPAPMessage::deserialize(const char *const buffer, const size_t numB
     }
 
     // TODO: This should be wrapped in a try/catch if there isn't a 0th element
-    auto messageType = static_cast<MessageType>(buffer[0]);
+    const auto messageType = static_cast<MessageType>(buffer[0]);
 
     switch (messageType)
     {
@@ -20,7 +20,8 @@ GPAPMessage GPAPMessage::deserialize(const char *const buffer, const size_t numB
         {
             throw;
         }
-        return std::move(GPAPMessage(deserialize::AlarmMessageBuilder::buildAlarmMessage(buffer + 1, numBytes - 1)));
+
+        return GPAPMessage(deserialize::AlarmMessageBuilder::buildAlarmMessage(buffer + 1, numBytes - 1));
 
     case MessageType::INFO:
         return GPAPMessage(InfoMessage());

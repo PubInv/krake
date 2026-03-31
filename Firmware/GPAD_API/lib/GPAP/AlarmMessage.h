@@ -34,7 +34,6 @@ namespace gpap_message::alarm
               messageId(std::move(messageId)),
               typeDesignator(std::move(typeDesignator)) {}
 
-        AlarmMessage(AlarmMessage &&other) = default;
         AlarmMessage(const AlarmMessage &&other)
             : level(other.level), content(std::move(other.content)),
               messageId(std::move(other.messageId)),

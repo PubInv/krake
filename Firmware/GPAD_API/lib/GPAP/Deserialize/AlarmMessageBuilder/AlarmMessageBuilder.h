@@ -31,10 +31,10 @@ namespace gpap_message::deserialize
     private:
         AlarmMessageBuilder();
 
-        size_t deserializeLevelBytes(const char *const buffer, size_t numBytes);
-        size_t deserializeIdBytes(const char *const buffer, const size_t numBytes);
-        size_t deserializeTypeDesignatorBytes(const char *const buffer, const size_t numBytes);
-        size_t deserializeMessageBytes(const char *const buffer, const size_t numBytes);
+        size_t deserializeLevel(const char *const buffer, size_t numBytes);
+        size_t deserializeId(const char *const buffer, const size_t numBytes);
+        size_t deserializeTypeDesignator(const char *const buffer, const size_t numBytes);
+        size_t deserializeMessage(const char *const buffer, const size_t numBytes);
 
     public:
         static alarm::AlarmMessage buildAlarmMessage(const char *const buffer, const size_t numBytes);
