@@ -457,35 +457,6 @@ void setup()
   char setupSsid[SETUP_SSID_LENGTH] = "Krake_";
   strcat(setupSsid, macAddressString);
 
-  const char *const testMessage = "a5{a4ab}[444]Test message";
-
-  const auto gpapMessage = gpap_message::GPAPMessage::deserialize(testMessage, 25);
-
-  switch (gpapMessage.messageType)
-  {
-  case gpap_message::MessageType::ALARM:
-    using gpap_message::alarm::AlarmMessage;
-    using gpap_message::alarm::AlarmTypeDesignator;
-    const gpap_message::alarm::AlarmMessage &alarm = gpapMessage.alarm;
-    Serial.println("Parsing Alarm Command");
-
-    Serial.printf("Alarm Level: %c\n", alarm.level);
-
-    switch (alarm.typeDesignator.state)
-    {
-    case AlarmMessage::PossibleTypeDesignator::State::None:
-      Serial.println("No Alarm Type Designator");
-      break;
-    case AlarmMessage::PossibleTypeDesignator::State::Some:
-      Serial.print("Alarm Type Designator: ");
-      alarm.typeDesignator.contents.printTo(Serial);
-      Serial.print("\n");
-      break;
-    }
-
-    break;
-  }
-
   // We call this a second time to get the MAC on the screen
   //  clearLCD();
   // req for Wifi Man and OTA
