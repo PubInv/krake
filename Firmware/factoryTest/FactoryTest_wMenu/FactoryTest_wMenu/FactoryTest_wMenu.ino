@@ -724,16 +724,20 @@ static bool initDFPlayer() {
   pinMode(DF_BUSY_IN, INPUT_PULLUP);
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
+
   delay(300);
 
   if (!dfPlayer.begin(dfSerial, false, true)) {
-    Serial.println(F("DFPlayer not detected (begin failed)."));
+    Serial.println(F("DFPlayer not detected (check connections)."));
     dfState = DF_FAIL;
     return false;
   }
+  else {
+    Serial.println(F("DFPlayer detected."));
+  }
 
   dfPlayer.setTimeOut(1000);
-  dfPlayer.enableACK();          // ← restore ACK for the rest of the session
+  //dfPlayer.enableACK();          // ← restore ACK for the rest of the session
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   delay(1200);
 
@@ -747,6 +751,7 @@ static bool initDFPlayer() {
   Serial.println(F("DFPlayer detected and responding."));
   return true;
 }
+
 
 // Put this OUTSIDE of runTest_DFPlayer() (global scope).
 // Call it when dfPlayer.available() is true.
