@@ -35,12 +35,12 @@ echo("WARNING: More than one project mode active!!!");
 // Export Options
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 0;
-GPAD_BShell          = 0; //2 w/LCD 
+GPAD_BShell          = 1; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
-sd_door_on_off       = 1;
+sd_door_on_off       = 0;
 recessed_bottom_on_off = 0;// turn on/off the recess moduel only
-recessed_module_on_off =1;
+recessed_module_on_off =0;
 //// recess sub modules when recess module is on///
 
 
@@ -785,7 +785,7 @@ CylinderSpacer(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter+Thick
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //  (On/Off, Xpos, Ypos, Diameter)
-SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY:SpeakerHoleY ,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer // Speaker 
+SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX+2.5-(3*Thick+2) : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY+9-(Thick+5):SpeakerHoleY ,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer // Speaker 
 //LED hole generator  unsure why this works   ??Question repeated commented to avoid confusion    
 CylinderHole(1,PCBLength-46.99+translationVariable,PCBWidth-FootPosX,5); //LED6 power light ??Question delete extra
 //(On/Off, Xpos,Ypos,Length,Width,Filet)
@@ -1002,11 +1002,14 @@ translate([x + (y%2)*cell/2, y*0.866, 0])
         cylinder(r=cell/2, h=h, $fn=6);
         cylinder(r=(cell/2)-wall, h=h+0.2, $fn=6);
     }}}
+    
+
+
 module SpeakerHole(Krake_rev2_76mmSPK,Cx,Cy,Cdia,Ccenter=false){
 //difference(){
 if(Krake_rev2_76mmSPK==1)
   translate([Cx ,Cy - 5,-1]){
-for(j = [1  : 3]){
+for(j = [0  : 2]){
 
 rotate(a = 360*j/3,v = [0,0,1])
 for(i = [1.8 : Cdia/60 : Cdia/1.5]){
@@ -1016,6 +1019,8 @@ for(i = [1.8 : Cdia/60 : Cdia/1.5]){
     cylinder(d=i*.65,h = 10, $fn=100,center=Ccenter);
     //echo(i);
 }}}}
+
+
 module SPKBOSS62(Krake_rev2_76mmSPK, stud_height_mm,h_offset_mm) {
 if(Krake_rev2_76mmSPK==1);
 // A VESA mount for D 75mm
