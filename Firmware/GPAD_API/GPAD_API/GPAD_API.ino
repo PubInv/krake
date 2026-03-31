@@ -465,14 +465,23 @@ void setup()
   {
   case gpap_message::MessageType::ALARM:
     using gpap_message::alarm::AlarmMessage;
+    using gpap_message::alarm::AlarmTypeDesignator;
     const gpap_message::alarm::AlarmMessage &alarm = gpapMessage.alarm;
     Serial.println("Parsing Alarm Command");
 
     Serial.printf("Alarm Level: %c\n", alarm.level);
 
-    Serial.print("Alarm Type Designator: ");
-    alarm.typeDesignator.printTo(Serial);
-    Serial.print("\n");
+    switch (alarm.typeDesignator.state)
+    {
+    case AlarmMessage::PossibleTypeDesignator::State::None:
+      Serial.println("No Alarm Type Designator");
+      break;
+    case AlarmMessage::PossibleTypeDesignator::State::Some:
+      Serial.print("Alarm Type Designator: ");
+      alarm.typeDesignator.contents.printTo(Serial);
+      Serial.print("\n");
+      break;
+    }
 
     break;
   }
