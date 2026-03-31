@@ -34,15 +34,11 @@ namespace gpap_message::alarm
               messageId(std::move(messageId)),
               typeDesignator(std::move(typeDesignator)) {}
 
-        AlarmMessage(const AlarmMessage &&other)
+        AlarmMessage(const AlarmMessage &&other) noexcept
             : level(other.level), content(std::move(other.content)),
               messageId(std::move(other.messageId)),
               typeDesignator(std::move(other.typeDesignator)) {}
-        AlarmMessage operator=(AlarmMessage &&other) noexcept
-        {
-            return std::move(other);
-        }
-        AlarmMessage operator=(const AlarmMessage &&other)
+        AlarmMessage operator=(const AlarmMessage &&other) noexcept
         {
             return std::move(other);
         }

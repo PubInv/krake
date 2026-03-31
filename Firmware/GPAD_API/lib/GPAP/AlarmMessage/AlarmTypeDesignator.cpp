@@ -9,8 +9,25 @@ using namespace gpap_message::alarm;
 AlarmTypeDesignator::AlarmTypeDesignator(
     const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator,
     const bool empty)
-    : designator(AlarmTypeDesignator::validateDesignator(designator, empty)),
-      empty(empty) {}
+    : designator(designator), empty(empty)
+{
+    if (!this->empty)
+    {
+        auto designatorIterator = designator.begin();
+
+        const bool allDigits = std::all_of(this->designator.cbegin(), this->designator.cend(),
+                                           [](char inputCharacter)
+                                           {
+                                               return isdigit(inputCharacter);
+                                           });
+
+        // if the characters are not all digits we want to throw
+        if (!allDigits)
+        {
+            throw;
+        }
+    }
+}
 
 AlarmTypeDesignator::~AlarmTypeDesignator() = default;
 
@@ -21,40 +38,7 @@ const char *const AlarmTypeDesignator::getValue() const
 
 size_t AlarmTypeDesignator::printTo(Print &print) const
 {
-    return print.print(this->getValue());
-}
-
-std::array<char, AlarmTypeDesignator::TOTAL_DESIGNATOR_LENGTH>
-AlarmTypeDesignator::validateDesignator(
-    const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>
-        inputDesignator,
-    const bool empty)
-{
-    std::array<char, AlarmTypeDesignator::TOTAL_DESIGNATOR_LENGTH> designator =
-        {};
-    if (empty)
-    {
-        return designator;
-    }
-
-    auto designatorIterator = designator.begin();
-
-    const bool allDigits = std::all_of(inputDesignator.cbegin(), inputDesignator.cend(),
-                                       [&](char inputCharacter)
-                                       {
-                                           *designatorIterator = inputCharacter;
-                                           designatorIterator =
-                                               std::next(designatorIterator, 1);
-                                           return isdigit(inputCharacter);
-                                       });
-
-    // if the characters are not all digits we want to throw
-    if (!allDigits)
-    {
-        throw;
-    }
-
-    *designatorIterator = '\0';
-
-    return designator;
+    auto bytesWritten = print.print(this->getValue());
+    bytesWritten += print.print("\0");
+    return bytesWritten;
 }

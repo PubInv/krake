@@ -14,22 +14,15 @@ namespace gpap_message::alarm
         using Buffer = std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>;
 
     private:
-        static const size_t TOTAL_DESIGNATOR_LENGTH =
-            AlarmTypeDesignator::DESIGNATOR_LENGTH + 1;
-        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH + 1> designator;
+        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
         const bool empty;
 
     public:
         AlarmTypeDesignator(const Buffer designator, const bool empty);
 
-        AlarmTypeDesignator(AlarmTypeDesignator &&other) = default;
-        AlarmTypeDesignator(const AlarmTypeDesignator &&other)
+        AlarmTypeDesignator(const AlarmTypeDesignator &&other) noexcept
             : designator(std::move(other.designator)), empty(other.empty) {}
-        AlarmTypeDesignator operator=(AlarmTypeDesignator &&source)
-        {
-            return std::move(source);
-        }
-        AlarmTypeDesignator operator=(const AlarmTypeDesignator &&source)
+        AlarmTypeDesignator operator=(const AlarmTypeDesignator &&source) noexcept
         {
             return std::move(source);
         }
@@ -44,10 +37,6 @@ namespace gpap_message::alarm
         const char *const getValue() const;
 
         size_t printTo(Print &print) const override;
-
-    private:
-        static std::array<char, AlarmTypeDesignator::TOTAL_DESIGNATOR_LENGTH>
-        validateDesignator(const Buffer buffer, const bool empty);
     };
 }
 
