@@ -911,19 +911,42 @@ static bool runTest_WifiAP() {
   WiFi.mode(WIFI_AP);
   String mac = WiFi.macAddress();
   mac.replace(":", "");
-  String ssid = "KRAKE_" + mac;
+  String defaultSsid = "KRAKE_" + mac;
 
-  bool ok = WiFi.softAP(ssid.c_str(), "krakefactory");
+  flushSerialRx();
+
+  Serial.print(F("AP SSID [default: "));
+  Serial.print(defaultSsid);
+  Serial.println(F("] — press Enter to keep:"));
+  Serial.print(F("> "));
+  String ssid;
+  if (!readLineOrMenuAbort(ssid, 25000)) {
+    Serial.println(F("\nAborted by menu key."));
+    return false;
+  }
+  ssid.trim();
+  if (ssid.length() == 0) ssid = defaultSsid;
+
+  Serial.println(F("AP PASSWORD [default: krakefactory] — press Enter to keep:"));
+  Serial.print(F("> "));
+  String pass;
+  if (!readLineOrMenuAbort(pass, 25000)) {
+    Serial.println(F("\nAborted by menu key."));
+    return false;
+  }
+  pass.trim();
+  if (pass.length() == 0) pass = "krakefactory";
+
+  bool ok = WiFi.softAP(ssid.c_str(), pass.c_str());
   if (!ok) {
     Serial.println(F("Failed to start Wi-Fi AP."));
     return false;
   }
 
   IPAddress ip = WiFi.softAPIP();
-  Serial.print(F("AP SSID: "));
-  Serial.println(ssid);
-  Serial.print(F("AP IP:   "));
-  Serial.println(ip);
+  Serial.print(F("AP SSID: ")); Serial.println(ssid);
+  Serial.print(F("AP Pass: ")); Serial.println(pass);
+  Serial.print(F("AP IP:   ")); Serial.println(ip);
   Serial.println(F("Operator: verify AP is visible from phone/PC."));
 
   startOTAServerIfNeeded();
