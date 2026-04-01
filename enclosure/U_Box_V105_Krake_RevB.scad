@@ -65,6 +65,7 @@ recessed_wall_on_off = 0;
 //////////////////////////////
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
+speaker_ring = 1;
 // Connectors Modifications specific port logic
 //if krake true x: y; i.e if krake on, usbbon =0, aka off
 USBbOn    = Krake ? 0 : 1;
@@ -785,7 +786,7 @@ CylinderSpacer(1,RotaryEncoderXpos,RotaryEncoderYpos,RotaryEncoderDiameter+Thick
 color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //  (On/Off, Xpos, Ypos, Diameter)
-SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX+2.5-(3*Thick+2) : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY+9-(Thick+5):SpeakerHoleY ,SpeakerDiameter_mm/2.5,Ccenter=true); //Buzzer // Speaker 
+SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX+2.5-(3*Thick+2) : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY+9-(Thick+5):SpeakerHoleY ,SpeakerDiameter_mm/2.5-1.5,Ccenter=true); //Buzzer // Speaker 
 //LED hole generator  unsure why this works   ??Question repeated commented to avoid confusion    
 CylinderHole(1,PCBLength-46.99+translationVariable,PCBWidth-FootPosX,5); //LED6 power light ??Question delete extra
 //(On/Off, Xpos,Ypos,Length,Width,Filet)
@@ -1221,4 +1222,9 @@ cylinder(h = base_thickness , r = (speaker_diameter/2) + flexure_gap  + flexure_
 
 //    // Build the model
 //    speaker_clamp();
+}
+
+if(speaker_ring == 1){
+import("parts_toPrint/SpeakerGasket3Inch-Extrude_7.7mm.stl");
+
 }
