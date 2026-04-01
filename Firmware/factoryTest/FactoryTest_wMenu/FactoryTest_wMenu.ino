@@ -1,13 +1,13 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.5.1"
+#define FIRMWARE_VERSION "v0.4.5.2"
 /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.5.1
+Version:         v0.4.5.2
 Date:            2026-03-17
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -58,6 +58,7 @@ Revision History:
 |         |           |               | RC debounce C602 on PCB. internalPullup=false.  |
 |         |           |               | Requires: OneButton lib from Library Manager.   |
 |v0.4.5.1 | 2026-3-23 | Yukti         | Fixed DFPlayer ACK handling                     |
+|v0.4.5.2 | 2026-3-24 | Yukti         | Added MAC address display to splash screen      |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -377,7 +378,6 @@ static void printBanner() {
 }
 
 void splashserial(void) {
-  //Serial splash
   Serial.println(F("===================== Serial Splash ===================="));
   Serial.println(PROG_NAME);
   Serial.print(VERSION);
@@ -386,6 +386,8 @@ void splashserial(void) {
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
+  Serial.print(F("MAC (STA): "));
+  Serial.println(WiFi.macAddress());
   Serial.println(F("======================================================="));
 }
 
@@ -723,16 +725,17 @@ static bool initDFPlayer() {
   pinMode(DF_BUSY_IN, INPUT_PULLUP);
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
+  
   delay(300);
 
   if (!dfPlayer.begin(dfSerial, false, true)) {
-    Serial.println(F("DFPlayer not detected (begin failed)."));
+    Serial.println(F("DFPlayer not detected (check connections)."));
     dfState = DF_FAIL;
     return false;
   }
 
   dfPlayer.setTimeOut(1000);
-  dfPlayer.enableACK();          // ← restore ACK for the rest of the session
+  //dfPlayer.enableACK();          // ← restore ACK for the rest of the session
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   delay(1200);
 
@@ -1373,12 +1376,11 @@ void setup() {
 
   //Mount LittleFS at boot so ElegantOTA can use it immediately
   g_littleFsMounted = LittleFS.begin(true);
-  if (!g_littleFsMounted) {
-    Serial.println(F("WARNING: LittleFS mount failed at boot."));
-  } else {
-    Serial.println(F("LittleFS mounted OK."));
-  }
+  Serial.println(g_littleFsMounted ? F("[boot] LittleFS... OK") : F("[boot] WARNING: LittleFS mount failed."));
 
+  WiFi.mode(WIFI_STA);
+  delay(100);
+  Serial.println(F("[boot] WiFi init... OK"));
   WiFi.mode(WIFI_OFF);
   delay(50);
 
