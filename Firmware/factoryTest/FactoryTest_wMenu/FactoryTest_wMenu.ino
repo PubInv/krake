@@ -733,9 +733,6 @@ static bool initDFPlayer() {
     dfState = DF_FAIL;
     return false;
   }
-  else {
-    Serial.println(F("DFPlayer detected."));
-  }
 
   dfPlayer.setTimeOut(1000);
   //dfPlayer.enableACK();          // ← restore ACK for the rest of the session
