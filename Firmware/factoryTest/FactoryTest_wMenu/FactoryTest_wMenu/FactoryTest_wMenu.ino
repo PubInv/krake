@@ -948,9 +948,11 @@ static bool runTest_WifiAP() {
 static bool runTest_WifiSTA() {
   Serial.println(F("\n[8] Wi-Fi STA (manual SSID/PASS)"));
 
+  WiFi.disconnect(false, true);  // erase stored NVS credentials while driver is still alive
+  WiFi.mode(WIFI_OFF);           // full radio off (handles AP→STA transition cleanly)
+  delay(200);
   WiFi.mode(WIFI_STA);
-  WiFi.disconnect(true, true);
-  delay(300);
+  delay(200);
 
   flushSerialRx();
 
@@ -978,6 +980,7 @@ static bool runTest_WifiSTA() {
 
   Serial.print(F("Connecting to: "));
   Serial.println(ssid);
+  WiFi.persistent(false);  // do not save test credentials to NVS flash
   WiFi.begin(ssid.c_str(), pass.c_str());
 
   uint32_t start = millis();
