@@ -134,9 +134,6 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 
     auto totalBytes = builder.deserializeLevel(buffer, numBytes);
 
-    // Iterate through buffer multiple times to find the elements/components
-    // remove Bytes from the function names
-
     if ((numBytes - totalBytes) > 0)
     {
         totalBytes +=
@@ -155,14 +152,40 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
                                                  numBytes - totalBytes);
     }
 
-    const auto messageId =
-        AlarmMessageId(builder.idLength, std::move(builder.idBuffer));
-    const auto typeDesignator = AlarmTypeDesignator(
-        std::move(builder.designatorBuffer), (builder.designatorLength == 0));
+    // The use of the lambda function here, and for creating the `PossibleParameter<AlarmTypeDesignator> allows
+    // for conditionally setting the variable value messageId. If messageId was assigned outside of a lambda it
+    // could not be const. The compiler will inline the lambda since it is called right away so there is no
+    // "inefficiency" due to leveraging this
+    const PossibleParameter<AlarmMessageId> messageId = [](size_t numBytes, const AlarmMessageId::Buffer buffer)
+    {
+        if (numBytes == 0)
+        {
+            return std::move(PossibleParameter<AlarmMessageId>());
+        }
+
+        const AlarmMessageId messageId(numBytes, std::move(buffer));
+        return std::move(PossibleParameter<AlarmMessageId>(std::move(messageId)));
+    }(builder.idLength, std::move(builder.idBuffer));
+
+    const PossibleParameter<AlarmTypeDesignator> typeDesignator = [](size_t numBytes, const AlarmTypeDesignator::Buffer buffer)
+    {
+        if (numBytes == 0)
+        {
+            return std::move(PossibleParameter<AlarmTypeDesignator>());
+        }
+
+        const AlarmTypeDesignator typeDesignator(std::move(buffer));
+        return std::move(PossibleParameter<AlarmTypeDesignator>(std::move(typeDesignator)));
+    }(builder.designatorLength, std::move(builder.designatorBuffer));
+
     const auto content =
         AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
 
-    const auto alarmMessage = AlarmMessage(builder.level, std::move(content), std::move(messageId),
-                                           std::move(typeDesignator));
+    const auto alarmMessage =
+        AlarmMessage(builder.level,
+                     std::move(content),
+                     std::move(messageId),
+                     std::move(typeDesignator));
+
     return std::move(alarmMessage);
 }

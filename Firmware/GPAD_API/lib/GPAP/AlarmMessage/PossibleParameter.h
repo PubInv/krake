@@ -6,24 +6,39 @@ namespace gpap_message::alarm
     template <class T>
     struct PossibleParameter
     {
+        const union
+        {
+            T contents;
+            std::nullptr_t empty;
+        };
+
         enum State
         {
             None,
             Some
         };
 
-        const State state;
-        const T contents;
+        State state;
 
-        PossibleParameter()
+        explicit PossibleParameter() : state(State::None), empty(nullptr) {}
+
+        explicit PossibleParameter(T contents) : contents(std::move(contents)), state(State::Some) {}
+        PossibleParameter(const PossibleParameter<T> &&other) : state(other.state)
         {
-            this->state = State::None;
+            switch (this->state)
+            {
+            case State::None:
+                this->empty = nullptr;
+                break;
+            case State::Some:
+                this->contents = std::move(other.contents);
+                break;
+            }
         }
-
-        PossibleParameter(T contents) : contents(std::move(contents)), state(State::Some) {}
-        PossibleParameter(const PossibleParameter<T> &&other) : state(other.state), contents(std::move(other.contents)) {}
         PossibleParameter(PossibleParameter<T> &other) = delete;
         PossibleParameter(const PossibleParameter<T> &other) = delete;
+
+        ~PossibleParameter() {}
     };
 }
 

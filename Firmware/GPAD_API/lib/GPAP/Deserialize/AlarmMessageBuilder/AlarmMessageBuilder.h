@@ -29,7 +29,7 @@ namespace gpap_message::deserialize
         AlarmContent::Buffer messageBuffer;
 
     private:
-        AlarmMessageBuilder();
+        explicit AlarmMessageBuilder();
 
         size_t deserializeLevel(const char *const buffer, size_t numBytes);
         size_t deserializeId(const char *const buffer, const size_t numBytes);

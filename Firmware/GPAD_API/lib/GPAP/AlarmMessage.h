@@ -24,14 +24,14 @@ namespace gpap_message::alarm
         using PossibleTypeDesignator = PossibleParameter<AlarmTypeDesignator>;
 
         const Level level;
-        const AlarmMessageId messageId;
+        const PossibleParameter<AlarmMessageId> messageId;
         const PossibleParameter<AlarmTypeDesignator> typeDesignator;
         const AlarmContent content;
 
     public:
         explicit AlarmMessage(const AlarmMessage::Level alarmLevel,
                               const AlarmContent alarmContent,
-                              const AlarmMessageId messageId,
+                              const PossibleParameter<AlarmMessageId> messageId,
                               const PossibleParameter<AlarmTypeDesignator> typeDesignator)
             : level(alarmLevel), content(std::move(alarmContent)),
               messageId(std::move(messageId)),

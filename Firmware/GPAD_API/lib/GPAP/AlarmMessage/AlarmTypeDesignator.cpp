@@ -6,26 +6,20 @@
 
 using namespace gpap_message::alarm;
 
-AlarmTypeDesignator::AlarmTypeDesignator(
-    const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator,
-    const bool empty)
-    : designator(designator), empty(empty)
+AlarmTypeDesignator::AlarmTypeDesignator(const Buffer designator) : designator(designator)
 {
-    if (!this->empty)
+    auto designatorIterator = designator.begin();
+
+    const bool allDigits = std::all_of(this->designator.cbegin(), this->designator.cend(),
+                                       [](char inputCharacter)
+                                       {
+                                           return isdigit(inputCharacter);
+                                       });
+
+    // if the characters are not all digits we want to throw
+    if (!allDigits)
     {
-        auto designatorIterator = designator.begin();
-
-        const bool allDigits = std::all_of(this->designator.cbegin(), this->designator.cend(),
-                                           [](char inputCharacter)
-                                           {
-                                               return isdigit(inputCharacter);
-                                           });
-
-        // if the characters are not all digits we want to throw
-        if (!allDigits)
-        {
-            throw;
-        }
+        throw;
     }
 }
 
