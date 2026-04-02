@@ -6,12 +6,12 @@ using namespace gpap_message::alarm;
 
 AlarmMessageId::AlarmMessageId(
     const size_t idLength,
-    const std::array<char, AlarmMessageId::MAX_LENGTH> id)
-    : idLength(idLength), id(AlarmMessageId::validateId(idLength, id)) {}
+    const Buffer id)
+    : idLength(idLength), id(std::move(AlarmMessageId::validateId(idLength, id))) {}
 
 std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> AlarmMessageId::validateId(
     const size_t idLength,
-    const std::array<char, AlarmMessageId::MAX_LENGTH> id)
+    const Buffer id)
 {
     std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> validatedId = {};
     auto validatedIdIterator = validatedId.begin();
@@ -41,5 +41,5 @@ std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> AlarmMessageId::validateId(
     }
 
     *validatedIdIterator = '\0';
-    return validatedId;
+    return std::move(validatedId);
 }

@@ -26,7 +26,7 @@ namespace gpap_message::deserialize
         alarm::AlarmTypeDesignator::Buffer designatorBuffer;
 
         size_t messageLength;
-        AlarmContent::Buffer messageBuffer;
+        alarm::AlarmContent::Buffer messageBuffer;
 
     private:
         explicit AlarmMessageBuilder();
@@ -38,11 +38,31 @@ namespace gpap_message::deserialize
 
     public:
         static alarm::AlarmMessage buildAlarmMessage(const char *const buffer, const size_t numBytes);
+        static bool isReservedCharacter(const char character);
 
-        AlarmMessageBuilder(AlarmMessageBuilder &&other) = default;
-        AlarmMessageBuilder operator=(AlarmMessageBuilder &&other)
+        AlarmMessageBuilder(AlarmMessageBuilder &&other)
+            : level(other.level),
+              idLength(other.idLength),
+              idBuffer(std::move(other.idBuffer)),
+              designatorLength(other.designatorLength),
+              designatorBuffer(std::move(other.designatorBuffer)),
+              messageLength(other.messageLength),
+              messageBuffer(std::move(other.messageBuffer)) {};
+        AlarmMessageBuilder &operator=(AlarmMessageBuilder &&other)
         {
-            return std::move(other);
+            return *this;
+        }
+        AlarmMessageBuilder(const AlarmMessageBuilder &&other)
+            : level(other.level),
+              idLength(other.idLength),
+              idBuffer(std::move(other.idBuffer)),
+              designatorLength(other.designatorLength),
+              designatorBuffer(std::move(other.designatorBuffer)),
+              messageLength(other.messageLength),
+              messageBuffer(std::move(other.messageBuffer)) {};
+        AlarmMessageBuilder &operator=(const AlarmMessageBuilder &&other)
+        {
+            return *this;
         }
 
         AlarmMessageBuilder(AlarmMessageBuilder &other) = delete;

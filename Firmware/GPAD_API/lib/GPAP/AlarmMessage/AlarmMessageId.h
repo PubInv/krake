@@ -25,10 +25,13 @@ namespace gpap_message::alarm
         AlarmMessageId(AlarmMessageId &&other) = default;
         AlarmMessageId(const AlarmMessageId &&other)
             : id(std::move(other.id)), idLength(other.idLength) {}
-        AlarmMessageId operator=(AlarmMessageId &&other) { return std::move(other); }
-        AlarmMessageId operator=(const AlarmMessageId &&other)
+        AlarmMessageId &operator=(AlarmMessageId &&other)
         {
-            return std::move(other);
+            return *this;
+        }
+        AlarmMessageId &operator=(const AlarmMessageId &&other)
+        {
+            return *this;
         }
 
         AlarmMessageId() = delete;
@@ -37,8 +40,7 @@ namespace gpap_message::alarm
 
     private:
         static std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH>
-        validateId(const size_t idLength,
-                   const Buffer);
+        validateId(const size_t idLength, const Buffer);
     };
 }
 

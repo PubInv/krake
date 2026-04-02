@@ -21,7 +21,7 @@ GPAPMessage GPAPMessage::deserialize(const char *const buffer, const size_t numB
             throw;
         }
 
-        return GPAPMessage(deserialize::AlarmMessageBuilder::buildAlarmMessage(buffer + 1, numBytes - 1));
+        return GPAPMessage(std::move(deserialize::AlarmMessageBuilder::buildAlarmMessage(buffer + 1, numBytes - 1)));
 
     case MessageType::INFO:
         return GPAPMessage(InfoMessage());

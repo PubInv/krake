@@ -1,6 +1,8 @@
 #ifndef _GPAP_MESSAGE_H
 #define _GPAP_MESSAGE_H
 
+#include <Arduino.h>
+
 #include "AlarmMessage.h"
 #include "HelpMessage.h"
 #include "InfoMessage.h"
@@ -38,17 +40,50 @@ namespace gpap_message
 
         // Constructors and operator overloads
     public:
-        explicit GPAPMessage(alarm::AlarmMessage alarmMessage) noexcept
-            : messageType(MessageType::ALARM), alarm(std::move(alarmMessage)) {}
-        explicit GPAPMessage(InfoMessage infoMessage) noexcept
+        explicit GPAPMessage(const alarm::AlarmMessage alarmMessage) noexcept
+            : messageType(MessageType::ALARM), alarm(std::move(alarmMessage))
+        {
+            auto data = this->alarm.typeDesignator.contents.getValue();
+            for (auto iter = data.cbegin(); iter != data.cend(); ++iter)
+            {
+                Serial.printf("In GPAPMessage ctor: %c\n", *iter);
+            }
+        }
+        explicit GPAPMessage(const InfoMessage infoMessage) noexcept
             : messageType(MessageType::INFO), info(std::move(infoMessage)) {}
-        explicit GPAPMessage(MuteMessage muteMessage) noexcept
+        explicit GPAPMessage(const MuteMessage muteMessage) noexcept
             : messageType(MessageType::MUTE), mute(std::move(muteMessage)) {}
-        explicit GPAPMessage(UnmuteMessage unmuteCommand) noexcept
+        explicit GPAPMessage(const UnmuteMessage unmuteCommand) noexcept
             : messageType(MessageType::UNMUTE), unmute(std::move(unmuteCommand)) {}
-        explicit GPAPMessage(HelpMessage helpCommand) noexcept
+        explicit GPAPMessage(const HelpMessage helpCommand) noexcept
             : messageType(MessageType::HELP), help(std::move(helpCommand)) {}
 
+        GPAPMessage(GPAPMessage &&other) noexcept
+            : messageType(other.messageType)
+        {
+            switch (this->messageType)
+            {
+            case MessageType::ALARM:
+                this->alarm = std::move(other.alarm);
+                break;
+            case MessageType::INFO:
+                this->info = std::move(other.info);
+                break;
+            case MessageType::MUTE:
+                this->mute = std::move(other.mute);
+                break;
+            case MessageType::UNMUTE:
+                this->unmute = std::move(other.unmute);
+                break;
+            case MessageType::HELP:
+                this->help = std::move(other.help);
+                break;
+            }
+        }
+        GPAPMessage &operator=(GPAPMessage &&other)
+        {
+            return *this;
+        }
         GPAPMessage(const GPAPMessage &&other) noexcept
             : messageType(other.messageType)
         {
@@ -71,9 +106,9 @@ namespace gpap_message
                 break;
             }
         }
-        const GPAPMessage operator=(const GPAPMessage &&other)
+        GPAPMessage &operator=(const GPAPMessage &&other)
         {
-            return std::move(other);
+            return *this;
         }
 
         ~GPAPMessage() {}

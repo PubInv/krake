@@ -15,17 +15,21 @@ namespace gpap_message::alarm
 
     private:
         const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
-        /// @brief The `empty` field was a temporary solution to the situation where no Type Designator
-        /// was provided. With the addition of the `PossibleField` type then this field can be removed
 
     public:
         explicit AlarmTypeDesignator(const Buffer designator);
 
+        AlarmTypeDesignator(AlarmTypeDesignator &&other) noexcept
+            : designator(std::move(other.designator)) {}
+        AlarmTypeDesignator &operator=(AlarmTypeDesignator &&other) noexcept
+        {
+            return *this;
+        }
         AlarmTypeDesignator(const AlarmTypeDesignator &&other) noexcept
             : designator(std::move(other.designator)) {}
-        AlarmTypeDesignator operator=(const AlarmTypeDesignator &&source) noexcept
+        AlarmTypeDesignator &operator=(const AlarmTypeDesignator &&other) noexcept
         {
-            return std::move(source);
+            return *this;
         }
 
         AlarmTypeDesignator() = delete;
@@ -35,7 +39,7 @@ namespace gpap_message::alarm
         virtual ~AlarmTypeDesignator();
         // Methods
     public:
-        const char *const getValue() const;
+        const Buffer &getValue() const;
 
         size_t printTo(Print &print) const override;
     };

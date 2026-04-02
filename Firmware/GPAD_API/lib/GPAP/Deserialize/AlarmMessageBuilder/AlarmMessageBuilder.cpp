@@ -80,6 +80,8 @@ AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer,
         return 0;
     }
 
+    const auto currBuffer = buffer + 1;
+
     auto designatorLength = 0;
     auto foundEnd = false;
     while ((designatorLength < (AlarmTypeDesignator::DESIGNATOR_LENGTH + 1)) &&
@@ -87,14 +89,13 @@ AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer,
     {
         // Need to offset the index by 1 since we have to account for the starting
         // character, {
-        auto bufferIndex = designatorLength + 1;
-        if (buffer[bufferIndex] == AlarmMessageBuilder::DESIGNATOR_END_CHARACTER)
+        if (currBuffer[designatorLength] == AlarmMessageBuilder::DESIGNATOR_END_CHARACTER)
         {
             foundEnd = true;
         }
         else if (designatorLength < AlarmTypeDesignator::DESIGNATOR_LENGTH)
         {
-            this->designatorBuffer.at(designatorLength) = buffer[bufferIndex];
+            this->designatorBuffer.at(designatorLength) = currBuffer[designatorLength];
             ++designatorLength;
         }
     }
@@ -121,6 +122,11 @@ size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer,
     auto messageLength = 0;
     for (; messageLength < numBytes; ++messageLength)
     {
+        if (!AlarmMessageBuilder::isReservedCharacter(buffer[messageLength]))
+        {
+            return messageLength - 1;
+        }
+
         this->messageBuffer.at(messageLength) = buffer[messageLength];
     }
 
@@ -134,58 +140,82 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 
     auto totalBytes = builder.deserializeLevel(buffer, numBytes);
 
-    if ((numBytes - totalBytes) > 0)
-    {
-        totalBytes +=
-            builder.deserializeId(buffer + totalBytes, numBytes - totalBytes);
-    }
+    auto foundId = false;
+    auto foundDesignator = false;
+    auto foundMessage = false;
 
-    if ((numBytes - totalBytes) > 0)
+    while ((totalBytes < numBytes) && !(foundId && foundDesignator && foundMessage))
     {
-        totalBytes += builder.deserializeTypeDesignator(buffer + totalBytes,
-                                                        numBytes - totalBytes);
-    }
+        auto currBuffer = buffer + totalBytes;
+        auto currNumBytes = numBytes - totalBytes;
+        if (currBuffer[0] == AlarmMessageBuilder::ID_START_CHARACTER && !foundId)
+        {
+            totalBytes += builder.deserializeId(currBuffer, currNumBytes);
 
-    if ((numBytes - totalBytes) > 0)
-    {
-        totalBytes += builder.deserializeMessage(buffer + totalBytes,
-                                                 numBytes - totalBytes);
+            foundId = true;
+        }
+        else if (currBuffer[0] == AlarmMessageBuilder::DESIGNATOR_START_CHARACTER && !foundDesignator)
+        {
+            totalBytes += builder.deserializeTypeDesignator(currBuffer, currNumBytes);
+
+            foundDesignator = true;
+        }
+        else
+        {
+            totalBytes += builder.deserializeMessage(currBuffer, currNumBytes);
+        }
     }
 
     // The use of the lambda function here, and for creating the `PossibleParameter<AlarmTypeDesignator> allows
     // for conditionally setting the variable value messageId. If messageId was assigned outside of a lambda it
     // could not be const. The compiler will inline the lambda since it is called right away so there is no
     // "inefficiency" due to leveraging this
-    const PossibleParameter<AlarmMessageId> messageId = [](size_t numBytes, const AlarmMessageId::Buffer buffer)
+    // const AlarmMessage::PossibleMessageId messageId = [](const size_t numBytes, const AlarmMessageId::Buffer buffer)
+    // {
+    //     if (numBytes == 0)
+    //     {
+    //         return std::move(AlarmMessage::PossibleMessageId());
+    //     }
+
+    //     const AlarmMessageId messageId(numBytes, std::move(buffer));
+    //     const AlarmMessage::PossibleMessageId possibleMessageId(std::move(messageId));
+    //     return std::move(possibleMessageId);
+    // }(builder.idLength, std::move(builder.idBuffer));
+
+    const AlarmMessage::PossibleTypeDesignator typeDesignator = [](const size_t numBytes, const AlarmTypeDesignator::Buffer buffer)
     {
         if (numBytes == 0)
         {
-            return std::move(PossibleParameter<AlarmMessageId>());
-        }
-
-        const AlarmMessageId messageId(numBytes, std::move(buffer));
-        return std::move(PossibleParameter<AlarmMessageId>(std::move(messageId)));
-    }(builder.idLength, std::move(builder.idBuffer));
-
-    const PossibleParameter<AlarmTypeDesignator> typeDesignator = [](size_t numBytes, const AlarmTypeDesignator::Buffer buffer)
-    {
-        if (numBytes == 0)
-        {
-            return std::move(PossibleParameter<AlarmTypeDesignator>());
+            return AlarmMessage::PossibleTypeDesignator();
         }
 
         const AlarmTypeDesignator typeDesignator(std::move(buffer));
-        return std::move(PossibleParameter<AlarmTypeDesignator>(std::move(typeDesignator)));
+        const AlarmMessage::PossibleTypeDesignator possibleTypeDesignator(std::move(typeDesignator));
+
+        return possibleTypeDesignator;
     }(builder.designatorLength, std::move(builder.designatorBuffer));
 
-    const auto content =
-        AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
+    // const auto content =
+    //     AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
 
-    const auto alarmMessage =
-        AlarmMessage(builder.level,
-                     std::move(content),
-                     std::move(messageId),
-                     std::move(typeDesignator));
+    auto data = typeDesignator.contents.getValue();
+    for (auto iter = data.cbegin(); iter != data.cend(); ++iter)
+    {
+        Serial.printf("Before creating AlarmMessage: %c\n", *iter);
+    }
 
-    return std::move(alarmMessage);
+    const AlarmMessage alarmMessage = AlarmMessage(builder.level,
+                                                   // std::move(content),
+                                                   // std::move(messageId),
+                                                   std::move(typeDesignator));
+
+    return alarmMessage;
+}
+
+bool AlarmMessageBuilder::isReservedCharacter(const char character)
+{
+    return (character != AlarmMessageBuilder::DESIGNATOR_START_CHARACTER &&
+            character != AlarmMessageBuilder::DESIGNATOR_END_CHARACTER &&
+            character != AlarmMessageBuilder::ID_START_CHARACTER &&
+            character != AlarmMessageBuilder::ID_END_CHARACTER);
 }
