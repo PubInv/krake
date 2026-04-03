@@ -14,23 +14,22 @@ namespace gpap_message::alarm
         using Buffer = std::array<char, AlarmContent::MAX_LENGTH>;
 
     private:
-        const size_t messageLength;
-        const std::array<char, AlarmContent::MAX_LENGTH> message;
+        size_t messageLength;
+        std::array<char, AlarmContent::MAX_LENGTH> message;
 
     public:
-        explicit AlarmContent(const size_t messageLength, const Buffer message)
+        explicit AlarmContent(const size_t messageLength, const Buffer message) noexcept
             : messageLength(messageLength), message(std::move(message)) {};
 
-        AlarmContent(AlarmContent &&other)
+        AlarmContent(const AlarmContent &&other) noexcept
             : messageLength(other.messageLength), message(std::move(other.message)) {}
-        AlarmContent &operator=(AlarmContent &&other)
+        AlarmContent &operator=(const AlarmContent &&other) noexcept
         {
-            return *this;
-        }
-        AlarmContent(const AlarmContent &&other)
-            : messageLength(other.messageLength), message(std::move(other.message)) {}
-        AlarmContent &operator=(const AlarmContent &&other)
-        {
+            if (this != &other)
+            {
+                this->messageLength = other.messageLength;
+                this->message = std::move(other.message);
+            }
             return *this;
         }
 

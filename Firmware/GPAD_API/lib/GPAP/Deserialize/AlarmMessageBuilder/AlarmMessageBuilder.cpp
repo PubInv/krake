@@ -170,17 +170,18 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
     // for conditionally setting the variable value messageId. If messageId was assigned outside of a lambda it
     // could not be const. The compiler will inline the lambda since it is called right away so there is no
     // "inefficiency" due to leveraging this
-    // const AlarmMessage::PossibleMessageId messageId = [](const size_t numBytes, const AlarmMessageId::Buffer buffer)
-    // {
-    //     if (numBytes == 0)
-    //     {
-    //         return std::move(AlarmMessage::PossibleMessageId());
-    //     }
+    const AlarmMessage::PossibleMessageId messageId = [](const size_t numBytes, const AlarmMessageId::Buffer buffer)
+    {
+        if (numBytes == 0)
+        {
+            return std::move(AlarmMessage::PossibleMessageId());
+        }
 
-    //     const AlarmMessageId messageId(numBytes, std::move(buffer));
-    //     const AlarmMessage::PossibleMessageId possibleMessageId(std::move(messageId));
-    //     return std::move(possibleMessageId);
-    // }(builder.idLength, std::move(builder.idBuffer));
+        const AlarmMessageId messageId(numBytes, std::move(buffer));
+        const AlarmMessage::PossibleMessageId possibleMessageId(std::move(messageId));
+
+        return possibleMessageId;
+    }(builder.idLength, std::move(builder.idBuffer));
 
     const AlarmMessage::PossibleTypeDesignator typeDesignator = [](const size_t numBytes, const AlarmTypeDesignator::Buffer buffer)
     {
@@ -195,21 +196,13 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
         return possibleTypeDesignator;
     }(builder.designatorLength, std::move(builder.designatorBuffer));
 
-    // const auto content =
-    //     AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
+    const auto content =
+        AlarmContent(builder.messageLength, std::move(builder.messageBuffer));
 
-    auto data = typeDesignator.contents.getValue();
-    for (auto iter = data.cbegin(); iter != data.cend(); ++iter)
-    {
-        Serial.printf("Before creating AlarmMessage: %c\n", *iter);
-    }
-
-    const AlarmMessage alarmMessage = AlarmMessage(builder.level,
-                                                   // std::move(content),
-                                                   // std::move(messageId),
-                                                   std::move(typeDesignator));
-
-    return alarmMessage;
+    return AlarmMessage(builder.level,
+                        std::move(content),
+                        std::move(messageId),
+                        std::move(typeDesignator));
 }
 
 bool AlarmMessageBuilder::isReservedCharacter(const char character)

@@ -23,49 +23,41 @@ namespace gpap_message::alarm
             Level5 = '5',
         };
 
-        // using PossibleMessageId = PossibleParameter<AlarmMessageId>;
+        using PossibleMessageId = PossibleParameter<AlarmMessageId>;
         using PossibleTypeDesignator = PossibleParameter<AlarmTypeDesignator>;
 
-        const Level level;
-        // const AlarmContent content;
-        // const PossibleMessageId messageId;
-        const PossibleTypeDesignator typeDesignator;
+        Level level;
+        AlarmContent content;
+        PossibleMessageId messageId;
+        PossibleTypeDesignator typeDesignator;
 
     public:
         explicit AlarmMessage(const AlarmMessage::Level alarmLevel,
-                              //   const AlarmContent alarmContent,
-                              //   const PossibleMessageId messageId,
-                              const PossibleTypeDesignator typeDesignator)
+                              const AlarmContent alarmContent,
+                              const PossibleMessageId messageId,
+                              const PossibleTypeDesignator typeDesignator) noexcept
             : level(alarmLevel),
-              //   content(std::move(alarmContent)),
-              //   messageId(std::move(messageId)),
+              content(std::move(alarmContent)),
+              messageId(std::move(messageId)),
               typeDesignator(std::move(typeDesignator))
         {
-            Serial.println("In AlarmMessage ctor:");
-            this->typeDesignator.contents.printTo(Serial);
-            Serial.print("\n");
-        }
-
-        AlarmMessage(AlarmMessage &&other) noexcept
-            : level(other.level),
-              //   content(std::move(other.content)),
-              //   messageId(std::move(other.messageId)),
-              typeDesignator(std::move(other.typeDesignator))
-        {
-        }
-        AlarmMessage &operator=(AlarmMessage &&other) noexcept
-        {
-            return *this;
         }
         AlarmMessage(const AlarmMessage &&other) noexcept
             : level(other.level),
-              //   content(std::move(other.content)),
-              //   messageId(std::move(other.messageId)),
+              content(std::move(other.content)),
+              messageId(std::move(other.messageId)),
               typeDesignator(std::move(other.typeDesignator))
         {
         }
         AlarmMessage &operator=(const AlarmMessage &&other) noexcept
         {
+            if (this != &other)
+            {
+                this->level = other.level;
+                this->content = std::move(other.content);
+                this->messageId = std::move(other.messageId);
+                this->typeDesignator = std::move(other.typeDesignator);
+            }
             return *this;
         }
 

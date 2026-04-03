@@ -1,8 +1,6 @@
 #ifndef _POSSIBLE_PARAMETER_H
 #define _POSSIBLE_PARAMETER_H
 
-#include <Arduino.h>
-
 namespace gpap_message::alarm
 {
     template <class T>
@@ -14,17 +12,19 @@ namespace gpap_message::alarm
             None,
         };
 
-        const union
+        union
         {
             T contents;
             std::nullptr_t empty;
         };
 
-        const State state;
+        State state;
 
         explicit PossibleParameter() : state(State::None), empty(nullptr) {}
         explicit PossibleParameter(T contents) : state(State::Some), contents(std::move(contents)) {}
-        PossibleParameter(PossibleParameter<T> &&other) : state(other.state)
+
+        PossibleParameter(const PossibleParameter<T> &&other) noexcept
+            : state(other.state)
         {
             switch (this->state)
             {
@@ -36,24 +36,21 @@ namespace gpap_message::alarm
                 break;
             }
         }
-        PossibleParameter &operator=(PossibleParameter<T> &&other)
+        PossibleParameter &operator=(const PossibleParameter<T> &&other) noexcept
         {
-            return *this;
-        }
-        PossibleParameter(const PossibleParameter<T> &&other) : state(other.state)
-        {
-            switch (this->state)
+            if (this != &other)
             {
-            case State::Some:
-                this->contents = std::move(other.contents);
-                break;
-            case State::None:
-                this->empty = nullptr;
-                break;
+                this->state = other.state;
+                switch (this->state)
+                {
+                case State::Some:
+                    this->contents = std::move(other.contents);
+                    break;
+                case State::None:
+                    this->empty = nullptr;
+                    break;
+                }
             }
-        }
-        PossibleParameter<T> &operator=(const PossibleParameter<T> &&other)
-        {
             return *this;
         }
 

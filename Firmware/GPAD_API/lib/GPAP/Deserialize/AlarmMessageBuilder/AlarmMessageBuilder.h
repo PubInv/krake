@@ -40,7 +40,7 @@ namespace gpap_message::deserialize
         static alarm::AlarmMessage buildAlarmMessage(const char *const buffer, const size_t numBytes);
         static bool isReservedCharacter(const char character);
 
-        AlarmMessageBuilder(AlarmMessageBuilder &&other)
+        AlarmMessageBuilder(const AlarmMessageBuilder &&other) noexcept
             : level(other.level),
               idLength(other.idLength),
               idBuffer(std::move(other.idBuffer)),
@@ -48,20 +48,18 @@ namespace gpap_message::deserialize
               designatorBuffer(std::move(other.designatorBuffer)),
               messageLength(other.messageLength),
               messageBuffer(std::move(other.messageBuffer)) {};
-        AlarmMessageBuilder &operator=(AlarmMessageBuilder &&other)
+        AlarmMessageBuilder &operator=(const AlarmMessageBuilder &&other) noexcept
         {
-            return *this;
-        }
-        AlarmMessageBuilder(const AlarmMessageBuilder &&other)
-            : level(other.level),
-              idLength(other.idLength),
-              idBuffer(std::move(other.idBuffer)),
-              designatorLength(other.designatorLength),
-              designatorBuffer(std::move(other.designatorBuffer)),
-              messageLength(other.messageLength),
-              messageBuffer(std::move(other.messageBuffer)) {};
-        AlarmMessageBuilder &operator=(const AlarmMessageBuilder &&other)
-        {
+            if (this != &other)
+            {
+                this->level = other.level;
+                this->idLength = other.idLength;
+                this->idBuffer = std::move(other.idBuffer);
+                this->designatorLength = other.designatorLength;
+                this->designatorBuffer = std::move(other.designatorBuffer);
+                this->messageLength = other.messageLength;
+                this->messageBuffer = std::move(other.messageBuffer);
+            }
             return *this;
         }
 

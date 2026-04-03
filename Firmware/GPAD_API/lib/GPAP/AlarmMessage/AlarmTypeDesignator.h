@@ -14,21 +14,19 @@ namespace gpap_message::alarm
         using Buffer = std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>;
 
     private:
-        const std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
+        std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH> designator;
 
     public:
         explicit AlarmTypeDesignator(const Buffer designator);
 
-        AlarmTypeDesignator(AlarmTypeDesignator &&other) noexcept
-            : designator(std::move(other.designator)) {}
-        AlarmTypeDesignator &operator=(AlarmTypeDesignator &&other) noexcept
-        {
-            return *this;
-        }
         AlarmTypeDesignator(const AlarmTypeDesignator &&other) noexcept
             : designator(std::move(other.designator)) {}
         AlarmTypeDesignator &operator=(const AlarmTypeDesignator &&other) noexcept
         {
+            if (this != &other)
+            {
+                this->designator = std::move(other.designator);
+            }
             return *this;
         }
 

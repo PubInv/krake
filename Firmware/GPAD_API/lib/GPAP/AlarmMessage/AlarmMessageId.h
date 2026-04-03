@@ -17,20 +17,21 @@ namespace gpap_message::alarm
         static const size_t TOTAL_MAX_LENGTH = AlarmMessageId::MAX_LENGTH + 1;
 
     public:
-        const size_t idLength;
-        const std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> id;
+        size_t idLength;
+        std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> id;
 
     public:
         explicit AlarmMessageId(const size_t idLength, const Buffer id);
-        AlarmMessageId(AlarmMessageId &&other) = default;
-        AlarmMessageId(const AlarmMessageId &&other)
+
+        AlarmMessageId(const AlarmMessageId &&other) noexcept
             : id(std::move(other.id)), idLength(other.idLength) {}
-        AlarmMessageId &operator=(AlarmMessageId &&other)
+        AlarmMessageId &operator=(const AlarmMessageId &&other) noexcept
         {
-            return *this;
-        }
-        AlarmMessageId &operator=(const AlarmMessageId &&other)
-        {
+            if (this != &other)
+            {
+                this->idLength = other.idLength;
+                this->id = std::move(other.id);
+            }
             return *this;
         }
 
