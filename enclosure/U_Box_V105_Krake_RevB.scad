@@ -51,7 +51,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 PWA_GPAD             = 0;
-PWA_KRAKE            = 0;//pcb
+PWA_KRAKE            = 1;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -1242,3 +1242,7 @@ module SpeakerFlushRing(width ,height,innerRadius,posx =0, posy = 0, posz =0)
         cylinder(r = innerRadius, h =height+2);
         }}
 }
+
+translate([161,22.5,6.5])
+rotate([0,180,0])
+import("parts_toPrint/knob_Dshaft_15mmx6mmv1.3.stl");
