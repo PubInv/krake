@@ -1225,6 +1225,20 @@ cylinder(h = base_thickness , r = (speaker_diameter/2) + flexure_gap  + flexure_
 }
 
 if(speaker_ring == 1){
-import("parts_toPrint/SpeakerGasket3Inch-Extrude_7.7mm.stl");
+//import("parts_toPrint/SpeakerGasket3Inch-Extrude_7.7mm.stl");
 
+SpeakerFlushRing(3.5,7.8-1.75,35, posx = SpeakerPositionX+2.5,posy =SpeakerPositionY+4,posz = Thick);
+}
+
+//translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
+module SpeakerFlushRing(width ,height,innerRadius,posx =0, posy = 0, posz =0)
+{
+    $fn = 50;
+    translate([posx,posy,posz]){
+        difference()
+    {
+        cylinder(r = innerRadius+width, h =height);
+        translate([0,0,-1])
+        cylinder(r = innerRadius, h =height+2);
+        }}
 }
