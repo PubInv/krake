@@ -15,6 +15,17 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
+/*
+  In the AlarmMessage, a couple of the fields are optional. The "message ID" and the "types designator".
+  Treating the concrete type of AlarmMessageId and AlarmTypeDesignator as both having a possible value
+  and also being empty can lead to many headaches and mistakes. To address this, an "optional" type has
+  been added to clearly indicate if a field in the AlarmMessage is present or not.
+
+  Note: In C++17 there is a native "optional" type called `std::optional`. At the time of creation for
+  this library, it was compiled using C++11 so an "optional" type had to be manually implemented.
+  https://en.cppreference.com/w/cpp/utility/optional.html
+*/
+
 #ifndef _POSSIBLE_PARAMETER_H
 #define _POSSIBLE_PARAMETER_H
 
