@@ -122,9 +122,10 @@ size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer,
     auto messageLength = 0;
     for (; messageLength < numBytes; ++messageLength)
     {
-        if (!AlarmMessageBuilder::isReservedCharacter(buffer[messageLength]))
+        if (AlarmMessageBuilder::isReservedCharacter(buffer[messageLength]))
         {
-            return messageLength - 1;
+            messageLength - 1;
+            break;
         }
 
         this->messageBuffer.at(messageLength) = buffer[messageLength];
@@ -160,9 +161,11 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 
             foundDesignator = true;
         }
-        else
+        else if (!foundMessage)
         {
             totalBytes += builder.deserializeMessage(currBuffer, currNumBytes);
+
+            foundMessage = true;
         }
     }
 
@@ -207,8 +210,8 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
 
 bool AlarmMessageBuilder::isReservedCharacter(const char character)
 {
-    return (character != AlarmMessageBuilder::DESIGNATOR_START_CHARACTER &&
-            character != AlarmMessageBuilder::DESIGNATOR_END_CHARACTER &&
-            character != AlarmMessageBuilder::ID_START_CHARACTER &&
-            character != AlarmMessageBuilder::ID_END_CHARACTER);
+    return (character == AlarmMessageBuilder::DESIGNATOR_START_CHARACTER ||
+            character == AlarmMessageBuilder::DESIGNATOR_END_CHARACTER ||
+            character == AlarmMessageBuilder::ID_START_CHARACTER ||
+            character == AlarmMessageBuilder::ID_END_CHARACTER);
 }
