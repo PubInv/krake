@@ -25,7 +25,7 @@ namespace gpap_message::alarm
     class AlarmTypeDesignator final
     {
     public:
-        static const size_t DESIGNATOR_LENGTH = 3;
+        static const std::size_t DESIGNATOR_LENGTH = 3;
         using Buffer = std::array<char, AlarmTypeDesignator::DESIGNATOR_LENGTH>;
 
     private:

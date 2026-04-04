@@ -18,8 +18,6 @@
 #ifndef _ALARM_MESSAGE_H
 #define _ALARM_MESSAGE_H
 
-#include <Arduino.h>
-
 #include "AlarmMessage/AlarmMessageId.h"
 #include "AlarmMessage/AlarmTypeDesignator.h"
 #include "AlarmMessage/AlarmContent.h"

@@ -19,7 +19,7 @@
 #include "Deserialize/AlarmMessageBuilder/AlarmMessageBuilder.h"
 
 using namespace gpap_message;
-GPAPMessage GPAPMessage::deserialize(const char *const buffer, const size_t numBytes)
+GPAPMessage GPAPMessage::deserialize(const char *const buffer, const std::size_t numBytes)
 {
     // Can't determined the message type if there are no bytes
     if (numBytes == 0)

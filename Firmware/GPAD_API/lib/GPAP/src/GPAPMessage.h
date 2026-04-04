@@ -38,7 +38,7 @@ namespace gpap_message
     struct GPAPMessage final
     {
     public:
-        static const size_t BUFFER_LENGTH = 131;
+        static const std::size_t BUFFER_LENGTH = 131;
 
         union
         {
@@ -119,7 +119,7 @@ namespace gpap_message
         GPAPMessage() = delete;
         GPAPMessage(GPAPMessage &other) = delete;
 
-        static GPAPMessage deserialize(const char *const buffer, const size_t numBytes);
+        static GPAPMessage deserialize(const char *const buffer, const std::size_t numBytes);
     };
 }
 

@@ -36,25 +36,25 @@ namespace gpap_message::deserialize
     private:
         alarm::AlarmMessage::Level level;
 
-        size_t idLength;
+        std::size_t idLength;
         alarm::AlarmMessageId::Buffer idBuffer;
 
-        size_t designatorLength;
+        std::size_t designatorLength;
         alarm::AlarmTypeDesignator::Buffer designatorBuffer;
 
-        size_t messageLength;
+        std::size_t messageLength;
         alarm::AlarmContent::Buffer messageBuffer;
 
     private:
         explicit AlarmMessageBuilder();
 
-        size_t deserializeLevel(const char *const buffer, size_t numBytes);
-        size_t deserializeId(const char *const buffer, const size_t numBytes);
-        size_t deserializeTypeDesignator(const char *const buffer, const size_t numBytes);
-        size_t deserializeMessage(const char *const buffer, const size_t numBytes);
+        std::size_t deserializeLevel(const char *const buffer, std::size_t numBytes);
+        std::size_t deserializeId(const char *const buffer, const std::size_t numBytes);
+        std::size_t deserializeTypeDesignator(const char *const buffer, const std::size_t numBytes);
+        std::size_t deserializeMessage(const char *const buffer, const std::size_t numBytes);
 
     public:
-        static alarm::AlarmMessage buildAlarmMessage(const char *const buffer, const size_t numBytes);
+        static alarm::AlarmMessage buildAlarmMessage(const char *const buffer, const std::size_t numBytes);
         static bool isReservedCharacter(const char character);
 
         AlarmMessageBuilder(const AlarmMessageBuilder &&other) noexcept

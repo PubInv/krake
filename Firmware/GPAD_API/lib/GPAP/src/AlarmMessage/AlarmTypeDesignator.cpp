@@ -18,6 +18,7 @@
 #include "AlarmTypeDesignator.h"
 
 #include <algorithm>
+#include <cctype>
 
 using namespace gpap_message::alarm;
 
@@ -29,7 +30,7 @@ AlarmTypeDesignator::AlarmTypeDesignator(const Buffer designator) : designator(s
         std::all_of(this->designator.cbegin(), this->designator.cend(),
                     [](char inputCharacter)
                     {
-                        return isdigit(inputCharacter);
+                        return std::isdigit(static_cast<unsigned char>(inputCharacter));
                     });
 
     // if the characters are not all digits we want to throw

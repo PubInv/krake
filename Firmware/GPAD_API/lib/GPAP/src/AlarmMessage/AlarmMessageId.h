@@ -26,19 +26,19 @@ namespace gpap_message::alarm
     {
     public:
         // TODO: Find out what this value is SUPPOSED to be.
-        static const size_t MAX_LENGTH = 10;
+        static const std::size_t MAX_LENGTH = 10;
 
         using Buffer = std::array<char, AlarmMessageId::MAX_LENGTH>;
 
     private:
-        static const size_t TOTAL_MAX_LENGTH = AlarmMessageId::MAX_LENGTH + 1;
+        static const std::size_t TOTAL_MAX_LENGTH = AlarmMessageId::MAX_LENGTH + 1;
 
     public:
-        size_t idLength;
+        std::size_t idLength;
         std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> id;
 
     public:
-        explicit AlarmMessageId(const size_t idLength, const Buffer id);
+        explicit AlarmMessageId(const std::size_t idLength, const Buffer id);
 
         AlarmMessageId(const AlarmMessageId &&other) noexcept
             : id(std::move(other.id)), idLength(other.idLength) {}
@@ -58,7 +58,7 @@ namespace gpap_message::alarm
 
     private:
         static std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH>
-        validateId(const size_t idLength, const Buffer);
+        validateId(const std::size_t idLength, const Buffer);
     };
 }
 

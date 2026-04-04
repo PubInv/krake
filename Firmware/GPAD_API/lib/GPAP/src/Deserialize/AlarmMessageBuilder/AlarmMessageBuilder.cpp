@@ -27,7 +27,7 @@ AlarmMessageBuilder::AlarmMessageBuilder()
 {
 }
 
-size_t AlarmMessageBuilder::deserializeLevel(const char *const buffer, const size_t numBytes)
+std::size_t AlarmMessageBuilder::deserializeLevel(const char *const buffer, const std::size_t numBytes)
 {
     if (numBytes == 0)
     {
@@ -39,7 +39,7 @@ size_t AlarmMessageBuilder::deserializeLevel(const char *const buffer, const siz
     return 1;
 }
 
-size_t AlarmMessageBuilder::deserializeId(const char *const buffer, const size_t numBytes)
+std::size_t AlarmMessageBuilder::deserializeId(const char *const buffer, const std::size_t numBytes)
 {
     if (numBytes == 0 || (buffer[0] != AlarmMessageBuilder::ID_START_CHARACTER))
     {
@@ -83,8 +83,8 @@ size_t AlarmMessageBuilder::deserializeId(const char *const buffer, const size_t
     }
 }
 
-size_t
-AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer, const size_t numBytes)
+std::size_t
+AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer, const std::size_t numBytes)
 {
     if ((numBytes == 0) ||
         buffer[0] != AlarmMessageBuilder::DESIGNATOR_START_CHARACTER)
@@ -128,8 +128,7 @@ AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer, const s
     }
 }
 
-size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer,
-                                               const size_t numBytes)
+std::size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer, const std::size_t numBytes)
 {
     auto messageLength = 0;
     for (; messageLength < numBytes; ++messageLength)
@@ -146,8 +145,7 @@ size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer,
     return messageLength;
 }
 
-AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
-                                                    const size_t numBytes)
+AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer, const std::size_t numBytes)
 {
     AlarmMessageBuilder builder = AlarmMessageBuilder();
 
@@ -185,7 +183,7 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
     // for conditionally setting the variable value messageId. If messageId was assigned outside of a lambda it
     // could not be const. The compiler will inline the lambda since it is called right away so there is no
     // "inefficiency" due to leveraging this
-    const AlarmMessage::PossibleMessageId messageId = [](const size_t numBytes, const AlarmMessageId::Buffer buffer)
+    const AlarmMessage::PossibleMessageId messageId = [](const std::size_t numBytes, const AlarmMessageId::Buffer buffer)
     {
         if (numBytes == 0)
         {
@@ -198,7 +196,7 @@ AlarmMessage AlarmMessageBuilder::buildAlarmMessage(const char *const buffer,
         return possibleMessageId;
     }(builder.idLength, std::move(builder.idBuffer));
 
-    const AlarmMessage::PossibleTypeDesignator typeDesignator = [](const size_t numBytes, const AlarmTypeDesignator::Buffer buffer)
+    const AlarmMessage::PossibleTypeDesignator typeDesignator = [](const std::size_t numBytes, const AlarmTypeDesignator::Buffer buffer)
     {
         if (numBytes == 0)
         {

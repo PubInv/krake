@@ -26,16 +26,16 @@ namespace gpap_message::alarm
     class AlarmContent final
     {
     public:
-        static const size_t MAX_LENGTH = 80;
+        static const std::size_t MAX_LENGTH = 80;
 
         using Buffer = std::array<char, AlarmContent::MAX_LENGTH>;
 
     private:
-        size_t messageLength;
+        std::size_t messageLength;
         std::array<char, AlarmContent::MAX_LENGTH> message;
 
     public:
-        explicit AlarmContent(const size_t messageLength, const Buffer message) noexcept
+        explicit AlarmContent(const std::size_t messageLength, const Buffer message) noexcept
             : messageLength(messageLength), message(std::move(message)) {};
 
         AlarmContent(const AlarmContent &&other) noexcept
