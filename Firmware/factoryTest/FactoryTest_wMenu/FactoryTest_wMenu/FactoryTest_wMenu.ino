@@ -1,14 +1,14 @@
 #define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.5.2"
-/*
+#define FIRMWARE_VERSION "v0.4.6.1"
+ /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.5.2
-Date:            2026-03-17
+Version:         v0.4.6.1
+Date:            2026-03-31
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
 ------------------------------------------------------------------------------
@@ -59,6 +59,8 @@ Revision History:
 |         |           |               | Requires: OneButton lib from Library Manager.   |
 |v0.4.5.1 | 2026-3-23 | Yukti         | Fixed DFPlayer ACK handling                     |
 |v0.4.5.2 | 2026-3-24 | Yukti         | Added MAC address display to splash screen      |
+|v0.4.6.0 | 2026-3-31 | Yukti         | Migrate to PlatformIO (#352)                    |
+|v0.4.6.1 | 2026-4-01 | Yukti         | Ignore CR characters in serial input            |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -259,7 +261,8 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
     while (Serial.available()) {
       char c = Serial.read();
 
-      if (c == '\n' || c == '\r') {
+      if (c == '\r') continue;  // skip CR; LF terminates (handles CRLF from PlatformIO)
+      if (c == '\n') {
         out.trim();
         if (out.length() == 1 && isMenuKey(out[0])) {
           g_pendingCmd = up(out[0]);
@@ -725,13 +728,15 @@ static bool initDFPlayer() {
   pinMode(DF_BUSY_IN, INPUT_PULLUP);
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
-  
   delay(300);
 
   if (!dfPlayer.begin(dfSerial, false, true)) {
     Serial.println(F("DFPlayer not detected (check connections)."));
     dfState = DF_FAIL;
     return false;
+  }
+  else {
+    Serial.println(F("DFPlayer detected."));
   }
 
   dfPlayer.setTimeOut(1000);
@@ -749,6 +754,7 @@ static bool initDFPlayer() {
   Serial.println(F("DFPlayer detected and responding."));
   return true;
 }
+
 
 // Put this OUTSIDE of runTest_DFPlayer() (global scope).
 // Call it when dfPlayer.available() is true.
@@ -943,9 +949,11 @@ static bool runTest_WifiAP() {
 static bool runTest_WifiSTA() {
   Serial.println(F("\n[8] Wi-Fi STA (manual SSID/PASS)"));
 
+  WiFi.disconnect(false, true);  // erase stored NVS credentials while driver is still alive
+  WiFi.mode(WIFI_OFF);           // full radio off (handles AP→STA transition cleanly)
+  delay(200);
   WiFi.mode(WIFI_STA);
-  WiFi.disconnect(true, true);
-  delay(300);
+  delay(200);
 
   flushSerialRx();
 
@@ -973,6 +981,7 @@ static bool runTest_WifiSTA() {
 
   Serial.print(F("Connecting to: "));
   Serial.println(ssid);
+  WiFi.persistent(false);  // do not save test credentials to NVS flash
   WiFi.begin(ssid.c_str(), pass.c_str());
 
   uint32_t start = millis();
