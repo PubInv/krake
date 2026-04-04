@@ -260,7 +260,8 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
     while (Serial.available()) {
       char c = Serial.read();
 
-      if (c == '\n' || c == '\r') {
+      if (c == '\r') continue;  // skip CR; LF terminates (handles CRLF from PlatformIO)
+      if (c == '\n') {
         out.trim();
         if (out.length() == 1 && isMenuKey(out[0])) {
           g_pendingCmd = up(out[0]);
