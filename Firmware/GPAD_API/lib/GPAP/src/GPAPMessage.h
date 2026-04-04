@@ -18,8 +18,6 @@
 #ifndef _GPAP_MESSAGE_H
 #define _GPAP_MESSAGE_H
 
-#include <Arduino.h>
-
 #include "AlarmMessage.h"
 #include "HelpMessage.h"
 #include "InfoMessage.h"

@@ -19,8 +19,6 @@
 
 #include <algorithm>
 
-#include <Print.h>
-
 using namespace gpap_message::alarm;
 
 AlarmTypeDesignator::AlarmTypeDesignator(const Buffer designator) : designator(std::move(designator))
@@ -41,21 +39,7 @@ AlarmTypeDesignator::AlarmTypeDesignator(const Buffer designator) : designator(s
     }
 }
 
-AlarmTypeDesignator::~AlarmTypeDesignator() {}
-
 const AlarmTypeDesignator::Buffer &AlarmTypeDesignator::getValue() const
 {
     return this->designator;
-}
-
-size_t AlarmTypeDesignator::printTo(Print &print) const
-{
-    auto bytesWritten = 0;
-    for (auto iter = this->getValue().cbegin(); iter != this->getValue().cend(); ++iter)
-    {
-        bytesWritten += print.print(*iter);
-    }
-
-    bytesWritten += print.print("\0");
-    return bytesWritten;
 }

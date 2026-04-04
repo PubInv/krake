@@ -20,11 +20,9 @@
 
 #include <array>
 
-#include <Printable.h>
-
 namespace gpap_message::alarm
 {
-    class AlarmTypeDesignator final : Printable
+    class AlarmTypeDesignator final
     {
     public:
         static const size_t DESIGNATOR_LENGTH = 3;
@@ -51,12 +49,8 @@ namespace gpap_message::alarm
         AlarmTypeDesignator(AlarmTypeDesignator &other) = delete;
         AlarmTypeDesignator(const AlarmTypeDesignator &other) = delete;
 
-        virtual ~AlarmTypeDesignator();
-        // Methods
     public:
         const Buffer &getValue() const;
-
-        size_t printTo(Print &print) const override;
     };
 }
 
