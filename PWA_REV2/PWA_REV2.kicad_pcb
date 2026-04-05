@@ -6396,7 +6396,7 @@
       (net 124 "/RS232/DCE_CTS") (pinfunction "8") (pintype "passive") (tstamp 36044b48-0830-4a0b-95b6-990f497601df))
     (pad "9" thru_hole circle locked (at -9.695 2.84) (size 1.6 1.6) (drill 1) (layers "*.Cu" "*.Mask")
       (net 125 "unconnected-(J701-Pad9)") (pinfunction "9") (pintype "passive+no_connect") (tstamp e5851e5e-9e91-44f6-9780-bb042997e9c8))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_Dsub.3dshapes/DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset9.90mm_Housed_MountingHolesOffset11.32mm.wrl"
+    (model "${KICAD7_3DMODEL_DIR}/Connector_Dsub.3dshapes/DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset9.90mm_Housed_MountingHolesOffset11.32mm.wrl"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
