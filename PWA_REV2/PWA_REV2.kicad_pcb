@@ -2321,13 +2321,8 @@
     (property "Distributor 2" "Digikey")
     (property "Distributor 2 PN" "450-1804-ND")
     (property "Family" "Tactile Switches")
-<<<<<<< HEAD
     (property "MPN" "TE Connectivity 1825910-7")
     (property "MPN 2" "")
-=======
-    (property "MPN" "TE Connectivity 1825910-7,   Dongguan Guangzhu Industrial ")
-    (property "MPN 2" "TS6685H-250gf")
->>>>>>> Rev2PWA
     (property "Manufacturer" "TE Connectivity ALCOSWITCH Switches")
     (property "Manufacturer 2" "YE")
     (property "Sheetfile" "PWA_REV2.kicad_sch")
@@ -17087,10 +17082,6 @@
     (property "Sheetname" "LCD And I2C Interface")
     (property "ki_description" "Potentiometer")
     (property "ki_keywords" "resistor variable")
-<<<<<<< HEAD
-=======
-    (path "/00000000-0000-0000-0000-000062b871ee/e6b2915e-b2de-400e-841f-313969e9ee14")
->>>>>>> Rev2PWA
     (attr through_hole)
     (fp_text reference "RV301" (at -1.651 -3.048 270) (layer "B.SilkS")
         (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
