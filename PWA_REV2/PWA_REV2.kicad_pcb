@@ -5387,7 +5387,7 @@
     (pad "16" thru_hole oval locked (at 17.78 0 90) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask")
       (net 145 "Net-(J603-BUSY)") (pinfunction "BUSY") (pintype "output") (tstamp 237c7298-ae7f-4f13-9505-fe6361589819))
     (model "${KIPRJMOD}/Parts/DFR0299--3DModel-STEP-56544.STEP"
-      (offset (xyz 8.89 -8.89 0))
+      (offset (xyz 8.89 -8.89 7))
       (scale (xyz 1 1 1))
       (rotate (xyz -90 0 0))
     )
