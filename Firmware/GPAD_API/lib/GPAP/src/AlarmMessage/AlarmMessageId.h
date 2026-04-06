@@ -20,12 +20,20 @@
 
 #include <array>
 
+#ifndef PIO_UNIT_TESTING
+#include <Printable.h>
+#else
+#include "MockPrintable.h"
+#include "MockPrint.h"
+using Printable = MockPrintable;
+using Print = MockPrint;
+#endif
+
 namespace gpap_message::alarm
 {
-    class AlarmMessageId final
+    class AlarmMessageId final : public Printable
     {
     public:
-        // TODO: Find out what this value is SUPPOSED to be.
         static const std::size_t MAX_LENGTH = 10;
 
         using Buffer = std::array<char, AlarmMessageId::MAX_LENGTH>;
@@ -33,7 +41,6 @@ namespace gpap_message::alarm
     private:
         static const std::size_t TOTAL_MAX_LENGTH = AlarmMessageId::MAX_LENGTH + 1;
 
-    public:
         std::size_t idLength;
         std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> id;
 
@@ -56,9 +63,14 @@ namespace gpap_message::alarm
         AlarmMessageId(AlarmMessageId &other) = delete;
         AlarmMessageId(const AlarmMessageId &other) = delete;
 
+        virtual ~AlarmMessageId();
+
     private:
         static std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH>
         validateId(const std::size_t idLength, const Buffer);
+
+    public:
+        std::size_t printTo(Print &print) const;
     };
 }
 

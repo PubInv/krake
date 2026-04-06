@@ -20,6 +20,13 @@
 #include <algorithm>
 #include <cctype>
 
+#ifndef PIO_UNIT_TESTING
+#include <Print.h>
+#else
+#include <MockPrint.h>
+using Print = MockPrint;
+#endif
+
 using namespace gpap_message::alarm;
 
 AlarmMessageId::AlarmMessageId(
@@ -64,4 +71,25 @@ std::array<char, AlarmMessageId::TOTAL_MAX_LENGTH> AlarmMessageId::validateId(
 
     *validatedIdIterator = '\0';
     return std::move(validatedId);
+}
+
+AlarmMessageId::~AlarmMessageId() {}
+
+std::size_t AlarmMessageId::printTo(Print &print) const
+{
+    auto beginIterator = this->id.cbegin();
+    const auto endIterator = std::next(beginIterator, this->idLength);
+
+    auto bytesWritten = 0;
+
+    std::for_each(
+        beginIterator,
+        endIterator,
+        [&bytesWritten, &print](const char &character)
+        {
+            bytesWritten += print.print(character);
+        });
+
+    bytesWritten += print.print('\0');
+    return bytesWritten;
 }

@@ -55,7 +55,6 @@
 #include "gpad_utility.h"
 #include "gpad_serial.h"
 #include "Wink.h"
-#include "GPAPMessage.h"
 #include <math.h>
 
 #include <WiFi.h>

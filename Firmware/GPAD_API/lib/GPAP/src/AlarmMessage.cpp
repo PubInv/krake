@@ -16,3 +16,8 @@ const AlarmMessage::PossibleTypeDesignator &AlarmMessage::getTypeDesignator() co
 {
     return this->typeDesignator;
 }
+
+const AlarmMessage::PossibleMessageId &AlarmMessage::getMessageId() const noexcept
+{
+    return this->messageId;
+}

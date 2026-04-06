@@ -62,7 +62,7 @@ namespace gpap_message::alarm
 
     public:
         const Buffer &getValue() const;
-        std::size_t printTo(Print &p) const;
+        std::size_t printTo(Print &print) const;
     };
 }
 
