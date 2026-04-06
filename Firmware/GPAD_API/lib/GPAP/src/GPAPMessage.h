@@ -40,6 +40,7 @@ namespace gpap_message
     public:
         static const std::size_t BUFFER_LENGTH = 131;
 
+    private:
         union
         {
             alarm::AlarmMessage alarm;
@@ -53,7 +54,6 @@ namespace gpap_message
 
         using GPAPBuffer = std::array<char, GPAPMessage::BUFFER_LENGTH>;
 
-        // Constructors and operator overloads
     public:
         explicit GPAPMessage(const alarm::AlarmMessage alarmMessage) noexcept
             : messageType(MessageType::ALARM), alarm(std::move(alarmMessage)) {}
@@ -120,6 +120,9 @@ namespace gpap_message
         GPAPMessage(GPAPMessage &other) = delete;
 
         static GPAPMessage deserialize(const char *const buffer, const std::size_t numBytes);
+
+        MessageType getMessageType() const noexcept;
+        const alarm::AlarmMessage &getAlarmMessage() const;
     };
 }
 

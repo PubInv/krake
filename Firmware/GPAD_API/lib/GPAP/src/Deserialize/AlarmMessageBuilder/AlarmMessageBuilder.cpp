@@ -142,6 +142,7 @@ std::size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer, co
         this->messageBuffer.at(messageLength) = buffer[messageLength];
     }
 
+    this->messageLength = messageLength;
     return messageLength;
 }
 

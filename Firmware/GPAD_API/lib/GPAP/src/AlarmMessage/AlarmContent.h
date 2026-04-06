@@ -18,7 +18,9 @@
 #ifndef _ALARM_CONTENT_H
 #define _ALARM_CONTENT_H
 
+#include <algorithm>
 #include <array>
+#include <iostream>
 
 namespace gpap_message::alarm
 {
@@ -35,8 +37,7 @@ namespace gpap_message::alarm
         std::array<char, AlarmContent::MAX_LENGTH> message;
 
     public:
-        explicit AlarmContent(const std::size_t messageLength, const Buffer message) noexcept
-            : messageLength(messageLength), message(std::move(message)) {};
+        explicit AlarmContent(const std::size_t messageLength, const Buffer message);
 
         AlarmContent(const AlarmContent &&other) noexcept
             : messageLength(other.messageLength), message(std::move(other.message)) {}
@@ -53,6 +54,25 @@ namespace gpap_message::alarm
         AlarmContent() = delete;
         AlarmContent(AlarmContent &other) = delete;
         AlarmContent(const AlarmContent &other) = delete;
+
+    public:
+        friend std::ostream &operator<<(std::ostream &out, const AlarmContent &alarmContent)
+        {
+            auto beginIterator = alarmContent.message.cbegin();
+
+            const auto endIterator = std::next(beginIterator, alarmContent.messageLength);
+
+            std::for_each(
+                beginIterator,
+                endIterator,
+                [&](const char &c)
+                {
+                    std::cout << c << std::endl;
+                    out << c;
+                });
+
+            return out;
+        }
     };
 }
 

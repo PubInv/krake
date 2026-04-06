@@ -41,6 +41,7 @@ namespace gpap_message::alarm
         using PossibleMessageId = PossibleParameter<AlarmMessageId>;
         using PossibleTypeDesignator = PossibleParameter<AlarmTypeDesignator>;
 
+    private:
         Level level;
         AlarmContent content;
         PossibleMessageId messageId;
@@ -81,6 +82,8 @@ namespace gpap_message::alarm
         AlarmMessage() = delete;
         AlarmMessage(AlarmMessage &other) = delete;
         AlarmMessage(const AlarmMessage &other) = delete;
+
+        const AlarmContent &getAlarmContent() const noexcept;
     };
 
 } // namespace alarm

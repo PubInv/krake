@@ -53,3 +53,19 @@ GPAPMessage GPAPMessage::deserialize(const char *const buffer, const std::size_t
         return GPAPMessage(HelpMessage());
     }
 }
+
+MessageType GPAPMessage::getMessageType() const noexcept
+{
+    return this->messageType;
+}
+
+const alarm::AlarmMessage &GPAPMessage::getAlarmMessage() const
+{
+    // Cannot access a field of the union when it's the incorrect type
+    if (this->messageType != MessageType::ALARM)
+    {
+        throw;
+    }
+
+    return this->alarm;
+}
