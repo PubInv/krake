@@ -60,8 +60,9 @@ Revision History:
 |v0.4.5.2 | 2026-3-24 | Yukti         | Added MAC address display to splash screen      |
 |v0.4.6.0 | 2026-3-31 | Yukti         | Migrate to PlatformIO (#352)                    |
 |v0.4.6.1 | 2026-4-01 | Yukti         | Ignore CR characters in serial input            |
-|v0.4.6.2 | 2026-4-06 | Yukti         | Remove hardcoded DEVICE_UNDER_TEST serial number|
-|         |           |               | prompt tester to enter SN at startup            |
+|v0.4.6.2 | 2026-4-06 | Yukti         | Remove hardcoded DEVICE_UNDER_TEST; prompt      |
+|         |           |               | tester to enter SN at startup; print MAC        |
+|         |           |               | without delimiters and drop misleading (STA)    |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -379,8 +380,12 @@ static void printBanner() {
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.printf("Chip revision: %d\n", ESP.getChipRevision());
   Serial.printf("Flash size: %u bytes\n", ESP.getFlashChipSize());
-  Serial.print(F("MAC (STA): "));
-  Serial.println(WiFi.macAddress());
+  {
+    String mac = WiFi.macAddress();
+    mac.replace(":", "");
+    Serial.print(F("MAC: "));
+    Serial.println(mac);
+  }
   Serial.println();
 }
 
@@ -393,8 +398,12 @@ void splashserial(void) {
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
-  Serial.print(F("MAC (STA): "));
-  Serial.println(WiFi.macAddress());
+  {
+    String mac = WiFi.macAddress();
+    mac.replace(":", "");
+    Serial.print(F("MAC: "));
+    Serial.println(mac);
+  }
   Serial.println(F("======================================================="));
 }
 
