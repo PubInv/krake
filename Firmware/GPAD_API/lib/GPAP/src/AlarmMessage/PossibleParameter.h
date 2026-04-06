@@ -32,7 +32,7 @@
 namespace gpap_message::alarm
 {
     template <class T>
-    struct PossibleParameter
+    struct PossibleParameter final
     {
         enum class State
         {

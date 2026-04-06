@@ -20,9 +20,18 @@
 
 #include <array>
 
+#ifndef PIO_UNIT_TESTING
+#include <Printable.h>
+#else
+#include "MockPrintable.h"
+#include "MockPrint.h"
+using Printable = MockPrintable;
+using Print = MockPrint;
+#endif
+
 namespace gpap_message::alarm
 {
-    class AlarmTypeDesignator final
+    class AlarmTypeDesignator final : Printable
     {
     public:
         static const std::size_t DESIGNATOR_LENGTH = 3;
@@ -49,8 +58,11 @@ namespace gpap_message::alarm
         AlarmTypeDesignator(AlarmTypeDesignator &other) = delete;
         AlarmTypeDesignator(const AlarmTypeDesignator &other) = delete;
 
+        virtual ~AlarmTypeDesignator();
+
     public:
         const Buffer &getValue() const;
+        std::size_t printTo(Print &p) const;
     };
 }
 

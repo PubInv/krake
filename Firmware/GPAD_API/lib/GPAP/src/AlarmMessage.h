@@ -84,6 +84,8 @@ namespace gpap_message::alarm
         AlarmMessage(const AlarmMessage &other) = delete;
 
         const AlarmContent &getAlarmContent() const noexcept;
+        Level getAlarmLevel() const noexcept;
+        const PossibleTypeDesignator &getTypeDesignator() const noexcept;
     };
 
 } // namespace alarm

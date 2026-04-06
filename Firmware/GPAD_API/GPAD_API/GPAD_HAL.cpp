@@ -431,9 +431,9 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   const auto protocolMessage = gpap_message::GPAPMessage::deserialize(buf, rlen);
 
   serialport->print(F("Command: "));
-  serialport->printf("%c\n", protocolMessage.messageType);
+  serialport->printf("%c\n", protocolMessage.getMessageType());
 
-  switch (protocolMessage.messageType)
+  switch (protocolMessage.getMessageType())
   {
   case gpap_message::MessageType::MUTE:
   {

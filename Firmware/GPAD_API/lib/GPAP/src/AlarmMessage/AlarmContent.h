@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <array>
-#include <iostream>
 
 namespace gpap_message::alarm
 {
@@ -54,25 +53,6 @@ namespace gpap_message::alarm
         AlarmContent() = delete;
         AlarmContent(AlarmContent &other) = delete;
         AlarmContent(const AlarmContent &other) = delete;
-
-    public:
-        friend std::ostream &operator<<(std::ostream &out, const AlarmContent &alarmContent)
-        {
-            auto beginIterator = alarmContent.message.cbegin();
-
-            const auto endIterator = std::next(beginIterator, alarmContent.messageLength);
-
-            std::for_each(
-                beginIterator,
-                endIterator,
-                [&](const char &c)
-                {
-                    std::cout << c << std::endl;
-                    out << c;
-                });
-
-            return out;
-        }
     };
 }
 
