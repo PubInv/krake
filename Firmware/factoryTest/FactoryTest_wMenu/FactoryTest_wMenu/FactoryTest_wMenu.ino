@@ -1,6 +1,5 @@
-#define DEVICE_UNDER_TEST "SN: LB0008"  //A Serial Number
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.6.1"
+#define FIRMWARE_VERSION "v0.4.6.2"
  /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -61,6 +60,8 @@ Revision History:
 |v0.4.5.2 | 2026-3-24 | Yukti         | Added MAC address display to splash screen      |
 |v0.4.6.0 | 2026-3-31 | Yukti         | Migrate to PlatformIO (#352)                    |
 |v0.4.6.1 | 2026-4-01 | Yukti         | Ignore CR characters in serial input            |
+|v0.4.6.2 | 2026-4-06 | Yukti         | Remove hardcoded DEVICE_UNDER_TEST serial number|
+|         |           |               | prompt tester to enter SN at startup            |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -188,6 +189,9 @@ static int g_sdFileCount = -999;
 static AsyncWebServer otaServer(80);
 static bool g_otaServerStarted = false;  // true once ElegantOTA is running
 static bool g_littleFsMounted  = false;  // true once LittleFS is mounted at boot
+
+// Device serial number entered by the tester at startup
+static char g_deviceSerialNumber[32] = "";
 
 // ============================================================================
 // Test bookkeeping
@@ -385,7 +389,7 @@ void splashserial(void) {
   Serial.println(PROG_NAME);
   Serial.print(VERSION);
   Serial.println(MODEL_NAME);
-  Serial.println(DEVICE_UNDER_TEST);
+  Serial.println(g_deviceSerialNumber);
   Serial.print(F("Compiled at: "));
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
   Serial.println(LICENSE);
@@ -1394,6 +1398,32 @@ void setup() {
   delay(50);
 
   printBanner();
+
+  // Prompt tester for the device serial number before the splash
+  Serial.println(F("Enter device serial number (e.g. SN: LB0001) then press Enter:"));
+  Serial.print(F("> "));
+  {
+    uint8_t idx = 0;
+    uint32_t t = millis();
+    while (millis() - t < 60000UL) {
+      if (Serial.available()) {
+        char c = Serial.read();
+        if (c == '\r') continue;
+        if (c == '\n') break;
+        if (idx < sizeof(g_deviceSerialNumber) - 1) {
+          g_deviceSerialNumber[idx++] = c;
+        }
+      }
+    }
+    g_deviceSerialNumber[idx] = '\0';
+    if (idx == 0) {
+      strncpy(g_deviceSerialNumber, "SN: UNKNOWN", sizeof(g_deviceSerialNumber) - 1);
+    }
+    Serial.println();
+    Serial.print(F("Device SN set to: "));
+    Serial.println(g_deviceSerialNumber);
+  }
+
   splashserial();
   printSummary();
   printMenu();
