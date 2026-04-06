@@ -1,12 +1,12 @@
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.6.2"
+#define FIRMWARE_VERSION "v0.4.6.3"
  /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.6.1
+Version:         v0.4.6.3
 Date:            2026-03-31
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -61,8 +61,9 @@ Revision History:
 |v0.4.6.0 | 2026-3-31 | Yukti         | Migrate to PlatformIO (#352)                    |
 |v0.4.6.1 | 2026-4-01 | Yukti         | Ignore CR characters in serial input            |
 |v0.4.6.2 | 2026-4-06 | Yukti         | Remove hardcoded DEVICE_UNDER_TEST; prompt      |
-|         |           |               | tester to enter SN at startup; print MAC        |
-|         |           |               | without delimiters and drop misleading (STA)    |
+|         |           |               | tester to enter SN at startup;                  |
+|v0.4.6.3 | 2026-4-07 | Yukti         | print MAC address without delimiters and drop   |
+|         |           |               | misleading (STA)                                |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
