@@ -182,7 +182,7 @@ NOTE, not all LCD modules have J1.  This LCD module has only J2 pictured with so
 ### Load MP3 Files to SD Card
 For each Krake assembly, load into a microSCHC Flash card several MP3 files. 
 The files must be loaded in a specified order.
-The files are found at: https://drive.google.com/drive/u/1/folders/1j0NoWhTwpoMUFePJHcl5dvErf954-mCs
+The files are found at: [https://drive.google.com/drive/u/1/folders/1j0NoWhTwpoMUFePJHcl5dvErf954-mCs](https://drive.google.com/drive/folders/1uwaVFpFQ0uJbVLxVXngsslgTf2tzOCR6?usp=sharing)
 There is a script file there, copy_to_sd.sh which on a Windows PC can copy the files in the required order to a microSCH Flash card.
 Run copy_to_sd.sh from the bash shell, by typing "./copy_to_sd.sh"
 
