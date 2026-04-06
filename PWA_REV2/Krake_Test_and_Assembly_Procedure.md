@@ -572,8 +572,11 @@ Units that pass all steps above are considered ready for integration into larger
   - "SD_door.stl"
 2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
   - **insert information about tools etc for threaded inserts - NK pictures & instructions?**
-  - Using M4 Threaded Inserts
-  - <img width="728" height="548" alt="image" src="https://github.com/user-attachments/assets/d047879c-d173-45ce-bdac-6abd16ee2677" />
+  - Using M4 Threaded Inserts: <img width="300" height="216" alt="image" src="https://github.com/user-attachments/assets/d047879c-d173-45ce-bdac-6abd16ee2677" />
+  - After the threaded inserts are inserted, displaced plastic may obstruct the screws
+<img width="600" height="515" alt="image" src="https://github.com/user-attachments/assets/2e11dcef-0adb-405a-bb69-5bcbe3d10dc3" />
+  - To clear this use a 4mm tap from the inside of the enclosure
+<img width="500" height="375" alt="image" src="https://github.com/user-attachments/assets/c35904b4-81fd-463d-8da6-6f4903117785" />
 
 3. To assemble the enclosure the following is required:
   - "knob_Dshaft_15mmx6mmv1.3.stl"
