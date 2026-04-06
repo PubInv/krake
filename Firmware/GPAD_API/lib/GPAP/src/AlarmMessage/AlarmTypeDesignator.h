@@ -31,7 +31,7 @@ using Print = MockPrint;
 
 namespace gpap_message::alarm
 {
-    class AlarmTypeDesignator final : Printable
+    class AlarmTypeDesignator final : public Printable
     {
     public:
         static const std::size_t DESIGNATOR_LENGTH = 3;

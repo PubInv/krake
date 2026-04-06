@@ -21,10 +21,19 @@
 #include <algorithm>
 #include <array>
 
+#ifndef PIO_UNIT_TESTING
+#include <Printable.h>
+#else
+#include "MockPrintable.h"
+#include "MockPrint.h"
+using Printable = MockPrintable;
+using Print = MockPrint;
+#endif
+
 namespace gpap_message::alarm
 {
 
-    class AlarmContent final
+    class AlarmContent final : public Printable
     {
     public:
         static const std::size_t MAX_LENGTH = 80;
@@ -53,6 +62,10 @@ namespace gpap_message::alarm
         AlarmContent() = delete;
         AlarmContent(AlarmContent &other) = delete;
         AlarmContent(const AlarmContent &other) = delete;
+
+        virtual ~AlarmContent();
+
+        std::size_t printTo(Print &print) const;
     };
 }
 

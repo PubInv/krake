@@ -2,13 +2,15 @@
 #define _MOCK_PRINT_H
 
 #include <stdlib.h>
+#include <cstdint>
 
 class MockPrint
 {
 public:
-    std::size_t print(char)
+    virtual std::size_t write(uint8_t) = 0;
+    std::size_t print(char character)
     {
-        return 0;
+        return this->write((uint8_t)character);
     }
 };
 
