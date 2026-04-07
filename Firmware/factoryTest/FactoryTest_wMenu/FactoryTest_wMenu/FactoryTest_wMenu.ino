@@ -1,12 +1,12 @@
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.6.4"
+#define FIRMWARE_VERSION "v0.4.6.5"
  /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.6.4
+Version:         v0.4.6.5
 Date:            2026-04-08
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -1044,10 +1044,13 @@ static bool runTest_WifiSTA() {
   WiFi.persistent(false);  // do not save test credentials to NVS flash
   WiFi.begin(ssid.c_str(), pass.c_str());
 
-  uint32_t start = millis();
+  uint32_t start   = millis();
+  uint32_t lastDot = start;
   while (WiFi.status() != WL_CONNECTED && millis() - start < WIFI_CONNECT_MS) {
-    delay(500);
-    Serial.print('.');
+    if (millis() - lastDot >= 500) {
+      Serial.print('.');
+      lastDot = millis();
+    }
   }
   Serial.println();
 
