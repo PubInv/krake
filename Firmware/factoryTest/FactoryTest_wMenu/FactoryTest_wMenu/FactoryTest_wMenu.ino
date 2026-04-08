@@ -712,10 +712,10 @@ static void reportMiniMP3PlayerType() {
   delay(100);
   int busyIdle = digitalRead(DF_BUSY_IN);
   Serial.print(F("  Mini MP3 BUSY idle: "));
-  if (busyIdle == LOW) {
-    Serial.println(F("LOW  --> WARNING: module may be inserted backwards!"));
+  if (busyIdle == HIGH) {
+    Serial.println(F("HIGH  --> WARNING: module may be inserted backwards!"));
   } else {
-    Serial.println(F("HIGH (normal)"));
+    Serial.println(F("LOW (normal)"));
   }
 
   // readState() sends command 0x42 and returns the play-status word.
@@ -778,8 +778,8 @@ static bool initDFPlayer() {
   // Check BUSY pin before asserting any UART traffic.
   // BUSY is active-LOW when playing; at idle it should be HIGH.
   // If it reads LOW now (nothing playing yet) the module is likely backwards.
-  if (digitalRead(DF_BUSY_IN) == LOW) {
-    Serial.println(F("  WARNING: BUSY pin LOW before init -- module may be inserted backwards!"));
+  if (digitalRead(DF_BUSY_IN) == HIGH) {
+    Serial.println(F("  WARNING: BUSY pin HIGH before init -- module may be inserted backwards!"));
   }
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
@@ -788,8 +788,8 @@ static bool initDFPlayer() {
   if (!dfPlayer.begin(dfSerial, false, true)) {
     Serial.println(F("DFPlayer not detected (check connections)."));
     Serial.println(F("  -> Visually inspect module orientation: pin 1 must align with PCB marking."));
-    if (digitalRead(DF_BUSY_IN) == LOW) {
-      Serial.println(F("  -> BUSY pin is LOW -- strong indicator of backwards insertion."));
+    if (digitalRead(DF_BUSY_IN) == HIGH) {
+      Serial.println(F("  -> BUSY pin is HIGH -- strong indicator of backwards insertion."));
     }
     dfState = DF_FAIL;
     return false;
