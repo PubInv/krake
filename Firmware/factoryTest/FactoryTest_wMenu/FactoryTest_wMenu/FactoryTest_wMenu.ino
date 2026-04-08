@@ -1,13 +1,13 @@
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.6.3"
+#define FIRMWARE_VERSION "v0.4.6.4"
  /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.6.3
-Date:            2026-03-31
+Version:         v0.4.6.4
+Date:            2026-04-08
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
 ------------------------------------------------------------------------------
@@ -64,6 +64,9 @@ Revision History:
 |         |           |               | tester to enter SN at startup;                  |
 |v0.4.6.3 | 2026-4-07 | Yukti         | print MAC address without delimiters and drop   |
 |         |           |               | misleading (STA)                                |
+|v0.4.6.4 | 2026-4-08 | Yukti         | DFPlayer: check BUSY idle before init to detect |
+|         |           |               | backwards insertion; add orientation warning on |
+|         |           |               | init failure; report module type after init     |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -700,6 +703,36 @@ static bool runTest_LEDs() {
 }
 
 
+// Read BUSY pin at idle to check module orientation and report module type.
+// The BUSY pin is active-LOW when playing.  If it reads LOW while no track is
+// playing the module is likely inserted backwards.
+// Call only after dfPlayer.begin() has succeeded and the module is responding.
+static void reportMiniMP3PlayerType() {
+  // Allow BUSY pin to settle after init before reading
+  delay(100);
+  int busyIdle = digitalRead(DF_BUSY_IN);
+  Serial.print(F("  Mini MP3 BUSY idle: "));
+  if (busyIdle == HIGH) {
+    Serial.println(F("HIGH  --> WARNING: module may be inserted backwards!"));
+  } else {
+    Serial.println(F("LOW (normal)"));
+  }
+
+  // readState() sends command 0x42 and returns the play-status word.
+  // Genuine DFRobot DFPlayerMini returns 0 (stopped) when idle;
+  // TD5580A clones have been observed returning different values.
+  // These values should be verified against hardware in the field.
+  int state = dfPlayer.readState();
+  Serial.printf("  Mini MP3 readState: %d", state);
+  if (state == 0) {
+    Serial.println(F("  --> likely DFRobot DFPlayerMini"));
+  } else if (state > 0) {
+    Serial.println(F("  --> may be TD5580A clone (non-zero idle state)"));
+  } else {
+    Serial.println(F("  --> no response to state query"));
+  }
+}
+
 static void clearDFPlayerCache() {
   dfState = DF_UNKNOWN;
   // optional: hard reset the UART session as well
@@ -740,12 +773,24 @@ static bool initDFPlayer() {
   Serial.println(F("Initializing DFPlayer (UART2)..."));
 
   pinMode(DF_BUSY_IN, INPUT_PULLUP);
+  delay(50);  // allow INPUT_PULLUP to stabilise
+
+  // Check BUSY pin before asserting any UART traffic.
+  // BUSY is active-LOW when playing; at idle it should be HIGH.
+  // If it reads LOW now (nothing playing yet) the module is likely backwards.
+  if (digitalRead(DF_BUSY_IN) == HIGH) {
+    Serial.println(F("  WARNING: BUSY pin HIGH before init -- module may be inserted backwards!"));
+  }
 
   dfSerial.begin(9600, SERIAL_8N1, DF_RXD2, DF_TXD2);
   delay(300);
 
   if (!dfPlayer.begin(dfSerial, false, true)) {
     Serial.println(F("DFPlayer not detected (check connections)."));
+    Serial.println(F("  -> Visually inspect module orientation: pin 1 must align with PCB marking."));
+    if (digitalRead(DF_BUSY_IN) == HIGH) {
+      Serial.println(F("  -> BUSY pin is HIGH -- strong indicator of backwards insertion."));
+    }
     dfState = DF_FAIL;
     return false;
   }
@@ -766,6 +811,7 @@ static bool initDFPlayer() {
 
   dfState = DF_OK;
   Serial.println(F("DFPlayer detected and responding."));
+  reportMiniMP3PlayerType();
   return true;
 }
 
