@@ -30,8 +30,21 @@ include <General_paramters.scad>
 GPAD_TShell          = 0;
 GPAD_BShell          = 0; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           = 0; //4 top
+GPAD_BPanL           =0; //4 top
 
+BButton              = 0 ;
+RotaryEncoder        = 0;  // change to a real rotary encoder 
+T_BShellScrew        = 0;
+BOSSScrew            = 0;
+PCB_SIMPLE           = 0;
+PWA_GPAD             = 0;
+PWA_KRAKE            = 0;//pcb
+LED_Standoff         = 0;
+LED_Standoff_Single  = 0;
+PWA                  = 0;
+SPK                  = 0;
+HEAT_SET_INSERTS     = 0;
+SPKLid               = 0;
 
 ////////////////////////////////////////////////////////////////////
 

@@ -20,6 +20,17 @@ recessed_bottom_on_off = 0;// turn on/off the recess moduel only
 
 GPAD_TShellWithVESA  = 1; // Krake TShell 
 
+
+AC_button_x = 38.77;
+AC_button_y = 44.44;
+/////////////////////////////////////////////////
+///////// recess paramters //////////
+R_height = Krake_76mmSPK_56h? Height - 40: 9;
+button_pins_height = Krake_76mmSPK_56h? 12.8  : 6.85;
+Door_recess_x_offset = Krake_rev2_76mmSPK? translationVariable - PCBLength+28 : -6.3;
+Door_recess_y_offset = Krake_rev2_76mmSPK? PCBWidth  -93.5: 36.5;
+///////////////////////////////////////
+
 T_shell_part();
 
 module T_shell_part(){

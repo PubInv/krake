@@ -8,6 +8,33 @@ include <General_paramters.scad>
 speaker_ring = 1;
 
 
+////////////////////////////////////////////////////////////////////
+//Parameters for LEDHole
+LEDspacing = 12.7 ;
+LEDYposOffset = 15.24  ; // offset from the Encoder edge of PCB
+LEDXposOffset = 27.94  ; // offset from the connector edge of PCB
+////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////
+//Modifications for Display
+DisplayXpos = PCBLength-50.8  + translationVariable;
+DisplayYpos = 71.12;
+DisplayLenght = 26;
+DisplayWidth = 76;
+DisplayFilet = 0;
+////////////////////////////////////////////////////////////////////
+
+//Modifications for SpeakerHole
+SpeakerHoleY = Krake ? PCBWidth*.769 : 15.24;
+SpeakerHoleX = translationVariable + ( Krake ? PCBLength*.815 :PCBLength - 15.24 );
+
+// Krake Modifications for RotaryEncodeHole
+i=-1; // Encoder is one LEd spacing below LEDs
+RotaryEncoderXpos      = Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : translationVariable + PCBLength-(LEDXposOffset+LEDspacing*i);
+RotaryEncoderYpos      = 15.24 ;
+RotaryEncoderDiameter  = 16 ;
+
+
 GPAD_BShell_part();
 
 //interface module with the main Assambly file 

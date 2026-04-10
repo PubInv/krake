@@ -5,6 +5,22 @@ include <General_paramters.scad>
 
 include <imported_scadModels/dsub.scad>
 
+
+USBbOn    = Krake ? 0 : 1;
+USBcOn    = Krake ? 1 : 0;
+DE9On     = Krake ? 1 : 0;
+I2COn     = Krake ? 0 : 1;
+RJ12On    = Krake ? 1 : 1;
+DCOn      = Krake ? 1 : 1;
+
+///////////////////
+USBbOn    = Krake_rev2_76mmSPK ? 0 : 1;
+USBcOn    = Krake_rev2_76mmSPK ? 1 : 0;
+DE9On     = Krake_rev2_76mmSPK ? 1 : 0;
+I2COn     = Krake_rev2_76mmSPK ? 0 : 1;
+RJ12On    = Krake_rev2_76mmSPK ? 1 : 1;
+DCOn      = Krake_rev2_76mmSPK ? 1 : 1;
+
 FPanL();
 
 module FPanL(){
