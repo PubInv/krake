@@ -117,6 +117,15 @@ cylinder(d=2,20);
 }// fin coque 
 
 
+//                      <- Linear text panel -> 
+module LText(OnOff,Tx,Ty,Font,Size,Content,_valign="baseline",_halign="left"){
+
+if(OnOff==1)
+translate([Tx,Ty,Thick+.5])
+linear_extrude(height =0.7){
+text(Content, size=Size, font=Font, halign = _halign,valign=_valign);
+}
+}
 
 
 //                     <- Circular text panel->  
@@ -132,5 +141,18 @@ linear_extrude(height = 0.7){
 }
 }   
 }
+}
+}
+
+
+////////////////////////////////////////////////////////////////////////
+//                           <- Panel ->  
+module Panel(Length,Width,Thick,Filet){
+scale([0.5,1,1])
+minkowski(){
+cube([Thick,Width-(Thick*2+Filet*2+m),Height-(Thick*2+Filet*2+m)]);
+translate([0,Filet,Filet])
+rotate([0,90,0])
+cylinder(r=Filet,h=Thick, $fn=100);
 }
 }
