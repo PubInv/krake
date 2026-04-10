@@ -10,20 +10,6 @@ Krake_rev2_76mmSPK= 1;  // 76 mm / 3 inch speaker
 
 if (Krake + GPAD > 1)
 echo("WARNING: More than one project mode active!!!");
-////////////////////////////////////////////////////////////////////
-// Export Options
-////////////////////////////////////////////////////////////////////
-GPAD_TShell          = 0;
-GPAD_BShell          = 1; //2 w/LCD 
-GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           = 0; //4 top
-sd_door_on_off       = 0;
-recessed_bottom_on_off = 0;// turn on/off the recess moduel only
-recessed_module_on_off =0;
-//// recess sub modules when recess module is on///
-
-
-////////////////////////////////////////////////////////////////////
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
 T_BShellScrew        = 0;

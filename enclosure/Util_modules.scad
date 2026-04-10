@@ -115,3 +115,22 @@ cylinder(d=2,20);
 
 }//fin de difference holes
 }// fin coque 
+
+
+
+
+//                     <- Circular text panel->  
+module CText(OnOff,Tx,Ty,Font,Size,TxtRadius,Angl,Turn,Content,_valign="baseline",_halign="center"){ 
+if(OnOff==1) {
+Angle = -Angl / len(Content);
+translate([Tx,Ty,Thick+.5])
+for (i= [0:len(Content)-1] ){   
+rotate([0,0,i*Angle+90+Turn])
+translate([0,TxtRadius,0]) {
+linear_extrude(height = 0.7){
+    text(Content[i], font = Font, size = Size,   halign = _halign,valign=_valign);
+}
+}   
+}
+}
+}
