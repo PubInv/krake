@@ -8,6 +8,18 @@ use <imported_scadModels/recessed.scad>
 use <imported_scadModels/slot.scad>
 use <imported_scadModels/flex_cover.scad>
 
+
+GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
+
+recessed_module_on_off =1;
+//// recess sub modules when recess module is on///
+
+sd_door_on_off       = 0;
+recessed_wall_on_off = 0;
+recessed_bottom_on_off = 0;// turn on/off the recess moduel only
+
+GPAD_TShellWithVESA  = 1; // Krake TShell 
+
 T_shell_part();
 
 module T_shell_part(){

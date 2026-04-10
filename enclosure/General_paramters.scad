@@ -24,13 +24,11 @@ SPK                  = 0;
 HEAT_SET_INSERTS     = 0;
 SPKLid               = 0;
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker 
-GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
-GPAD_TShellWithVESA  = 1; // Krake TShell 
-recessed_wall_on_off = 0;
+
+
 //////////////////////////////
 Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
-speaker_ring = 1;
 // Connectors Modifications specific port logic
 //if krake true x: y; i.e if krake on, usbbon =0, aka off
 USBbOn    = Krake ? 0 : 1;
@@ -128,12 +126,14 @@ LEDspacing = 12.7 ;
 LEDYposOffset = 15.24  ; // offset from the Encoder edge of PCB
 LEDXposOffset = 27.94  ; // offset from the connector edge of PCB
 ////////////////////////////////////////////////////////////////////
+
 // Krake Modifications for RotaryEncodeHole
 i=-1; // Encoder is one LEd spacing below LEDs
 RotaryEncoderXpos      = Krake ? PCBLength-(LEDXposOffset+LEDspacing*i) : translationVariable + PCBLength-(LEDXposOffset+LEDspacing*i);
 RotaryEncoderYpos      = 15.24 ;
 RotaryEncoderDiameter  = 16 ;
 //For instructions on mute Button inscription go to line 594.
+
 ///////// recess paramters //////////
 R_height = Krake_76mmSPK_56h? Height - 40: 9;
 button_pins_height = Krake_76mmSPK_56h? 12.8  : 6.85;

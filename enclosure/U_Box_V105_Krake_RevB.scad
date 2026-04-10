@@ -27,14 +27,10 @@ include <General_paramters.scad>
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
-GPAD_TShell          = 1;
+GPAD_TShell          = 0;
 GPAD_BShell          = 0; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
-sd_door_on_off       = 0;
-recessed_bottom_on_off = 0;// turn on/off the recess moduel only
-recessed_module_on_off =0;
-//// recess sub modules when recess module is on///
 
 
 ////////////////////////////////////////////////////////////////////
@@ -234,12 +230,9 @@ B_panl_part();
 // Module Section
 //RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution =50);
 
-module frontPanel(){
-difference() {
-Coque();
-SpeakerHole(OnOff = 1, Cx = 30, Cy = 20, Cdia = 20, Ccenter = true);
-}
-}
+
+
+
 //This is the purchased part.
 // This is a 2mm screw that connects the BShell to the TShell.
 if (T_BShellScrew==1){

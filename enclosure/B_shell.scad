@@ -4,6 +4,10 @@ include <imported_scadModels/StudModules.scad>
 
 include <General_paramters.scad>
 
+
+speaker_ring = 1;
+
+
 GPAD_BShell_part();
 
 //interface module with the main Assambly file 
