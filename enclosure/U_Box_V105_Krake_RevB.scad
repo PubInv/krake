@@ -21,6 +21,7 @@ use <imported_scadModels/flex_cover.scad>
 use <Util_modules.scad>
 use <B_shell.scad>
 use <F_panl.scad>
+use <B_panl.scad>
 
 include <General_paramters.scad>
 
@@ -30,7 +31,7 @@ include <General_paramters.scad>
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 0;
 GPAD_BShell          = 0; //2 w/LCD 
-GPAD_FPanL           = 1;//3 bottom
+GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
 sd_door_on_off       = 0;
 recessed_bottom_on_off = 0;// turn on/off the recess moduel only
@@ -349,8 +350,9 @@ FPanL();
 if(GPAD_BPanL==1){
 color(Couleur2)
 translate([Thick+m/2,Thick+m/2,Thick+m/2])
-Panel(Length,Width,Thick,Filet);
+B_panl_part();
 }
+
 // Module Section
 //RoundBox(length = 100, width = 50, height = 30, radius = 10, resolution =50);
 
@@ -547,6 +549,7 @@ translate([PCBLength*.87,PCBWidth*.82,clamp_Z])
 translate([0,0,-base_thickness])
 cylinder(h = base_thickness , r = (speaker_diameter/2) + flexure_gap  + flexure_thickness + 3);
 }
+
 
 //    // Build the model
 //    speaker_clamp();
