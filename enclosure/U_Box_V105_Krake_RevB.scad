@@ -16,6 +16,7 @@ include <imported_scadModels/StudModules.scad>
 
 
 use <Util_modules.scad>
+
 use <B_shell.scad>
 use <T_shell.scad>
 use <F_panl.scad>
@@ -28,17 +29,17 @@ include <General_paramters.scad>
 // Export Options
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 0;
-GPAD_BShell          = 0; //2 w/LCD 
+GPAD_BShell          = 1; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           =0; //4 top
+GPAD_BPanL           = 0; //4 top
 
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 
 T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
-PWA_GPAD             = 0;
-PWA_KRAKE            = 0;//pcb
+//PWA_GPAD             = 0;
+PWA_KRAKE            = 1;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;
@@ -128,6 +129,7 @@ translate([0,0,(FootHeight-Post[2]/2) ]){
 
 if(GPAD_TShell==1){
 T_shell_part();
+
 }
 
 

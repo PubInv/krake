@@ -14,11 +14,11 @@ GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on
 recessed_module_on_off =1;
 //// recess sub modules when recess module is on///
 
-sd_door_on_off       = 0;
-recessed_wall_on_off = 0;
-recessed_bottom_on_off = 0;// turn on/off the recess moduel only
+sd_door_on_off       = 1;
+recessed_wall_on_off = 1;
+recessed_bottom_on_off = 1;// turn on/off the recess moduel only
 
-GPAD_TShellWithVESA  = 1; // Krake TShell 
+GPAD_TShellWithVESA  = 0; // Krake TShell 
 
 
 AC_button_x = 38.77;
@@ -53,7 +53,14 @@ else
 if (GPAD_TshellDoorRecess == 1){
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3])cube([90,35+19,10]);
     
-}}
+}
+
+
+
+}
+
+
+
 if (GPAD_TshellDoorRecess == 1){
 
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25]){
@@ -70,7 +77,12 @@ translate([55,20,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
 
 }
 
-}}
+}
+
+if(recessed_module_on_off == 1){
+translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
+}
+}
 
 
 
@@ -219,6 +231,4 @@ translate([0,0,-R_height+9])difference(){
     }       
 }
 }
-if(recessed_module_on_off == 1){
-translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
-}
+

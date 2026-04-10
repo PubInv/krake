@@ -9,7 +9,7 @@ if (Krake + GPAD > 1)
 echo("WARNING: More than one project mode active!!!");
 
 //////////////////////////////
-Krake_76mmSPK_56h    = 1;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
+Krake_76mmSPK_56h    = 0;  // turn off if using Cricklewood Speaker 40 mm height and if using 28 mm speaker  
 ////////////////////////////////////////////////////////////////////
 // Connectors Modifications specific port logic
 //if krake true x: y; i.e if krake on, usbbon =0, aka off
