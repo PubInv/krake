@@ -16,6 +16,17 @@ translate([0,Filet,Filet]){
 ////////////////////////////////////////////////////////////////////  
 
 
+module RoundBox2(Length, Width, Height,f=1){// Cube bords arrondis
+$fn=Resolution;            
+
+translate([f,f,0]) minkowski()
+{
+cube([Length-(2*f),Width-(2*f),Height-1]);
+cylinder(r=f,h=1,false);
+}
+
+}// End of RoundBox Module
+
 
 //Module Coque/Shell          
 module Coque(){//Coque - Shell  

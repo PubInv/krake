@@ -122,3 +122,11 @@ cylinder(d=Filet,h=10, $fn=100,center=Ccenter);
 }
 }
 
+/////// do we need this module? ////
+module frontPanel(){
+difference() {
+Coque();
+SpeakerHole(OnOff = 1, Cx = 30, Cy = 20, Cdia = 20, Ccenter = true);
+}
+}
+
