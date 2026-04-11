@@ -130,15 +130,6 @@ namespace gpad_hal
   static const uint8_t API_MINOR_VERSION = 1;
   static const uint8_t API_PATCH_VERSION = 0;
 
-  enum class Command : char
-  {
-    MUTE = 's',
-    UNMUTE = 'u',
-    HELP = 'h',
-    ALARM = 'a',
-    INFO = 'i',
-  };
-
   /**
    * SemanticVersion stores a version following the "semantic versioning" convention
    * defined here: https://semver.org/
