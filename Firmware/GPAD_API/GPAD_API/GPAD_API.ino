@@ -132,7 +132,7 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
 // MQTT Broker
-//#define USE_HIVEMQ
+// #define USE_HIVEMQ
 #ifdef USE_HIVEMQ
 const char *mqtt_broker_name = "broker.hivemq.com";
 const char *mqtt_user = "";
@@ -245,7 +245,7 @@ void reconnect()
   {
     n++;
     Serial.print("Attempting MQTT connection at: ");
-    Serial.print(millis() );
+    Serial.print(millis());
     Serial.print("..... ");
     if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
     {
@@ -520,12 +520,13 @@ void loop()
 {
 #if defined HMWK || defined KRAKE
 
-if (!client.loop()) {
-  Serial.print(mqtt_broker_name);
-  Serial.print(" lost MQTT at: ");
-  Serial.println(millis());
+  if (!client.loop())
+  {
+    Serial.print(mqtt_broker_name);
+    Serial.print(" lost MQTT at: ");
+    Serial.println(millis());
     reconnect();
-}
+  }
 
   publishOnLineMsg();
   wink(); // The builtin LED

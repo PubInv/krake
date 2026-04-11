@@ -1,0 +1,16 @@
+This library provides the types needed to deserialize messages as laid out in the [GPAP](https://github.com/PubInv/gpap) protocol.
+At the time of the library's creation it leverages functionality of C++11 that is "more advanced" than other parts of this project.
+Building the main class, `GPAPMessage`, heavily leverages the concept of "Return Value Optimization", or [RVO](https://sigcpp.github.io/2020/06/08/return-value-optimization)
+(also known as [Copy elision](https://en.wikipedia.org/wiki/Copy_elision)).
+Without RVO, when an instance is returned from a function that instances destructor is called and then a _new_ constructor is called
+copying the data from the initial instance. **With** RVO, the initial instance's destructor is never called. Only a single constructor is called.
+The article linked earlier for RVO has wonderful code explains highlighting the difference.
+
+In C++17 and later, RVO (or copy elision) happens more implicitly than C++11 (the current C++ version at the time of writing). Since C++11 is being
+used we do have to be more explicit and leverage [`std::move()`](https://en.cppreference.com/w/cpp/utility/move.html). While it is _technically_ a function,
+it is more an idication to the compiler saying "this value can be moved efficiently, don't copy it". `std::move()` is used through out the building of the
+`GPAPMessage`, specifically the `AlarmMessage`, since a "builder pattern" is leveraged to constructor the types from a buffer of bytes.
+
+To facilitate being explicit about RVO and using `std::move()` the various `AlarmMessage*` types have defined move constructors and move assignment operators.
+This does result in a substantial amount of "boiler plate" code but it's all quite straightforward. None of the types perform any sort of allocation, or hold
+onto dynamically allocated memory, the move assignments and move constructors are just stating the data from one instance is moving to the new instance.
