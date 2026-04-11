@@ -25,6 +25,7 @@
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
+#include "GPAPMessage.h"
 
 using namespace gpad_hal;
 
@@ -426,25 +427,32 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     printError(serialport);
     return;
   }
-  Command command = static_cast<Command>(buf[0]);
-  char commandChar = static_cast<char>(command);
+
+  const auto protocolMessage = gpap_message::GPAPMessage::deserialize(buf, rlen);
 
   serialport->print(F("Command: "));
-  serialport->printf("%c\n", commandChar);
-  switch (command)
+  serialport->printf("%c\n", protocolMessage.getMessageType());
+
+  switch (protocolMessage.getMessageType())
   {
-  case Command::MUTE:
+  case gpap_message::MessageType::MUTE:
+  {
     serialport->println(F("Muting Case!"));
     currentlyMuted = true;
     break;
-  case Command::UNMUTE:
+  }
+  case gpap_message::MessageType::UNMUTE:
+  {
     serialport->println(F("UnMuting Case!"));
     currentlyMuted = false;
     break;
-  case Command::HELP: // help
+  }
+  case gpap_message::MessageType::HELP:
+  {
     printInstructions(serialport);
     break;
-  case Command::ALARM:
+  }
+  case gpap_message::MessageType::ALARM:
   {
     // In the case of an alarm state, the rest of the buffer is a message.
     // we will read up to 60 characters from this buffer for display on our
@@ -465,7 +473,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break;
   }
-  case Command::INFO: // Information. Firmware Version, Mute Status,
+  case gpap_message::MessageType::INFO:
   {
     // Firmware Version
     //  81+23 = Maximum string length
@@ -550,8 +558,10 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     break; // end of 'i'
   }
   default:
+  {
     serialport->println(F("Unknown Command"));
     break;
+  }
   }
   serialport->print(F("currentlyMuted : "));
   serialport->println(currentlyMuted);
