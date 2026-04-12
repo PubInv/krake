@@ -789,7 +789,7 @@
       {
         "filename": "PWA_REV2.kicad_sch",
         "name": "PWA_REV2",
-        "uuid": "412a327d-1ee3-473e-bc00-1545004b7edf"
+        "uuid": "00000000-0000-0000-0000-000000000000"
       }
     ],
     "used_designators": ""
@@ -797,7 +797,7 @@
   "sheets": [
     [
       "412a327d-1ee3-473e-bc00-1545004b7edf",
-      "PWA_REV2"
+      ""
     ],
     [
       "00000000-0000-0000-0000-000062bc4e7e",
