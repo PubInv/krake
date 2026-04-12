@@ -28,7 +28,7 @@ include <General_paramters.scad>
 ////////////////////////////////////////////////////////////////////
 // Export Options
 ////////////////////////////////////////////////////////////////////
-GPAD_TShell          = 0;
+GPAD_TShell          = 1;
 GPAD_BShell          = 1; //2 w/LCD 
 GPAD_FPanL           = 0;//3 bottom
 GPAD_BPanL           = 0; //4 top
@@ -39,7 +39,7 @@ T_BShellScrew        = 0;
 BOSSScrew            = 0;
 PCB_SIMPLE           = 0;
 //PWA_GPAD             = 0;
-PWA_KRAKE            = 1;//pcb
+PWA_KRAKE            = 0;//pcb
 LED_Standoff         = 0;
 LED_Standoff_Single  = 0;
 PWA                  = 0;

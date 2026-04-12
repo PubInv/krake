@@ -48,13 +48,17 @@ SPKBOSSpunch62 (7.8,7.8);
 }
 translate ([SpeakerPositionX+2.5,SpeakerPositionY+4,Thick+7.8+.1])
 SPKBOSS62 (7.8,7.8);
-}
-
 if(speaker_ring == 1){
 //import("parts_toPrint/SpeakerGasket3Inch-Extrude_7.7mm.stl");
 
 SpeakerFlushRing(3.5,7.8-1.75,35, posx = SpeakerPositionX+2.5,posy =SpeakerPositionY+4,posz = Thick);
 }
+
+}else
+{
+    GPAD_BShell();
+    }
+
 
 }
 

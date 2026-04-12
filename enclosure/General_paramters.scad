@@ -1,9 +1,9 @@
 KrakeEnclosureVersion = 3.1; // change this with each rev
 
 /* Project Selector */
-Krake= 0;      // [0:Off, 1:On] //on // for the 28 mm speaker
+Krake= 1;      // [0:Off, 1:On] //on // for the 28 mm speaker
 GPAD  = 0;      // [0:Off, 1:On]
-Krake_rev2_76mmSPK= 1;  // 76 mm / 3 inch speaker
+Krake_rev2_76mmSPK= 0;  // 76 mm / 3 inch speaker
 
 if (Krake + GPAD > 1)
 echo("WARNING: More than one project mode active!!!");
