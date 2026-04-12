@@ -1,93 +1,107 @@
-.~lock*
+# -----------------------------
+# OS files
+# -----------------------------
 .DS_Store
 Thumbs.db
 ehthumbs.db
 
+# -----------------------------
+# General temp / compressed
+# -----------------------------
 *.gz
-*.vs
-*.vscode*
-__pycache__
-*.pyc
-Private
+*.tmp
+*.log
+*.dat
+*.out
 
-# Eagle PCB temp files
-*.b#*
-*.s#*
-
-# General editor / backup files
+# -----------------------------
+# Editors / backups
+# -----------------------------
 *~
 \#*\#
+.\#*
 /.emacs.desktop
 /.emacs.desktop.lock
 *.elc
 auto-save-list
 tramp
-.\#*
 *-backups/
 /*-backups/
 
-# Org-mode
+# -----------------------------
+# VS / IDE
+# -----------------------------
+*.vs
+*.vscode*
+
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.pyc
+
+# -----------------------------
+# Emacs / Org / tooling
+# -----------------------------
 .org-id-locations
 *_archive
-
-# flymake-mode
 *_flymake.*
+flycheck_*.el
 
-# eshell files
+# -----------------------------
+# Shell / eshell
+# -----------------------------
 /eshell/history
 /eshell/lastdir
 
-# elpa packages
-/elpa/
-
-# reftex files
-*.rel
-
-# AUCTeX auto folder
-/auto/
-
-# cask packages
+# -----------------------------
+# Packages / build
+# -----------------------------
+.elpa/
 .cask/
 dist/
+*build
 
-# Flycheck
-flycheck_*.el
-
-# server auth directory
+# -----------------------------
+# Project config
+# -----------------------------
+.projectile
+.dir-locals.el
+/network-security.data
 /server/
 
-# projectile files
-.projectile
+# -----------------------------
+# Private
+# -----------------------------
+Private
 
-# directory configuration
-.dir-locals.el
-
-# network security
-/network-security.data
-
+# -----------------------------
 # FreeCAD
+# -----------------------------
 *.fcstd1
 *.FCStd1
 *.fcstd2
 *.FCStd2
 *.FCBak
 
-# KiCad / PCB files
-*.000
+# -----------------------------
+# KiCad / PCB
+# -----------------------------
+
+# Backups & autosave
+.autosave
+.history/
 *.bak
 *.bck
 *.kicad_pcb-bak
 *.kicad_sch-bak
-*.kicad_prl
 *.sch-bak
 _autosave-*
-.autosave
-*.tmp
-*-save.pro
-*-save.kicad_pcb
-.history/
 
-# Output / fabrication files
+# Temp numbering files
+*.000
+
+# Fabrication / outputs
 *.drl
 *.gbr
 *.fab
@@ -98,37 +112,44 @@ _autosave-*
 *.pos
 *.pnp
 
-# Simulation / generated files
+# Simulation
 *.cir
-*.log
-*.dat
-*.out
 *.raw
 *.sra
 *.st
+
+# Cache / render
 *-cache.wrl
 *-cache.png
 
-# Session / router / reports
+# Reports / sessions
 *.dsn
 *.ses
 *.lck
 *.drc
 *.erc
 
-# Local project caches / config
+# Local configs
 fp-info-cache
 sym-info-cache
 kicad_pro.user
 kicad_wks.user
+*.kicad_prl
 
-# Ignore build files
-*build
+# -----------------------------
+# Eagle PCB
+# -----------------------------
+*.b#*
+*.s#*
 
+# -----------------------------
 # PlatformIO
+# -----------------------------
 platformio_override.ini
 
-# Optional generated docs
+# -----------------------------
+# Optional (uncomment if needed)
+# -----------------------------
 # *.pdf
 # *.ps
 # *.svg
