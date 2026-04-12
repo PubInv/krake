@@ -1,12 +1,12 @@
 
 use <Util_modules.scad>
 include <General_paramters.scad>
-include <imported_scadModels/StudModules.scad>
+include <StudModules.scad>
 
-use <imported_scadModels/COVER.scad>
-use <imported_scadModels/recessed.scad>
-use <imported_scadModels/slot.scad>
-use <imported_scadModels/flex_cover.scad>
+use <COVER.scad>
+use <recessed.scad>
+use <slot.scad>
+use <flex_cover.scad>
 
 
 GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 

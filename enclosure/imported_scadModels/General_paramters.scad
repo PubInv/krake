@@ -1,4 +1,4 @@
-KrakeEnclosureVersion = 3.1; // change this with each rev
+KrakeEnclosureVersion = 4.0; // change this with each rev
 
 /* Project Selector */
 Krake= 1;      // [0:Off, 1:On] //on // for the 28 mm speaker

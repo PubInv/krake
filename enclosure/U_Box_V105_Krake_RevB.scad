@@ -15,14 +15,14 @@
 include <imported_scadModels/StudModules.scad>
 
 
-use <Util_modules.scad>
+use <imported_scad/ModelsUtil_modules.scad>
 
-use <B_shell.scad>
-use <T_shell.scad>
-use <F_panl.scad>
-use <B_panl.scad>
+use <imported_scadModels/B_shell.scad>
+use <imported_scadModels/T_shell.scad>
+use <imported_scadModels/F_panl.scad>
+use <imported_scadModels/B_panl.scad>
 
-include <General_paramters.scad>
+include <imported_scadModels/General_paramters.scad>
 
 
 ////////////////////////////////////////////////////////////////////
@@ -30,8 +30,8 @@ include <General_paramters.scad>
 ////////////////////////////////////////////////////////////////////
 GPAD_TShell          = 1;
 GPAD_BShell          = 1; //2 w/LCD 
-GPAD_FPanL           = 0;//3 bottom
-GPAD_BPanL           = 0; //4 top
+GPAD_FPanL           = 1;//3 bottom
+GPAD_BPanL           = 1; //4 top
 
 BButton              = 0 ;
 RotaryEncoder        = 0;  // change to a real rotary encoder 

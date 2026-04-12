@@ -1,6 +1,6 @@
 
 use <Util_modules.scad>
-include <imported_scadModels/StudModules.scad>
+include <StudModules.scad>
 
 include <General_paramters.scad>
 
