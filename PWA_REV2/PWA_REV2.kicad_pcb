@@ -5444,7 +5444,7 @@
     (property "ki_keywords" "R res resistor")
     (path "/00000000-0000-0000-0000-000062bc4e7e/ae29f84e-a2f6-4065-8ed8-dbc76672bccd")
     (attr smd)
-    (fp_text reference "R212" (at -3.6725 0.1525 270) (layer "F.SilkS")
+    (fp_text reference "R212" (at -3.1645 0.4065 270) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp ca5bbb64-19a7-4fe4-8128-5813fb7c3a86)
     )
