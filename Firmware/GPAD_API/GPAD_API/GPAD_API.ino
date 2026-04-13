@@ -177,6 +177,19 @@ unsigned long lastLEDtime_ms = 0;
 // unsigned long nextLEDchangee_ms = 100; //time in ms.
 unsigned long nextLEDchangee_ms = 5000; // time in ms.
 
+//wifi disconnect event
+void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
+  Serial.print("Wifi Disconnected. Reason: ");
+  Serial.println(info.wifi_sta_disconnected.reason);
+  
+  // OPTION A: Simple Reconnect
+  //WiFi.begin(); 
+  
+  // OPTION B: Re-trigger WiFiManager Portal
+  // wm.startConfigPortal("AutoConnectAP");
+}
+
+
 // extern int LIGHT[];
 // extern int NUM_LIGHTS;
 
@@ -352,6 +365,7 @@ void setupOTA()
 
 void setup()
 {
+  WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   wifiManager.initialize();
 
   pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
@@ -365,7 +379,7 @@ void setup()
   }
   serialSplash();
   // We call this a second time to get the MAC on the screen
-  clearLCD();
+  //clearLCD();
 
 // Set LED pins as outputs
 #if defined(LED_D9)
