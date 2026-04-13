@@ -241,6 +241,6 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceIp);
 void GPAD_HAL_loop();
 
-// extern LiquidCrystal_I2C lcd;
+extern LiquidCrystal_I2C Real_lcd;
 extern LCDWrapper lcd;
 #endif

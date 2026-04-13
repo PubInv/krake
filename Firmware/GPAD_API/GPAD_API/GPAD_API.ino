@@ -365,7 +365,7 @@ void setup()
   }
   serialSplash();
   // We call this a second time to get the MAC on the screen
-  clearLCD();
+  // clearLCD();
 
 // Set LED pins as outputs
 #if defined(LED_D9)
