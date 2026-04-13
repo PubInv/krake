@@ -177,6 +177,7 @@ void setupDFPlayer()
   dfPlayer.start(); // Todo, ?? necessary for DFPlayer processing
   delay(1000);
   //  dfPlayer.play(11);  //DFPlayer Splash
+  Serial.println("DFPlayer about to play.");
   dfPlayer.play(9);
   delay(100);
   dfPlayer.stop();
@@ -184,7 +185,7 @@ void setupDFPlayer()
   dfPlayer.previous();
   delay(1500);
   dfPlayer.play(); // DFPlayer Splash
-
+  Serial.println("DFPlayer / played");
   displayDFPlayerStats();
 
 } // setupDFPLayer

@@ -132,7 +132,7 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // const int SWITCH_COUNT = sizeof(SWITCH_PINS) / sizeof(SWITCH_PINS[0]);
 
 // MQTT Broker
-//#define USE_HIVEMQ
+// #define USE_HIVEMQ
 #ifdef USE_HIVEMQ
 const char *mqtt_broker_name = "broker.hivemq.com";
 const char *mqtt_user = "";
@@ -176,6 +176,19 @@ const int LOW_TIME_LED_MS = 200;
 unsigned long lastLEDtime_ms = 0;
 // unsigned long nextLEDchangee_ms = 100; //time in ms.
 unsigned long nextLEDchangee_ms = 5000; // time in ms.
+
+//wifi disconnect event
+void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
+  Serial.print("\nWifi Disconnected. Reason: ");
+  Serial.println(info.wifi_sta_disconnected.reason);
+  
+  // OPTION A: Simple Reconnect
+  //WiFi.begin(); 
+  
+  // OPTION B: Re-trigger WiFiManager Portal
+  // wm.startConfigPortal("AutoConnectAP");
+}
+
 
 // extern int LIGHT[];
 // extern int NUM_LIGHTS;
@@ -245,18 +258,18 @@ void reconnect()
   {
     n++;
     Serial.print("Attempting MQTT connection at: ");
-    Serial.print(millis() );
+    Serial.print(millis());
     Serial.print("..... ");
     if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
     {
-      Serial.print("success at");
+      Serial.print("success at: ");
       Serial.println(millis());
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
     }
     else
     {
       Serial.print("failed, rc=");
-      Serial.print(client.state());
+      Serial.println(client.state());
       delay(1000);
     }
   }
@@ -352,8 +365,6 @@ void setupOTA()
 
 void setup()
 {
-  wifiManager.initialize();
-
   pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   // Serial setup
@@ -365,7 +376,7 @@ void setup()
   }
   serialSplash();
   // We call this a second time to get the MAC on the screen
-  clearLCD();
+  //clearLCD();
 
 // Set LED pins as outputs
 #if defined(LED_D9)
@@ -391,6 +402,10 @@ void setup()
   // Setup and present LCD splash screen
   // Setup the SWITCH_MUTE
   // Setup the SWITCH_ENCODER
+
+  WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+  wifiManager.initialize();
+
   IPAddress deviceAddress = wifiManager.getAddress();
   GPAD_HAL_setup(&Serial, wifiManager.getMode(), deviceAddress);
 
@@ -484,22 +499,41 @@ void setup()
   wifiManager.setApStartedCallback(apStartedCallback);
 
   wifiManager.connect(setupSsid);
-  WifiOTA::initLittleFS();
-  server.begin(); // Start server web socket to render pages
-  ElegantOTA.begin(&server);
-  setupOTA();
 
-  // Need this to work here:   printInstructions(serialport);
+  Serial.println(F("WiFi Manager connected."));
+
+  WifiOTA::initLittleFS();
+
+  Serial.println(F("initLiffleFS"));
+
+  server.begin(); // Start server web socket to render pages
+  
+  Serial.println(F("iStart server web socket to render pages"));
+
+  ElegantOTA.begin(&server);
+  Serial.println(F("ElegantOTA.begin"));
+
+  setupOTA();
+  Serial.println(F("setupOTA"));
+
+
+  initRotator();
+  Serial.println(F("initRotator"));
+  splashLCD(wifiManager.getMode(), deviceAddress);
+
+  Serial.println(F("splashLCD"));
+
+  setupDFPlayer();
+  Serial.println(F("setupDFPlayer"));
+
+  setup_GPAD_menu();
+
+  Serial.println(F("setupGPAD_menu"));
+
+    // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
   turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW); // turn the LED off at end of setup
-
-  initRotator();
-  splashLCD(wifiManager.getMode(), deviceAddress);
-
-  setupDFPlayer();
-  setup_GPAD_menu();
-
 } // end of setup()
 
 unsigned long last_ms = 0;
@@ -520,12 +554,13 @@ void loop()
 {
 #if defined HMWK || defined KRAKE
 
-if (!client.loop()) {
-  Serial.print(mqtt_broker_name);
-  Serial.print(" lost MQTT at: ");
-  Serial.println(millis());
+  if (!client.loop())
+  {
+    Serial.print(mqtt_broker_name);
+    Serial.print(" lost MQTT at: ");
+    Serial.println(millis());
     reconnect();
-}
+  }
 
   publishOnLineMsg();
   wink(); // The builtin LED
