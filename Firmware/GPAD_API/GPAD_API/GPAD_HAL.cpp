@@ -65,21 +65,6 @@ extern PubSubClient client;
 
 // https://github.com/johnrickman/LiquidCrystal_I2C
 
-class LCDWrapper
-{
-public :
-  void init(LiquidCrystal_I2C* _lcd)
-  {
-    _LCD = _lcd;
-  }
-  void print(char *str)
-  {
-    _LCD->print(str);
-  }
-private:
-LiquidCrystal_I2C* _LCD;
-};
-
 LiquidCrystal_I2C Real_lcd(LCD_ADDRESS, 20, 4);
 LCDWrapper lcd;
 

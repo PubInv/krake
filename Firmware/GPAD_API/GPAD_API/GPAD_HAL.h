@@ -168,6 +168,62 @@ namespace gpad_hal
   const GPAD_API gpadApi = GPAD_API(SemanticVersion(API_MAJOR_VERSION, API_MINOR_VERSION, API_PATCH_VERSION));
 }
 
+
+
+class LCDWrapper : public Print
+{
+public :
+    virtual size_t write(uint8_t b) override {
+      return _LCD->write(b); 
+    }
+  void init(LiquidCrystal_I2C* _lcd)
+  {
+    _LCD = _lcd;
+  }
+  void init()
+  {
+    _LCD->init();
+  }
+  void clear(){
+    _LCD->clear();
+  }
+  void backlight(){
+    _LCD->backlight();
+  }
+  void noBacklight(){
+    _LCD->noBacklight();
+  }
+  void setCursor(int16_t col, int16_t row){
+    _LCD->setCursor(col, row);
+  }
+  void print(const char *str)
+  {
+    _LCD->print(str);
+  }
+  void print(int c)
+  {
+    _LCD->print(c);
+  }
+  void print(const __FlashStringHelper* str)
+  {
+    _LCD->print(str);
+  }
+  void noBlink(){
+    _LCD->noBlink();
+  }
+  void blink(){
+    _LCD->blink();
+  }
+  void cursor(){
+    _LCD->cursor();
+  }
+  void noCursor(){
+    _LCD->noCursor();
+  }
+private:
+LiquidCrystal_I2C* _LCD;
+};
+
 // SPI Functions....
 void setup_spi();
 void receive_byte(byte c);
