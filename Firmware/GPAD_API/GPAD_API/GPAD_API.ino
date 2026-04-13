@@ -179,7 +179,7 @@ unsigned long nextLEDchangee_ms = 5000; // time in ms.
 
 //wifi disconnect event
 void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.print("Wifi Disconnected. Reason: ");
+  Serial.print("\nWifi Disconnected. Reason: ");
   Serial.println(info.wifi_sta_disconnected.reason);
   
   // OPTION A: Simple Reconnect
@@ -365,9 +365,6 @@ void setupOTA()
 
 void setup()
 {
-  WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
-  wifiManager.initialize();
-
   pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   // Serial setup
@@ -405,6 +402,10 @@ void setup()
   // Setup and present LCD splash screen
   // Setup the SWITCH_MUTE
   // Setup the SWITCH_ENCODER
+
+  WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+  wifiManager.initialize();
+
   IPAddress deviceAddress = wifiManager.getAddress();
   GPAD_HAL_setup(&Serial, wifiManager.getMode(), deviceAddress);
 
