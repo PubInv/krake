@@ -129,6 +129,29 @@ void checkSerial(void)
   }
 } // end checkSerial
 
+// Ping the module to check it is still responding.
+// Uses readFileCounts() with one retry to tolerate a slow/busy SD card.
+// Returns true if the module replies, false if unresponsive.
+bool dfPlayerResponding()
+{
+  int c = dfPlayer.readFileCounts();
+  if (c >= 0) return true;
+  delay(150);
+  c = dfPlayer.readFileCounts();
+  return (c >= 0);
+}
+
+// Tear down the UART session and re-run setupDFPlayer() to recover a hung module.
+// Call this when dfPlayerResponding() returns false during operation.
+void resetDFPlayer()
+{
+  Serial.println("DFPlayer: resetting UART and reinitialising...");
+  isDFPlayerDetected = false;
+  mySerial1.end();
+  delay(100);
+  setupDFPlayer();
+}
+
 // Functions
 void setupDFPlayer()
 {
@@ -280,6 +303,22 @@ void printDetail(uint8_t type, int value)
 
 void dfPlayerUpdate(void)
 {
+  if (!isDFPlayerDetected) return;
+
+  // Periodic health check every 10 seconds: ping the module and reset if hung.
+  static unsigned long healthTimer = millis();
+  const unsigned long healthInterval = 10000;
+  if (millis() - healthTimer > healthInterval)
+  {
+    healthTimer = millis();
+    if (!dfPlayerResponding())
+    {
+      Serial.println("DFPlayer health check failed -- attempting recovery.");
+      resetDFPlayer();
+      return;
+    }
+  }
+
   unsigned long timePlay = 3000; // Plays 3 seconds of all files.
   static unsigned long timer = millis();
   if (millis() - timer > timePlay)
@@ -297,6 +336,7 @@ void dfPlayerUpdate(void)
 // Functions to learn DFPlayer behavior
 void playNotBusy()
 {
+  if (!isDFPlayerDetected) return;
   // Plays all files succsivly.
   Serial.println("PlayNotBusy");
   if (HIGH == digitalRead(nDFPlayer_BUSY))
@@ -314,6 +354,7 @@ void playNotBusy()
 
 void playNotBusyLevel(int level)
 {
+  if (!isDFPlayerDetected) return;
   // Plays all files succsivly.
   Serial.println("PlayNotBusyLevel");
   if (HIGH == digitalRead(nDFPlayer_BUSY))
@@ -336,6 +377,8 @@ void playNotBusyLevel(int level)
 // Play a track but not if the DFPlayer is busy
 bool playAlarmLevel(int alarmNumberToPlay)
 {
+  if (!isDFPlayerDetected) return false;
+
   static unsigned long timer = millis();
 
   const unsigned long delayPlayLevel = 20;
