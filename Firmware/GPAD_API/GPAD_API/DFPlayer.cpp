@@ -151,6 +151,7 @@ void setupDFPlayer()
     Serial.println("DFPlayer Mini not detected or not working.");
     Serial.println("Check for missing SD Card.");
     isDFPlayerDetected = false;
+    return; // No module present -- skip all play/query commands that would block the main loop.
   }
   else
   {
