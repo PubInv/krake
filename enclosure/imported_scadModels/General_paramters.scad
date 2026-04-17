@@ -4,6 +4,7 @@ KrakeEnclosureVersion = 4.0; // change this with each rev
 Krake= 1;      // [0:Off, 1:On] //on // for the 28 mm speaker
 GPAD  = 0;      // [0:Off, 1:On]
 Krake_rev2_76mmSPK= 0;  // 76 mm / 3 inch speaker
+NumberingSystem = 1; // enable part number text
 
 if (Krake + GPAD > 1)
 echo("WARNING: More than one project mode active!!!");
