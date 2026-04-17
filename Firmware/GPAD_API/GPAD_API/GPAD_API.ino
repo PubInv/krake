@@ -336,6 +336,78 @@ bool readMacAddress(uint8_t *baseMac)
   }
 }
 
+String jsonEscape(const String &raw)
+{
+  String escaped;
+  escaped.reserve(raw.length() + 8);
+  for (size_t i = 0; i < raw.length(); i++)
+  {
+    const char c = raw.charAt(i);
+    if (c == '\\' || c == '"')
+    {
+      escaped += '\\';
+    }
+    escaped += c;
+  }
+  return escaped;
+}
+
+String uptimeString()
+{
+  const uint32_t totalSeconds = millis() / 1000;
+  const uint32_t hours = totalSeconds / 3600;
+  const uint32_t minutes = (totalSeconds % 3600) / 60;
+  const uint32_t seconds = totalSeconds % 60;
+  return String(hours) + "h " + String(minutes) + "m " + String(seconds) + "s";
+}
+
+String currentUrl()
+{
+  IPAddress ip = wifiManager.getAddress();
+  if (ip == INADDR_NONE)
+  {
+    return String("-");
+  }
+  return "http://" + ip.toString();
+}
+
+String templateProcessor(const String &var)
+{
+  if (var == "SERIAL")
+  {
+    return String(macAddressString);
+  }
+  if (var == "URL")
+  {
+    return currentUrl();
+  }
+  if (var == "IP")
+  {
+    return wifiManager.getAddress().toString();
+  }
+  if (var == "MAC")
+  {
+    return String(macAddressString);
+  }
+  if (var == "RSSI")
+  {
+    return String(WiFi.RSSI()) + " dBm";
+  }
+  if (var == "UPTIME")
+  {
+    return uptimeString();
+  }
+  if (var == "MQTT")
+  {
+    return client.connected() ? String("connected") : String("disconnected");
+  }
+  if (var == "QR")
+  {
+    return "/favicon.png";
+  }
+  return WifiOTA::processor(var);
+}
+
 // Elegant OTA Setup
 
 void setupOTA()
@@ -343,7 +415,32 @@ void setupOTA()
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/index.html", "text/html", false, WifiOTA::processor); });
+            { request->send(LittleFS, "/index.html", "text/html", false, templateProcessor); });
+
+  server.on("/lcd", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              String payload = "{\"lines\":[\"";
+              payload += jsonEscape(lcd.line(0));
+              payload += "\",\"";
+              payload += jsonEscape(lcd.line(1));
+              payload += "\",\"";
+              payload += jsonEscape(lcd.line(2));
+              payload += "\",\"";
+              payload += jsonEscape(lcd.line(3));
+              payload += "\"]}";
+              request->send(200, "application/json", payload); });
+
+  server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              String payload = "{";
+              payload += "\"ip\":\"" + jsonEscape(wifiManager.getAddress().toString()) + "\",";
+              payload += "\"mac\":\"" + jsonEscape(String(macAddressString)) + "\",";
+              payload += "\"rssi\":\"" + String(WiFi.RSSI()) + " dBm\",";
+              payload += "\"uptime\":\"" + jsonEscape(uptimeString()) + "\",";
+              payload += "\"mqtt\":\"" + String(client.connected() ? "connected" : "disconnected") + "\",";
+              payload += "\"url\":\"" + jsonEscape(currentUrl()) + "\"";
+              payload += "}";
+              request->send(200, "application/json", payload); });
 
   server.serveStatic("/", LittleFS, "/");
 
@@ -485,9 +582,9 @@ void setup()
 
   wifiManager.connect(setupSsid);
   WifiOTA::initLittleFS();
-  server.begin(); // Start server web socket to render pages
-  ElegantOTA.begin(&server);
   setupOTA();
+  ElegantOTA.begin(&server);
+  server.begin(); // Start server web socket to render pages
 
   // Need this to work here:   printInstructions(serialport);
   Serial.println(F("Done With Setup!"));
