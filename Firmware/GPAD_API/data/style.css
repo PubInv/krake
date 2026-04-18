@@ -145,6 +145,10 @@ h1 {
 
 .footer {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
   padding: 0 0 24px;
 }
 
@@ -152,4 +156,12 @@ h1 {
   color: #146620;
   text-decoration: none;
   font-weight: bold;
+}
+
+.footer-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #146620;
+  color: #fff !important;
 }
