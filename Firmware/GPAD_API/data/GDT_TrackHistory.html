@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Krake Child Devices</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f0f4ff;
+      --text: #182033;
+      --muted: #667085;
+      --line: #d9e2f2;
+      --accent: #3559e0;
+      --accent-2: #6c7ff2;
+      --success-bg: #e9f9ef;
+      --success-text: #0f7a3d;
+      --shadow: 0 12px 30px rgba(24, 32, 51, 0.08);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(108, 127, 242, 0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(53, 89, 224, 0.12), transparent 28%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .subpage {
+      width: min(1180px, calc(100% - 32px));
+      margin: 32px auto;
+      padding: 0 0 28px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eef3ff 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 14px;
+      background: rgba(53, 89, 224, 0.08);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 70ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .meta-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .meta-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 1rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .meta-value a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .toolbar {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-wrap {
+      flex: 1 1 280px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font: inherit;
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 4px rgba(108, 127, 242, 0.12);
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 11px 14px;
+      font: inherit;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .section {
+      margin-top: 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 22px 24px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .section-header .count {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      padding: 0 14px 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 16px 14px;
+      border-bottom: 1px solid #edf1f7;
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    td {
+      font-size: 0.98rem;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status.reporting {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .status.standard {
+      background: #eef2ff;
+      color: #4254c8;
+    }
+
+    .device-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .cards {
+      display: none;
+      padding: 0 18px 18px;
+      gap: 14px;
+    }
+
+    .device-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+    }
+
+    .device-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+    }
+
+    .device-card .row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 0.95rem;
+    }
+
+    .device-card .label {
+      color: var(--muted);
+    }
+
+    .empty-state {
+      padding: 28px 22px 34px;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .subpage {
+        width: min(100% - 20px, 1180px);
+        margin: 16px auto;
+      }
+
+      .hero, .section {
+        border-radius: 22px;
+      }
+
+      .table-wrap {
+        display: none;
+      }
+
+      .cards {
+        display: grid;
+      }
+
+      .device-card .row {
+        grid-template-columns: 92px 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="subpage">
+    <section class="hero">
+      <div class="eyebrow">Device Relationship Subpage</div>
+      <div>
+        <h1>Public Invention Krake Rev. 2</h1>
+        <p>
+          This subpage presents the child devices linked to the parent record, highlights the active reporting key,
+          and gives visitors a quick searchable view that works well inside a larger website.
+        </p>
+      </div>
+
+      <div class="meta-grid">
+        <article class="meta-card">
+          <div class="meta-label">Parent Device</div>
+          <div class="meta-value">Public Invention Krake Rev. 2</div>
+        </article>
+        <article class="meta-card">
+          <div class="meta-label">Parent Record Key</div>
+          <div class="meta-value">CzUNpCJu4MMmpjDHck3Z7e</div>
+        </article>
+        <article class="meta-card">
+          <div class="meta-label">Parent Record URL</div>
+          <div class="meta-value"><a href="https://gosqas.org/record/CzUNpCJu4MMmpjDHck3Z7e" target="_blank" rel="noopener noreferrer">Open parent record</a></div>
+        </article>
+        <article class="meta-card">
+          <div class="meta-label">Child Devices</div>
+          <div class="meta-value">21 total · 1 reporting key</div>
+        </article>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input id="searchInput" type="search" placeholder="Search by child name or key..." aria-label="Search child devices" />
+        </div>
+        <div class="pill-group">
+          <button class="pill active" data-filter="all">All devices</button>
+          <button class="pill" data-filter="reporting">Reporting only</button>
+          <button class="pill" data-filter="standard">Non-reporting only</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>Child device list</h2>
+        <div class="count" id="resultsCount">Showing 21 of 21 devices</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Child Name</th>
+              <th>Child Key</th>
+              <th>Type</th>
+              <th>Record Link</th>
+            </tr>
+          </thead>
+          <tbody id="deviceTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="cards" id="deviceCards"></div>
+      <div class="empty-state" id="emptyState">No devices match the current search or filter.</div>
+    </section>
+
+    <div class="footer-note">
+      Built from the uploaded CSV and styled as a standalone section that can be embedded as a subpage in a larger site.
+    </div>
+  </main>
+
+  <script>
+    const devices = [
+  {
+    "childName": "US0006",
+    "childKey": "Sb6uq9ZAiwrMMWQhrZ4FQv",
+    "childUrl": "https://gosqas.org/history/Sb6uq9ZAiwrMMWQhrZ4FQv",
+    "reporting": true
+  },
+  {
+    "childName": "US0007",
+    "childKey": "4RYSw4xS9uLgdLnj5wVMxA",
+    "childUrl": "https://gosqas.org/history/4RYSw4xS9uLgdLnj5wVMxA",
+    "reporting": false
+  },
+  {
+    "childName": "US0008",
+    "childKey": "UYpW7bjxaDGvfxvzySdGrG",
+    "childUrl": "https://gosqas.org/history/UYpW7bjxaDGvfxvzySdGrG",
+    "reporting": false
+  },
+  {
+    "childName": "US0009",
+    "childKey": "CSnpRUqUas8KJHTqyEcJrp",
+    "childUrl": "https://gosqas.org/history/CSnpRUqUas8KJHTqyEcJrp",
+    "reporting": false
+  },
+  {
+    "childName": "US0010",
+    "childKey": "MqMiwFL9sDYVh4imuBcuio",
+    "childUrl": "https://gosqas.org/history/MqMiwFL9sDYVh4imuBcuio",
+    "reporting": false
+  },
+  {
+    "childName": "US0011",
+    "childKey": "3AQLTMy8D7rVUrz7gGxdYH",
+    "childUrl": "https://gosqas.org/history/3AQLTMy8D7rVUrz7gGxdYH",
+    "reporting": false
+  },
+  {
+    "childName": "US0012",
+    "childKey": "SbmqQmPtaD6tgyZ4h9hby8",
+    "childUrl": "https://gosqas.org/history/SbmqQmPtaD6tgyZ4h9hby8",
+    "reporting": false
+  },
+  {
+    "childName": "US0013",
+    "childKey": "3k249GxSd1wr4hPckZZbdN",
+    "childUrl": "https://gosqas.org/history/3k249GxSd1wr4hPckZZbdN",
+    "reporting": false
+  },
+  {
+    "childName": "US0014",
+    "childKey": "5vHP7H3zAKYJL5n1BGa49W",
+    "childUrl": "https://gosqas.org/history/5vHP7H3zAKYJL5n1BGa49W",
+    "reporting": false
+  },
+  {
+    "childName": "US0015",
+    "childKey": "KXqfWMePbSvu97rRy7fUNy",
+    "childUrl": "https://gosqas.org/history/KXqfWMePbSvu97rRy7fUNy",
+    "reporting": false
+  },
+  {
+    "childName": "LB0006",
+    "childKey": "Ah6mgB3p9YXPJuRb22zbQP",
+    "childUrl": "https://gosqas.org/history/Ah6mgB3p9YXPJuRb22zbQP",
+    "reporting": false
+  },
+  {
+    "childName": "LB0007",
+    "childKey": "LJyZQeMj775gzgqmJGwGjj",
+    "childUrl": "https://gosqas.org/history/LJyZQeMj775gzgqmJGwGjj",
+    "reporting": false
+  },
+  {
+    "childName": "LB0008",
+    "childKey": "9abz4CxRcap4QDDiw6gP2D",
+    "childUrl": "https://gosqas.org/history/9abz4CxRcap4QDDiw6gP2D",
+    "reporting": false
+  },
+  {
+    "childName": "LB0009",
+    "childKey": "MYEc3woPh6cjZ4X95UHSit",
+    "childUrl": "https://gosqas.org/history/MYEc3woPh6cjZ4X95UHSit",
+    "reporting": false
+  },
+  {
+    "childName": "LB0010",
+    "childKey": "E6NrR3UbrmVbFP5SN5vkDg",
+    "childUrl": "https://gosqas.org/history/E6NrR3UbrmVbFP5SN5vkDg",
+    "reporting": false
+  },
+  {
+    "childName": "UK0001",
+    "childKey": "Q6Ph8E7t2omKp7dzNCiHee",
+    "childUrl": "https://gosqas.org/history/Q6Ph8E7t2omKp7dzNCiHee",
+    "reporting": false
+  },
+  {
+    "childName": "UK0002",
+    "childKey": "BHMptznZGv1bbsLGTeyt9y",
+    "childUrl": "https://gosqas.org/history/BHMptznZGv1bbsLGTeyt9y",
+    "reporting": false
+  },
+  {
+    "childName": "UK0003",
+    "childKey": "XFmJgR6UWg4TmGQxutd46w",
+    "childUrl": "https://gosqas.org/history/XFmJgR6UWg4TmGQxutd46w",
+    "reporting": false
+  },
+  {
+    "childName": "UK0004",
+    "childKey": "XRMfJiWN3RyMSN33UbM7ek",
+    "childUrl": "https://gosqas.org/history/XRMfJiWN3RyMSN33UbM7ek",
+    "reporting": false
+  },
+  {
+    "childName": "UK0005",
+    "childKey": "5SYz6FLckRAKjVwsgDXY9P",
+    "childUrl": "https://gosqas.org/history/5SYz6FLckRAKjVwsgDXY9P",
+    "reporting": false
+  },
+  {
+    "childName": "Public Invention Krake Rev. 2",
+    "childKey": "Medq1SKNpdfqpXcfZiurc3",
+    "childUrl": "https://gosqas.org/history/Medq1SKNpdfqpXcfZiurc3",
+    "reporting": false
+  }
+];
+    const state = {
+      query: "",
+      filter: "all"
+    };
+
+    const tableBody = document.getElementById("deviceTableBody");
+    const cards = document.getElementById("deviceCards");
+    const resultsCount = document.getElementById("resultsCount");
+    const emptyState = document.getElementById("emptyState");
+    const searchInput = document.getElementById("searchInput");
+    const filterButtons = document.querySelectorAll(".pill");
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function matchesFilter(device) {
+      if (state.filter === "reporting") return device.reporting;
+      if (state.filter === "standard") return !device.reporting;
+      return true;
+    }
+
+    function matchesQuery(device) {
+      const haystack = `${device.childName} ${device.childKey}`.toLowerCase();
+      return haystack.includes(state.query.toLowerCase());
+    }
+
+    function render() {
+      const filtered = devices.filter(device => matchesFilter(device) && matchesQuery(device));
+
+      tableBody.innerHTML = filtered.map(device => `
+        <tr>
+          <td><strong>${escapeHtml(device.childName)}</strong></td>
+          <td>${escapeHtml(device.childKey)}</td>
+          <td>
+            <span class="status ${device.reporting ? "reporting" : "standard"}">
+              ${device.reporting ? "Reporting key" : "Standard child"}
+            </span>
+          </td>
+          <td><a class="device-link" href="${escapeHtml(device.childUrl)}" target="_blank" rel="noopener noreferrer">Open child record</a></td>
+        </tr>
+      `).join("");
+
+      cards.innerHTML = filtered.map(device => `
+        <article class="device-card">
+          <h3>${escapeHtml(device.childName)}</h3>
+          <div class="row">
+            <div class="label">Child Key</div>
+            <div>${escapeHtml(device.childKey)}</div>
+          </div>
+          <div class="row">
+            <div class="label">Type</div>
+            <div><span class="status ${device.reporting ? "reporting" : "standard"}">${device.reporting ? "Reporting key" : "Standard child"}</span></div>
+          </div>
+          <div class="row">
+            <div class="label">Record</div>
+            <div><a class="device-link" href="${escapeHtml(device.childUrl)}" target="_blank" rel="noopener noreferrer">Open child record</a></div>
+          </div>
+        </article>
+      `).join("");
+
+      resultsCount.textContent = `Showing ${filtered.length} of ${devices.length} devices`;
+      emptyState.style.display = filtered.length ? "none" : "block";
+    }
+
+    searchInput.addEventListener("input", (event) => {
+      state.query = event.target.value.trim();
+      render();
+    });
+
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        state.filter = button.dataset.filter;
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
