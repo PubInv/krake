@@ -83,7 +83,6 @@ AsyncWebSocket ws("/ws");
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
 PubSubClient client(espClient);
-extern bool currentlyMuted;
 
 WifiOTA::Manager wifiManager(WiFi, Serial);
 
@@ -349,6 +348,65 @@ String joinedExtraTopics()
   }
   return result;
 }
+
+bool parseMutedParam(const String &rawValue, bool &parsedMutedState)
+{
+  String normalized = rawValue;
+  normalized.trim();
+  normalized.toLowerCase();
+
+  if (normalized == "1" || normalized == "true" || normalized == "on" || normalized == "mute" || normalized == "muted")
+  {
+    parsedMutedState = true;
+    return true;
+  }
+
+  if (normalized == "0" || normalized == "false" || normalized == "off" || normalized == "unmute" || normalized == "unmuted")
+  {
+    parsedMutedState = false;
+    return true;
+  }
+
+  return false;
+}
+
+bool applyMuteSetting(const String &rawValue)
+{
+  bool requestedMutedState = false;
+  if (!parseMutedParam(rawValue, requestedMutedState))
+  {
+    return false;
+  }
+  setMuted(requestedMutedState);
+  return true;
+}
+
+bool applyBrokerSetting(const String &broker)
+{
+  if (broker.length() == 0 || broker.length() >= MQTT_BROKER_MAX_LEN)
+  {
+    return false;
+  }
+
+  broker.toCharArray(mqtt_broker_name, MQTT_BROKER_MAX_LEN);
+  client.setServer(mqtt_broker_name, 1883);
+  if (client.connected())
+  {
+    client.disconnect();
+  }
+  reconnect();
+  return true;
+}
+
+void applyExtraTopicsSetting(const String &topics)
+{
+  parseAndSetExtraTopics(topics);
+  if (client.connected())
+  {
+    client.disconnect();
+  }
+  reconnect();
+}
 // Function to turn on all lamps
 void turnOnAllLamps()
 {
@@ -539,7 +597,7 @@ void setupOTA()
               payload += "\"alarmTopic\":\"" + jsonEscape(String(subscribe_Alarm_Topic)) + "\",";
               payload += "\"ackTopic\":\"" + jsonEscape(String(publish_Ack_Topic)) + "\",";
               payload += "\"extraTopics\":\"" + jsonEscape(joinedExtraTopics()) + "\",";
-              payload += "\"muted\":" + String(currentlyMuted ? "true" : "false");
+              payload += "\"muted\":" + String(isMuted() ? "true" : "false");
               payload += "}";
               request->send(200, "application/json", payload); });
 
@@ -551,8 +609,12 @@ void setupOTA()
                 return;
               }
               const String muted = request->getParam("muted", true)->value();
-              currentlyMuted = (muted == "1" || muted == "true");
-              request->send(200, "text/plain", currentlyMuted ? "muted" : "unmuted"); });
+              if (!applyMuteSetting(muted))
+              {
+                request->send(400, "text/plain", "invalid muted value");
+                return;
+              }
+              request->send(200, "text/plain", isMuted() ? "muted" : "unmuted"); });
 
   server.on("/settings/broker", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -562,18 +624,11 @@ void setupOTA()
                 return;
               }
               const String broker = request->getParam("broker", true)->value();
-              if (broker.length() == 0 || broker.length() >= MQTT_BROKER_MAX_LEN)
+              if (!applyBrokerSetting(broker))
               {
                 request->send(400, "text/plain", "invalid broker");
                 return;
               }
-              broker.toCharArray(mqtt_broker_name, MQTT_BROKER_MAX_LEN);
-              client.setServer(mqtt_broker_name, 1883);
-              if (client.connected())
-              {
-                client.disconnect();
-              }
-              reconnect();
               request->send(200, "text/plain", "broker updated"); });
 
   server.on("/settings/topics", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -583,12 +638,7 @@ void setupOTA()
                 request->send(400, "text/plain", "missing topics");
                 return;
               }
-              parseAndSetExtraTopics(request->getParam("topics", true)->value());
-              if (client.connected())
-              {
-                client.disconnect();
-              }
-              reconnect();
+              applyExtraTopicsSetting(request->getParam("topics", true)->value());
               request->send(200, "text/plain", "topics updated"); });
 
   server.on("/settings/wifi/reset", HTTP_POST, [](AsyncWebServerRequest *request)
