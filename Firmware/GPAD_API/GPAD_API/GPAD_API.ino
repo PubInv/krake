@@ -70,6 +70,7 @@
 
 #include "WiFiManagerOTA.h"
 #include <ESPAsyncWebServer.h>
+#include <string.h>
 
 #include "InterruptRotator.h"
 
@@ -82,6 +83,7 @@ AsyncWebSocket ws("/ws");
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
 PubSubClient client(espClient);
+extern bool currentlyMuted;
 
 WifiOTA::Manager wifiManager(WiFi, Serial);
 
@@ -134,14 +136,21 @@ const int LED_COUNT = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 // MQTT Broker
 // #define USE_HIVEMQ
 #ifdef USE_HIVEMQ
-const char *mqtt_broker_name = "broker.hivemq.com";
+const char *DEFAULT_MQTT_BROKER_NAME = "broker.hivemq.com";
 const char *mqtt_user = "";
 const char *mqtt_password = "";
 #else
-const char *mqtt_broker_name = "public.cloud.shiftr.io";
+const char *DEFAULT_MQTT_BROKER_NAME = "public.cloud.shiftr.io";
 const char *mqtt_user = "public";
 const char *mqtt_password = "public";
 #endif
+const size_t MQTT_BROKER_MAX_LEN = 64;
+char mqtt_broker_name[MQTT_BROKER_MAX_LEN] = {0};
+const uint8_t MAX_EXTRA_TOPICS = 4;
+const size_t MAX_TOPIC_LEN = 64;
+char subscribe_Extra_Topics[MAX_EXTRA_TOPICS][MAX_TOPIC_LEN];
+uint8_t subscribe_Extra_Topic_Count = 0;
+unsigned long wifiResetRequestedAtMs = 0;
 
 const size_t MAC_ADDRESS_STRING_LENGTH = 13;
 // MQTT Topics, MAC plus an extention
@@ -265,6 +274,10 @@ void reconnect()
       Serial.print("success at: ");
       Serial.println(millis());
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
+      for (uint8_t i = 0; i < subscribe_Extra_Topic_Count; i++)
+      {
+        client.subscribe(subscribe_Extra_Topics[i]);
+      }
     }
     else
     {
@@ -274,6 +287,67 @@ void reconnect()
     }
   }
   Serial.println((client.connected()) ? "connected!" : "failed to reconnect!");
+}
+
+bool isManagedSubscribedTopic(const char *topic)
+{
+  if (strcmp(topic, subscribe_Alarm_Topic) == 0)
+  {
+    return true;
+  }
+  for (uint8_t i = 0; i < subscribe_Extra_Topic_Count; i++)
+  {
+    if (strcmp(topic, subscribe_Extra_Topics[i]) == 0)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+void clearExtraTopics()
+{
+  subscribe_Extra_Topic_Count = 0;
+  for (uint8_t i = 0; i < MAX_EXTRA_TOPICS; i++)
+  {
+    subscribe_Extra_Topics[i][0] = '\0';
+  }
+}
+
+void parseAndSetExtraTopics(const String &rawTopics)
+{
+  clearExtraTopics();
+  String token = "";
+  for (size_t i = 0; i <= rawTopics.length(); i++)
+  {
+    char c = (i == rawTopics.length()) ? ',' : rawTopics.charAt(i);
+    if (c == ',' || c == '\n' || c == '\r' || c == '\t')
+    {
+      token.trim();
+      if (token.length() > 0 && subscribe_Extra_Topic_Count < MAX_EXTRA_TOPICS)
+      {
+        token.toCharArray(subscribe_Extra_Topics[subscribe_Extra_Topic_Count], MAX_TOPIC_LEN);
+        subscribe_Extra_Topic_Count++;
+      }
+      token = "";
+      continue;
+    }
+    token += c;
+  }
+}
+
+String joinedExtraTopics()
+{
+  String result;
+  for (uint8_t i = 0; i < subscribe_Extra_Topic_Count; i++)
+  {
+    if (i > 0)
+    {
+      result += ",";
+    }
+    result += subscribe_Extra_Topics[i];
+  }
+  return result;
 }
 // Function to turn on all lamps
 void turnOnAllLamps()
@@ -304,7 +378,7 @@ void callback(char *topic, byte *payload, unsigned int length)
 {
   // todo, remove use of String here....
   // Note: We will check for topic or topics in the future...
-  if (strcmp(topic, subscribe_Alarm_Topic) == 0)
+  if (isManagedSubscribedTopic(topic))
   {
     char mbuff[121];
     Serial.print("Topic arrived [");
@@ -455,6 +529,73 @@ void setupOTA()
               payload += "}";
               request->send(200, "application/json", payload); });
 
+  server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/settings.html", "text/html"); });
+
+  server.on("/settings-data", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              String payload = "{";
+              payload += "\"broker\":\"" + jsonEscape(String(mqtt_broker_name)) + "\",";
+              payload += "\"alarmTopic\":\"" + jsonEscape(String(subscribe_Alarm_Topic)) + "\",";
+              payload += "\"ackTopic\":\"" + jsonEscape(String(publish_Ack_Topic)) + "\",";
+              payload += "\"extraTopics\":\"" + jsonEscape(joinedExtraTopics()) + "\",";
+              payload += "\"muted\":" + String(currentlyMuted ? "true" : "false");
+              payload += "}";
+              request->send(200, "application/json", payload); });
+
+  server.on("/settings/mute", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              if (!request->hasParam("muted", true))
+              {
+                request->send(400, "text/plain", "missing muted");
+                return;
+              }
+              const String muted = request->getParam("muted", true)->value();
+              currentlyMuted = (muted == "1" || muted == "true");
+              request->send(200, "text/plain", currentlyMuted ? "muted" : "unmuted"); });
+
+  server.on("/settings/broker", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              if (!request->hasParam("broker", true))
+              {
+                request->send(400, "text/plain", "missing broker");
+                return;
+              }
+              const String broker = request->getParam("broker", true)->value();
+              if (broker.length() == 0 || broker.length() >= MQTT_BROKER_MAX_LEN)
+              {
+                request->send(400, "text/plain", "invalid broker");
+                return;
+              }
+              broker.toCharArray(mqtt_broker_name, MQTT_BROKER_MAX_LEN);
+              client.setServer(mqtt_broker_name, 1883);
+              if (client.connected())
+              {
+                client.disconnect();
+              }
+              reconnect();
+              request->send(200, "text/plain", "broker updated"); });
+
+  server.on("/settings/topics", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              if (!request->hasParam("topics", true))
+              {
+                request->send(400, "text/plain", "missing topics");
+                return;
+              }
+              parseAndSetExtraTopics(request->getParam("topics", true)->value());
+              if (client.connected())
+              {
+                client.disconnect();
+              }
+              reconnect();
+              request->send(200, "text/plain", "topics updated"); });
+
+  server.on("/settings/wifi/reset", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              wifiResetRequestedAtMs = millis();
+              request->send(200, "text/plain", "wifi reset scheduled"); });
+
   server.serveStatic("/", LittleFS, "/");
 
   // End of ELegant OTA Setup
@@ -512,6 +653,9 @@ void setup()
 #endif
 
   Serial.setTimeout(SERIAL_TIMEOUT_MS);
+  strncpy(mqtt_broker_name, DEFAULT_MQTT_BROKER_NAME, MQTT_BROKER_MAX_LEN - 1);
+  mqtt_broker_name[MQTT_BROKER_MAX_LEN - 1] = '\0';
+  clearExtraTopics();
   client.setServer(mqtt_broker_name, 1883); // Default MQTT port, this is a TCP port.
   client.setCallback(callback);
 
@@ -657,6 +801,14 @@ void loop()
     Serial.print(" lost MQTT at: ");
     Serial.println(millis());
     reconnect();
+  }
+
+  if (wifiResetRequestedAtMs != 0 && (millis() - wifiResetRequestedAtMs) > 750)
+  {
+    Serial.println(F("Resetting WiFi credentials and restarting."));
+    WiFi.disconnect(true, true);
+    delay(150);
+    ESP.restart();
   }
 
   publishOnLineMsg();
