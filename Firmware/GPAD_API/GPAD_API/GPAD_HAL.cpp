@@ -64,7 +64,9 @@ extern PubSubClient client;
 //  #include <LiquidCrystal_I2C.h>
 
 // https://github.com/johnrickman/LiquidCrystal_I2C
-LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
+
+LiquidCrystal_I2C Real_lcd(LCD_ADDRESS, 20, 4);
+LCDWrapper lcd;
 
 #include "DFPlayer.h"
 
@@ -333,9 +335,13 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
   // Setup the SWITCH_ENCODER
   // Print instructions on DEBUG serial port
 
+  lcd.init(&Real_lcd);
   local_ptr_to_serial = serialport;
   Wire.begin();
-  lcd.init();
+  
+  Real_lcd.init();
+  
+  
 #if (DEBUG > 0)
   serialport->println(F("Clear LCD"));
 #endif
