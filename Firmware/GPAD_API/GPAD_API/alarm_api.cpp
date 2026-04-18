@@ -56,6 +56,21 @@ int alarm(AlarmLevel level, char *str, Stream *serialport)
   return previousLevel;
 }
 
+void setMuted(bool muted)
+{
+  currentlyMuted = muted;
+}
+
+bool isMuted()
+{
+  return currentlyMuted;
+}
+
+void toggleMuted()
+{
+  currentlyMuted = !currentlyMuted;
+}
+
 AlarmLevel getCurrentAlarmLevel()
 {
   return currentLevel;
