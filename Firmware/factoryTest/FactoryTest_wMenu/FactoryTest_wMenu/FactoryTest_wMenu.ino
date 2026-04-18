@@ -1,5 +1,5 @@
 #define PROG_NAME "FactoryTest_wMenu"
-#define FIRMWARE_VERSION "v0.4.6.5"
+#define FIRMWARE_VERSION "v0.4.6.6"
  /*
 ------------------------------------------------------------------------------
 File:            FactoryTest_wMenu.ino
@@ -67,6 +67,9 @@ Revision History:
 |v0.4.6.4 | 2026-4-08 | Yukti         | DFPlayer: check BUSY idle before init to detect |
 |         |           |               | backwards insertion; add orientation warning on |
 |         |           |               | init failure; report module type after init     |
+|v0.4.6.5 | 2026-4-08 | Yukti         | Replace delay() with millis()-based timing      |
+|v0.4.6.6 | 2026-4-08 | Yukti         | DFPlayer: detect TD5580 clone via readState();  |
+|         |           |               | fail init and warn operator if TD5580 detected  |
 ----------------------------------------------------------------------------------------|
 Overview:
 - Repeatable factory test sequence for ESP32-WROOM-32D Krake/GPAD v2 boards.
@@ -186,6 +189,8 @@ HardwareSerial dfSerial(2);
 DFRobotDFPlayerMini dfPlayer;
 enum dfState_t { DF_UNKNOWN, DF_OK, DF_FAIL };
 static dfState_t dfState = DF_UNKNOWN;
+enum dfModuleType_t { DF_MODULE_UNKNOWN, DF_MODULE_GENUINE, DF_MODULE_MP3TF16P, DF_MODULE_TD5580 };
+static dfModuleType_t g_dfModuleType = DF_MODULE_UNKNOWN;
 // SD cache: read file count ONCE during test [5], reuse during test [6]
 static bool g_sdChecked = false;
 static int g_sdFileCount = -999;
@@ -703,38 +708,40 @@ static bool runTest_LEDs() {
 }
 
 
-// Read BUSY pin at idle to check module orientation and report module type.
-// The BUSY pin is active-LOW when playing.  If it reads LOW while no track is
-// playing the module is likely inserted backwards.
+// Detect which DFPlayer-class module is installed by reading BUSY pin and
+// querying readState() (command 0x42).
+//   Genuine DFRobot DFPlayerMini : readState() == 0 when idle
+//   TD5580 clone                 : readState() >  0 when idle (non-zero play status)
+//   MP3-TF-16P / unknown         : readState() == -1 (no response / timeout)
 // Call only after dfPlayer.begin() has succeeded and the module is responding.
-static void reportMiniMP3PlayerType() {
-  // Allow BUSY pin to settle after init before reading
-  delay(100);
-  int busyIdle = digitalRead(DF_BUSY_IN);
-  Serial.print(F("  Mini MP3 BUSY idle: "));
-  if (busyIdle == HIGH) {
-    Serial.println(F("HIGH  --> WARNING: module may be inserted backwards!"));
-  } else {
-    Serial.println(F("LOW (normal)"));
-  }
+static dfModuleType_t detectModuleType() {
+  delay(100);  // allow BUSY pin to settle after init
 
-  // readState() sends command 0x42 and returns the play-status word.
-  // Genuine DFRobot DFPlayerMini returns 0 (stopped) when idle;
-  // TD5580A clones have been observed returning different values.
-  // These values should be verified against hardware in the field.
+  int busyIdle = digitalRead(DF_BUSY_IN);
+  Serial.print(F("  BUSY idle: "));
+  Serial.println(busyIdle == HIGH ? F("HIGH  --> WARNING: module may be backwards!") : F("LOW (normal)"));
+
   int state = dfPlayer.readState();
-  Serial.printf("  Mini MP3 readState: %d", state);
+  Serial.printf("  readState: %d\n", state);
+
   if (state == 0) {
-    Serial.println(F("  --> likely DFRobot DFPlayerMini"));
+    Serial.println(F("  --> DFRobot DFPlayerMini (genuine)"));
+    return DF_MODULE_GENUINE;
   } else if (state > 0) {
-    Serial.println(F("  --> may be TD5580A clone (non-zero idle state)"));
+    Serial.println(F("  --> TD5580 clone detected (non-zero idle state)"));
+    Serial.println(F("  *** INCOMPATIBLE MODULE -- replace with genuine DFPlayer Mini or MP3-TF-16P ***"));
+    return DF_MODULE_TD5580;
   } else {
-    Serial.println(F("  --> no response to state query"));
+    // readState() returned -1: no response / timeout.
+    // MP3-TF-16P does not respond to 0x42 -- treat as compatible.
+    Serial.println(F("  --> Module type unknown (no readState response); treating as compatible"));
+    return DF_MODULE_MP3TF16P;
   }
 }
 
 static void clearDFPlayerCache() {
   dfState = DF_UNKNOWN;
+  g_dfModuleType = DF_MODULE_UNKNOWN;
   // optional: hard reset the UART session as well
   dfSerial.end();
   delay(50);
@@ -776,8 +783,8 @@ static bool initDFPlayer() {
   delay(50);  // allow INPUT_PULLUP to stabilise
 
   // Check BUSY pin before asserting any UART traffic.
-  // BUSY is active-LOW when playing; at idle it should be HIGH.
-  // If it reads LOW now (nothing playing yet) the module is likely backwards.
+  // BUSY is active-LOW when playing; at idle it should be LOW.
+  // If it reads HIGH now (nothing playing yet) the module is likely backwards.
   if (digitalRead(DF_BUSY_IN) == HIGH) {
     Serial.println(F("  WARNING: BUSY pin HIGH before init -- module may be inserted backwards!"));
   }
@@ -811,7 +818,11 @@ static bool initDFPlayer() {
 
   dfState = DF_OK;
   Serial.println(F("DFPlayer detected and responding."));
-  reportMiniMP3PlayerType();
+  g_dfModuleType = detectModuleType();
+  if (g_dfModuleType == DF_MODULE_TD5580) {
+    dfState = DF_FAIL;
+    return false;
+  }
   return true;
 }
 

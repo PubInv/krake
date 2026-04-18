@@ -158,13 +158,26 @@ void setupDFPlayer()
     Serial.println("DFPlayer Mini detected!");
   }
 
+  dfPlayer.setTimeOut(500);  // Set serial communication time out 500ms
+
+  // Detect TD5580 clone: readState() returns non-zero at idle on TD5580,
+  // whereas genuine DFRobot DFPlayerMini returns 0 when stopped.
+  // TD5580 blocks firmware execution if play commands are sent -- bail out early.
+  delay(100);  // allow module to settle before querying state
+  int moduleState = dfPlayer.readState();
+  if (moduleState > 0) {
+    Serial.println("*** DFPlayer: TD5580 clone detected (readState non-zero at idle). ***");
+    Serial.println("*** Incompatible module -- audio disabled. Replace with genuine DFPlayer Mini or MP3-TF-16P. ***");
+    isDFPlayerDetected = false;
+    return;
+  }
+
   dfPlayer.volume(volumeDFPlayer); // Set initial volume
-  dfPlayer.setTimeOut(500);        // Set serial communictaion time out 500ms
-  //  delay(100);
 
   dfPlayer.start(); // Todo, ?? necessary for DFPlayer processing
   delay(1000);
   //  dfPlayer.play(11);  //DFPlayer Splash
+  Serial.println("DFPlayer about to play.");
   dfPlayer.play(9);
   delay(100);
   dfPlayer.stop();
@@ -172,7 +185,7 @@ void setupDFPlayer()
   dfPlayer.previous();
   delay(1500);
   dfPlayer.play(); // DFPlayer Splash
-
+  Serial.println("DFPlayer / played");
   displayDFPlayerStats();
 
 } // setupDFPLayer
