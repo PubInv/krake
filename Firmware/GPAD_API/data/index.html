@@ -39,6 +39,8 @@
       <div class="info-row"><span class="label">WiFi RSSI:</span> <span id="rssi">%RSSI%</span></div>
       <div class="info-row"><span class="label">Uptime:</span> <span id="uptime">%UPTIME%</span></div>
       <div class="info-row"><span class="label">MQTT:</span> <span id="mqtt">%MQTT%</span></div>
+      <div class="info-row"><span class="label">Firmware:</span> <span id="firmware">%FIRMWARE_VERSION%</span></div>
+      <div class="info-row"><span class="label">Compiled:</span> <span id="compiled">%COMPILED_AT%</span></div>
 
       <div class="qr-box">
         <img src="%QR%" alt="QR Code">
@@ -100,6 +102,8 @@
         document.getElementById("rssi").textContent = data.rssi || "-";
         document.getElementById("uptime").textContent = data.uptime || "-";
         document.getElementById("mqtt").textContent = data.mqtt || "-";
+        document.getElementById("firmware").textContent = data.firmware || "-";
+        document.getElementById("compiled").textContent = data.compiled || "-";
         document.getElementById("deviceUrl").textContent = data.url || "-";
       } catch (e) {
         console.log("Status fetch failed");
