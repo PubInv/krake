@@ -546,6 +546,14 @@ String templateProcessor(const String &var)
   {
     return client.connected() ? String("connected") : String("disconnected");
   }
+  if (var == "FIRMWARE_VERSION")
+  {
+    return String(FIRMWARE_VERSION);
+  }
+  if (var == "COMPILED_AT")
+  {
+    return String(__DATE__ " " __TIME__);
+  }
   if (var == "QR")
   {
     return "/favicon.png";
@@ -583,6 +591,8 @@ void setupOTA()
               payload += "\"rssi\":\"" + String(WiFi.RSSI()) + " dBm\",";
               payload += "\"uptime\":\"" + jsonEscape(uptimeString()) + "\",";
               payload += "\"mqtt\":\"" + String(client.connected() ? "connected" : "disconnected") + "\",";
+              payload += "\"firmware\":\"" + jsonEscape(String(FIRMWARE_VERSION)) + "\",";
+              payload += "\"compiled\":\"" + jsonEscape(String(__DATE__ " " __TIME__)) + "\",";
               payload += "\"url\":\"" + jsonEscape(currentUrl()) + "\"";
               payload += "}";
               request->send(200, "application/json", payload); });
