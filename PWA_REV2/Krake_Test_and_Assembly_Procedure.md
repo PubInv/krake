@@ -411,12 +411,15 @@ The front panel LEDs provide visual alarm and status indication.
 1. Identify the LED footprints on the PCB and the corresponding LED colors (e.g., white vs. red).
   - 5 white LED's (D201-D205)
   - 1 red LED - Power ((D103) .
+
 3. For each LED:
    - Note the flat edge on the plastic body indicating the cathode.
    - <img width="200" height="210" alt="image" src="https://github.com/user-attachments/assets/baf3bd47-3918-4b86-a1b3-03e3834cc087" />
    - Align the flat edge with the flat indicator on the PCB silkscreen.
-   - Insert the LED and ensure consistent height above the PCB - to do this 3D print and use 6 of the LED spacer files "U_Box_V105_GPAD_LED_Standoff_single.stl" within enclosure/parts_toPrint
+   - Insert the LED spacer to ensure consistent height above the PCB - to do this 3D print and use 6 of the LED spacer files "U_Box_V105_GPAD_LED_Standoff_single.stl" within enclosure/parts_toPrint
+     <img width="245" height="350" alt="Screenshot 2026-04-19 at 10 26 37" src="https://github.com/user-attachments/assets/4417a096-1f9b-41e0-924b-6f2930c58bab" />
    - Solder the leads.
+     <img width="718" height="427" alt="Screenshot 2026-04-19 at 10 30 31" src="https://github.com/user-attachments/assets/cfd0bd27-ff2b-49b5-9a04-aa0cc505fbc2" />
    - Trim the leads carefully, taking care not to damage nearby transistors or other components.
 4. To avoid mixing LED colors:
    - Install and solder all white LEDs first, then close and set aside their packaging.
@@ -463,7 +466,9 @@ This section covers basic procedures for powering Krake and verifying that the a
 7. One upload is complete, navigate to the Serial Monitor within Arduino IDE
 8. Change the 'baud rate' to 115200
 9. Test response by sending [R] in the command window
-10. Record MCU MAC address & factory firmware test version **To do: add screenshot CL & NK **
+10. Record MCU MAC address & factory firmware test version
+    <img width="1048" height="579" alt="Screenshot 2026-04-16 at 21 38 37" src="https://github.com/user-attachments/assets/0b73cbc3-be97-41c4-9d28-082645b76ef5" />
+
 11. Enter [P] into the Serial Monitor
 12. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
 <img width="611" height="316" alt="image" src="https://github.com/user-attachments/assets/94affc1e-c702-4151-a7dc-2bc3370afdd9" />
@@ -571,7 +576,7 @@ Units that pass all steps above are considered ready for integration into larger
   - "Recess_bottom.stl"
   - "SD_door.stl"
 2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
-  - **insert information about tools etc for threaded inserts - NK pictures & instructions?**
+  - **insert information about tools etc for threaded inserts
   - Using M4 Threaded Inserts: <img width="300" height="216" alt="image" src="https://github.com/user-attachments/assets/d047879c-d173-45ce-bdac-6abd16ee2677" />
   - After the threaded inserts are inserted, displaced plastic may obstruct the screws
 <img width="600" height="515" alt="image" src="https://github.com/user-attachments/assets/2e11dcef-0adb-405a-bb69-5bcbe3d10dc3" />
