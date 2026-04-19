@@ -25,7 +25,7 @@ body {
 .topbar {
   height: 68px;
   background: linear-gradient(120deg, var(--accent-strong), var(--accent));
-  color: white;
+  color: #1f7a3d;
   display: flex;
   align-items: center;
   justify-content: space-between;
