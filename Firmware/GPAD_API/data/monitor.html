@@ -53,23 +53,16 @@
 <main class="container">
   <section class="card">
     <h1>Developer Monitor</h1>
-    <p class="subtitle">Live firmware metadata and synchronous monitor reporting view.</p>
+    <p class="subtitle">Live UART-only monitor reporting view.</p>
 
-    <div class="status-chip mono">Firmware: <span id="firmware">%FIRMWARE_VERSION%</span></div>
-    <div class="status-chip mono">Compiled: <span id="compiled">%COMPILED_AT%</span></div>
     <div class="status-chip mono">Serial Monitor Port: <span id="serialPort">%SERIAL_PORT%</span></div>
     <div class="status-chip mono">Baud: <span id="serialBaud">%SERIAL_BAUD%</span></div>
-    <div class="status-chip mono">IP: <span id="ip">%IP%</span></div>
   </section>
 
   <section class="card monitor-grid">
     <div>
-      <div class="lcd-title">Synchronous Device Status</div>
-      <div id="statusText" class="monitor-box mono">Waiting for /status...</div>
-    </div>
-    <div>
-      <div class="lcd-title">Live LCD Snapshot</div>
-      <div id="lcdText" class="monitor-box mono">Waiting for /lcd...</div>
+      <div class="lcd-title">UART Pin Monitor</div>
+      <div id="uartText" class="monitor-box mono">Waiting for /status...</div>
     </div>
   </section>
 </main>
@@ -89,33 +82,22 @@
       if (!res.ok) return;
       const data = await res.json();
 
-      document.getElementById('firmware').textContent = data.firmware || '-';
-      document.getElementById('compiled').textContent = data.compiled || '-';
       document.getElementById('serialPort').textContent = data.serialPort || '-';
       document.getElementById('serialBaud').textContent = data.serialBaud || '-';
-      document.getElementById('ip').textContent = data.ip || '-';
 
-      document.getElementById('statusText').textContent = JSON.stringify(data, null, 2);
-    } catch (e) {
-      document.getElementById('statusText').textContent = 'Status fetch failed';
-    }
-  }
+      const uartOnly = {
+        serialPort: data.serialPort || '-',
+        serialBaud: data.serialBaud || '-'
+      };
 
-  async function fetchLCD() {
-    try {
-      const res = await fetch('/lcd');
-      if (!res.ok) return;
-      const data = await res.json();
-      document.getElementById('lcdText').textContent = JSON.stringify(data, null, 2);
+      document.getElementById('uartText').textContent = JSON.stringify(uartOnly, null, 2);
     } catch (e) {
-      document.getElementById('lcdText').textContent = 'LCD fetch failed';
+      document.getElementById('uartText').textContent = 'UART status fetch failed';
     }
   }
 
   fetchStatus();
-  fetchLCD();
   setInterval(fetchStatus, 1000);
-  setInterval(fetchLCD, 1000);
 </script>
 </body>
 </html>
