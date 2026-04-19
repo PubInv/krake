@@ -13,7 +13,18 @@
       <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
       <span>Settings</span>
     </div>
+    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
   </header>
+
+  <nav id="sideMenu" class="side-menu">
+    <a href="/update">Update Firmware</a>
+    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
+    <a href="/Electrical_testHistory.html">Electrical Test History</a>
+    <a href="/monitor">Factory Test / Developer Monitor</a>
+    <a href="/manual">User Manual</a>
+    <a href="/settings">Settings</a>
+    <a class="menu-home" href="/index.html">Home</a>
+  </nav>
 
   <main class="container">
     <section class="card">
@@ -50,11 +61,14 @@
   </main>
 
   <footer class="footer">
-    <a class="footer-btn" href="/">Back to Dashboard</a>
     <div id="message" class="note"></div>
   </footer>
 
   <script>
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("open");
+    }
+
     function showMessage(msg, isError = false) {
       const node = document.getElementById('message');
       node.textContent = msg;
