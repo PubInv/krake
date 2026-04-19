@@ -554,6 +554,14 @@ String templateProcessor(const String &var)
   {
     return String(__DATE__ " " __TIME__);
   }
+  if (var == "SERIAL_PORT")
+  {
+    return String("UART0 (USB Serial/JTAG)");
+  }
+  if (var == "SERIAL_BAUD")
+  {
+    return String(BAUDRATE);
+  }
   if (var == "QR")
   {
     return "/favicon.png";
@@ -569,6 +577,9 @@ void setupOTA()
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html", false, templateProcessor); });
+
+  server.on("/monitor", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/monitor.html", "text/html", false, templateProcessor); });
 
   server.on("/lcd", HTTP_GET, [](AsyncWebServerRequest *request)
             {
@@ -593,6 +604,8 @@ void setupOTA()
               payload += "\"mqtt\":\"" + String(client.connected() ? "connected" : "disconnected") + "\",";
               payload += "\"firmware\":\"" + jsonEscape(String(FIRMWARE_VERSION)) + "\",";
               payload += "\"compiled\":\"" + jsonEscape(String(__DATE__ " " __TIME__)) + "\",";
+              payload += "\"serialPort\":\"" + jsonEscape(String("UART0 (USB Serial/JTAG)")) + "\",";
+              payload += "\"serialBaud\":\"" + String(BAUDRATE) + "\",";
               payload += "\"url\":\"" + jsonEscape(currentUrl()) + "\"";
               payload += "}";
               request->send(200, "application/json", payload); });
