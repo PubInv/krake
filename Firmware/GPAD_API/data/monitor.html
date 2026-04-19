@@ -84,20 +84,31 @@
 
       document.getElementById('serialPort').textContent = data.serialPort || '-';
       document.getElementById('serialBaud').textContent = data.serialBaud || '-';
-
-      const uartOnly = {
-        serialPort: data.serialPort || '-',
-        serialBaud: data.serialBaud || '-'
-      };
-
-      document.getElementById('uartText').textContent = JSON.stringify(uartOnly, null, 2);
     } catch (e) {
       document.getElementById('uartText').textContent = 'UART status fetch failed';
     }
   }
 
+  async function fetchSerialMonitor() {
+    try {
+      const res = await fetch('/serial-monitor');
+      if (!res.ok) return;
+      const text = await res.text();
+      const uartText = document.getElementById('uartText');
+      const nearBottom = uartText.scrollTop + uartText.clientHeight >= uartText.scrollHeight - 8;
+      uartText.textContent = text || '(No serial output yet)';
+      if (nearBottom) {
+        uartText.scrollTop = uartText.scrollHeight;
+      }
+    } catch (e) {
+      document.getElementById('uartText').textContent = 'Serial monitor fetch failed';
+    }
+  }
+
   fetchStatus();
+  fetchSerialMonitor();
   setInterval(fetchStatus, 1000);
+  setInterval(fetchSerialMonitor, 300);
 </script>
 </body>
 </html>
