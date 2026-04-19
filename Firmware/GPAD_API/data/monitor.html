@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Factory Test / Developer Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .monitor-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .monitor-box {
+      background: #081217;
+      color: #b7f9cc;
+      border: 1px solid rgba(0, 183, 255, .25);
+      border-radius: 10px;
+      padding: 14px;
+      min-height: 280px;
+      overflow: auto;
+      white-space: pre-wrap;
+      line-height: 1.35;
+    }
+    .status-chip {
+      display: inline-block;
+      background: rgba(0, 183, 255, .12);
+      border: 1px solid rgba(0, 183, 255, .35);
+      border-radius: 20px;
+      padding: 5px 10px;
+      margin: 4px 6px 0 0;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
+    <span>Factory Test / Developer Monitor</span>
+  </div>
+  <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+</header>
+
+<nav id="sideMenu" class="side-menu">
+  <a href="/">Home</a>
+  <a href="/update">Update Firmware</a>
+  <a href="/GDT_TrackHistory.html">GDT Track Record</a>
+  <a href="/Electrical_testHistory.html">Electrical Test History</a>
+  <a href="/monitor">Factory Test / Developer Monitor</a>
+  <a href="/manual">User Manual</a>
+  <a href="/settings">Settings</a>
+</nav>
+
+<main class="container">
+  <section class="card">
+    <h1>Developer Monitor</h1>
+    <p class="subtitle">Live firmware metadata and synchronous monitor reporting view.</p>
+
+    <div class="status-chip mono">Firmware: <span id="firmware">%FIRMWARE_VERSION%</span></div>
+    <div class="status-chip mono">Compiled: <span id="compiled">%COMPILED_AT%</span></div>
+    <div class="status-chip mono">Serial Monitor Port: <span id="serialPort">%SERIAL_PORT%</span></div>
+    <div class="status-chip mono">Baud: <span id="serialBaud">%SERIAL_BAUD%</span></div>
+    <div class="status-chip mono">IP: <span id="ip">%IP%</span></div>
+  </section>
+
+  <section class="card monitor-grid">
+    <div>
+      <div class="lcd-title">Synchronous Device Status</div>
+      <div id="statusText" class="monitor-box mono">Waiting for /status...</div>
+    </div>
+    <div>
+      <div class="lcd-title">Live LCD Snapshot</div>
+      <div id="lcdText" class="monitor-box mono">Waiting for /lcd...</div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <a href="https://pubinv.org" target="_blank">pubinv.org</a>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("open");
+  }
+
+  async function fetchStatus() {
+    try {
+      const res = await fetch('/status');
+      if (!res.ok) return;
+      const data = await res.json();
+
+      document.getElementById('firmware').textContent = data.firmware || '-';
+      document.getElementById('compiled').textContent = data.compiled || '-';
+      document.getElementById('serialPort').textContent = data.serialPort || '-';
+      document.getElementById('serialBaud').textContent = data.serialBaud || '-';
+      document.getElementById('ip').textContent = data.ip || '-';
+
+      document.getElementById('statusText').textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      document.getElementById('statusText').textContent = 'Status fetch failed';
+    }
+  }
+
+  async function fetchLCD() {
+    try {
+      const res = await fetch('/lcd');
+      if (!res.ok) return;
+      const data = await res.json();
+      document.getElementById('lcdText').textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      document.getElementById('lcdText').textContent = 'LCD fetch failed';
+    }
+  }
+
+  fetchStatus();
+  fetchLCD();
+  setInterval(fetchStatus, 1000);
+  setInterval(fetchLCD, 1000);
+</script>
+</body>
+</html>
