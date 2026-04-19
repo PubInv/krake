@@ -12,7 +12,7 @@
   <header class="topbar">
     <div class="brand">
       <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>KRAKE</span>
+      <span>Public Invention</span>
     </div>
 
     <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
@@ -25,6 +25,7 @@
     <a href="/monitor">Factory Test / Developer Monitor</a>
     <a href="/manual">User Manual</a>
     <a href="/settings">Settings</a>
+    <a class="menu-home" href="/index.html">Home</a>
   </nav>
 
   <main class="container">
@@ -32,17 +33,19 @@
       <h1>KRAKE </h1>
       <p class="subtitle">A Public Invention device</p>
 
-      <div class="info-row"><span class="label">Serial:</span> <span id="serial">%SERIAL%</span></div>
-      <div class="info-row"><span class="label">URL:</span> <span id="deviceUrl">%URL%</span></div>
-      <div class="info-row"><span class="label">IP:</span> <span id="ip">%IP%</span></div>
-      <div class="info-row"><span class="label">MAC:</span> <span id="mac">%MAC%</span></div>
-      <div class="info-row"><span class="label">WiFi RSSI:</span> <span id="rssi">%RSSI%</span></div>
-      <div class="info-row"><span class="label">Uptime:</span> <span id="uptime">%UPTIME%</span></div>
-      <div class="info-row"><span class="label">MQTT:</span> <span id="mqtt">%MQTT%</span></div>
+      <div class="info-row"><span class="label">Serial: %SERIAL%</span></div>
+      <div class="info-row"><span class="label">URL:  %URL%</span></div>
+      <div class="info-row"><span class="label">IP: %IP%</span></div>
+      <div class="info-row"><span class="label">MAC: %MAC%</span></div>
+      <div class="info-row"><span class="label">WiFi RSSI: %RSSI%</span></div>
+      <div class="info-row"><span class="label">Uptime: %UPTIME%</span></div>
+      <div class="info-row"><span class="label">MQTT: %MQTT%</span></div>
+      <div class="info-row"><span class="label">Firmware: %FIRMWARE_VERSION%</span></div>
+      <div class="info-row"><span class="label">Compiled: %COMPILED_AT%</span></div>
 
-      <div class="qr-box">
+      <!-- <div class="qr-box">
         <img src="%QR%" alt="QR Code">
-      </div>
+      </div> -->
     </section>
 
     <section class="card">
@@ -100,6 +103,8 @@
         document.getElementById("rssi").textContent = data.rssi || "-";
         document.getElementById("uptime").textContent = data.uptime || "-";
         document.getElementById("mqtt").textContent = data.mqtt || "-";
+        document.getElementById("firmware").textContent = data.firmware || "-";
+        document.getElementById("compiled").textContent = data.compiled || "-";
         document.getElementById("deviceUrl").textContent = data.url || "-";
       } catch (e) {
         console.log("Status fetch failed");

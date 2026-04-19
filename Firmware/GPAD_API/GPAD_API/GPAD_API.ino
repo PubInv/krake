@@ -80,11 +80,71 @@
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
+const size_t SERIAL_LOG_MAX_CHARS = 12000;
+String serialLogBuffer;
+
+void appendSerialLog(const char *text, size_t len)
+{
+  if (len == 0)
+  {
+    return;
+  }
+
+  if (len > SERIAL_LOG_MAX_CHARS)
+  {
+    text += (len - SERIAL_LOG_MAX_CHARS);
+    len = SERIAL_LOG_MAX_CHARS;
+  }
+
+  for (size_t i = 0; i < len; ++i)
+  {
+    serialLogBuffer += text[i];
+  }
+  if (serialLogBuffer.length() > SERIAL_LOG_MAX_CHARS)
+  {
+    serialLogBuffer.remove(0, serialLogBuffer.length() - SERIAL_LOG_MAX_CHARS);
+  }
+}
+
+class SerialMirrorStream : public Stream
+{
+public:
+  explicit SerialMirrorStream(HardwareSerial &serialPort)
+      : port(serialPort) {}
+
+  void begin(unsigned long baud) { port.begin(baud); }
+  void setTimeout(unsigned long timeoutMs) { port.setTimeout(timeoutMs); }
+  operator bool() const { return static_cast<bool>(port); }
+
+  int available() override { return port.available(); }
+  int read() override { return port.read(); }
+  int peek() override { return port.peek(); }
+  void flush() override { port.flush(); }
+
+  size_t write(uint8_t ch) override
+  {
+    const char c = static_cast<char>(ch);
+    appendSerialLog(&c, 1);
+    return port.write(ch);
+  }
+
+  size_t write(const uint8_t *buffer, size_t size) override
+  {
+    appendSerialLog(reinterpret_cast<const char *>(buffer), size);
+    return port.write(buffer, size);
+  }
+
+private:
+  HardwareSerial &port;
+};
+
+SerialMirrorStream debugSerial(Serial);
+
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-WifiOTA::Manager wifiManager(WiFi, Serial);
+WifiOTA::Manager wifiManager(WiFi, debugSerial);
 
 /* SPI_PERIPHERAL
    From: https://circuitdigest.com/microcontroller-projects/arduino-spi-communication-tutorial
@@ -187,8 +247,8 @@ unsigned long nextLEDchangee_ms = 5000; // time in ms.
 
 //wifi disconnect event
 void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
-  Serial.print("\nWifi Disconnected. Reason: ");
-  Serial.println(info.wifi_sta_disconnected.reason);
+  debugSerial.print("\nWifi Disconnected. Reason: ");
+  debugSerial.println(info.wifi_sta_disconnected.reason);
   
   // OPTION A: Simple Reconnect
   //WiFi.begin(); 
@@ -204,24 +264,24 @@ void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 void serialSplash()
 {
   // Serial splash
-  Serial.println(F("==================================="));
-  Serial.println(COMPANY_NAME);
-  Serial.println(MODEL_NAME);
-  //  Serial.println(DEVICE_UNDER_TEST);
-  Serial.print(PROG_NAME);
-  Serial.println(FIRMWARE_VERSION);
-  //  Serial.println(HARDWARE_VERSION);
-  Serial.print("Builtin ESP32 MAC Address: ");
-  Serial.println(macAddressString);
-  Serial.print(F("Alarm Topic: "));
-  Serial.println(subscribe_Alarm_Topic);
-  Serial.print(F("Broker: "));
-  Serial.println(mqtt_broker_name);
-  Serial.print(F("Compiled at: "));
-  Serial.println(F(__DATE__ " " __TIME__)); // compile date that is used for a unique identifier
-  Serial.println(LICENSE);
-  Serial.println(F("==================================="));
-  Serial.println();
+  debugSerial.println(F("==================================="));
+  debugSerial.println(COMPANY_NAME);
+  debugSerial.println(MODEL_NAME);
+  //  debugSerial.println(DEVICE_UNDER_TEST);
+  debugSerial.print(PROG_NAME);
+  debugSerial.println(FIRMWARE_VERSION);
+  //  debugSerial.println(HARDWARE_VERSION);
+  debugSerial.print("Builtin ESP32 MAC Address: ");
+  debugSerial.println(macAddressString);
+  debugSerial.print(F("Alarm Topic: "));
+  debugSerial.println(subscribe_Alarm_Topic);
+  debugSerial.print(F("Broker: "));
+  debugSerial.println(mqtt_broker_name);
+  debugSerial.print(F("Compiled at: "));
+  debugSerial.println(F(__DATE__ " " __TIME__)); // compile date that is used for a unique identifier
+  debugSerial.println(LICENSE);
+  debugSerial.println(F("==================================="));
+  debugSerial.println();
 }
 
 // A periodic message identifying the subscriber (Krake) is on line.
@@ -238,8 +298,8 @@ void publishOnLineMsg(void)
     char rssiString[8];
 
 #if (DEBUG > 1)
-    Serial.print("Publish RSSI: ");
-    Serial.println(rssi);
+    debugSerial.print("Publish RSSI: ");
+    debugSerial.println(rssi);
 #endif
 
     dtostrf(rssi, 1, 2, rssiString);
@@ -248,8 +308,8 @@ void publishOnLineMsg(void)
     client.publish(publish_Ack_Topic, onLineMsg);
 
     // This should be moved to a place after the WiFi connect success
-    //  Serial.print("Device connected at IPaddress: "); //FLE
-    // Serial.println(WiFi.localIP());  //FLE
+    //  debugSerial.print("Device connected at IPaddress: "); //FLE
+    // debugSerial.println(WiFi.localIP());  //FLE
 
 #if defined(HMWK)
     digitalWrite(LED_D9, !digitalRead(LED_D9)); // Toggle
@@ -265,13 +325,13 @@ void reconnect()
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES)
   {
     n++;
-    Serial.print("Attempting MQTT connection at: ");
-    Serial.print(millis());
-    Serial.print("..... ");
+    debugSerial.print("Attempting MQTT connection at: ");
+    debugSerial.print(millis());
+    debugSerial.print("..... ");
     if (client.connect(COMPANY_NAME, mqtt_user, mqtt_password))
     {
-      Serial.print("success at: ");
-      Serial.println(millis());
+      debugSerial.print("success at: ");
+      debugSerial.println(millis());
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
       for (uint8_t i = 0; i < subscribe_Extra_Topic_Count; i++)
       {
@@ -280,12 +340,12 @@ void reconnect()
     }
     else
     {
-      Serial.print("failed, rc=");
-      Serial.println(client.state());
+      debugSerial.print("failed, rc=");
+      debugSerial.println(client.state());
       delay(1000);
     }
   }
-  Serial.println((client.connected()) ? "connected!" : "failed to reconnect!");
+  debugSerial.println((client.connected()) ? "connected!" : "failed to reconnect!");
 }
 
 bool isManagedSubscribedTopic(const char *topic)
@@ -439,9 +499,9 @@ void callback(char *topic, byte *payload, unsigned int length)
   if (isManagedSubscribedTopic(topic))
   {
     char mbuff[121];
-    Serial.print("Topic arrived [");
-    Serial.print(topic);
-    Serial.print("] ");
+    debugSerial.print("Topic arrived [");
+    debugSerial.print(topic);
+    debugSerial.print("] ");
 
     // Put payload into mbuff[] a character array
     int m = min((unsigned int)length, (unsigned int)120);
@@ -452,14 +512,14 @@ void callback(char *topic, byte *payload, unsigned int length)
     mbuff[m] = '\0';
 
 #if (DEBUG > 0)
-    Serial.print("|");
-    Serial.print(mbuff);
-    Serial.println("|");
+    debugSerial.print("|");
+    debugSerial.print(mbuff);
+    debugSerial.println("|");
 #endif
 
-    Serial.println("Received MQTT Msg.");
-    interpretBuffer(mbuff, m, &Serial, &client); // Process the MQTT message
-    annunciateAlarmLevel(&Serial);
+    debugSerial.println("Received MQTT Msg.");
+    interpretBuffer(mbuff, m, &debugSerial, &client); // Process the MQTT message
+    annunciateAlarmLevel(&debugSerial);
   }
 } // end call back
 
@@ -469,14 +529,14 @@ bool readMacAddress(uint8_t *baseMac)
   esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
   if (ret == ESP_OK)
   {
-    // Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
+    // debugSerial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
     //               baseMac[0], baseMac[1], baseMac[2],
     //               baseMac[3], baseMac[4], baseMac[5]);
     return true;
   }
   else
   {
-    // Serial.println("Failed to read MAC address");
+    // debugSerial.println("Failed to read MAC address");
     return false;
   }
 }
@@ -546,6 +606,22 @@ String templateProcessor(const String &var)
   {
     return client.connected() ? String("connected") : String("disconnected");
   }
+  if (var == "FIRMWARE_VERSION")
+  {
+    return String(FIRMWARE_VERSION);
+  }
+  if (var == "COMPILED_AT")
+  {
+    return String(__DATE__ " " __TIME__);
+  }
+  if (var == "SERIAL_PORT")
+  {
+    return String("UART0 (USB Serial/JTAG)");
+  }
+  if (var == "SERIAL_BAUD")
+  {
+    return String(BAUDRATE);
+  }
   if (var == "QR")
   {
     return "/favicon.png";
@@ -561,6 +637,9 @@ void setupOTA()
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html", false, templateProcessor); });
+
+  server.on("/monitor", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/monitor.html", "text/html", false, templateProcessor); });
 
   server.on("/lcd", HTTP_GET, [](AsyncWebServerRequest *request)
             {
@@ -583,9 +662,17 @@ void setupOTA()
               payload += "\"rssi\":\"" + String(WiFi.RSSI()) + " dBm\",";
               payload += "\"uptime\":\"" + jsonEscape(uptimeString()) + "\",";
               payload += "\"mqtt\":\"" + String(client.connected() ? "connected" : "disconnected") + "\",";
+              payload += "\"firmware\":\"" + jsonEscape(String(FIRMWARE_VERSION)) + "\",";
+              payload += "\"compiled\":\"" + jsonEscape(String(__DATE__ " " __TIME__)) + "\",";
+              payload += "\"serialPort\":\"" + jsonEscape(String("UART0 (USB Serial/JTAG)")) + "\",";
+              payload += "\"serialBaud\":\"" + String(BAUDRATE) + "\",";
               payload += "\"url\":\"" + jsonEscape(currentUrl()) + "\"";
               payload += "}";
               request->send(200, "application/json", payload); });
+
+  server.on("/serial-monitor", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              request->send(200, "text/plain", serialLogBuffer); });
 
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/settings.html", "text/html"); });
@@ -657,8 +744,8 @@ void setup()
   digitalWrite(LED_BUILTIN, HIGH);
   // Serial setup
   delay(100);
-  Serial.begin(BAUDRATE);
-  while (!Serial)
+  debugSerial.begin(BAUDRATE);
+  while (!debugSerial)
   {
     ; // wait for serial port to connect. Needed for native USB
   }
@@ -684,7 +771,7 @@ void setup()
   macAddressString[0] = '\0';
 
 #if (DEBUG > 1)
-  Serial.println("Call: GPAD_HAL_setup(&Serial)");
+  debugSerial.println("Call: GPAD_HAL_setup(&debugSerial)");
 #endif
 
   // Setup and present LCD splash screen
@@ -695,14 +782,14 @@ void setup()
   wifiManager.initialize();
 
   IPAddress deviceAddress = wifiManager.getAddress();
-  GPAD_HAL_setup(&Serial, wifiManager.getMode(), deviceAddress);
+  GPAD_HAL_setup(&debugSerial, wifiManager.getMode(), deviceAddress);
 
 #if (DEBUG > 0)
-  Serial.println("MAC: ");
-  Serial.println(macAddressString);
+  debugSerial.println("MAC: ");
+  debugSerial.println(macAddressString);
 #endif
 
-  Serial.setTimeout(SERIAL_TIMEOUT_MS);
+  debugSerial.setTimeout(SERIAL_TIMEOUT_MS);
   strncpy(mqtt_broker_name, DEFAULT_MQTT_BROKER_NAME, MQTT_BROKER_MAX_LEN - 1);
   mqtt_broker_name[MQTT_BROKER_MAX_LEN - 1] = '\0';
   clearExtraTopics();
@@ -710,7 +797,7 @@ void setup()
   client.setCallback(callback);
 
 #if (DEBUG > 0)
-  Serial.println("Starting WiFi as STA");
+  debugSerial.println("Starting WiFi as STA");
 #endif
 
   // Note: On Krake SN#3 only, performing this
@@ -737,8 +824,8 @@ void setup()
 
 #if (DEBUG > 0)
   printf("My mac is " MACSTR "\n", MAC2STR(mac));
-  Serial.print("MAC as char array: ");
-  Serial.println(buff);
+  debugSerial.print("MAC as char array: ");
+  debugSerial.println(buff);
 #endif
 
   strcpy(macAddressString, buff);
@@ -751,10 +838,10 @@ void setup()
   publish_Ack_Topic[16] = '\0';
 
 #if (DEBUG > 1)
-  Serial.println("XXXXXXX");
-  Serial.println(subscribe_Alarm_Topic);
-  Serial.println(publish_Ack_Topic);
-  Serial.println("XXXXXXX");
+  debugSerial.println("XXXXXXX");
+  debugSerial.println(subscribe_Alarm_Topic);
+  debugSerial.println(publish_Ack_Topic);
+  debugSerial.println("XXXXXXX");
 #endif
   // Setup SSID length is the length of the prefix, 'Krake_', which is 7
   // plus the length of the MAC address string, MAC_ADDRESS_STRING_LENGTH
@@ -791,38 +878,38 @@ void setup()
 
   wifiManager.connect(setupSsid);
 
-  Serial.println(F("WiFi Manager connected."));
+  debugSerial.println(F("WiFi Manager connected."));
 
   WifiOTA::initLittleFS();
 
-  Serial.println(F("initLiffleFS"));
+  debugSerial.println(F("initLiffleFS"));
 
   server.begin(); // Start server web socket to render pages
   
-  Serial.println(F("iStart server web socket to render pages"));
+  debugSerial.println(F("iStart server web socket to render pages"));
 
   ElegantOTA.begin(&server);
-  Serial.println(F("ElegantOTA.begin"));
+  debugSerial.println(F("ElegantOTA.begin"));
 
   setupOTA();
-  Serial.println(F("setupOTA"));
+  debugSerial.println(F("setupOTA"));
 
 
   initRotator();
-  Serial.println(F("initRotator"));
+  debugSerial.println(F("initRotator"));
   splashLCD(wifiManager.getMode(), deviceAddress);
 
-  Serial.println(F("splashLCD"));
+  debugSerial.println(F("splashLCD"));
 
   setupDFPlayer();
-  Serial.println(F("setupDFPlayer"));
+  debugSerial.println(F("setupDFPlayer"));
 
   setup_GPAD_menu();
 
-  Serial.println(F("setupGPAD_menu"));
+  debugSerial.println(F("setupGPAD_menu"));
 
     // Need this to work here:   printInstructions(serialport);
-  Serial.println(F("Done With Setup!"));
+  debugSerial.println(F("Done With Setup!"));
   turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW); // turn the LED off at end of setup
 } // end of setup()
@@ -847,15 +934,15 @@ void loop()
 
   if (!client.loop())
   {
-    Serial.print(mqtt_broker_name);
-    Serial.print(" lost MQTT at: ");
-    Serial.println(millis());
+    debugSerial.print(mqtt_broker_name);
+    debugSerial.print(" lost MQTT at: ");
+    debugSerial.println(millis());
     reconnect();
   }
 
   if (wifiResetRequestedAtMs != 0 && (millis() - wifiResetRequestedAtMs) > 750)
   {
-    Serial.println(F("Resetting WiFi credentials and restarting."));
+    debugSerial.println(F("Resetting WiFi credentials and restarting."));
     WiFi.disconnect(true, true);
     delay(150);
     ESP.restart();
@@ -865,14 +952,14 @@ void loop()
   wink(); // The builtin LED
 #endif
 
-  unchanged_anunicateAlarmLevel(&Serial);
+  unchanged_anunicateAlarmLevel(&debugSerial);
   // delay(20);
   GPAD_HAL_loop();
 
-  processSerial(&Serial, &Serial, &client);
+  processSerial(&debugSerial, &debugSerial, &client);
 
   // Here we also process the UART1 using the same routine.
-  processSerial(&Serial, &uartSerial1, &client);
+  processSerial(&debugSerial, &uartSerial1, &client);
 
   // Here we will listen for an SPI command...
 
@@ -887,7 +974,7 @@ void loop()
   {
     lcd.clear();
     lcd.noBacklight();
-    restoreAlarmLevel(&Serial);
+    restoreAlarmLevel(&debugSerial);
     menu_just_exited = false;
   }
   if (running_menu)
