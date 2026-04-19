@@ -30,20 +30,23 @@
 
   <main class="container">
     <section class="card">
-      <h1>KRAKE </h1>
-      <p class="subtitle">A Public Invention device</p>
+      <h1>KRAKE Device Overview</h1>
+      <p class="subtitle">Public Invention-ready interface for field diagnostics and status tracking.</p>
 
-      <div class="info-row"><span class="label">Serial:</span> <span id="serial">%SERIAL%</span></div>
-      <div class="info-row"><span class="label">URL:</span> <span id="deviceUrl">%URL%</span></div>
-      <div class="info-row"><span class="label">IP:</span> <span id="ip">%IP%</span></div>
-      <div class="info-row"><span class="label">MAC:</span> <span id="mac">%MAC%</span></div>
-      <div class="info-row"><span class="label">WiFi RSSI:</span> <span id="rssi">%RSSI%</span></div>
-      <div class="info-row"><span class="label">Uptime:</span> <span id="uptime">%UPTIME%</span></div>
-      <div class="info-row"><span class="label">MQTT:</span> <span id="mqtt">%MQTT%</span></div>
-      <div class="info-row"><span class="label">Firmware:</span> <span id="firmware">%FIRMWARE_VERSION%</span></div>
-      <div class="info-row"><span class="label">Compiled:</span> <span id="compiled">%COMPILED_AT%</span></div>
+      <div class="info-grid">
+        <div class="info-row"><span class="label">Serial</span><span id="serial">%SERIAL%</span></div>
+        <div class="info-row"><span class="label">URL</span><span id="deviceUrl">%URL%</span></div>
+        <div class="info-row"><span class="label">IP</span><span id="ip">%IP%</span></div>
+        <div class="info-row"><span class="label">MAC</span><span id="mac">%MAC%</span></div>
+        <div class="info-row"><span class="label">WiFi RSSI</span><span id="rssi">%RSSI%</span></div>
+        <div class="info-row"><span class="label">Uptime</span><span id="uptime">%UPTIME%</span></div>
+        <div class="info-row"><span class="label">MQTT</span><span id="mqtt">%MQTT%</span></div>
+        <div class="info-row"><span class="label">Firmware</span><span id="firmware">%FIRMWARE_VERSION%</span></div>
+        <div class="info-row"><span class="label">Compiled</span><span id="compiled">%COMPILED_AT%</span></div>
+      </div>
 
       <div class="qr-box">
+        <span class="label">Device QR</span>
         <img src="%QR%" alt="QR Code">
       </div>
     </section>
