@@ -7,7 +7,12 @@ use <COVER.scad>
 use <recessed.scad>
 use <slot.scad>
 use <flex_cover.scad>
+use <PartNumbering.scad>
 
+
+PartName = "TShell";
+PartVersion = "V4.0";
+Date = "26141";
 
 GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
 
@@ -33,6 +38,7 @@ Door_recess_y_offset = Krake_rev2_76mmSPK? PCBWidth  -93.5: 36.5;
 
 T_shell_part();
 
+
 module T_shell_part(){
 difference(){
 if(GPAD_TShellWithVESA == 1){
@@ -54,8 +60,6 @@ if (GPAD_TshellDoorRecess == 1){
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])rotate([180,0,90])translate([-15,-10,-3])cube([90,35+19,10]);
     
 }
-
-
 
 }
 
@@ -82,6 +86,12 @@ translate([55,20,0]){rotate([0,0,90])mirror([0,0,0])test_locking();
 if(recessed_module_on_off == 1){
 translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.25])translate([-34,-32,-40.2]) recessed_module();
 }
+
+if(NumberingSystem == 1){
+    translate([10,15,Height-2.7])mirror([0,1,0])rotate([0,0,0])
+        numbering(0.9,4,PartName,PartVersion,Date);
+    }
+
 }
 
 
