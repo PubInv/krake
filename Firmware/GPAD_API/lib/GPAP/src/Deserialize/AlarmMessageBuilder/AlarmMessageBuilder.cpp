@@ -52,7 +52,7 @@ std::size_t AlarmMessageBuilder::deserializeId(const char *const buffer, const s
     // Going 1 more than the max since the end character, ], can be after the max
     // length of the ID
     while ((idLength < (AlarmMessageId::MAX_LENGTH + 1)) &&
-           (idLength < numBytes) && !foundEnd)
+           ((idLength + 1) < numBytes) && !foundEnd)
     {
         // Need to offset the index by 1 since we have to account for the starting
         // character, [
@@ -77,8 +77,8 @@ std::size_t AlarmMessageBuilder::deserializeId(const char *const buffer, const s
     {
         this->idLength = idLength;
 
-        // Add 2 to the index value since that will account for the deliminating
-        // characters, '[' and ']'
+        // Add 2 to the index value since that will account for the delimiting
+        // characters, '{' and '}'
         return idLength + 2;
     }
 }
@@ -122,7 +122,7 @@ AlarmMessageBuilder::deserializeTypeDesignator(const char *const buffer, const s
     {
         this->designatorLength = designatorLength;
 
-        // Add 2 to the index value since that will account for the deliminating
+        // Add 2 to the index value since that will account for the delimiting
         // characters, '{' and '}'
         return designatorLength + 2;
     }
@@ -135,7 +135,6 @@ std::size_t AlarmMessageBuilder::deserializeMessage(const char *const buffer, co
     {
         if (AlarmMessageBuilder::isReservedCharacter(buffer[messageLength]))
         {
-            messageLength - 1;
             break;
         }
 

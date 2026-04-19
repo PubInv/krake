@@ -5,13 +5,13 @@
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f7f9;
-  color: #1b1b1b;
+  background: #edf6ef;
+  color: #173222;
 }
 
 .topbar {
   height: 60px;
-  background: #55b06e8a;
+  background: #1f7a3de0;
   color: white;
   display: flex;
   align-items: center;
@@ -47,7 +47,7 @@ body {
   right: -260px;
   width: 240px;
   height: calc(100% - 60px);
-  background: white;
+  background: #ffffff;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.12);
   transition: right 0.25s ease;
   padding: 14px 0;
@@ -61,14 +61,14 @@ body {
 .side-menu a {
   display: block;
   padding: 14px 18px;
-  color: #222;
+  color: #173222;
   text-decoration: none;
   border-bottom: 1px solid #eee;
   font-size: 0.98rem;
 }
 
 .side-menu a:hover {
-  background: #f2f6f8;
+  background: #eaf7ee;
 }
 
 .container {
@@ -78,7 +78,7 @@ body {
 }
 
 .card {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   padding: 18px;
   margin-bottom: 16px;
@@ -93,7 +93,7 @@ h1 {
 
 .subtitle {
   margin-top: 0;
-  color: #555;
+  color: #466253;
   margin-bottom: 18px;
 }
 
@@ -113,9 +113,9 @@ h1 {
 .qr-box img {
   width: 120px;
   max-width: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid #c9dfcf;
   border-radius: 8px;
-  background: white;
+  background: #ffffff;
 }
 
 .lcd-title {
@@ -162,6 +162,50 @@ h1 {
   display: inline-block;
   padding: 10px 14px;
   border-radius: 8px;
-  background: #146620;
+  background: #1f7a3d;
   color: #fff !important;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #1f7a3d;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.action-btn.secondary {
+  background: #426b54;
+}
+
+.action-btn.danger {
+  background: #b00020;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.text-input {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #c6d9cd;
+  font-size: 0.95rem;
+}
+
+.status-row {
+  margin-top: 8px;
+  color: #244533;
+}
+
+.note {
+  font-size: 0.95rem;
+  min-height: 1.2rem;
 }

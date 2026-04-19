@@ -291,7 +291,7 @@ void muteButtonCallback(byte buttonEvent)
   case onPress:
     // Do something...
     local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
-    currentlyMuted = !currentlyMuted;
+    toggleMuted();
     start_of_song = millis();
     annunciateAlarmLevel(local_ptr_to_serial);
     printAlarmState(local_ptr_to_serial);
@@ -444,13 +444,13 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   case gpap_message::MessageType::MUTE:
   {
     serialport->println(F("Muting Case!"));
-    currentlyMuted = true;
+    setMuted(true);
     break;
   }
   case gpap_message::MessageType::UNMUTE:
   {
     serialport->println(F("UnMuting Case!"));
-    currentlyMuted = false;
+    setMuted(false);
     break;
   }
   case gpap_message::MessageType::HELP:

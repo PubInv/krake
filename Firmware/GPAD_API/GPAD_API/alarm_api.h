@@ -45,6 +45,9 @@ typedef struct
 
 int alarm_event(AlarmEvent &event, Stream *serialport);
 int alarm(AlarmLevel level, char *str, Stream *serialport);
+void setMuted(bool muted);
+bool isMuted();
+void toggleMuted();
 
 AlarmLevel getCurrentAlarmLevel();
 char *getCurrentMessage();
