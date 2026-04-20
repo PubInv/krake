@@ -735,6 +735,9 @@ void setupOTA()
 
   server.serveStatic("/", LittleFS, "/");
 
+  server.onNotFound([](AsyncWebServerRequest *request)
+                    { request->send(LittleFS, "/404.html", "text/html"); });
+
   // End of ELegant OTA Setup
 }
 
