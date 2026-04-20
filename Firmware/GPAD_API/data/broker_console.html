@@ -6,6 +6,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/style.css">
+  <style>
+    .console-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .chip {
+      border: 1px solid #d7e7dc;
+      border-radius: 10px;
+      background: #f8fbf9;
+      padding: 9px 11px;
+      font-size: 0.9rem;
+      color: #315541;
+    }
+    .chip strong { color: #113521; }
+    .meta-line { font-size: 0.85rem; color: #4d6658; margin-top: 8px; }
+    .quick-topics {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .topic-btn {
+      border: 1px solid #b8d2c2;
+      border-radius: 999px;
+      background: #eef7f1;
+      color: #1c5438;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .topic-btn:hover { background: #def0e4; }
+    .topic-btn.small { font-size: 0.78rem; padding: 5px 9px; }
+    .status-table td code { font-size: 0.78rem; }
+    .row-online { background: #f4fcf6; }
+    .row-offline { background: #fff8f8; }
+    .pill {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .pill.ok { background: #d6f0df; color: #125a32; }
+    .pill.bad { background: #f8d8df; color: #7b1a32; }
+    @media (min-width: 980px) {
+      .console-grid { grid-template-columns: 1fr 1fr; }
+      .console-grid .card-wide { grid-column: 1 / -1; }
+    }
+  </style>
 </head>
 <body>
   <header class="topbar">
@@ -28,56 +81,85 @@
   </nav>
 
   <main class="container">
-    <section class="card">
-      <h1>Send Message / Alarm</h1>
-      <p class="subtitle">Publish messages directly to the broker for remote KRAKE devices.</p>
+    <div class="status-strip">
+      <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
+      <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
+      <div class="chip">Watched topic: <strong id="watchTopicCurrent">-</strong></div>
+      <div class="chip">Drakes seen: <strong id="drakeCount">0</strong></div>
+    </div>
 
-      <label for="publishTopic">Topic</label>
-      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+    <div class="console-grid">
+      <section class="card">
+        <h1>Send Message / Alarm</h1>
+        <p class="subtitle">Publish MQTT payloads directly for test and validation workflows.</p>
 
-      <label for="publishPayload">Payload</label>
-      <textarea id="publishPayload" class="text-input" rows="4" placeholder="ALARM,3,High pressure"></textarea>
+        <label for="publishTopic">Topic</label>
+        <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
 
-      <div class="button-row">
-        <button class="action-btn" onclick="publishMessage()">Send Message</button>
-        <button class="action-btn secondary" onclick="fillAlarmTemplate()">Alarm Template</button>
-      </div>
-      <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
-    </section>
+        <label for="publishPayload">Payload</label>
+        <textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea>
 
-    <section class="card">
-      <h1>Watch Topic Participation</h1>
-      <p class="subtitle">Track drakes observed publishing on a selected topic (proxy for active subscribers).</p>
+        <div class="quick-topics" aria-label="quick publish topic templates">
+          <button class="topic-btn small" onclick="fillPublishTopicSuffix('_ALM')">Use _ALM</button>
+          <button class="topic-btn small" onclick="fillPublishTopicSuffix('_ACK')">Use _ACK</button>
+          <button class="topic-btn small" onclick="fillAlarmTemplate()">Alarm payload</button>
+          <button class="topic-btn small" onclick="fillInfoTemplate()">Info payload</button>
+        </div>
 
-      <label for="watchTopic">Topic to watch</label>
-      <input id="watchTopic" class="text-input" placeholder="hospital/floor1/alerts" />
-      <button class="action-btn" onclick="saveWatchTopic()">Start Watching</button>
-      <div class="status-row">Current watch topic: <code id="watchTopicCurrent">-</code></div>
-    </section>
+        <div class="button-row">
+          <button class="action-btn" onclick="publishMessage()">Send Message</button>
+          <button class="action-btn secondary" onclick="copyWatchToPublish()">Copy watched topic</button>
+        </div>
+        <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
+      </section>
 
-    <section class="card">
-      <h1>Drake Status Seen by Broker</h1>
-      <p class="subtitle">Online list is built from <code>+_ACK</code> status beacons.</p>
+      <section class="card">
+        <h1>Monitor Topic Activity</h1>
+        <p class="subtitle">Use known KRAKE topic patterns to monitor participants and ACK flow.</p>
 
-      <div style="overflow-x:auto;">
-        <table class="status-table">
-          <thead>
-            <tr>
-              <th>Drake ID</th>
-              <th>Online</th>
-              <th>Topic Active</th>
-              <th>RSSI</th>
-              <th>Status</th>
-              <th>Last Topic</th>
-              <th>Age (s)</th>
-            </tr>
-          </thead>
-          <tbody id="drakeTableBody">
-            <tr><td colspan="7">Waiting for broker data...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <label for="watchTopic">Topic to watch</label>
+        <input id="watchTopic" class="text-input" placeholder="10061C686A14_ACK" />
+
+        <div class="quick-topics">
+          <button class="topic-btn" onclick="setWatchTopic('10061C686A14_ACK')">20240421_USA4_ACK</button>
+          <button class="topic-btn" onclick="setWatchTopic('CCDBA730098C_ACK')">20240421_LEB1_ACK</button>
+          <button class="topic-btn" onclick="setWatchTopic('F024F9F1B874_ACK')">KRAKE_LB0001_ACK</button>
+          <button class="topic-btn" onclick="setWatchTopic('adam/out/LEBANON-5')">ADAM_Server</button>
+        </div>
+
+        <div class="button-row">
+          <button class="action-btn" onclick="saveWatchTopic()">Start Watching</button>
+          <button class="action-btn secondary" onclick="clearWatchTopic()">Clear</button>
+        </div>
+        <div class="meta-line">Tip: if you monitor <code>*_ACK</code>, the table will highlight online/offline and participant age.</div>
+      </section>
+
+      <section class="card card-wide">
+        <h1>KRAKE Device Status</h1>
+        <p class="subtitle">Online list is built from <code>_ACK</code> status beacons and optional watched topic participation.</p>
+
+        <div style="overflow-x:auto;">
+          <table class="status-table">
+            <thead>
+              <tr>
+                <th>Device</th>
+                <th>MAC / ID</th>
+                <th>Online</th>
+                <th>Topic active</th>
+                <th>RSSI</th>
+                <th>Status</th>
+                <th>Last topic</th>
+                <th>Age status (s)</th>
+                <th>Age topic (s)</th>
+              </tr>
+            </thead>
+            <tbody id="drakeTableBody">
+              <tr><td colspan="9">Waiting for broker data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </main>
 
   <footer class="footer">
@@ -85,8 +167,16 @@
   </footer>
 
   <script>
+    const macToName = {
+      '10061C686A14': '20240421_USA4',
+      'CCDBA730098C': '20240421_LEB1',
+      'F024F9F1B874': 'KRAKE_LB0001',
+      '3C61053EE100': 'PPG_Lee',
+      'A0B765F51E28': 'MockingKrake_LEB'
+    };
+
     function toggleMenu() {
-      document.getElementById("sideMenu").classList.toggle("open");
+      document.getElementById('sideMenu').classList.toggle('open');
     }
 
     function showMessage(msg, isError = false) {
@@ -107,21 +197,51 @@
       return text;
     }
 
+    function fillPublishTopicSuffix(suffix) {
+      const input = document.getElementById('publishTopic');
+      const v = (input.value || '').trim();
+      if (!v) {
+        input.value = '10061C686A14' + suffix;
+        return;
+      }
+      input.value = v.replace(/(_ACK|_ALM)$/i, '') + suffix;
+    }
+
     function fillAlarmTemplate() {
-      document.getElementById('publishPayload').value = 'ALARM,3,Message from broker console';
+      document.getElementById('publishPayload').value = 'a3 20260420_121212 BrokerConsole test alarm';
+    }
+
+    function fillInfoTemplate() {
+      document.getElementById('publishPayload').value = 'i1 20260420_121212 BrokerConsole status ping';
+    }
+
+    function copyWatchToPublish() {
+      const watch = document.getElementById('watchTopic').value.trim();
+      if (watch) document.getElementById('publishTopic').value = watch;
     }
 
     async function publishMessage() {
       try {
         const topic = document.getElementById('publishTopic').value.trim();
         const payload = document.getElementById('publishPayload').value;
+        if (!topic) throw new Error('Topic is required');
         const result = await postForm('/broker-console/publish', { topic, payload });
         document.getElementById('publishResult').textContent = result;
-        showMessage('Message published.');
+        showMessage('Message published to ' + topic + '.');
       } catch (e) {
         document.getElementById('publishResult').textContent = 'failed';
         showMessage('Publish failed: ' + e.message, true);
       }
+    }
+
+    function setWatchTopic(topic) {
+      document.getElementById('watchTopic').value = topic;
+      saveWatchTopic();
+    }
+
+    async function clearWatchTopic() {
+      document.getElementById('watchTopic').value = '';
+      await saveWatchTopic();
     }
 
     async function saveWatchTopic() {
@@ -129,30 +249,44 @@
         const topic = document.getElementById('watchTopic').value.trim();
         await postForm('/broker-console/topic', { topic });
         document.getElementById('watchTopicCurrent').textContent = topic || '-';
-        showMessage('Watch topic updated.');
+        showMessage(topic ? ('Watch topic updated: ' + topic) : 'Watch topic cleared.');
       } catch (e) {
         showMessage('Failed to update watch topic: ' + e.message, true);
       }
     }
 
+    function displayName(id) {
+      if (!id) return '-';
+      const short = id.substring(0, 12);
+      return macToName[short] || short;
+    }
+
     function renderDrakes(drakes) {
       const body = document.getElementById('drakeTableBody');
+      document.getElementById('drakeCount').textContent = String((drakes || []).length);
       if (!drakes || drakes.length === 0) {
-        body.innerHTML = '<tr><td colspan="7">No drakes observed yet.</td></tr>';
+        body.innerHTML = '<tr><td colspan="9">No drakes observed yet.</td></tr>';
         return;
       }
 
-      body.innerHTML = drakes.map(d => `
-        <tr>
-          <td>${d.id || '-'}</td>
-          <td>${d.online ? 'online' : 'offline'}</td>
-          <td>${d.topicParticipant ? 'active' : 'idle'}</td>
-          <td>${d.rssi ?? '-'}</td>
-          <td>${d.status || '-'}</td>
-          <td>${d.lastTopic || '-'}</td>
-          <td>${d.secondsSinceStatus ?? '-'}</td>
-        </tr>
-      `).join('');
+      body.innerHTML = drakes.map(d => {
+        const onlineClass = d.online ? 'ok' : 'bad';
+        const topicClass = d.topicParticipant ? 'ok' : 'bad';
+        const rowClass = d.online ? 'row-online' : 'row-offline';
+        return `
+          <tr class="${rowClass}">
+            <td>${displayName(d.id)}</td>
+            <td><code>${d.id || '-'}</code></td>
+            <td><span class="pill ${onlineClass}">${d.online ? 'ONLINE' : 'OFFLINE'}</span></td>
+            <td><span class="pill ${topicClass}">${d.topicParticipant ? 'ACTIVE' : 'IDLE'}</span></td>
+            <td>${d.rssi ?? '-'}</td>
+            <td>${d.status || '-'}</td>
+            <td><code>${d.lastTopic || '-'}</code></td>
+            <td>${d.secondsSinceStatus ?? '-'}</td>
+            <td>${d.secondsSinceTopic ?? '-'}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function refreshData() {
