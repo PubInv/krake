@@ -510,30 +510,36 @@ bool isWatchedTopic(const char *topic)
   return false;
 }
 
-void markWatchedTopicParticipant(const char *topic, const String &payloadMsg)
+String extractDrakeIdFromTopic(const char *topic)
+{
+  String id = String(topic);
+  const int slash = id.indexOf('/');
+  if (slash > 0)
+  {
+    id = id.substring(0, slash);
+  }
+  const int underscore = id.indexOf('_');
+  if (underscore > 0)
+  {
+    id = id.substring(0, underscore);
+  }
+  id.trim();
+  id.toUpperCase();
+  return id;
+}
+
+void markWatchedTopicParticipant(const char *topic)
 {
   if (!isWatchedTopic(topic))
   {
     return;
   }
 
-  String drakeId;
-  const int idTokenStart = payloadMsg.indexOf("id:");
-  if (idTokenStart >= 0)
-  {
-    drakeId = payloadMsg.substring(idTokenStart + 3);
-    const int splitAt = drakeId.indexOf(' ');
-    if (splitAt > 0)
-    {
-      drakeId = drakeId.substring(0, splitAt);
-    }
-  }
+  String drakeId = extractDrakeIdFromTopic(topic);
   if (drakeId.length() == 0)
   {
-    drakeId = "TOPIC_PARTICIPANT";
+    return;
   }
-  drakeId.trim();
-  drakeId.toUpperCase();
 
   const int idx = indexForDrake(drakeId);
   if (idx < 0)
@@ -797,7 +803,7 @@ void callback(char *topic, byte *payload, unsigned int length)
       updateDrakeStatusFromAck(topic, payloadText);
       return;
     }
-    markWatchedTopicParticipant(topic, payloadText);
+    markWatchedTopicParticipant(topic);
     interpretBuffer(mbuff, m, &debugSerial, &client); // Process the MQTT message
     annunciateAlarmLevel(&debugSerial);
   }
@@ -1026,6 +1032,13 @@ void setupOTA()
                 request->send(400, "text/plain", "missing topics");
                 return;
               }
+              char previousWatchedTopics[MAX_WATCH_TOPICS][MAX_TOPIC_LEN];
+              const uint8_t previousWatchedTopicCount = watchedTopicCount;
+              for (uint8_t i = 0; i < MAX_WATCH_TOPICS; i++)
+              {
+                strncpy(previousWatchedTopics[i], watchedTopics[i], MAX_TOPIC_LEN - 1);
+                previousWatchedTopics[i][MAX_TOPIC_LEN - 1] = '\0';
+              }
               const String newTopics = request->hasParam("topics", true) ? request->getParam("topics", true)->value() : request->getParam("topic", true)->value();
               if (!setWatchedTopics(newTopics))
               {
@@ -1034,6 +1047,13 @@ void setupOTA()
               }
               if (client.connected())
               {
+                for (uint8_t i = 0; i < previousWatchedTopicCount; i++)
+                {
+                  if (previousWatchedTopics[i][0] != '\0')
+                  {
+                    client.unsubscribe(previousWatchedTopics[i]);
+                  }
+                }
                 for (uint8_t i = 0; i < watchedTopicCount; i++)
                 {
                   client.subscribe(watchedTopics[i]);
@@ -1043,9 +1063,9 @@ void setupOTA()
 
   server.on("/broker-console/publish", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              if (!request->hasParam("topic", true) || !request->hasParam("payload", true))
+              if (!request->hasParam("topic", true))
               {
-                request->send(400, "text/plain", "missing topic or payload");
+                request->send(400, "text/plain", "missing topic");
                 return;
               }
               if (!client.connected())
@@ -1053,8 +1073,14 @@ void setupOTA()
                 request->send(503, "text/plain", "mqtt disconnected");
                 return;
               }
-              const String topic = request->getParam("topic", true)->value();
-              const String payload = request->getParam("payload", true)->value();
+              String topic = request->getParam("topic", true)->value();
+              String payload = request->hasParam("payload", true) ? request->getParam("payload", true)->value() : "";
+              topic.trim();
+              if (topic.length() == 0)
+              {
+                request->send(400, "text/plain", "topic is required");
+                return;
+              }
               bool ok = client.publish(topic.c_str(), payload.c_str());
               request->send(ok ? 200 : 500, "text/plain", ok ? "published" : "publish failed"); });
 
