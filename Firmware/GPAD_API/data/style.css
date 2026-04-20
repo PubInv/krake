@@ -270,3 +270,23 @@ h1 {
   }
   .container { padding-top: 14px; }
 }
+
+
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.status-table th,
+.status-table td {
+  border: 1px solid #d7e7dc;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.status-table th {
+  background: #f1f7f3;
+  color: #1f4a34;
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KRAKE Broker Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
+      <span>Broker Console</span>
+    </div>
+    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+  </header>
+
+  <nav id="sideMenu" class="side-menu">
+    <a href="/update">Update Firmware</a>
+    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
+    <a href="/Electrical_testHistory.html">Electrical Test History</a>
+    <a href="/monitor">Factory Test / Developer Monitor</a>
+    <a href="/broker-console">Broker Console</a>
+    <a href="/manual">User Manual</a>
+    <a href="/settings">Settings</a>
+    <a class="menu-home" href="/index.html">Home</a>
+  </nav>
+
+  <main class="container">
+    <section class="card">
+      <h1>Send Message / Alarm</h1>
+      <p class="subtitle">Publish messages directly to the broker for remote KRAKE devices.</p>
+
+      <label for="publishTopic">Topic</label>
+      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+
+      <label for="publishPayload">Payload</label>
+      <textarea id="publishPayload" class="text-input" rows="4" placeholder="ALARM,3,High pressure"></textarea>
+
+      <div class="button-row">
+        <button class="action-btn" onclick="publishMessage()">Send Message</button>
+        <button class="action-btn secondary" onclick="fillAlarmTemplate()">Alarm Template</button>
+      </div>
+      <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
+    </section>
+
+    <section class="card">
+      <h1>Watch Topic Participation</h1>
+      <p class="subtitle">Track drakes observed publishing on a selected topic (proxy for active subscribers).</p>
+
+      <label for="watchTopic">Topic to watch</label>
+      <input id="watchTopic" class="text-input" placeholder="hospital/floor1/alerts" />
+      <button class="action-btn" onclick="saveWatchTopic()">Start Watching</button>
+      <div class="status-row">Current watch topic: <code id="watchTopicCurrent">-</code></div>
+    </section>
+
+    <section class="card">
+      <h1>Drake Status Seen by Broker</h1>
+      <p class="subtitle">Online list is built from <code>+_ACK</code> status beacons.</p>
+
+      <div style="overflow-x:auto;">
+        <table class="status-table">
+          <thead>
+            <tr>
+              <th>Drake ID</th>
+              <th>Online</th>
+              <th>Topic Active</th>
+              <th>RSSI</th>
+              <th>Status</th>
+              <th>Last Topic</th>
+              <th>Age (s)</th>
+            </tr>
+          </thead>
+          <tbody id="drakeTableBody">
+            <tr><td colspan="7">Waiting for broker data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div id="message" class="note"></div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("open");
+    }
+
+    function showMessage(msg, isError = false) {
+      const node = document.getElementById('message');
+      node.textContent = msg;
+      node.style.color = isError ? '#b00020' : '#146620';
+    }
+
+    async function postForm(url, bodyObj) {
+      const body = new URLSearchParams(bodyObj);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
+      });
+      const text = await res.text();
+      if (!res.ok) throw new Error(text || 'Request failed');
+      return text;
+    }
+
+    function fillAlarmTemplate() {
+      document.getElementById('publishPayload').value = 'ALARM,3,Message from broker console';
+    }
+
+    async function publishMessage() {
+      try {
+        const topic = document.getElementById('publishTopic').value.trim();
+        const payload = document.getElementById('publishPayload').value;
+        const result = await postForm('/broker-console/publish', { topic, payload });
+        document.getElementById('publishResult').textContent = result;
+        showMessage('Message published.');
+      } catch (e) {
+        document.getElementById('publishResult').textContent = 'failed';
+        showMessage('Publish failed: ' + e.message, true);
+      }
+    }
+
+    async function saveWatchTopic() {
+      try {
+        const topic = document.getElementById('watchTopic').value.trim();
+        await postForm('/broker-console/topic', { topic });
+        document.getElementById('watchTopicCurrent').textContent = topic || '-';
+        showMessage('Watch topic updated.');
+      } catch (e) {
+        showMessage('Failed to update watch topic: ' + e.message, true);
+      }
+    }
+
+    function renderDrakes(drakes) {
+      const body = document.getElementById('drakeTableBody');
+      if (!drakes || drakes.length === 0) {
+        body.innerHTML = '<tr><td colspan="7">No drakes observed yet.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = drakes.map(d => `
+        <tr>
+          <td>${d.id || '-'}</td>
+          <td>${d.online ? 'online' : 'offline'}</td>
+          <td>${d.topicParticipant ? 'active' : 'idle'}</td>
+          <td>${d.rssi ?? '-'}</td>
+          <td>${d.status || '-'}</td>
+          <td>${d.lastTopic || '-'}</td>
+          <td>${d.secondsSinceStatus ?? '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function refreshData() {
+      try {
+        const res = await fetch('/broker-console/data');
+        if (!res.ok) throw new Error('Unable to load broker data');
+        const data = await res.json();
+        document.getElementById('watchTopicCurrent').textContent = data.watchedTopic || '-';
+        if (!document.getElementById('watchTopic').value && data.watchedTopic) {
+          document.getElementById('watchTopic').value = data.watchedTopic;
+        }
+        renderDrakes(data.drakes || []);
+      } catch (e) {
+        showMessage(e.message, true);
+      }
+    }
+
+    refreshData();
+    setInterval(refreshData, 2000);
+  </script>
+</body>
+</html>
