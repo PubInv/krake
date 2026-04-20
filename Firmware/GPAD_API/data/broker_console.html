@@ -84,7 +84,7 @@
     <div class="status-strip">
       <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
       <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
-      <div class="chip">Watched topic: <strong id="watchTopicCurrent">-</strong></div>
+      <div class="chip">Watched topics: <strong id="watchTopicCurrent">-</strong></div>
       <div class="chip">Drakes seen: <strong id="drakeCount">0</strong></div>
     </div>
 
@@ -117,18 +117,18 @@
         <h1>Monitor Topic Activity</h1>
         <p class="subtitle">Use known KRAKE topic patterns to monitor participants and ACK flow.</p>
 
-        <label for="watchTopic">Topic to watch</label>
-        <input id="watchTopic" class="text-input" placeholder="10061C686A14_ACK" />
+        <label for="watchTopic">Topics to watch (comma-separated)</label>
+        <input id="watchTopic" class="text-input" placeholder="10061C686A14_ACK,adam/out/LEBANON-5" />
 
         <div class="quick-topics">
-          <button class="topic-btn" onclick="setWatchTopic('10061C686A14_ACK')">20240421_USA4_ACK</button>
-          <button class="topic-btn" onclick="setWatchTopic('CCDBA730098C_ACK')">20240421_LEB1_ACK</button>
-          <button class="topic-btn" onclick="setWatchTopic('F024F9F1B874_ACK')">KRAKE_LB0001_ACK</button>
-          <button class="topic-btn" onclick="setWatchTopic('adam/out/LEBANON-5')">ADAM_Server</button>
+          <button class="topic-btn" onclick="appendWatchTopic('10061C686A14_ACK')">20240421_USA4_ACK</button>
+          <button class="topic-btn" onclick="appendWatchTopic('CCDBA730098C_ACK')">20240421_LEB1_ACK</button>
+          <button class="topic-btn" onclick="appendWatchTopic('F024F9F1B874_ACK')">KRAKE_LB0001_ACK</button>
+          <button class="topic-btn" onclick="appendWatchTopic('adam/out/LEBANON-5')">ADAM_Server</button>
         </div>
 
         <div class="button-row">
-          <button class="action-btn" onclick="saveWatchTopic()">Start Watching</button>
+          <button class="action-btn" onclick="saveWatchTopic()">Start Watching Topics</button>
           <button class="action-btn secondary" onclick="clearWatchTopic()">Clear</button>
         </div>
         <div class="meta-line">Tip: if you monitor <code>*_ACK</code>, the table will highlight online/offline and participant age.</div>
@@ -234,8 +234,11 @@
       }
     }
 
-    function setWatchTopic(topic) {
-      document.getElementById('watchTopic').value = topic;
+    function appendWatchTopic(topic) {
+      const input = document.getElementById('watchTopic');
+      const current = input.value.split(',').map(v => v.trim()).filter(Boolean);
+      if (!current.includes(topic)) current.push(topic);
+      input.value = current.join(',');
       saveWatchTopic();
     }
 
@@ -247,11 +250,11 @@
     async function saveWatchTopic() {
       try {
         const topic = document.getElementById('watchTopic').value.trim();
-        await postForm('/broker-console/topic', { topic });
+        await postForm('/broker-console/topic', { topics: topic });
         document.getElementById('watchTopicCurrent').textContent = topic || '-';
-        showMessage(topic ? ('Watch topic updated: ' + topic) : 'Watch topic cleared.');
+        showMessage(topic ? ('Watch topics updated: ' + topic) : 'Watch topics cleared.');
       } catch (e) {
-        showMessage('Failed to update watch topic: ' + e.message, true);
+        showMessage('Failed to update watch topics: ' + e.message, true);
       }
     }
 
@@ -294,9 +297,10 @@
         const res = await fetch('/broker-console/data');
         if (!res.ok) throw new Error('Unable to load broker data');
         const data = await res.json();
-        document.getElementById('watchTopicCurrent').textContent = data.watchedTopic || '-';
-        if (!document.getElementById('watchTopic').value && data.watchedTopic) {
-          document.getElementById('watchTopic').value = data.watchedTopic;
+        const watchedTopics = data.watchedTopics || data.watchedTopic || '';
+        document.getElementById('watchTopicCurrent').textContent = watchedTopics || '-';
+        if (!document.getElementById('watchTopic').value && watchedTopics) {
+          document.getElementById('watchTopic').value = watchedTopics;
         }
         renderDrakes(data.drakes || []);
       } catch (e) {
