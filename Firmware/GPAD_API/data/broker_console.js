@@ -60,18 +60,18 @@
     return minutes + 'm ' + remainder + 's';
   }
 
-  function renderDrakeTable(drakes) {
-    const tbody = byId('drakeTableBody');
+  function renderKrakeTable(krakes) {
+    const tbody = byId('krakeTableBody');
 
-    if (!drakes || drakes.length === 0) {
+    if (!krakes || krakes.length === 0) {
       tbody.innerHTML = '<tr><td colspan="9">No tracked devices yet.</td></tr>';
-      byId('drakeCount').textContent = '0';
+      byId('krakeCount').textContent = '0';
       return;
     }
 
-    const rows = drakes.map((drake) => {
-      const online = !!drake.online;
-      const topicActive = !!drake.topicParticipant;
+    const rows = krakes.map((krake) => {
+      const online = !!krake.online;
+      const topicActive = !!krake.topicParticipant;
       const rowClass = online ? 'row-online' : 'row-offline';
       const onlinePill = online
         ? '<span class="pill ok">ONLINE</span>'
@@ -82,21 +82,21 @@
 
       return [
         '<tr class="' + rowClass + '">',
-        '<td>' + parsePrimaryId(drake.id) + '</td>',
-        '<td><code>' + (drake.id || '-') + '</code></td>',
+        '<td>' + parsePrimaryId(krake.id) + '</td>',
+        '<td><code>' + (krake.id || '-') + '</code></td>',
         '<td>' + onlinePill + '</td>',
         '<td>' + topicPill + '</td>',
-        '<td>' + (Number.isFinite(drake.rssi) ? drake.rssi : '-') + '</td>',
-        '<td><code>' + (drake.status || '-') + '</code></td>',
-        '<td><code>' + (drake.lastTopic || '-') + '</code></td>',
-        '<td>' + ageText(drake.secondsSinceStatus) + '</td>',
-        '<td>' + ageText(drake.secondsSinceTopic) + '</td>',
+        '<td>' + (Number.isFinite(krake.rssi) ? krake.rssi : '-') + '</td>',
+        '<td><code>' + (krake.status || '-') + '</code></td>',
+        '<td><code>' + (krake.lastTopic || '-') + '</code></td>',
+        '<td>' + ageText(krake.secondsSinceStatus) + '</td>',
+        '<td>' + ageText(krake.secondsSinceTopic) + '</td>',
         '</tr>'
       ].join('');
     });
 
     tbody.innerHTML = rows.join('');
-    byId('drakeCount').textContent = String(drakes.length);
+    byId('krakeCount').textContent = String(krakes.length);
   }
 
   function updateWatchUi(watchedTopics) {
@@ -114,7 +114,16 @@
 
       const data = await response.json();
       updateWatchUi(data.watchedTopics || data.watchedTopic || '');
-      renderDrakeTable(Array.isArray(data.drakes) ? data.drakes : []);
+      renderKrakeTable(Array.isArray(data.krakes) ? data.krakes : []);
+      byId('brokerName').textContent = data.broker || byId('brokerName').textContent;
+      byId('brokerLive').textContent = data.broker || "-";
+      byId('subTopicLive').textContent = data.subscribeAlarmTopic || "-";
+      byId('ackTopicLive').textContent = data.publishAckTopic || "-";
+      byId('mqttState').textContent = data.mqttConnected ? "connected" : "disconnected";
+      const publishTopic = byId('publishTopic');
+      if (publishTopic && !publishTopic.value.trim() && data.subscribeAlarmTopic) {
+        publishTopic.value = data.subscribeAlarmTopic;
+      }
     } catch (error) {
       showMessage('Broker data refresh failed: ' + error.message, true);
     }
@@ -198,6 +207,14 @@
     byId('btnInfoTemplate').addEventListener('click', () => {
       const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
       byId('publishPayload').value = 'a0 ' + timestamp + ' Test info message';
+    });
+
+    byId('btnMuteTemplate').addEventListener('click', () => {
+      byId('publishPayload').value = 'S';
+    });
+
+    byId('btnUnmuteTemplate').addEventListener('click', () => {
+      byId('publishPayload').value = 'U';
     });
   }
 
