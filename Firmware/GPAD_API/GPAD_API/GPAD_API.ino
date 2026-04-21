@@ -953,6 +953,7 @@ void setupOTA()
             {
               String payload = "{";
               payload += "\"ip\":\"" + jsonEscape(wifiManager.getAddress().toString()) + "\",";
+              payload += "\"serial\":\"" + jsonEscape(String(macAddressString)) + "\",";
               payload += "\"mac\":\"" + jsonEscape(String(macAddressString)) + "\",";
               payload += "\"rssi\":\"" + String(WiFi.RSSI()) + " dBm\",";
               payload += "\"uptime\":\"" + jsonEscape(uptimeString()) + "\",";
@@ -971,6 +972,9 @@ void setupOTA()
 
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/settings.html", "text/html"); });
+
+  server.on("/manual", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/manual.html", "text/html"); });
 
   server.on("/settings-data", HTTP_GET, [](AsyncWebServerRequest *request)
             {
