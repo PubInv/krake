@@ -34,15 +34,15 @@
       <h1>KRAKE </h1>
       <p class="subtitle">A Public Invention device</p>
 
-      <div class="info-row"><span class="label">Serial:</span><span class="value">%SERIAL%</span></div>
-      <div class="info-row"><span class="label">URL:</span><span class="value">%URL%</span></div>
-      <div class="info-row"><span class="label">IP:</span><span class="value">%IP%</span></div>
-      <div class="info-row"><span class="label">MAC:</span><span class="value">%MAC%</span></div>
-      <div class="info-row"><span class="label">WiFi RSSI:</span><span class="value">%RSSI%</span></div>
-      <div class="info-row"><span class="label">Uptime:</span><span class="value">%UPTIME%</span></div>
-      <div class="info-row"><span class="label">MQTT:</span><span class="value">%MQTT%</span></div>
-      <div class="info-row"><span class="label">Firmware:</span><span class="value">%FIRMWARE_VERSION%</span></div>
-      <div class="info-row"><span class="label">Compiled:</span><span class="value">%COMPILED_AT%</span></div>
+      <div class="info-row"><span class="label">Serial:</span><span id="serial" class="value">%SERIAL%</span></div>
+      <div class="info-row"><span class="label">URL:</span><span id="deviceUrl" class="value">%URL%</span></div>
+      <div class="info-row"><span class="label">IP:</span><span id="ip" class="value">%IP%</span></div>
+      <div class="info-row"><span class="label">MAC:</span><span id="mac" class="value">%MAC%</span></div>
+      <div class="info-row"><span class="label">WiFi RSSI:</span><span id="rssi" class="value">%RSSI%</span></div>
+      <div class="info-row"><span class="label">Uptime:</span><span id="uptime" class="value">%UPTIME%</span></div>
+      <div class="info-row"><span class="label">MQTT:</span><span id="mqtt" class="value">%MQTT%</span></div>
+      <div class="info-row"><span class="label">Firmware:</span><span id="firmware" class="value">%FIRMWARE_VERSION%</span></div>
+      <div class="info-row"><span class="label">Compiled:</span><span id="compiled" class="value">%COMPILED_AT%</span></div>
         <!-- <div class="qr-box">
         <img src="%QR%" alt="QR Code">
       </div> -->
@@ -98,14 +98,20 @@
         if (!res.ok) return;
         const data = await res.json();
 
-        document.getElementById("ip").textContent = data.ip || "-";
-        document.getElementById("mac").textContent = data.mac || "-";
-        document.getElementById("rssi").textContent = data.rssi || "-";
-        document.getElementById("uptime").textContent = data.uptime || "-";
-        document.getElementById("mqtt").textContent = data.mqtt || "-";
-        document.getElementById("firmware").textContent = data.firmware || "-";
-        document.getElementById("compiled").textContent = data.compiled || "-";
-        document.getElementById("deviceUrl").textContent = data.url || "-";
+        const setText = (id, value) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = value || "-";
+        };
+
+        setText("serial", data.serial || data.mac);
+        setText("ip", data.ip);
+        setText("mac", data.mac);
+        setText("rssi", data.rssi);
+        setText("uptime", data.uptime);
+        setText("mqtt", data.mqtt);
+        setText("firmware", data.firmware);
+        setText("compiled", data.compiled);
+        setText("deviceUrl", data.url);
       } catch (e) {
         console.log("Status fetch failed");
       }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KRAKE User Manual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
+      <span>User Manual</span>
+    </div>
+    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+  </header>
+
+  <nav id="sideMenu" class="side-menu">
+    <a href="/update">Update Firmware</a>
+    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
+    <a href="/Electrical_testHistory.html">Electrical Test History</a>
+    <a href="/monitor">Factory Test / Developer Monitor</a>
+    <a href="/broker-console">Broker Console</a>
+    <a href="/manual">User Manual</a>
+    <a href="/settings">Settings</a>
+    <a class="menu-home" href="/index.html">Home</a>
+  </nav>
+
+  <main class="container">
+    <section class="card">
+      <h1>KRAKE Quick Start</h1>
+      <p class="subtitle">Basic usage and where to find key diagnostics.</p>
+      <ul>
+        <li><strong>Home</strong>: serial, MAC, IP, firmware, MQTT status, and live LCD output.</li>
+        <li><strong>Settings</strong>: broker/topic settings, mute control, and WiFi reset.</li>
+        <li><strong>Broker Console</strong>: publish test alarms and monitor ACK topics.</li>
+        <li><strong>Factory Test / Developer Monitor</strong>: live UART monitor output.</li>
+      </ul>
+      <p class="subtitle">Tip: The serial number shown on these pages is the MAC-based device identifier used in topics.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="https://pubinv.org" target="_blank">pubinv.org</a>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("open");
+    }
+  </script>
+</body>
+</html>
