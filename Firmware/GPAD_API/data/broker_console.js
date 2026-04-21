@@ -23,6 +23,13 @@
     node.style.color = isError ? '#b00020' : '#146620';
   }
 
+  function setWebMessageResult(message, isError = false) {
+    const node = byId('webMessageResult');
+    if (!node) return;
+    node.textContent = message;
+    node.style.color = isError ? '#b00020' : '#146620';
+  }
+
   async function postForm(url, bodyObj) {
     const response = await fetch(url, {
       method: 'POST',
@@ -188,6 +195,34 @@
     }
   }
 
+  async function sendWebMessage() {
+    const topic = byId('publishTopic').value.trim();
+    const textInput = byId('webMessageText');
+    const messageText = textInput ? textInput.value.trim() : '';
+
+    if (!topic) {
+      setWebMessageResult('Topic is required.', true);
+      return;
+    }
+
+    if (!messageText) {
+      setWebMessageResult('Message text is required.', true);
+      return;
+    }
+
+    const payload = 'a0 ' + messageText;
+
+    try {
+      const result = await postForm('/broker-console/publish', { topic, payload });
+      setWebMessageResult(result || 'Published');
+      showMessage('Webpage message published.');
+      byId('publishPayload').value = payload;
+    } catch (error) {
+      setWebMessageResult(error.message, true);
+      showMessage('Webpage message publish failed: ' + error.message, true);
+    }
+  }
+
   function setupTemplates() {
     byId('btnUseAlm').addEventListener('click', () => {
       const base = parsePrimaryId(byId('publishTopic').value.trim()).replace(/[^A-Za-z0-9]/g, '');
@@ -227,6 +262,10 @@
     byId('btnStartWatching').addEventListener('click', startWatchingTopics);
     byId('btnClearWatch').addEventListener('click', clearWatchTopics);
     byId('btnSendMessage').addEventListener('click', publishMessage);
+    const sendWebBtn = byId('btnSendWebMessage');
+    if (sendWebBtn) {
+      sendWebBtn.addEventListener('click', sendWebMessage);
+    }
 
     byId('btnCopyWatch').addEventListener('click', async () => {
       try {
