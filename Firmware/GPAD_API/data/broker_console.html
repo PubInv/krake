@@ -165,7 +165,7 @@
       <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
       <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
       <div class="chip">Watched topics: <strong id="watchTopicCurrent">-</strong></div>
-      <div class="chip">Drakes seen: <strong id="drakeCount">0</strong></div>
+      <div class="chip">Krakes seen: <strong id="krakeCount">0</strong></div>
     </div>
 
     <div class="console-grid">
@@ -184,6 +184,8 @@
           <button id="btnUseAck" class="topic-btn small" type="button">Use _ACK</button>
           <button id="btnAlarmTemplate" class="topic-btn small" type="button">Alarm payload</button>
           <button id="btnInfoTemplate" class="topic-btn small" type="button">Info payload</button>
+          <button id="btnMuteTemplate" class="topic-btn small" type="button">Mute payload</button>
+          <button id="btnUnmuteTemplate" class="topic-btn small" type="button">Unmute payload</button>
         </div>
 
         <div class="button-row">
@@ -225,14 +227,17 @@
           <div class="info-row"><span class="label">MAC</span><span class="value">%MAC%</span></div>
           <div class="info-row"><span class="label">WiFi RSSI</span><span class="value">%RSSI%</span></div>
           <div class="info-row"><span class="label">Uptime</span><span class="value">%UPTIME%</span></div>
-          <div class="info-row"><span class="label">MQTT</span><span class="value">%MQTT%</span></div>
+          <div class="info-row"><span class="label">MQTT</span><span id="mqttState" class="value">%MQTT%</span></div>
+          <div class="info-row"><span class="label">Broker (live)</span><span id="brokerLive" class="value">-</span></div>
+          <div class="info-row"><span class="label">Subscribe</span><span id="subTopicLive" class="value">-</span></div>
+          <div class="info-row"><span class="label">Publish ACK</span><span id="ackTopicLive" class="value">-</span></div>
           <div class="info-row"><span class="label">Firmware</span><span class="value">%FIRMWARE_VERSION%</span></div>
           <div class="info-row"><span class="label">Compiled</span><span class="value">%COMPILED_AT%</span></div>
         </div>
       </section>
 
       <section class="card card-wide">
-        <h1>KRAKE Device Status</h1>
+        <h1>KRAKE Fleet Status</h1>
         <p class="subtitle">Online list is built from <code>_ACK</code> status beacons and optional watched topic participation.</p>
 
         <div style="overflow-x:auto;">
@@ -250,7 +255,7 @@
                 <th>Age topic (s)</th>
               </tr>
             </thead>
-            <tbody id="drakeTableBody">
+            <tbody id="krakeTableBody">
               <tr><td colspan="9">Waiting for broker data...</td></tr>
             </tbody>
           </table>

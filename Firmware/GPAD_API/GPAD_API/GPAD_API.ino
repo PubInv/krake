@@ -209,16 +209,16 @@ const uint8_t MAX_EXTRA_TOPICS = 4;
 const size_t MAX_TOPIC_LEN = 64;
 char subscribe_Extra_Topics[MAX_EXTRA_TOPICS][MAX_TOPIC_LEN];
 uint8_t subscribe_Extra_Topic_Count = 0;
-const char *STATUS_DISCOVERY_TOPIC = "+_ACK";
+const char *STATUS_DISCOVERY_TOPIC = "#";
 const uint8_t MAX_WATCH_TOPICS = 4;
 char watchedTopics[MAX_WATCH_TOPICS][MAX_TOPIC_LEN];
 uint8_t watchedTopicCount = 0;
 unsigned long wifiResetRequestedAtMs = 0;
 
-const uint8_t MAX_TRACKED_DRAKES = 16;
-const unsigned long DRAKE_ONLINE_TIMEOUT_MS = 30000;
+const uint8_t MAX_TRACKED_KRAKES = 16;
+const unsigned long KRAKE_ONLINE_TIMEOUT_MS = 30000;
 const unsigned long TOPIC_PARTICIPATION_TIMEOUT_MS = 120000;
-struct TrackedDrake
+struct TrackedKrake
 {
   bool inUse;
   char id[17];
@@ -229,9 +229,10 @@ struct TrackedDrake
   char status[80];
   char lastTopic[MAX_TOPIC_LEN];
 };
-TrackedDrake trackedDrakes[MAX_TRACKED_DRAKES];
+TrackedKrake trackedKrakes[MAX_TRACKED_KRAKES];
 
 String jsonEscape(const String &raw);
+bool endsWithAckTopic(const char *topic);
 
 const size_t MAC_ADDRESS_STRING_LENGTH = 13;
 // MQTT Topics, MAC plus an extention
@@ -381,6 +382,10 @@ bool isManagedSubscribedTopic(const char *topic)
   {
     return true;
   }
+  if (endsWithAckTopic(topic))
+  {
+    return true;
+  }
   if (strcmp(topic, subscribe_Alarm_Topic) == 0)
   {
     return true;
@@ -412,36 +417,36 @@ bool endsWithAckTopic(const char *topic)
   return strcmp(topic + len - 4, "_ACK") == 0;
 }
 
-void clearTrackedDrakes()
+void clearTrackedKrakes()
 {
-  for (uint8_t i = 0; i < MAX_TRACKED_DRAKES; i++)
+  for (uint8_t i = 0; i < MAX_TRACKED_KRAKES; i++)
   {
-    trackedDrakes[i].inUse = false;
-    trackedDrakes[i].id[0] = '\0';
-    trackedDrakes[i].status[0] = '\0';
-    trackedDrakes[i].lastTopic[0] = '\0';
-    trackedDrakes[i].rssi = 0;
-    trackedDrakes[i].lastSeenMs = 0;
-    trackedDrakes[i].lastStatusMs = 0;
-    trackedDrakes[i].watchedTopicSeenMs = 0;
+    trackedKrakes[i].inUse = false;
+    trackedKrakes[i].id[0] = '\0';
+    trackedKrakes[i].status[0] = '\0';
+    trackedKrakes[i].lastTopic[0] = '\0';
+    trackedKrakes[i].rssi = 0;
+    trackedKrakes[i].lastSeenMs = 0;
+    trackedKrakes[i].lastStatusMs = 0;
+    trackedKrakes[i].watchedTopicSeenMs = 0;
   }
 }
 
-int indexForDrake(const String &drakeId)
+int indexForKrake(const String &krakeId)
 {
-  if (drakeId.length() == 0)
+  if (krakeId.length() == 0)
   {
     return -1;
   }
 
   int freeSlot = -1;
-  for (uint8_t i = 0; i < MAX_TRACKED_DRAKES; i++)
+  for (uint8_t i = 0; i < MAX_TRACKED_KRAKES; i++)
   {
-    if (trackedDrakes[i].inUse && drakeId.equalsIgnoreCase(trackedDrakes[i].id))
+    if (trackedKrakes[i].inUse && krakeId.equalsIgnoreCase(trackedKrakes[i].id))
     {
       return i;
     }
-    if (!trackedDrakes[i].inUse && freeSlot < 0)
+    if (!trackedKrakes[i].inUse && freeSlot < 0)
     {
       freeSlot = i;
     }
@@ -449,15 +454,15 @@ int indexForDrake(const String &drakeId)
 
   if (freeSlot >= 0)
   {
-    trackedDrakes[freeSlot].inUse = true;
-    drakeId.toCharArray(trackedDrakes[freeSlot].id, sizeof(trackedDrakes[freeSlot].id));
+    trackedKrakes[freeSlot].inUse = true;
+    krakeId.toCharArray(trackedKrakes[freeSlot].id, sizeof(trackedKrakes[freeSlot].id));
     return freeSlot;
   }
 
   return -1;
 }
 
-String extractDrakeIdFromAckTopic(const char *topic)
+String extractKrakeIdFromAckTopic(const char *topic)
 {
   String id(topic);
   id.toUpperCase();
@@ -480,22 +485,22 @@ int parseRssiFromStatus(const String &status)
   return rssiPart.toInt();
 }
 
-void updateDrakeStatusFromAck(const char *topic, const String &statusMsg)
+void updateKrakeStatusFromAck(const char *topic, const String &statusMsg)
 {
-  const String drakeId = extractDrakeIdFromAckTopic(topic);
-  const int idx = indexForDrake(drakeId);
+  const String krakeId = extractKrakeIdFromAckTopic(topic);
+  const int idx = indexForKrake(krakeId);
   if (idx < 0)
   {
     return;
   }
 
-  trackedDrakes[idx].lastSeenMs = millis();
-  trackedDrakes[idx].lastStatusMs = millis();
-  trackedDrakes[idx].rssi = parseRssiFromStatus(statusMsg);
-  strncpy(trackedDrakes[idx].status, statusMsg.c_str(), sizeof(trackedDrakes[idx].status) - 1);
-  trackedDrakes[idx].status[sizeof(trackedDrakes[idx].status) - 1] = '\0';
-  strncpy(trackedDrakes[idx].lastTopic, topic, sizeof(trackedDrakes[idx].lastTopic) - 1);
-  trackedDrakes[idx].lastTopic[sizeof(trackedDrakes[idx].lastTopic) - 1] = '\0';
+  trackedKrakes[idx].lastSeenMs = millis();
+  trackedKrakes[idx].lastStatusMs = millis();
+  trackedKrakes[idx].rssi = parseRssiFromStatus(statusMsg);
+  strncpy(trackedKrakes[idx].status, statusMsg.c_str(), sizeof(trackedKrakes[idx].status) - 1);
+  trackedKrakes[idx].status[sizeof(trackedKrakes[idx].status) - 1] = '\0';
+  strncpy(trackedKrakes[idx].lastTopic, topic, sizeof(trackedKrakes[idx].lastTopic) - 1);
+  trackedKrakes[idx].lastTopic[sizeof(trackedKrakes[idx].lastTopic) - 1] = '\0';
 }
 
 bool isWatchedTopic(const char *topic)
@@ -510,7 +515,7 @@ bool isWatchedTopic(const char *topic)
   return false;
 }
 
-String extractDrakeIdFromTopic(const char *topic)
+String extractKrakeIdFromTopic(const char *topic)
 {
   String id = String(topic);
   const int slash = id.indexOf('/');
@@ -535,21 +540,21 @@ void markWatchedTopicParticipant(const char *topic)
     return;
   }
 
-  String drakeId = extractDrakeIdFromTopic(topic);
-  if (drakeId.length() == 0)
+  String krakeId = extractKrakeIdFromTopic(topic);
+  if (krakeId.length() == 0)
   {
     return;
   }
 
-  const int idx = indexForDrake(drakeId);
+  const int idx = indexForKrake(krakeId);
   if (idx < 0)
   {
     return;
   }
-  trackedDrakes[idx].watchedTopicSeenMs = millis();
-  trackedDrakes[idx].lastSeenMs = millis();
-  strncpy(trackedDrakes[idx].lastTopic, topic, sizeof(trackedDrakes[idx].lastTopic) - 1);
-  trackedDrakes[idx].lastTopic[sizeof(trackedDrakes[idx].lastTopic) - 1] = '\0';
+  trackedKrakes[idx].watchedTopicSeenMs = millis();
+  trackedKrakes[idx].lastSeenMs = millis();
+  strncpy(trackedKrakes[idx].lastTopic, topic, sizeof(trackedKrakes[idx].lastTopic) - 1);
+  trackedKrakes[idx].lastTopic[sizeof(trackedKrakes[idx].lastTopic) - 1] = '\0';
 }
 
 String joinedWatchedTopics()
@@ -602,25 +607,29 @@ bool setWatchedTopics(const String &rawTopics)
   return true;
 }
 
-String trackedDrakesJson()
+String trackedKrakesJson()
 {
   const unsigned long now = millis();
   String payload = "{\"watchedTopic\":\"";
   payload += jsonEscape(watchedTopicCount > 0 ? String(watchedTopics[0]) : String(""));
   payload += "\",\"watchedTopics\":\"";
   payload += jsonEscape(joinedWatchedTopics());
-  payload += "\",\"drakes\":[";
+  payload += "\",\"mqttConnected\":" + String(client.connected() ? "true" : "false") + ",";
+  payload += "\"broker\":\"" + jsonEscape(String(mqtt_broker_name)) + "\",";
+  payload += "\"subscribeAlarmTopic\":\"" + jsonEscape(String(subscribe_Alarm_Topic)) + "\",";
+  payload += "\"publishAckTopic\":\"" + jsonEscape(String(publish_Ack_Topic)) + "\",";
+  payload += "\"krakes\":[";
   bool first = true;
 
-  for (uint8_t i = 0; i < MAX_TRACKED_DRAKES; i++)
+  for (uint8_t i = 0; i < MAX_TRACKED_KRAKES; i++)
   {
-    if (!trackedDrakes[i].inUse)
+    if (!trackedKrakes[i].inUse)
     {
       continue;
     }
-    const bool online = (now - trackedDrakes[i].lastStatusMs) <= DRAKE_ONLINE_TIMEOUT_MS;
-    const bool topicParticipant = trackedDrakes[i].watchedTopicSeenMs > 0 &&
-                                  (now - trackedDrakes[i].watchedTopicSeenMs) <= TOPIC_PARTICIPATION_TIMEOUT_MS;
+    const bool online = (now - trackedKrakes[i].lastStatusMs) <= KRAKE_ONLINE_TIMEOUT_MS;
+    const bool topicParticipant = trackedKrakes[i].watchedTopicSeenMs > 0 &&
+                                  (now - trackedKrakes[i].watchedTopicSeenMs) <= TOPIC_PARTICIPATION_TIMEOUT_MS;
 
     if (!first)
     {
@@ -628,14 +637,14 @@ String trackedDrakesJson()
     }
     first = false;
     payload += "{";
-    payload += "\"id\":\"" + jsonEscape(String(trackedDrakes[i].id)) + "\",";
+    payload += "\"id\":\"" + jsonEscape(String(trackedKrakes[i].id)) + "\",";
     payload += "\"online\":" + String(online ? "true" : "false") + ",";
     payload += "\"topicParticipant\":" + String(topicParticipant ? "true" : "false") + ",";
-    payload += "\"rssi\":" + String(trackedDrakes[i].rssi) + ",";
-    payload += "\"status\":\"" + jsonEscape(String(trackedDrakes[i].status)) + "\",";
-    payload += "\"lastTopic\":\"" + jsonEscape(String(trackedDrakes[i].lastTopic)) + "\",";
-    payload += "\"secondsSinceStatus\":" + String((now - trackedDrakes[i].lastStatusMs) / 1000) + ",";
-    payload += "\"secondsSinceTopic\":" + String((trackedDrakes[i].watchedTopicSeenMs == 0) ? -1 : ((now - trackedDrakes[i].watchedTopicSeenMs) / 1000));
+    payload += "\"rssi\":" + String(trackedKrakes[i].rssi) + ",";
+    payload += "\"status\":\"" + jsonEscape(String(trackedKrakes[i].status)) + "\",";
+    payload += "\"lastTopic\":\"" + jsonEscape(String(trackedKrakes[i].lastTopic)) + "\",";
+    payload += "\"secondsSinceStatus\":" + String((now - trackedKrakes[i].lastStatusMs) / 1000) + ",";
+    payload += "\"secondsSinceTopic\":" + String((trackedKrakes[i].watchedTopicSeenMs == 0) ? -1 : ((now - trackedKrakes[i].watchedTopicSeenMs) / 1000));
     payload += "}";
   }
 
@@ -800,7 +809,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     const String payloadText = String(mbuff);
     if (endsWithAckTopic(topic))
     {
-      updateDrakeStatusFromAck(topic, payloadText);
+      updateKrakeStatusFromAck(topic, payloadText);
       return;
     }
     markWatchedTopicParticipant(topic);
@@ -1023,7 +1032,7 @@ void setupOTA()
             { request->send(LittleFS, "/broker_console.html", "text/html"); });
 
   server.on("/broker-console/data", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "application/json", trackedDrakesJson()); });
+            { request->send(200, "application/json", trackedKrakesJson()); });
 
   server.on("/broker-console/topic", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -1147,7 +1156,7 @@ void setup()
   strncpy(mqtt_broker_name, DEFAULT_MQTT_BROKER_NAME, MQTT_BROKER_MAX_LEN - 1);
   mqtt_broker_name[MQTT_BROKER_MAX_LEN - 1] = '\0';
   clearExtraTopics();
-  clearTrackedDrakes();
+  clearTrackedKrakes();
   clearWatchedTopics();
   client.setServer(mqtt_broker_name, 1883); // Default MQTT port, this is a TCP port.
   client.setCallback(callback);
