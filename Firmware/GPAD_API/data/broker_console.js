@@ -69,10 +69,19 @@
 
   function renderKrakeTable(krakes) {
     const tbody = byId('krakeTableBody');
+    const krakeCount = byId('krakeCount');
+    if (!tbody) {
+      if (krakeCount) {
+        krakeCount.textContent = String(Array.isArray(krakes) ? krakes.length : 0);
+      }
+      return;
+    }
 
     if (!krakes || krakes.length === 0) {
       tbody.innerHTML = '<tr><td colspan="9">No tracked devices yet.</td></tr>';
-      byId('krakeCount').textContent = '0';
+      if (krakeCount) {
+        krakeCount.textContent = '0';
+      }
       return;
     }
 
@@ -103,13 +112,21 @@
     });
 
     tbody.innerHTML = rows.join('');
-    byId('krakeCount').textContent = String(krakes.length);
+    if (krakeCount) {
+      krakeCount.textContent = String(krakes.length);
+    }
   }
 
   function updateWatchUi(watchedTopics) {
     const normalized = normalizeTopicList(watchedTopics || '');
-    byId('watchTopic').value = normalized;
-    byId('watchTopicCurrent').textContent = normalized || '-';
+    const watchTopic = byId('watchTopic');
+    if (watchTopic) {
+      watchTopic.value = normalized;
+    }
+    const watchTopicCurrent = byId('watchTopicCurrent');
+    if (watchTopicCurrent) {
+      watchTopicCurrent.textContent = normalized || '-';
+    }
   }
 
   async function refreshBrokerData() {
@@ -122,11 +139,10 @@
       const data = await response.json();
       updateWatchUi(data.watchedTopics || data.watchedTopic || '');
       renderKrakeTable(Array.isArray(data.krakes) ? data.krakes : []);
-      byId('brokerName').textContent = data.broker || byId('brokerName').textContent;
-      byId('brokerLive').textContent = data.broker || "-";
-      byId('subTopicLive').textContent = data.subscribeAlarmTopic || "-";
-      byId('ackTopicLive').textContent = data.publishAckTopic || "-";
-      byId('mqttState').textContent = data.mqttConnected ? "connected" : "disconnected";
+      const brokerName = byId('brokerName');
+      if (brokerName) {
+        brokerName.textContent = data.broker || brokerName.textContent;
+      }
       const publishTopic = byId('publishTopic');
       if (publishTopic && !publishTopic.value.trim() && data.subscribeAlarmTopic) {
         publishTopic.value = data.subscribeAlarmTopic;
@@ -138,6 +154,7 @@
 
   function appendWatchTopic(topic) {
     const watchInput = byId('watchTopic');
+    if (!watchInput) return;
     const current = normalizeTopicList(watchInput.value);
     const parts = current ? current.split(',') : [];
 
@@ -149,7 +166,12 @@
   }
 
   async function startWatchingTopics() {
-    const topics = normalizeTopicList(byId('watchTopic').value);
+    const watchTopic = byId('watchTopic');
+    if (!watchTopic) {
+      showMessage('Topic monitor controls are not available on this page.', true);
+      return;
+    }
+    const topics = normalizeTopicList(watchTopic.value);
     if (!topics) {
       showMessage('Please provide at least one topic to watch.', true);
       return;
@@ -165,10 +187,16 @@
   }
 
   async function clearWatchTopics() {
+    const watchTopic = byId('watchTopic');
     try {
       await postForm('/broker-console/topic', { topics: '' });
-      byId('watchTopic').value = '';
-      byId('watchTopicCurrent').textContent = '-';
+      if (watchTopic) {
+        watchTopic.value = '';
+      }
+      const watchTopicCurrent = byId('watchTopicCurrent');
+      if (watchTopicCurrent) {
+        watchTopicCurrent.textContent = '-';
+      }
       showMessage('Watch topics cleared.');
       await refreshBrokerData();
     } catch (error) {
@@ -259,8 +287,14 @@
       menuToggle.addEventListener('click', toggleMenu);
     }
 
-    byId('btnStartWatching').addEventListener('click', startWatchingTopics);
-    byId('btnClearWatch').addEventListener('click', clearWatchTopics);
+    const btnStartWatching = byId('btnStartWatching');
+    if (btnStartWatching) {
+      btnStartWatching.addEventListener('click', startWatchingTopics);
+    }
+    const btnClearWatch = byId('btnClearWatch');
+    if (btnClearWatch) {
+      btnClearWatch.addEventListener('click', clearWatchTopics);
+    }
     byId('btnSendMessage').addEventListener('click', publishMessage);
     const sendWebBtn = byId('btnSendWebMessage');
     if (sendWebBtn) {
@@ -269,7 +303,8 @@
 
     byId('btnCopyWatch').addEventListener('click', async () => {
       try {
-        const watchTopic = byId('watchTopicCurrent').textContent || '';
+        const watchNode = byId('watchTopicCurrent');
+        const watchTopic = (watchNode && watchNode.textContent) || '';
         if (!watchTopic || watchTopic === '-') {
           showMessage('No watched topic to copy.', true);
           return;
