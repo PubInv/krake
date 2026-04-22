@@ -161,11 +161,17 @@ void setupDFPlayer()
 
   dfPlayer.setTimeOut(500);  // Set serial communication time out 500ms
 
-  // Detect TD5580 clone: readState() returns non-zero at idle on TD5580,
-  // whereas genuine DFRobot DFPlayerMini returns 0 when stopped.
-  // TD5580 blocks firmware execution if play commands are sent -- bail out early.
+  // Validate module with readState():
+  //   < 0 : timeout -- begin() false-positive (floating UART), treat as absent.
+  //   = 0 : genuine DFPlayer Mini stopped, proceed normally.
+  //   > 0 : TD5580 clone -- blocks on play commands, bail out early.
   delay(100);  // allow module to settle before querying state
   int moduleState = dfPlayer.readState();
+  if (moduleState < 0) {
+    Serial.println("DFPlayer: no response to readState() -- module absent or UART noise. Disabling audio.");
+    isDFPlayerDetected = false;
+    return;
+  }
   if (moduleState > 0) {
     Serial.println("*** DFPlayer: TD5580 clone detected (readState non-zero at idle). ***");
     Serial.println("*** Incompatible module -- audio disabled. Replace with genuine DFPlayer Mini or MP3-TF-16P. ***");
@@ -281,6 +287,7 @@ void printDetail(uint8_t type, int value)
 
 void dfPlayerUpdate(void)
 {
+  if (!isDFPlayerDetected) return;
   unsigned long timePlay = 3000; // Plays 3 seconds of all files.
   static unsigned long timer = millis();
   if (millis() - timer > timePlay)
@@ -298,6 +305,7 @@ void dfPlayerUpdate(void)
 // Functions to learn DFPlayer behavior
 void playNotBusy()
 {
+  if (!isDFPlayerDetected) return;
   // Plays all files succsivly.
   Serial.println("PlayNotBusy");
   if (HIGH == digitalRead(nDFPlayer_BUSY))
@@ -315,6 +323,7 @@ void playNotBusy()
 
 void playNotBusyLevel(int level)
 {
+  if (!isDFPlayerDetected) return;
   // Plays all files succsivly.
   Serial.println("PlayNotBusyLevel");
   if (HIGH == digitalRead(nDFPlayer_BUSY))
@@ -337,6 +346,7 @@ void playNotBusyLevel(int level)
 // Play a track but not if the DFPlayer is busy
 bool playAlarmLevel(int alarmNumberToPlay)
 {
+  if (!isDFPlayerDetected) return false;
   static unsigned long timer = millis();
 
   const unsigned long delayPlayLevel = 20;
