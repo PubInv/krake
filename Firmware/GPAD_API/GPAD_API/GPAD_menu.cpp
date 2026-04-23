@@ -6,6 +6,7 @@
 #include "GPAD_HAL.h"
 #include "RickmanLiquidCrystal_I2C.h"
 #include "DFPlayer.h"
+#include "alarm_api.h"
 
 using namespace Menu;
 
@@ -38,6 +39,13 @@ result action2(eventMask e)
   {
     Serial.println(F("Yes, I will take that action #2 !"));
   }
+  char emptyMsg[] = "";
+  alarm(silent, emptyMsg, &Serial);      // sets currentLevel=0, clears AlarmMessageBuffer
+  annunciateAlarmLevel(&Serial);          // turns off LEDs, updates LCD, stops DFPlayer buzzer
+  char onLineMsg[32] = "Dismissed!";
+  client.publish(publish_Ack_Topic, onLineMsg);
+  Serial.print("Message sent to topic: ");
+  Serial.println(publish_Ack_Topic);
   return proceed;
 }
 result action3(eventMask e)
