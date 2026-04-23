@@ -156,7 +156,7 @@ void setupDFPlayer()
   else
   {
     isDFPlayerDetected = true;
-    Serial.println("DFPlayer Mini detected!");
+     // Serial.println("DFPlayer Mini detected!");
   }
 
   dfPlayer.setTimeOut(500);  // Set serial communication time out 500ms
@@ -173,6 +173,7 @@ void setupDFPlayer()
     return;
   }
   if (moduleState > 0) {
+    Serial.println("DFPlayer Mini detected!");
     Serial.println("*** DFPlayer: TD5580 clone detected (readState non-zero at idle). ***");
     Serial.println("*** Incompatible module -- audio disabled. Replace with genuine DFPlayer Mini or MP3-TF-16P. ***");
     isDFPlayerDetected = false;
@@ -180,7 +181,8 @@ void setupDFPlayer()
   }
 
   dfPlayer.volume(volumeDFPlayer); // Set initial volume
-
+  
+  Serial.println("DFPlayer Mini detected!");
   dfPlayer.start(); // Todo, ?? necessary for DFPlayer processing
   delay(1000);
   //  dfPlayer.play(11);  //DFPlayer Splash
