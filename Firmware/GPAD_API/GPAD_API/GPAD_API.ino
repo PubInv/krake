@@ -973,6 +973,43 @@ void setupOTA()
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/settings.html", "text/html"); });
 
+  server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/setup.html", "text/html"); });
+
+  server.on("/wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              String ssid;
+              String password;
+              const bool hasStored = wifiManager.loadCredentials(ssid, password);
+              String payload = "{";
+              payload += "\"hasStored\":" + String(hasStored ? "true" : "false") + ",";
+              payload += "\"ssid\":\"" + jsonEscape(ssid) + "\"";
+              payload += "}";
+              request->send(200, "application/json", payload); });
+
+  server.on("/wifi", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+              if (!request->hasParam("ssid", true))
+              {
+                request->send(400, "text/plain", "missing ssid");
+                return;
+              }
+              const String ssid = request->getParam("ssid", true)->value();
+              const String password = request->hasParam("password", true) ? request->getParam("password", true)->value() : "";
+              String trimmedSsid = ssid;
+              trimmedSsid.trim();
+              if (trimmedSsid.length() == 0)
+              {
+                request->send(400, "text/plain", "ssid cannot be empty");
+                return;
+              }
+              if (!wifiManager.saveCredentials(trimmedSsid, password))
+              {
+                request->send(500, "text/plain", "failed to save wifi.json");
+                return;
+              }
+              request->send(200, "text/plain", "wifi.json saved"); });
+
   server.on("/manual", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/manual.html", "text/html"); });
 
@@ -1145,6 +1182,8 @@ void setup()
   // Setup the SWITCH_MUTE
   // Setup the SWITCH_ENCODER
 
+  WifiOTA::initLittleFS();
+
   WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   wifiManager.initialize();
 
@@ -1249,8 +1288,6 @@ void setup()
 
   debugSerial.println(F("WiFi Manager connected."));
 
-  WifiOTA::initLittleFS();
-
   debugSerial.println(F("initLiffleFS"));
 
   server.begin(); // Start server web socket to render pages
@@ -1312,6 +1349,11 @@ void loop()
   if (wifiResetRequestedAtMs != 0 && (millis() - wifiResetRequestedAtMs) > 750)
   {
     debugSerial.println(F("Resetting WiFi credentials and restarting."));
+    if (LittleFS.exists("/wifi.json"))
+    {
+      LittleFS.remove("/wifi.json");
+      debugSerial.println(F("Removed /wifi.json"));
+    }
     WiFi.disconnect(true, true);
     delay(150);
     ESP.restart();
