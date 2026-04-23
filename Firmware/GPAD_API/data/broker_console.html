@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KRAKE Broker Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .console-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      border: 1px solid #d7e7dc;
+      border-radius: 10px;
+      background: #f8fbf9;
+      padding: 9px 11px;
+      font-size: 0.9rem;
+      color: #315541;
+    }
+
+    .chip strong {
+      color: #113521;
+    }
+
+    .meta-line {
+      font-size: 0.85rem;
+      color: #4d6658;
+      margin-top: 8px;
+    }
+
+    .quick-topics {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .topic-btn {
+      border: 1px solid #b8d2c2;
+      border-radius: 999px;
+      background: #eef7f1;
+      color: #1c5438;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .topic-btn:hover {
+      background: #def0e4;
+    }
+
+    .topic-btn.small {
+      font-size: 0.78rem;
+      padding: 5px 9px;
+    }
+
+    .status-table td code {
+      font-size: 0.78rem;
+    }
+
+    .row-online {
+      background: #f4fcf6;
+    }
+
+    .row-offline {
+      background: #fff8f8;
+    }
+
+    .pill {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .pill.ok {
+      background: #d6f0df;
+      color: #125a32;
+    }
+
+    .pill.bad {
+      background: #f8d8df;
+      color: #7b1a32;
+    }
+
+    .info-block {
+      border: 1px solid #d7e7dc;
+      border-radius: 10px;
+      background: #f8fbf9;
+      padding: 10px 12px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 5px 0;
+      font-size: 0.88rem;
+      color: #315541;
+      border-bottom: 1px solid #e6f1eb;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #113521;
+      white-space: nowrap;
+    }
+
+    .value {
+      color: #4d6658;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    @media (min-width: 980px) {
+      .console-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .console-grid .card-wide {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
+      <span>Broker Console</span>
+    </div>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>
+  </header>
+
+  <nav id="sideMenu" class="side-menu">
+    <a href="/update">Update Firmware</a>
+    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
+    <a href="/Electrical_testHistory.html">Electrical Test History</a>
+    <a href="/monitor">Factory Test / Developer Monitor</a>
+    <a href="/broker-console">Broker Console</a>
+    <a href="/manual">User Manual</a>
+    <a href="/settings">Settings</a>
+    <a class="menu-home" href="/index.html">Home</a>
+  </nav>
+
+  <main class="container">
+    <div class="status-strip">
+      <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
+      <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
+      <div class="chip">Watched topics: <strong id="watchTopicCurrent">-</strong></div>
+      <div class="chip">Krakes seen: <strong id="krakeCount">0</strong></div>
+    </div>
+
+    <div class="console-grid">
+      <section class="card">
+        <h1>Send Message / Alarm</h1>
+        <p class="subtitle">Publish MQTT payloads directly for test and validation workflows.</p>
+
+        <label for="publishTopic">Topic</label>
+        <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+
+        <label for="publishPayload">Payload</label>
+        <textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea>
+
+        <div class="quick-topics" aria-label="quick publish topic templates">
+          <button id="btnUseAlm" class="topic-btn small" type="button">Use _ALM</button>
+          <button id="btnUseAck" class="topic-btn small" type="button">Use _ACK</button>
+          <button id="btnAlarmTemplate" class="topic-btn small" type="button">Alarm payload</button>
+          <button id="btnInfoTemplate" class="topic-btn small" type="button">Info payload</button>
+          <button id="btnMuteTemplate" class="topic-btn small" type="button">Mute payload</button>
+          <button id="btnUnmuteTemplate" class="topic-btn small" type="button">Unmute payload</button>
+        </div>
+
+        <div class="button-row">
+          <button id="btnSendMessage" class="action-btn" type="button">Send Message</button>
+          <button id="btnCopyWatch" class="action-btn secondary" type="button">Copy watched topic</button>
+        </div>
+        <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
+
+        <h2 style="margin:18px 0 8px;font-size:1.05rem;">Webpage Quick Message</h2>
+        <p class="subtitle">Type plain text and send it as a GPAP info message from this webpage.</p>
+
+        <label for="webMessageText">Message text</label>
+        <input id="webMessageText" class="text-input" maxlength="160" placeholder="Message to show from webpage" />
+
+        <div class="button-row">
+          <button id="btnSendWebMessage" class="action-btn" type="button">Send Webpage Message</button>
+        </div>
+        <div class="status-row">Web message result: <strong id="webMessageResult">-</strong></div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div id="message" class="note"></div>
+  </footer>
+
+  <script src="/broker_console.js"></script>
+</body>
+</html>
