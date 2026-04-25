@@ -175,7 +175,7 @@
     async function setMuted(muted) {
       try {
         await postForm('/settings/mute', { muted: muted ? '1' : '0' });
-        showMessage(muted ? 'Krake muted.' : 'Krake unmuted.');
+        showMessage(muted ? 'KRAKE muted.' : 'KRAKE unmuted.');
         await refreshSettings();
       } catch (e) {
         showMessage('Failed to update mute status: ' + e.message, true);
