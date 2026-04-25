@@ -981,9 +981,12 @@ void setupOTA()
               String ssid;
               String password;
               const bool hasStored = wifiManager.loadCredentials(ssid, password);
+              std::vector<WifiOTA::Manager::Credential> credentials;
+              wifiManager.loadCredentialsList(credentials);
               String payload = "{";
               payload += "\"hasStored\":" + String(hasStored ? "true" : "false") + ",";
-              payload += "\"ssid\":\"" + jsonEscape(ssid) + "\"";
+              payload += "\"ssid\":\"" + jsonEscape(ssid) + "\",";
+              payload += "\"count\":" + String(credentials.size());
               payload += "}";
               request->send(200, "application/json", payload); });
 
@@ -995,15 +998,27 @@ void setupOTA()
                 return;
               }
               const String ssid = request->getParam("ssid", true)->value();
-              const String password = request->hasParam("password", true) ? request->getParam("password", true)->value() : "";
+              if (!request->hasParam("password", true))
+              {
+                request->send(400, "text/plain", "missing password");
+                return;
+              }
+              const String password = request->getParam("password", true)->value();
               String trimmedSsid = ssid;
+              String trimmedPassword = password;
               trimmedSsid.trim();
+              trimmedPassword.trim();
               if (trimmedSsid.length() == 0)
               {
                 request->send(400, "text/plain", "ssid cannot be empty");
                 return;
               }
-              if (!wifiManager.saveCredentials(trimmedSsid, password))
+              if (trimmedPassword.length() == 0)
+              {
+                request->send(400, "text/plain", "password cannot be empty");
+                return;
+              }
+              if (!wifiManager.saveCredentials(trimmedSsid, trimmedPassword))
               {
                 request->send(500, "text/plain", "failed to save wifi.json");
                 return;

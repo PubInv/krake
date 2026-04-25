@@ -4,6 +4,7 @@
 namespace
 {
   const char *WIFI_CREDENTIALS_PATH = "/wifi.json";
+  constexpr size_t MAX_SAVED_WIFI_NETWORKS = 20;
 
   String jsonEscape(const String &value)
   {
@@ -21,16 +22,14 @@ namespace
     return escaped;
   }
 
-  bool extractJsonString(const String &json, const char *key, String &value)
+  bool parseJsonStringAt(const String &json, int keyPos, String &value, int *valueEndPos = nullptr)
   {
-    const String keyToken = String("\"") + key + "\"";
-    const int keyPos = json.indexOf(keyToken);
     if (keyPos < 0)
     {
       return false;
     }
 
-    const int colonPos = json.indexOf(':', keyPos + keyToken.length());
+    const int colonPos = json.indexOf(':', keyPos);
     if (colonPos < 0)
     {
       return false;
@@ -61,11 +60,26 @@ namespace
       if (ch == '"')
       {
         value = parsed;
+        if (valueEndPos != nullptr)
+        {
+          *valueEndPos = i;
+        }
         return true;
       }
       parsed += ch;
     }
     return false;
+  }
+
+  bool extractJsonString(const String &json, const char *key, String &value, int startPos = 0, int *valueEndPos = nullptr)
+  {
+    const String keyToken = String("\"") + key + "\"";
+    const int keyPos = json.indexOf(keyToken, startPos);
+    if (keyPos < 0)
+    {
+      return false;
+    }
+    return parseJsonStringAt(json, keyPos + keyToken.length(), value, valueEndPos);
   }
 }
 
@@ -93,14 +107,25 @@ Manager::~Manager() {}
 
 void Manager::connect(const char *const accessPointSsid)
 {
-
-  String savedSsid;
-  String savedPassword;
-  if (this->loadCredentials(savedSsid, savedPassword) && this->connectStoredCredentials(savedSsid, savedPassword))
+  std::vector<Credential> credentials;
+  if (this->loadCredentialsList(credentials))
   {
-    this->print.println("Connected using stored wifi.json credentials.");
-    this->ipSet();
-    return;
+    for (size_t index = 0; index < credentials.size(); ++index)
+    {
+      this->print.print("Trying saved WiFi ");
+      this->print.print(index + 1);
+      this->print.print("/");
+      this->print.print(credentials.size());
+      this->print.print(": ");
+      this->print.println(credentials[index].ssid);
+
+      if (this->connectStoredCredentials(credentials[index].ssid, credentials[index].password))
+      {
+        this->print.println("Connected using stored wifi.json credentials.");
+        this->ipSet();
+        return;
+      }
+    }
   }
 
   this->startPortal(accessPointSsid);
@@ -180,6 +205,35 @@ IPAddress Manager::getAddress()
 
 bool Manager::saveCredentials(const String &ssid, const String &password)
 {
+  String trimmedSsid = ssid;
+  String trimmedPassword = password;
+  trimmedSsid.trim();
+  trimmedPassword.trim();
+  if (trimmedSsid.length() == 0 || trimmedPassword.length() == 0)
+  {
+    this->print.println("SSID and password are required.");
+    return false;
+  }
+
+  std::vector<Credential> credentials;
+  this->loadCredentialsList(credentials);
+
+  std::vector<Credential> updated;
+  updated.reserve(credentials.size() + 1);
+
+  updated.push_back({trimmedSsid, trimmedPassword});
+  for (size_t i = 0; i < credentials.size(); ++i)
+  {
+    if (credentials[i].ssid != trimmedSsid)
+    {
+      updated.push_back(credentials[i]);
+    }
+    if (updated.size() >= MAX_SAVED_WIFI_NETWORKS)
+    {
+      break;
+    }
+  }
+
   File file = LittleFS.open(WIFI_CREDENTIALS_PATH, "w");
   if (!file)
   {
@@ -187,11 +241,20 @@ bool Manager::saveCredentials(const String &ssid, const String &password)
     return false;
   }
 
-  String payload = "{\"ssid\":\"";
-  payload += jsonEscape(ssid);
-  payload += "\",\"password\":\"";
-  payload += jsonEscape(password);
-  payload += "\"}";
+  String payload = "{\"networks\":[";
+  for (size_t i = 0; i < updated.size(); ++i)
+  {
+    if (i > 0)
+    {
+      payload += ",";
+    }
+    payload += "{\"ssid\":\"";
+    payload += jsonEscape(updated[i].ssid);
+    payload += "\",\"password\":\"";
+    payload += jsonEscape(updated[i].password);
+    payload += "\"}";
+  }
+  payload += "]}";
 
   const size_t written = file.print(payload);
   file.close();
@@ -200,8 +263,20 @@ bool Manager::saveCredentials(const String &ssid, const String &password)
 
 bool Manager::loadCredentials(String &ssid, String &password)
 {
-  ssid = "";
-  password = "";
+  std::vector<Credential> credentials;
+  if (!this->loadCredentialsList(credentials) || credentials.empty())
+  {
+    return false;
+  }
+
+  ssid = credentials[0].ssid;
+  password = credentials[0].password;
+  return true;
+}
+
+bool Manager::loadCredentialsList(std::vector<Credential> &credentials)
+{
+  credentials.clear();
   if (!LittleFS.exists(WIFI_CREDENTIALS_PATH))
   {
     return false;
@@ -214,26 +289,84 @@ bool Manager::loadCredentials(String &ssid, String &password)
     return false;
   }
 
-  String content = file.readString();
+  const String content = file.readString();
   file.close();
 
-  String loadedSsid;
-  String loadedPassword;
-  if (!extractJsonString(content, "ssid", loadedSsid) || !extractJsonString(content, "password", loadedPassword))
+  int searchPos = 0;
+  while (credentials.size() < MAX_SAVED_WIFI_NETWORKS)
+  {
+    const int ssidKeyPos = content.indexOf("\"ssid\"", searchPos);
+    if (ssidKeyPos < 0)
+    {
+      break;
+    }
+
+    String loadedSsid;
+    int ssidEndPos = -1;
+    if (!extractJsonString(content, "ssid", loadedSsid, ssidKeyPos, &ssidEndPos))
+    {
+      break;
+    }
+
+    const int passwordKeyPos = content.indexOf("\"password\"", ssidEndPos);
+    if (passwordKeyPos < 0)
+    {
+      break;
+    }
+
+    String loadedPassword;
+    int passwordEndPos = -1;
+    if (!extractJsonString(content, "password", loadedPassword, passwordKeyPos, &passwordEndPos))
+    {
+      break;
+    }
+
+    loadedSsid.trim();
+    loadedPassword.trim();
+    if (loadedSsid.length() > 0 && loadedPassword.length() > 0)
+    {
+      bool alreadyExists = false;
+      for (size_t i = 0; i < credentials.size(); ++i)
+      {
+        if (credentials[i].ssid == loadedSsid)
+        {
+          alreadyExists = true;
+          break;
+        }
+      }
+
+      if (!alreadyExists)
+      {
+        credentials.push_back({loadedSsid, loadedPassword});
+      }
+    }
+
+    searchPos = passwordEndPos + 1;
+  }
+
+  if (!credentials.empty())
+  {
+    return true;
+  }
+
+  // Backward compatibility with legacy single-network format.
+  String legacySsid;
+  String legacyPassword;
+  if (!extractJsonString(content, "ssid", legacySsid) || !extractJsonString(content, "password", legacyPassword))
   {
     this->print.println("wifi.json missing required keys.");
     return false;
   }
 
-  loadedSsid.trim();
-  if (loadedSsid.length() == 0)
+  legacySsid.trim();
+  legacyPassword.trim();
+  if (legacySsid.length() == 0 || legacyPassword.length() == 0)
   {
-    this->print.println("wifi.json has empty SSID.");
+    this->print.println("wifi.json has invalid SSID/password.");
     return false;
   }
 
-  ssid = loadedSsid;
-  password = loadedPassword;
+  credentials.push_back({legacySsid, legacyPassword});
   return true;
 }
 

@@ -28,7 +28,7 @@
   <main class="container">
     <section class="card">
       <h1>WiFi Credentials</h1>
-      <p class="subtitle">Save SSID/password to <code>/wifi.json</code> for reconnection on boot.</p>
+      <p class="subtitle">Save SSID/password to <code>/wifi.json</code> for reconnection on boot. Device will try all saved networks.</p>
 
       <label for="ssid">SSID</label>
       <input id="ssid" class="text-input" placeholder="Your network name" />
@@ -41,6 +41,7 @@
         <button class="action-btn secondary" onclick="loadWifi()">Reload</button>
       </div>
       <div class="status-row">Stored SSID: <strong id="storedSsid">-</strong></div>
+      <div class="status-row">Saved networks: <strong id="storedCount">0</strong></div>
     </section>
   </main>
 
@@ -66,6 +67,7 @@
         const data = await res.json();
         document.getElementById('ssid').value = data.ssid || '';
         document.getElementById('storedSsid').textContent = data.hasStored ? (data.ssid || '(hidden)') : 'None';
+        document.getElementById('storedCount').textContent = (typeof data.count === 'number') ? String(data.count) : '0';
       } catch (e) {
         showMessage('Unable to load WiFi settings: ' + e.message, true);
       }
@@ -78,6 +80,10 @@
         showMessage('SSID is required.', true);
         return;
       }
+      if (!password || !password.trim()) {
+        showMessage('Password is required.', true);
+        return;
+      }
 
       try {
         const body = new URLSearchParams({ ssid, password });
@@ -87,7 +93,7 @@
           body
         });
         if (!res.ok) throw new Error(await res.text());
-        showMessage('WiFi credentials saved to wifi.json. Reboot to apply.');
+        showMessage('WiFi credentials saved. Device will retry all saved networks on boot.');
         await loadWifi();
       } catch (e) {
         showMessage('Failed to save WiFi: ' + e.message, true);
