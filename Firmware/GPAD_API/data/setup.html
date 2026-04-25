@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KRAKE WiFi Setup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
+      <span>WiFi Setup</span>
+    </div>
+    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+  </header>
+
+  <nav id="sideMenu" class="side-menu">
+    <a href="/update">Update Firmware</a>
+    <a href="/monitor">Factory Test / Developer Monitor</a>
+    <a href="/broker-console">Broker Console</a>
+    <a href="/settings">Settings</a>
+    <a href="/setup">WiFi Setup</a>
+    <a class="menu-home" href="/index.html">Home</a>
+  </nav>
+
+  <main class="container">
+    <section class="card">
+      <h1>WiFi Credentials</h1>
+      <p class="subtitle">Save SSID/password to <code>/wifi.json</code> for reconnection on boot.</p>
+
+      <label for="ssid">SSID</label>
+      <input id="ssid" class="text-input" placeholder="Your network name" />
+
+      <label for="password" style="margin-top:12px; display:block;">Password</label>
+      <input id="password" type="password" class="text-input" placeholder="Your network password" />
+
+      <div class="button-row" style="margin-top:14px;">
+        <button class="action-btn" onclick="saveWifi()">Save WiFi</button>
+        <button class="action-btn secondary" onclick="loadWifi()">Reload</button>
+      </div>
+      <div class="status-row">Stored SSID: <strong id="storedSsid">-</strong></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div id="message" class="note"></div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('sideMenu').classList.toggle('open');
+    }
+
+    function showMessage(msg, isError = false) {
+      const node = document.getElementById('message');
+      node.textContent = msg;
+      node.style.color = isError ? '#b00020' : '#146620';
+    }
+
+    async function loadWifi() {
+      try {
+        const res = await fetch('/wifi');
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        document.getElementById('ssid').value = data.ssid || '';
+        document.getElementById('storedSsid').textContent = data.hasStored ? (data.ssid || '(hidden)') : 'None';
+      } catch (e) {
+        showMessage('Unable to load WiFi settings: ' + e.message, true);
+      }
+    }
+
+    async function saveWifi() {
+      const ssid = document.getElementById('ssid').value.trim();
+      const password = document.getElementById('password').value;
+      if (!ssid) {
+        showMessage('SSID is required.', true);
+        return;
+      }
+
+      try {
+        const body = new URLSearchParams({ ssid, password });
+        const res = await fetch('/wifi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        });
+        if (!res.ok) throw new Error(await res.text());
+        showMessage('WiFi credentials saved to wifi.json. Reboot to apply.');
+        await loadWifi();
+      } catch (e) {
+        showMessage('Failed to save WiFi: ' + e.message, true);
+      }
+    }
+
+    loadWifi();
+  </script>
+</body>
+</html>
