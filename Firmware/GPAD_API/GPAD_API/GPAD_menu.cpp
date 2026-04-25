@@ -18,7 +18,7 @@ extern bool menu_just_exited;
 // This needs to be cleaned up; the PubSublcient and WiFi stuff needs to put into a
 // a module that is not in GPAD_API.ino
 extern PubSubClient client;
-extern char publish_Ack_Topic[17];
+extern char publish_Ack_Topic[];
 
 result action1(eventMask e)
 {
