@@ -355,11 +355,11 @@
         const watchNode = byId('watchTopicCurrent');
         const watchTopic = (watchNode && watchNode.textContent) || '';
         if (!watchTopic || watchTopic === '-') {
-          showMessage('No watched topic to copy.', true);
+          showMessage('No watched topics to copy.', true);
           return;
         }
         await navigator.clipboard.writeText(watchTopic);
-        showMessage('Watched topic copied.');
+        showMessage('Watched topics copied.');
       } catch (error) {
         showMessage('Clipboard unavailable in this browser.', true);
       }
