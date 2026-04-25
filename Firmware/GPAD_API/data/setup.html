@@ -13,94 +13,20 @@
       <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
       <span>WiFi Setup</span>
     </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
   </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/broker-console">Broker Console</a>
-    <a href="/settings">Settings</a>
-    <a href="/setup">WiFi Setup</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
 
   <main class="container">
     <section class="card">
-      <h1>WiFi Credentials</h1>
-      <p class="subtitle">Save SSID/password to <code>/wifi.json</code> for reconnection on boot. Device will try all saved networks.</p>
-
-      <label for="ssid">SSID</label>
-      <input id="ssid" class="text-input" placeholder="Your network name" />
-
-      <label for="password" style="margin-top:12px; display:block;">Password</label>
-      <input id="password" type="password" class="text-input" placeholder="Your network password" />
-
-      <div class="button-row" style="margin-top:14px;">
-        <button class="action-btn" onclick="saveWifi()">Save WiFi</button>
-        <button class="action-btn secondary" onclick="loadWifi()">Reload</button>
-      </div>
-      <div class="status-row">Stored SSID: <strong id="storedSsid">-</strong></div>
-      <div class="status-row">Saved networks: <strong id="storedCount">0</strong></div>
+      <h1>WiFi setup moved</h1>
+      <p class="subtitle">WiFi setup is now part of the main Settings page.</p>
+      <a href="/settings" class="action-btn" style="display:inline-block; text-decoration:none;">Open Settings</a>
     </section>
   </main>
 
-  <footer class="footer">
-    <div id="message" class="note"></div>
-  </footer>
-
   <script>
-    function toggleMenu() {
-      document.getElementById('sideMenu').classList.toggle('open');
-    }
-
-    function showMessage(msg, isError = false) {
-      const node = document.getElementById('message');
-      node.textContent = msg;
-      node.style.color = isError ? '#b00020' : '#146620';
-    }
-
-    async function loadWifi() {
-      try {
-        const res = await fetch('/wifi');
-        if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
-        document.getElementById('ssid').value = data.ssid || '';
-        document.getElementById('storedSsid').textContent = data.hasStored ? (data.ssid || '(hidden)') : 'None';
-        document.getElementById('storedCount').textContent = (typeof data.count === 'number') ? String(data.count) : '0';
-      } catch (e) {
-        showMessage('Unable to load WiFi settings: ' + e.message, true);
-      }
-    }
-
-    async function saveWifi() {
-      const ssid = document.getElementById('ssid').value.trim();
-      const password = document.getElementById('password').value;
-      if (!ssid) {
-        showMessage('SSID is required.', true);
-        return;
-      }
-      if (!password || !password.trim()) {
-        showMessage('Password is required.', true);
-        return;
-      }
-
-      try {
-        const body = new URLSearchParams({ ssid, password });
-        const res = await fetch('/wifi', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body
-        });
-        if (!res.ok) throw new Error(await res.text());
-        showMessage('WiFi credentials saved. Device will retry all saved networks on boot.');
-        await loadWifi();
-      } catch (e) {
-        showMessage('Failed to save WiFi: ' + e.message, true);
-      }
-    }
-
-    loadWifi();
+    setTimeout(() => {
+      window.location.replace('/settings');
+    }, 500);
   </script>
 </body>
 </html>
