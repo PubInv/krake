@@ -247,12 +247,12 @@ bool parseCsvIntoTopics(const String &rawTopics, char dest[][MAX_TOPIC_LEN], uin
 String joinTopicsCsv(const char topics[][MAX_TOPIC_LEN], uint8_t count);
 
 const size_t MAC_ADDRESS_STRING_LENGTH = 13;
-// MQTT Topics, MAC plus an extention
+// MQTT Topics, MAC plus an extension
 // A MAC addresss treated as a string has 12 chars.
 // The strings "_ALM" and "_ACK" have 4 chars.
 // A null character is one other. 12 + 4 + 1 = 17
-char subscribe_Alarm_Topic[17];
-char publish_Ack_Topic[17];
+char subscribe_Alarm_Topic[MAX_TOPIC_LEN];
+char publish_Ack_Topic[MAX_TOPIC_LEN];
 char macAddressString[MAC_ADDRESS_STRING_LENGTH];
 
 #define MAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
@@ -991,6 +991,37 @@ bool applyBrokerSetting(const String &broker)
   return true;
 }
 
+bool applyRoleSetting(const String &rawRole)
+{
+  String role = rawRole;
+  role.trim();
+  if (role.equalsIgnoreCase("Krake"))
+  {
+    strncpy(device_role, "Krake", DEVICE_ROLE_MAX_LEN - 1);
+    device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
+    return true;
+  }
+  if (role.equalsIgnoreCase("PMD"))
+  {
+    strncpy(device_role, "PMD", DEVICE_ROLE_MAX_LEN - 1);
+    device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
+    return true;
+  }
+  return false;
+}
+
+bool applyPrimaryTopicSetting(const String &rawTopic, char *destTopic, size_t destLen)
+{
+  String topic = rawTopic;
+  topic.trim();
+  if (topic.length() == 0 || topic.length() >= destLen)
+  {
+    return false;
+  }
+  topic.toCharArray(destTopic, destLen);
+  return true;
+}
+
 void applyExtraTopicsSetting(const String &topics)
 {
   parseAndSetExtraTopics(topics);
@@ -1274,6 +1305,12 @@ void setupOTA()
   server.on("/manual", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/manual.html", "text/html"); });
 
+  server.on("/PMD_GPAD_API", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/PMD_GPAD_API.html", "text/html"); });
+
+  server.on("/PMD_GPAD_API.html", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/PMD_GPAD_API.html", "text/html"); });
+
   server.on("/settings-data", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               String payload = "{";
@@ -1291,11 +1328,16 @@ void setupOTA()
 
   server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request)
             {
+              String errorMessage;
               if (request->hasParam("broker", true))
               {
                 String broker = request->getParam("broker", true)->value();
                 broker.trim();
-                if (broker.length() > 0 && broker.length() < MQTT_BROKER_MAX_LEN)
+                if (broker.length() == 0 || broker.length() >= MQTT_BROKER_MAX_LEN)
+                {
+                  errorMessage += "invalid broker;";
+                }
+                else
                 {
                   broker.toCharArray(mqtt_broker_name, MQTT_BROKER_MAX_LEN);
                   client.setServer(mqtt_broker_name, 1883);
@@ -1304,63 +1346,70 @@ void setupOTA()
 
               if (request->hasParam("role", true))
               {
-                String role = request->getParam("role", true)->value();
-                role.trim();
-                if (role.equalsIgnoreCase("Krake"))
+                if (!applyRoleSetting(request->getParam("role", true)->value()))
                 {
-                  strncpy(device_role, "Krake", DEVICE_ROLE_MAX_LEN - 1);
-                  device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
-                }
-                else if (role.equalsIgnoreCase("PMD"))
-                {
-                  strncpy(device_role, "PMD", DEVICE_ROLE_MAX_LEN - 1);
-                  device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
+                  errorMessage += "invalid role;";
                 }
               }
 
               if (request->hasParam("subscribeTopic", true))
               {
-                String topic = request->getParam("subscribeTopic", true)->value();
-                topic.trim();
-                if (topic.length() > 0 && topic.length() < sizeof(subscribe_Alarm_Topic))
+                if (!applyPrimaryTopicSetting(request->getParam("subscribeTopic", true)->value(), subscribe_Alarm_Topic, sizeof(subscribe_Alarm_Topic)))
                 {
-                  topic.toCharArray(subscribe_Alarm_Topic, sizeof(subscribe_Alarm_Topic));
+                  errorMessage += "invalid subscribeTopic;";
                 }
               }
 
               if (request->hasParam("publishTopic", true))
               {
-                String topic = request->getParam("publishTopic", true)->value();
-                topic.trim();
-                if (topic.length() > 0 && topic.length() < sizeof(publish_Ack_Topic))
+                if (!applyPrimaryTopicSetting(request->getParam("publishTopic", true)->value(), publish_Ack_Topic, sizeof(publish_Ack_Topic)))
                 {
-                  topic.toCharArray(publish_Ack_Topic, sizeof(publish_Ack_Topic));
+                  errorMessage += "invalid publishTopic;";
                 }
               }
 
               if (request->hasParam("subscribeTopics", true))
               {
                 String topics = request->getParam("subscribeTopics", true)->value();
-                parseAndSetExtraTopics(topics);
+                if (!parseAndSetExtraTopics(topics))
+                {
+                  errorMessage += "invalid subscribeTopics;";
+                }
               }
               if (request->hasParam("watchTopics", true))
               {
                 String topics = request->getParam("watchTopics", true)->value();
-                setWatchedTopics(topics);
+                if (!setWatchedTopics(topics))
+                {
+                  errorMessage += "invalid watchTopics;";
+                }
               }
               if (request->hasParam("publishTopics", true))
               {
                 String topics = request->getParam("publishTopics", true)->value();
-                parseAndSetPublishTopics(topics);
+                if (!parseAndSetPublishTopics(topics))
+                {
+                  errorMessage += "invalid publishTopics;";
+                }
               }
               if (request->hasParam("publishDefaultTopic", true))
               {
                 String topic = request->getParam("publishDefaultTopic", true)->value();
                 topic.trim();
-                if (topic.length() < MAX_TOPIC_LEN)
+                if (topic.length() > 0 && topic.length() < MAX_TOPIC_LEN)
                 {
                   topic.toCharArray(publish_Default_Topic, MAX_TOPIC_LEN);
                 }
+                else
+                {
+                  errorMessage += "invalid publishDefaultTopic;";
+                }
+              }
+
+              if (errorMessage.length() > 0)
+              {
+                request->send(400, "text/plain", errorMessage);
+                return;
               }
 
               writeMqttConfig();
@@ -1607,12 +1656,8 @@ void setup()
 
   strcpy(macAddressString, buff);
   macAddressString[12] = '\0';
-  strcpy(subscribe_Alarm_Topic, buff);
-  strcpy(publish_Ack_Topic, buff);
-  strcpy(subscribe_Alarm_Topic + 12, "_ALM");
-  strcpy(publish_Ack_Topic + 12, "_ACK");
-  subscribe_Alarm_Topic[16] = '\0';
-  publish_Ack_Topic[16] = '\0';
+  snprintf(subscribe_Alarm_Topic, sizeof(subscribe_Alarm_Topic), "%s_ALM", buff);
+  snprintf(publish_Ack_Topic, sizeof(publish_Ack_Topic), "%s_ACK", buff);
   strncpy(publish_Default_Topic, subscribe_Alarm_Topic, MAX_TOPIC_LEN - 1);
   publish_Default_Topic[MAX_TOPIC_LEN - 1] = '\0';
 
