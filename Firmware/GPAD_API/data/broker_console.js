@@ -129,6 +129,18 @@
     }
   }
 
+  function updatePublishTopicsUi(publishTopics, publishDefaultTopic) {
+    const normalized = normalizeTopicList(publishTopics || '');
+    const list = byId('publishTopicList');
+    if (list) {
+      list.value = normalized;
+    }
+    const publishTopic = byId('publishTopic');
+    if (publishTopic && !publishTopic.value.trim() && publishDefaultTopic) {
+      publishTopic.value = publishDefaultTopic;
+    }
+  }
+
   async function refreshBrokerData() {
     try {
       const response = await fetch('/broker-console/data', { cache: 'no-store' });
@@ -143,6 +155,11 @@
       if (brokerName) {
         brokerName.textContent = data.broker || brokerName.textContent;
       }
+      const roleNode = byId('deviceRole');
+      if (roleNode) {
+        roleNode.textContent = data.role || 'Krake';
+      }
+      updatePublishTopicsUi(data.publishTopics || '', data.publishDefaultTopic || '');
       const publishTopic = byId('publishTopic');
       if (publishTopic && !publishTopic.value.trim() && data.subscribeAlarmTopic) {
         publishTopic.value = data.subscribeAlarmTopic;
@@ -201,6 +218,20 @@
       await refreshBrokerData();
     } catch (error) {
       showMessage('Failed to clear watch topics: ' + error.message, true);
+    }
+  }
+
+  async function savePublishTopics() {
+    const listNode = byId('publishTopicList');
+    if (!listNode) return;
+    const publishTopics = normalizeTopicList(listNode.value);
+    const publishDefaultTopic = byId('publishTopic').value.trim();
+    try {
+      await postForm('/config', { publishTopics, publishDefaultTopic });
+      showMessage('Publish topics saved.');
+      await refreshBrokerData();
+    } catch (error) {
+      showMessage('Failed to save publish topics: ' + error.message, true);
     }
   }
 
@@ -294,6 +325,24 @@
     const btnClearWatch = byId('btnClearWatch');
     if (btnClearWatch) {
       btnClearWatch.addEventListener('click', clearWatchTopics);
+    }
+    const btnSavePublishTopics = byId('btnSavePublishTopics');
+    if (btnSavePublishTopics) {
+      btnSavePublishTopics.addEventListener('click', savePublishTopics);
+    }
+    const btnUsePublishList = byId('btnUsePublishList');
+    if (btnUsePublishList) {
+      btnUsePublishList.addEventListener('click', () => {
+        const listNode = byId('publishTopicList');
+        if (!listNode) return;
+        const topics = normalizeTopicList(listNode.value).split(',').filter(Boolean);
+        if (topics.length > 0) {
+          byId('publishTopic').value = topics[0];
+          showMessage('Publish topic selected from saved list.');
+        } else {
+          showMessage('No saved publish topics available.', true);
+        }
+      });
     }
     byId('btnSendMessage').addEventListener('click', publishMessage);
     const sendWebBtn = byId('btnSendWebMessage');

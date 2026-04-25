@@ -60,18 +60,28 @@
 
     <section class="card">
       <h1>MQTT</h1>
-      <p class="subtitle">Edit broker and set extra topics to subscribe (comma-separated).</p>
+      <p class="subtitle">Dynamic broker/topic/role assignment stored in <code>/mqtt.json</code>.</p>
 
+      <label for="role">Device Role</label>
+      <select id="role" class="text-input">
+        <option value="Krake">Krake</option>
+        <option value="PMD">PMD</option>
+      </select>
       <label for="broker">Broker</label>
       <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
-      <button class="action-btn" onclick="saveBroker()">Save Broker</button>
+      <label for="subscribeTopic" style="margin-top:12px; display:block;">Primary Subscribe Topic</label>
+      <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+      <label for="publishTopic" style="margin-top:12px; display:block;">Primary Publish Topic</label>
+      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
 
-      <label for="topics" style="margin-top:12px; display:block;">Extra Subscribe Topics</label>
+      <label for="topics" style="margin-top:12px; display:block;">Extra Subscribe Topics (comma-separated)</label>
       <textarea id="topics" class="text-input" rows="3" placeholder="topic1,topic2"></textarea>
-      <button class="action-btn" onclick="saveTopics()">Save Topics</button>
+      <label for="publishTopics" style="margin-top:12px; display:block;">Saved Publish Topics (comma-separated)</label>
+      <textarea id="publishTopics" class="text-input" rows="3" placeholder="topicA,topicB"></textarea>
+      <button class="action-btn" onclick="saveMqttConfig()">Save MQTT Config</button>
 
-      <div class="status-row">Primary alarm topic: <code id="alarmTopic">-</code></div>
-      <div class="status-row">Ack topic: <code id="ackTopic">-</code></div>
+      <div class="status-row">Primary subscribe topic: <code id="alarmTopic">-</code></div>
+      <div class="status-row">Primary publish topic: <code id="ackTopic">-</code></div>
     </section>
   </main>
 
@@ -142,10 +152,14 @@
       if (!res.ok) throw new Error('Unable to load settings');
       const data = await res.json();
       document.getElementById('broker').value = data.broker || '';
+      document.getElementById('role').value = data.role || 'Krake';
       document.getElementById('topics').value = data.extraTopics || '';
+      document.getElementById('publishTopics').value = data.publishTopics || '';
+      document.getElementById('subscribeTopic').value = data.subscribeTopic || '';
+      document.getElementById('publishTopic').value = data.publishTopic || '';
       document.getElementById('muteStatus').textContent = data.muted ? 'Muted' : 'Unmuted';
-      document.getElementById('alarmTopic').textContent = data.alarmTopic || '-';
-      document.getElementById('ackTopic').textContent = data.ackTopic || '-';
+      document.getElementById('alarmTopic').textContent = data.subscribeTopic || '-';
+      document.getElementById('ackTopic').textContent = data.publishTopic || '-';
     }
 
     async function resetWifi() {
@@ -168,24 +182,19 @@
       }
     }
 
-    async function saveBroker() {
+    async function saveMqttConfig() {
       try {
+        const role = document.getElementById('role').value;
         const broker = document.getElementById('broker').value.trim();
-        await postForm('/settings/broker', { broker });
-        showMessage('Broker updated and MQTT reconnected.');
-      } catch (e) {
-        showMessage('Failed to save broker: ' + e.message, true);
-      }
-    }
-
-    async function saveTopics() {
-      try {
         const topics = document.getElementById('topics').value;
-        await postForm('/settings/topics', { topics });
-        showMessage('Topics updated and MQTT reconnected.');
+        const publishTopics = document.getElementById('publishTopics').value;
+        const subscribeTopic = document.getElementById('subscribeTopic').value.trim();
+        const publishTopic = document.getElementById('publishTopic').value.trim();
+        await postForm('/config', { role, broker, subscribeTopic, publishTopic, subscribeTopics: topics, publishTopics, publishDefaultTopic: publishTopic });
+        showMessage('MQTT config updated and saved to /mqtt.json.');
         await refreshSettings();
       } catch (e) {
-        showMessage('Failed to save topics: ' + e.message, true);
+        showMessage('Failed to save MQTT config: ' + e.message, true);
       }
     }
 
