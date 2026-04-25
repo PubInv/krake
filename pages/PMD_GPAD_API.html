@@ -99,6 +99,24 @@ Date: 20241023
 			overflow: hidden;
         }
 
+        #mqttTerminal {
+            width: min(900px, 95vw);
+            background: rgba(0, 0, 0, 0.7);
+            color: #e8ffe8;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            max-height: 230px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        #connectionStatus {
+            font-weight: bold;
+        }
+
 </style>
 
 <script
@@ -144,9 +162,12 @@ Date: 20241023
 		<input type="password" value="public" id="password" name="namePassword" required minlength="4" maxlength="100" size="50" />
 		<br>
 		<div class="fetch-button">
-			<button onclick="setBroker()">Set Broker Values</button>
+			<button type="button" onclick="setBroker()">Set Broker Values</button>
+            <button type="button" onclick="connectMqtt()">Connect MQTT</button>
+            <button type="button" onclick="disconnectMqtt()">Disconnect MQTT</button>
 		</div>
 	</form>
+    <p id="connectionStatus">MQTT Status: disconnected</p>
 
 
 	<h1>Set Krake Target</h1>
@@ -161,7 +182,7 @@ Date: 20241023
         </input>
 		<br>
 		<div class="fetch-button">
-			<button onclick="setTopic(this)">Set KRAKE Topic</button>
+			<button type="button" onclick="setTopic(this)">Set KRAKE Topic</button>
 		</div>
 	<b>Some KRAKEs (TOPICs): </b>
 		<UL>
@@ -187,56 +208,147 @@ Date: 20241023
         </div>
 
         <div class="fetch-button">
-            <button onclick="fetchMuteStatus()">Get Mute Status</button>
+            <button type="button" onclick="fetchMuteStatus()">Get Mute Status</button>
         </div>
 		<p id="muteValue">Mute Value: -</p>
     </div>
+
+    <h1>MQTT Terminal</h1>
+    <p>Monitors messages for the topics currently subscribed in this page.</p>
+    <p id="subscribedTopics">Subscribed Topics: none</p>
+    <div id="mqttTerminal">[terminal ready]</div>
 
 	<h6> 	Public Invention,  LICENSE "GNU Affero General Public License, version 3 " </h6>
 
     <script>
         let topic = "PLACEHOLDER TOPIC";
+        let client = null;
+        let mqttConnected = false;
+        const subscribedTopics = new Set();
+
+        function logTerminal(msg) {
+            const terminal = document.getElementById('mqttTerminal');
+            const now = new Date().toLocaleTimeString();
+            terminal.textContent += `\n[${now}] ${msg}`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function refreshSubscribedTopicsUi() {
+            const topicList = Array.from(subscribedTopics);
+            document.getElementById('subscribedTopics').innerText = `Subscribed Topics: ${topicList.length ? topicList.join(", ") : "none"}`;
+        }
+
+        function updateConnectionStatus(statusText) {
+            document.getElementById('connectionStatus').innerText = `MQTT Status: ${statusText}`;
+        }
+
+        function buildAckTopic(alarmTopic) {
+            if (!alarmTopic) return "";
+            if (alarmTopic.endsWith("_ALM")) {
+                return alarmTopic.replace(/_ALM$/, "_ACK");
+            }
+            return `${alarmTopic}_ACK`;
+        }
+
+        function subscribeToTopic(oneTopic) {
+            if (!client || !mqttConnected || !oneTopic) return;
+            if (subscribedTopics.has(oneTopic)) return;
+            client.subscribe(oneTopic, (err) => {
+                if (err) {
+                    logTerminal(`subscribe FAILED: ${oneTopic} (${err.message || err})`);
+                    return;
+                }
+                subscribedTopics.add(oneTopic);
+                refreshSubscribedTopicsUi();
+                logTerminal(`subscribed: ${oneTopic}`);
+            });
+        }
+
+        function subscribeToCurrentTopics() {
+            subscribeToTopic(topic);
+            subscribeToTopic(buildAckTopic(topic));
+        }
+
+        function connectMqtt() {
+            if (mqttConnected) {
+                logTerminal("already connected");
+                return;
+            }
+
+            const wsUrl = 'wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL;
+            logTerminal(`connecting to ${wsUrl}`);
+            client = mqtt.connect(wsUrl);
+
+            client.on('connect', function () {
+                mqttConnected = true;
+                updateConnectionStatus(`connected (${brokerURL})`);
+                logTerminal("connected");
+                subscribeToCurrentTopics();
+            });
+
+            client.on('message', function (receivedTopic, receivedMessage) {
+                logTerminal(`message ${receivedTopic}: ${receivedMessage.toString()}`);
+            });
+
+            client.on('error', function (err) {
+                logTerminal(`error: ${err.message || err}`);
+            });
+
+            client.on('close', function () {
+                mqttConnected = false;
+                subscribedTopics.clear();
+                refreshSubscribedTopicsUi();
+                updateConnectionStatus("disconnected");
+                logTerminal("connection closed");
+            });
+        }
+
+        function disconnectMqtt() {
+            if (!client) return;
+            logTerminal("disconnect requested");
+            client.end();
+            client = null;
+        }
+
 	    function setBroker() {
-			event.preventDefault(); //Do not reload page
-			console.log("setBroker URL, User, PW");
+			brokerURL = $("#nameBroker").val().trim();
+			brokerUser = $("#username").val().trim();
+			brokerPassword = $("#password").val().trim();
+			logTerminal(`broker set: ${brokerURL}, user: ${brokerUser}`);
+            if (mqttConnected) {
+                disconnectMqtt();
+                connectMqtt();
+            }
         }//end setBroker()
 
 
 	    function setTopic(val) {
-			event.preventDefault(); //Do not reload page
             let new_topic = $("#nameTopic").val();
-			console.log("setTopic val: " + new_topic);
+			logTerminal("topic set: " + new_topic);
             topic = new_topic;
+            if (mqttConnected) {
+                subscribeToCurrentTopics();
+            }
         }//end setTopic()
 
 
 		let brokerURL = 'public.cloud.shiftr.io';
 		let brokerUser = 'public';
 		let brokerPassword = 'public';
-		let topic2 = "20240421_USA4"
 
 		function publishEmergency(level) {
-
-		//	let client = mqtt.connect('wss://public:public@public.cloud.shiftr.io');
-			let client = mqtt.connect('wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL);
-
+            if (!mqttConnected) {
+                connectMqtt();
+            }
 
             let metric = 'MessageFromProcessing_PMD: ';
             // Note, Rob added "a" here...
             metric =  "a" + level + metric + "a" + level;
 
-			client.subscribe(topic);
-			client.subscribe("20240421_USA4");
-
 			client.publish(topic, metric);
-				console.log("Published to: " + topic);
-				console.log("the  message: " + metric);
-
-			client.on('message', function (topic2, message2) { // message is Buffer
-				console.log("Got a subscription message topic 20240421_USA4: ");
-				console.log(message2.toString());
-				});
-			client.end();
+            subscribeToCurrentTopics();
+            logTerminal("Published to: " + topic);
+            logTerminal("Payload: " + metric);
 		}//end publishEmergency
 
 
