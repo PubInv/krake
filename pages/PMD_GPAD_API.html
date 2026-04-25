@@ -117,6 +117,10 @@ Date: 20241023
             font-weight: bold;
         }
 
+        #connectionStatus.connected { color: #0f5132; }
+        #connectionStatus.connecting { color: #664d03; }
+        #connectionStatus.disconnected { color: #842029; }
+
 </style>
 
 <script
@@ -182,7 +186,7 @@ Date: 20241023
         </input>
 		<br>
 		<div class="fetch-button">
-			<button type="button" onclick="setTopic(this)">Set KRAKE Topic</button>
+			<button type="button" onclick="setTopic()">Set KRAKE Topic</button>
 		</div>
 	<b>Some KRAKEs (TOPICs): </b>
 		<UL>
@@ -222,14 +226,20 @@ Date: 20241023
 
     <script>
         let topic = "PLACEHOLDER TOPIC";
+        let brokerURL = 'public.cloud.shiftr.io';
+        let brokerUser = 'public';
+        let brokerPassword = 'public';
+
         let client = null;
         let mqttConnected = false;
+        let mqttConnecting = false;
         const subscribedTopics = new Set();
 
         function logTerminal(msg) {
             const terminal = document.getElementById('mqttTerminal');
             const now = new Date().toLocaleTimeString();
-            terminal.textContent += `\n[${now}] ${msg}`;
+            terminal.textContent += `
+[${now}] ${msg}`;
             terminal.scrollTop = terminal.scrollHeight;
         }
 
@@ -238,29 +248,50 @@ Date: 20241023
             document.getElementById('subscribedTopics').innerText = `Subscribed Topics: ${topicList.length ? topicList.join(", ") : "none"}`;
         }
 
-        function updateConnectionStatus(statusText) {
-            document.getElementById('connectionStatus').innerText = `MQTT Status: ${statusText}`;
+        function updateConnectionStatus(statusText, stateClass = "disconnected") {
+            const status = document.getElementById('connectionStatus');
+            status.innerText = `MQTT Status: ${statusText}`;
+            status.classList.remove('connected', 'connecting', 'disconnected');
+            status.classList.add(stateClass);
+        }
+
+        function normalizeBrokerUrl(rawBroker) {
+            const trimmed = (rawBroker || "").trim();
+            if (!trimmed) return "";
+
+            if (trimmed.startsWith('ws://') || trimmed.startsWith('wss://')) {
+                return trimmed;
+            }
+
+            if (trimmed.includes('://')) {
+                throw new Error('Use websocket URL (ws:// or wss://), or host[:port][/path].');
+            }
+
+            return `wss://${trimmed}`;
         }
 
         function buildAckTopic(alarmTopic) {
-            if (!alarmTopic) return "";
-            if (alarmTopic.endsWith("_ALM")) {
-                return alarmTopic.replace(/_ALM$/, "_ACK");
+            const cleaned = (alarmTopic || "").trim();
+            if (!cleaned) return "";
+            if (cleaned.endsWith("_ALM")) {
+                return cleaned.replace(/_ALM$/, "_ACK");
             }
-            return `${alarmTopic}_ACK`;
+            return `${cleaned}_ACK`;
         }
 
         function subscribeToTopic(oneTopic) {
-            if (!client || !mqttConnected || !oneTopic) return;
-            if (subscribedTopics.has(oneTopic)) return;
-            client.subscribe(oneTopic, (err) => {
+            const cleanedTopic = (oneTopic || "").trim();
+            if (!client || !mqttConnected || !cleanedTopic) return;
+            if (subscribedTopics.has(cleanedTopic)) return;
+
+            client.subscribe(cleanedTopic, { qos: 0 }, (err) => {
                 if (err) {
-                    logTerminal(`subscribe FAILED: ${oneTopic} (${err.message || err})`);
+                    logTerminal(`subscribe FAILED: ${cleanedTopic} (${err.message || err})`);
                     return;
                 }
-                subscribedTopics.add(oneTopic);
+                subscribedTopics.add(cleanedTopic);
                 refreshSubscribedTopicsUi();
-                logTerminal(`subscribed: ${oneTopic}`);
+                logTerminal(`subscribed: ${cleanedTopic}`);
             });
         }
 
@@ -269,21 +300,64 @@ Date: 20241023
             subscribeToTopic(buildAckTopic(topic));
         }
 
+        function unsubscribeTopicIfNeeded(topicToRemove) {
+            const cleanedTopic = (topicToRemove || "").trim();
+            if (!cleanedTopic || !client || !mqttConnected || !subscribedTopics.has(cleanedTopic)) return;
+
+            client.unsubscribe(cleanedTopic, (err) => {
+                if (err) {
+                    logTerminal(`unsubscribe FAILED: ${cleanedTopic} (${err.message || err})`);
+                    return;
+                }
+                subscribedTopics.delete(cleanedTopic);
+                refreshSubscribedTopicsUi();
+                logTerminal(`unsubscribed: ${cleanedTopic}`);
+            });
+        }
+
         function connectMqtt() {
             if (mqttConnected) {
                 logTerminal("already connected");
                 return;
             }
+            if (mqttConnecting) {
+                logTerminal("connection already in progress");
+                return;
+            }
 
-            const wsUrl = 'wss://' + brokerUser + ':' + brokerPassword + '@' + brokerURL;
+            let wsUrl = "";
+            try {
+                wsUrl = normalizeBrokerUrl(brokerURL);
+            } catch (e) {
+                logTerminal(`broker URL error: ${e.message}`);
+                updateConnectionStatus("invalid broker URL", "disconnected");
+                return;
+            }
+
+            mqttConnecting = true;
+            updateConnectionStatus("connecting...", "connecting");
             logTerminal(`connecting to ${wsUrl}`);
-            client = mqtt.connect(wsUrl);
+
+            client = mqtt.connect(wsUrl, {
+                username: brokerUser || undefined,
+                password: brokerPassword || undefined,
+                reconnectPeriod: 2000,
+                connectTimeout: 10000,
+                clean: true
+            });
 
             client.on('connect', function () {
+                mqttConnecting = false;
                 mqttConnected = true;
-                updateConnectionStatus(`connected (${brokerURL})`);
+                updateConnectionStatus(`connected (${wsUrl})`, "connected");
                 logTerminal("connected");
                 subscribeToCurrentTopics();
+            });
+
+            client.on('reconnect', function () {
+                mqttConnecting = true;
+                updateConnectionStatus('reconnecting...', 'connecting');
+                logTerminal('reconnecting...');
             });
 
             client.on('message', function (receivedTopic, receivedMessage) {
@@ -295,62 +369,93 @@ Date: 20241023
             });
 
             client.on('close', function () {
+                mqttConnecting = false;
                 mqttConnected = false;
                 subscribedTopics.clear();
                 refreshSubscribedTopicsUi();
-                updateConnectionStatus("disconnected");
+                updateConnectionStatus("disconnected", "disconnected");
                 logTerminal("connection closed");
             });
         }
 
         function disconnectMqtt() {
-            if (!client) return;
+            if (!client) {
+                logTerminal("disconnect requested (no client)");
+                return;
+            }
             logTerminal("disconnect requested");
-            client.end();
+            client.end(true);
             client = null;
         }
 
-	    function setBroker() {
-			brokerURL = $("#nameBroker").val().trim();
-			brokerUser = $("#username").val().trim();
-			brokerPassword = $("#password").val().trim();
-			logTerminal(`broker set: ${brokerURL}, user: ${brokerUser}`);
-            if (mqttConnected) {
+        function setBroker() {
+            brokerURL = $("#nameBroker").val().trim();
+            brokerUser = $("#username").val().trim();
+            brokerPassword = $("#password").val().trim();
+            logTerminal(`broker set: ${brokerURL}, user: ${brokerUser || "(none)"}`);
+            if (mqttConnected || mqttConnecting) {
                 disconnectMqtt();
                 connectMqtt();
             }
         }//end setBroker()
 
 
-	    function setTopic(val) {
-            let new_topic = $("#nameTopic").val();
-			logTerminal("topic set: " + new_topic);
-            topic = new_topic;
+        function setTopic() {
+            const newTopic = $("#nameTopic").val().trim();
+            if (!newTopic) {
+                logTerminal("topic set FAILED: empty topic");
+                return;
+            }
+
+            const oldTopic = topic;
+            topic = newTopic;
+            logTerminal(`topic set: ${newTopic}`);
+
             if (mqttConnected) {
+                unsubscribeTopicIfNeeded(oldTopic);
+                unsubscribeTopicIfNeeded(buildAckTopic(oldTopic));
                 subscribeToCurrentTopics();
             }
         }//end setTopic()
 
 
-		let brokerURL = 'public.cloud.shiftr.io';
-		let brokerUser = 'public';
-		let brokerPassword = 'public';
+        async function waitForConnection(timeoutMs = 6000) {
+            if (mqttConnected) return true;
+            const deadline = Date.now() + timeoutMs;
+            while (!mqttConnected && Date.now() < deadline) {
+                await new Promise((resolve) => setTimeout(resolve, 200));
+            }
+            return mqttConnected;
+        }
 
-		function publishEmergency(level) {
+        async function publishEmergency(level) {
+            if (!topic || topic.includes("PLACEHOLDER")) {
+                logTerminal("publish blocked: set a valid topic first");
+                return;
+            }
+
             if (!mqttConnected) {
                 connectMqtt();
+                const connected = await waitForConnection();
+                if (!connected || !client) {
+                    logTerminal("publish FAILED: unable to connect in time");
+                    return;
+                }
             }
 
             let metric = 'MessageFromProcessing_PMD: ';
-            // Note, Rob added "a" here...
             metric =  "a" + level + metric + "a" + level;
 
-			client.publish(topic, metric);
-            subscribeToCurrentTopics();
-            logTerminal("Published to: " + topic);
-            logTerminal("Payload: " + metric);
-		}//end publishEmergency
-
+            client.publish(topic, metric, { qos: 0 }, (err) => {
+                if (err) {
+                    logTerminal(`publish FAILED: ${err.message || err}`);
+                    return;
+                }
+                subscribeToCurrentTopics();
+                logTerminal("Published to: " + topic);
+                logTerminal("Payload: " + metric);
+            });
+        }//end publishEmergency
 
         function updateSensorValue(value) {
             document.getElementById('Value').innerText = 'Sensor Value: ' + value;
