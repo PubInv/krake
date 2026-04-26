@@ -1,200 +1,88 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>MQTT Device Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="stylesheet" href="/style.css" />
-  <style>
-    .hero-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    .eyebrow {
-      margin: 0;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #5e7a69;
-    }
-    .broker {
-      display: inline-block;
-      border-radius: 20px;
-      padding: 6px 10px;
-      border: 1px solid #d0e2d6;
-      background: #f8fbf9;
-      color: #315541;
-      font-size: .9rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .broker.online { background: #e5f6ea; border-color: #b8dec4; color: #146620; }
-    .broker.offline { background: #fdf0f0; border-color: #ebc8c8; color: #9f2727; }
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-      align-items: end;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-    }
-    .stat {
-      border: 1px solid #d7e7dc;
-      border-radius: 12px;
-      background: #f8fbf9;
-      padding: 12px;
-    }
-    .stat span {
-      display: block;
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: #18422c;
-      line-height: 1.1;
-    }
-    .stat small { color: #4f685b; }
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 720px; }
-    th, td { border-bottom: 1px solid #ebf2ee; padding: 10px 8px; text-align: left; vertical-align: top; }
-    th { color: #4f685b; font-size: .84rem; }
-    .status-pill {
-      display: inline-flex;
-      border-radius: 18px;
-      border: 1px solid #d7e7dc;
-      padding: 4px 8px;
-      font-weight: 700;
-      font-size: .8rem;
-      text-transform: capitalize;
-    }
-    .status-pill.online { background: #e5f6ea; color: #146620; border-color: #b8dec4; }
-    .status-pill.offline { background: #fdf0f0; color: #9f2727; border-color: #ebc8c8; }
-    #log {
-      margin: 0;
-      min-height: 170px;
-      max-height: 300px;
-      overflow: auto;
-      background: #0f1a14;
-      color: #c8f2d3;
-      border-radius: 10px;
-      padding: 12px;
-      white-space: pre-wrap;
-    }
-  </style>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>MQTT Device Monitor</span>
-    </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/broker-console">Broker Console</a>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
-
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
   <main class="container">
-    <section class="card">
-      <div class="hero-row">
-        <div>
-          <p class="eyebrow">MQTT Web Monitor</p>
-          <h1>Online Devices</h1>
-          <p class="subtitle">Tracks devices by MAC-based topics, retained messages, and heartbeat timeout.</p>
-        </div>
-        <div id="brokerStatus" class="broker offline">Broker offline</div>
-      </div>
-    </section>
+<section class="card">
+<div class="hero-row">
+<div>
+<p class="eyebrow">MQTT Web Monitor</p>
+<h1>Online Devices</h1>
+<p class="subtitle">Tracks devices by MAC-based topics, retained messages, and heartbeat timeout.</p>
+</div>
+<div class="broker offline" id="brokerStatus">Broker offline</div>
+</div>
+</section>
+<section class="card">
+<h1>Broker Connection</h1>
+<div class="form-grid">
+<label>Broker WSS URL<input class="text-input" id="brokerUrl" value="wss://public.cloud.shiftr.io"/></label>
+<label>Username<input class="text-input" id="username" value="public"/></label>
+<label>Password<input class="text-input" id="password" type="password" value="public"/></label>
+<button class="action-btn" id="connectBtn">Connect</button>
+<button class="action-btn secondary" disabled="" id="disconnectBtn">Disconnect</button>
+</div>
+</section>
+<section class="card">
+<h1>Publish command to all devices</h1>
+<div class="form-grid">
+<label>Command Preset
+          <select class="text-input" id="commandPreset">
+<option value="i">Info request: i</option>
+<option value="h">Help: h</option>
+<option value="s">Silence/Mute: s</option>
+<option value="u">Unmute: u</option>
+<option value="a1Test alarm from web app">Alarm level 1</option>
+<option value="a2Test alarm from web app">Alarm level 2</option>
+<option value="a5Test alarm from web app">Alarm level 5</option>
+</select>
+</label>
+<label>Custom command<input class="text-input" id="customCommand" placeholder="Or type custom GPAD/GPAP message"/></label>
+<label><input id="retain" type="checkbox"/> Retain</label>
+<button class="action-btn" disabled="" id="publishBtn">Publish</button>
+</div>
+<p class="status-row">Publishes to <code>&lt;MAC&gt;_ALM</code>, same as the Processing sketch.</p>
+</section>
+<section class="card stats">
+<div class="stat"><span id="onlineCount">0</span><small>Online</small></div>
+<div class="stat"><span id="offlineCount">0</span><small>Offline</small></div>
+<div class="stat"><span id="messageCount">0</span><small>Messages</small></div>
+</section>
+<section class="card">
+<h1>Device Registry</h1>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Name</th>
+<th>MAC</th>
+<th>Last topic</th>
+<th>Last seen</th>
+<th>Last message</th>
+</tr>
+</thead>
+<tbody id="deviceTable"></tbody>
+</table>
+</div>
+</section>
+<section class="card">
+<h1>Event Log</h1>
+<pre id="log"></pre>
+</section>
+</main>
 
-    <section class="card">
-      <h1>Broker Connection</h1>
-      <div class="form-grid">
-        <label>Broker WSS URL<input id="brokerUrl" class="text-input" value="wss://public.cloud.shiftr.io" /></label>
-        <label>Username<input id="username" class="text-input" value="public" /></label>
-        <label>Password<input id="password" class="text-input" value="public" type="password" /></label>
-        <button id="connectBtn" class="action-btn">Connect</button>
-        <button id="disconnectBtn" class="action-btn secondary" disabled>Disconnect</button>
-      </div>
-    </section>
-
-    <section class="card">
-      <h1>Publish command to all devices</h1>
-      <div class="form-grid">
-        <label>Command Preset
-          <select id="commandPreset" class="text-input">
-            <option value="i">Info request: i</option>
-            <option value="h">Help: h</option>
-            <option value="s">Silence/Mute: s</option>
-            <option value="u">Unmute: u</option>
-            <option value="a1Test alarm from web app">Alarm level 1</option>
-            <option value="a2Test alarm from web app">Alarm level 2</option>
-            <option value="a5Test alarm from web app">Alarm level 5</option>
-          </select>
-        </label>
-        <label>Custom command<input id="customCommand" class="text-input" placeholder="Or type custom GPAD/GPAP message" /></label>
-        <label><input id="retain" type="checkbox" /> Retain</label>
-        <button id="publishBtn" class="action-btn" disabled>Publish</button>
-      </div>
-      <p class="status-row">Publishes to <code>&lt;MAC&gt;_ALM</code>, same as the Processing sketch.</p>
-    </section>
-
-    <section class="card stats">
-      <div class="stat"><span id="onlineCount">0</span><small>Online</small></div>
-      <div class="stat"><span id="offlineCount">0</span><small>Offline</small></div>
-      <div class="stat"><span id="messageCount">0</span><small>Messages</small></div>
-    </section>
-
-    <section class="card">
-      <h1>Device Registry</h1>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Name</th>
-              <th>MAC</th>
-              <th>Last topic</th>
-              <th>Last seen</th>
-              <th>Last message</th>
-            </tr>
-          </thead>
-          <tbody id="deviceTable"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="card">
-      <h1>Event Log</h1>
-      <pre id="log"></pre>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <a href="https://pubinv.org" target="_blank">pubinv.org</a>
-  </footer>
-
-  <script>
-    function toggleMenu() {
-      document.getElementById("sideMenu").classList.toggle("open");
-    }
-  </script>
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script src="/app.js"></script>
+  <script src="/js/device-monitor.js"></script>
 </body>
 </html>

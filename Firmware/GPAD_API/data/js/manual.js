@@ -1,0 +1,1 @@
+KrakeUI.mountLayout('User Manual');
