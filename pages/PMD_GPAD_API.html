@@ -157,7 +157,10 @@ Date: 20241023
 	<h2>Setup MQTT Broker</h2>
 	<form>
 		<label for="brokerURL">Broker URL :</label>
-		<input type="text" value="public.cloud.shiftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
+		<input type="text" value="public.cloud.shftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
+		<br>
+		<label for="brokerPort">Broker Port :</label>
+		<input type="number" value="1883" id="brokerPort" name="brokerPort" min="1" max="65535" step="1" />
 		<br>
 		<label for="username">Broker User :</label>
 		<input type="text" value="public" id="username" name="username" required minlength="4" maxlength="100" size="50" />
@@ -226,7 +229,8 @@ Date: 20241023
 
     <script>
         let topic = "PLACEHOLDER TOPIC";
-        let brokerURL = 'public.cloud.shiftr.io';
+        let brokerURL = 'public.cloud.shftr.io';
+        let brokerPort = '1883';
         let brokerUser = 'public';
         let brokerPassword = 'public';
 
@@ -255,19 +259,31 @@ Date: 20241023
             status.classList.add(stateClass);
         }
 
-        function normalizeBrokerUrl(rawBroker) {
+        function normalizeBrokerUrl(rawBroker, rawPort) {
             const trimmed = (rawBroker || "").trim();
             if (!trimmed) return "";
+            const portText = String(rawPort || "").trim();
+            const parsedPort = Number.parseInt(portText, 10);
+            const hasPort = Number.isInteger(parsedPort) && parsedPort > 0 && parsedPort <= 65535;
 
             if (trimmed.startsWith('ws://') || trimmed.startsWith('wss://')) {
                 return trimmed;
+            }
+
+            if (trimmed.startsWith('mqtt://') || trimmed.startsWith('mqtts://')) {
+                const wsProtocol = trimmed.startsWith('mqtts://') ? 'wss://' : 'ws://';
+                const hostPart = trimmed.replace(/^mqtts?:\/\//, '');
+                return `${wsProtocol}${hostPart}`;
             }
 
             if (trimmed.includes('://')) {
                 throw new Error('Use websocket URL (ws:// or wss://), or host[:port][/path].');
             }
 
-            return `wss://${trimmed}`;
+            const protocol = parsedPort === 1883 ? 'ws' : 'wss';
+            const hasInlinePort = /:\d+(?:\/|$)/.test(trimmed);
+            const hostWithPort = hasInlinePort || !hasPort ? trimmed : `${trimmed}:${parsedPort}`;
+            return `${protocol}://${hostWithPort}`;
         }
 
         function buildAckTopic(alarmTopic) {
@@ -327,7 +343,7 @@ Date: 20241023
 
             let wsUrl = "";
             try {
-                wsUrl = normalizeBrokerUrl(brokerURL);
+                wsUrl = normalizeBrokerUrl(brokerURL, brokerPort);
             } catch (e) {
                 logTerminal(`broker URL error: ${e.message}`);
                 updateConnectionStatus("invalid broker URL", "disconnected");
@@ -390,9 +406,10 @@ Date: 20241023
 
         function setBroker() {
             brokerURL = $("#nameBroker").val().trim();
+            brokerPort = $("#brokerPort").val().trim();
             brokerUser = $("#username").val().trim();
             brokerPassword = $("#password").val().trim();
-            logTerminal(`broker set: ${brokerURL}, user: ${brokerUser || "(none)"}`);
+            logTerminal(`broker set: ${brokerURL}:${brokerPort || "(default)"}, user: ${brokerUser || "(none)"}`);
             if (mqttConnected || mqttConnecting) {
                 disconnectMqtt();
                 connectMqtt();
