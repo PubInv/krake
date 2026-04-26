@@ -240,6 +240,7 @@ TrackedKrake trackedKrakes[MAX_TRACKED_KRAKES];
 
 String jsonEscape(const String &raw);
 bool endsWithAckTopic(const char *topic);
+bool isAllowedPublishTopic(const String &topic);
 bool extractJsonString(const String &json, const char *key, String &value, int startPos = 0, int *valueEndPos = nullptr);
 bool writeMqttConfig();
 bool loadMqttConfig();
@@ -734,6 +735,24 @@ void clearPublishTopics()
 bool parseAndSetPublishTopics(const String &rawTopics)
 {
   return parseCsvIntoTopics(rawTopics, publish_Saved_Topics, publish_Saved_Topic_Count, MAX_PUBLISH_TOPICS);
+}
+
+bool isAllowedPublishTopic(const String &topic)
+{
+  if (topic.length() == 0 || topic.length() >= MAX_TOPIC_LEN)
+  {
+    return false;
+  }
+
+  for (uint8_t i = 0; i < publish_Saved_Topic_Count; i++)
+  {
+    if (topic.equals(publish_Saved_Topics[i]))
+    {
+      return true;
+    }
+  }
+
+  return topic.equals(publish_Default_Topic);
 }
 
 bool parseJsonStringAt(const String &json, int keyPos, String &value, int *valueEndPos = nullptr)
@@ -1526,6 +1545,11 @@ void setupOTA()
               if (topic.length() == 0)
               {
                 request->send(400, "text/plain", "topic is required");
+                return;
+              }
+              if (!isAllowedPublishTopic(topic))
+              {
+                request->send(403, "text/plain", "topic not allowed; use saved broker-console publish topics");
                 return;
               }
               bool ok = client.publish(topic.c_str(), payload.c_str());
