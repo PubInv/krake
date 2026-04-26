@@ -37,8 +37,6 @@
       <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
       <div class="chip">Role: <strong id="deviceRole">Krake</strong></div>
       <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
-      <div class="chip">Watched topics: <strong id="watchTopicCurrent">-</strong></div>
-      <div class="chip">KRAKEs seen: <strong id="krakeCount">0</strong></div>
     </div>
 
     <div class="console-grid">
@@ -68,34 +66,8 @@
         <textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea>
         <div class="button-row">
           <button id="btnSendMessage" class="action-btn" type="button">Send Message</button>
-          <button id="btnCopyWatch" class="action-btn secondary" type="button">Copy watched topic</button>
         </div>
         <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
-      </section>
-
-      <section class="card">
-        <h1>Topic Lists</h1>
-        <label for="watchTopic">Subscribe topics (comma-separated)</label>
-        <textarea id="watchTopic" class="text-input" rows="3" placeholder="topic/sub/1,topic/sub/2"></textarea>
-        <div class="button-row">
-          <button id="btnStartWatching" class="action-btn" type="button">Save Subscribe Topics</button>
-          <button id="btnClearWatch" class="action-btn secondary" type="button">Clear</button>
-        </div>
-
-        <label for="publishTopicList" style="margin-top:12px; display:block;">Publish topics (comma-separated)</label>
-        <textarea id="publishTopicList" class="text-input" rows="3" placeholder="topic/pub/1,topic/pub/2"></textarea>
-        <div class="button-row">
-          <button id="btnSavePublishTopics" class="action-btn" type="button">Save Publish Topics</button>
-          <button id="btnUsePublishList" class="action-btn secondary" type="button">Use First Publish Topic</button>
-        </div>
-      </section>
-
-      <section class="card card-wide">
-        <h1>Tracked Devices</h1>
-        <table class="status-table">
-          <thead><tr><th>Short ID</th><th>ID</th><th>Online</th><th>Topic</th><th>RSSI</th><th>Status</th><th>Last Topic</th><th>Last Status</th><th>Last Topic Msg</th></tr></thead>
-          <tbody id="krakeTableBody"><tr><td colspan="9">No tracked devices yet.</td></tr></tbody>
-        </table>
       </section>
     </div>
   </main>
