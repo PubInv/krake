@@ -157,7 +157,7 @@ Date: 20241023
 	<h2>Setup MQTT Broker</h2>
 	<form>
 		<label for="brokerURL">Broker URL :</label>
-		<input type="text" value="public.cloud.shftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
+		<input type="text" value="public.cloud.shiftr.io" id="nameBroker" name="nameBroker" required minlength="4" maxlength="100" size="50" />
 		<br>
 		<label for="brokerPort">Broker Port :</label>
 		<input type="number" value="1883" id="brokerPort" name="brokerPort" min="1" max="65535" step="1" />
@@ -229,7 +229,7 @@ Date: 20241023
 
     <script>
         let topic = "PLACEHOLDER TOPIC";
-        let brokerURL = 'public.cloud.shftr.io';
+        let brokerURL = 'public.cloud.shiftr.io';
         let brokerPort = '1883';
         let brokerUser = 'public';
         let brokerPassword = 'public';
@@ -237,6 +237,7 @@ Date: 20241023
         let client = null;
         let mqttConnected = false;
         let mqttConnecting = false;
+        let connectionEpoch = 0;
         const subscribedTopics = new Set();
 
         function logTerminal(msg) {
@@ -280,7 +281,7 @@ Date: 20241023
                 throw new Error('Use websocket URL (ws:// or wss://), or host[:port][/path].');
             }
 
-            const protocol = parsedPort === 1883 ? 'ws' : 'wss';
+            const protocol = 'ws';
             const hasInlinePort = /:\d+(?:\/|$)/.test(trimmed);
             const hostWithPort = hasInlinePort || !hasPort ? trimmed : `${trimmed}:${parsedPort}`;
             return `${protocol}://${hostWithPort}`;
@@ -331,6 +332,18 @@ Date: 20241023
             });
         }
 
+        function refreshBrokerStateFromForm() {
+            brokerURL = $("#nameBroker").val().trim();
+            brokerPort = $("#brokerPort").val().trim();
+            brokerUser = $("#username").val().trim();
+            brokerPassword = $("#password").val().trim();
+        }
+
+        function reconnectMqtt() {
+            disconnectMqtt();
+            window.setTimeout(connectMqtt, 150);
+        }
+
         function connectMqtt() {
             if (mqttConnected) {
                 logTerminal("already connected");
@@ -354,15 +367,19 @@ Date: 20241023
             updateConnectionStatus("connecting...", "connecting");
             logTerminal(`connecting to ${wsUrl}`);
 
-            client = mqtt.connect(wsUrl, {
+            const thisEpoch = ++connectionEpoch;
+            const activeClient = mqtt.connect(wsUrl, {
                 username: brokerUser || undefined,
                 password: brokerPassword || undefined,
                 reconnectPeriod: 2000,
                 connectTimeout: 10000,
-                clean: true
+                clean: true,
+                clientId: `pmd_web_${Math.random().toString(16).slice(2, 10)}`
             });
+            client = activeClient;
 
-            client.on('connect', function () {
+            activeClient.on('connect', function () {
+                if (thisEpoch !== connectionEpoch || client !== activeClient) return;
                 mqttConnecting = false;
                 mqttConnected = true;
                 updateConnectionStatus(`connected (${wsUrl})`, "connected");
@@ -370,21 +387,26 @@ Date: 20241023
                 subscribeToCurrentTopics();
             });
 
-            client.on('reconnect', function () {
+            activeClient.on('reconnect', function () {
+                if (thisEpoch !== connectionEpoch || client !== activeClient) return;
                 mqttConnecting = true;
+                mqttConnected = false;
                 updateConnectionStatus('reconnecting...', 'connecting');
                 logTerminal('reconnecting...');
             });
 
-            client.on('message', function (receivedTopic, receivedMessage) {
+            activeClient.on('message', function (receivedTopic, receivedMessage) {
+                if (thisEpoch !== connectionEpoch || client !== activeClient) return;
                 logTerminal(`message ${receivedTopic}: ${receivedMessage.toString()}`);
             });
 
-            client.on('error', function (err) {
+            activeClient.on('error', function (err) {
+                if (thisEpoch !== connectionEpoch || client !== activeClient) return;
                 logTerminal(`error: ${err.message || err}`);
             });
 
-            client.on('close', function () {
+            activeClient.on('close', function () {
+                if (thisEpoch !== connectionEpoch || client !== activeClient) return;
                 mqttConnecting = false;
                 mqttConnected = false;
                 subscribedTopics.clear();
@@ -399,20 +421,23 @@ Date: 20241023
                 logTerminal("disconnect requested (no client)");
                 return;
             }
-            logTerminal("disconnect requested");
-            client.end(true);
+            const activeClient = client;
+            connectionEpoch += 1;
             client = null;
+            mqttConnecting = false;
+            mqttConnected = false;
+            subscribedTopics.clear();
+            refreshSubscribedTopicsUi();
+            updateConnectionStatus("disconnected", "disconnected");
+            logTerminal("disconnect requested");
+            activeClient.end(true);
         }
 
         function setBroker() {
-            brokerURL = $("#nameBroker").val().trim();
-            brokerPort = $("#brokerPort").val().trim();
-            brokerUser = $("#username").val().trim();
-            brokerPassword = $("#password").val().trim();
+            refreshBrokerStateFromForm();
             logTerminal(`broker set: ${brokerURL}:${brokerPort || "(default)"}, user: ${brokerUser || "(none)"}`);
             if (mqttConnected || mqttConnecting) {
-                disconnectMqtt();
-                connectMqtt();
+                reconnectMqtt();
             }
         }//end setBroker()
 
@@ -511,6 +536,8 @@ Date: 20241023
                 console.error('Error sending emergency request:', error);
             });
         }//end emergency level
+
+        refreshBrokerStateFromForm();
 
     </script>
 
