@@ -1232,6 +1232,12 @@ void setupOTA()
   server.on("/monitor", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/monitor.html", "text/html", false, templateProcessor); });
 
+  server.on("/device-monitor", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/device-monitor.html", "text/html"); });
+
+  server.on("/device-monitor.html", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/device-monitor.html", "text/html"); });
+
   server.on("/lcd", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               String payload = "{\"lines\":[\"";
