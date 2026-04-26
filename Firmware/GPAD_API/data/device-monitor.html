@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Krake / PMD MQTT Device Monitor</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">MQTT Web Monitor</p>
+        <h1>Online Devices</h1>
+        <p class="sub">Tracks devices by MAC-based topics, retained messages, and heartbeat timeout.</p>
+      </div>
+      <div id="brokerStatus" class="broker offline">Broker offline</div>
+    </header>
+
+    <section class="panel controls">
+      <label>
+        Broker WSS URL
+        <input id="brokerUrl" value="wss://public.cloud.shiftr.io" />
+      </label>
+      <label>
+        Username
+        <input id="username" value="public" />
+      </label>
+      <label>
+        Password
+        <input id="password" value="public" type="password" />
+      </label>
+      <button id="connectBtn">Connect</button>
+      <button id="disconnectBtn" disabled>Disconnect</button>
+    </section>
+
+    <section class="panel publish">
+      <h2>Publish command to all devices</h2>
+      <div class="publish-row">
+        <select id="commandPreset">
+          <option value="i">Info request: i</option>
+          <option value="h">Help: h</option>
+          <option value="s">Silence/Mute: s</option>
+          <option value="u">Unmute: u</option>
+          <option value="a1Test alarm from web app">Alarm level 1</option>
+          <option value="a2Test alarm from web app">Alarm level 2</option>
+          <option value="a5Test alarm from web app">Alarm level 5</option>
+        </select>
+        <input id="customCommand" placeholder="Or type custom GPAD/GPAP message" />
+        <label class="check"><input id="retain" type="checkbox" /> Retain</label>
+        <button id="publishBtn" disabled>Publish</button>
+      </div>
+      <p class="hint">Publishes to <code>&lt;MAC&gt;_ALM</code>, same as the Processing sketch.</p>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><span id="onlineCount">0</span><small>Online</small></div>
+      <div class="stat"><span id="offlineCount">0</span><small>Offline</small></div>
+      <div class="stat"><span id="messageCount">0</span><small>Messages</small></div>
+    </section>
+
+    <section class="panel">
+      <h2>Device Registry</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Name</th>
+            <th>MAC</th>
+            <th>Last topic</th>
+            <th>Last seen</th>
+            <th>Last message</th>
+          </tr>
+        </thead>
+        <tbody id="deviceTable"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Event Log</h2>
+      <pre id="log"></pre>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
