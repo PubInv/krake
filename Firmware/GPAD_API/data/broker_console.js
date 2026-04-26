@@ -283,31 +283,37 @@
   }
 
   function setupTemplates() {
-    byId('btnUseAlm').addEventListener('click', () => {
+    const btnUseAlm = byId('btnUseAlm');
+    if (btnUseAlm) btnUseAlm.addEventListener('click', () => {
       const base = parsePrimaryId(byId('publishTopic').value.trim()).replace(/[^A-Za-z0-9]/g, '');
       byId('publishTopic').value = (base || 'AABBCCDDEEFF') + '_ALM';
     });
 
-    byId('btnUseAck').addEventListener('click', () => {
+    const btnUseAck = byId('btnUseAck');
+    if (btnUseAck) btnUseAck.addEventListener('click', () => {
       const base = parsePrimaryId(byId('publishTopic').value.trim()).replace(/[^A-Za-z0-9]/g, '');
       byId('publishTopic').value = (base || 'AABBCCDDEEFF') + '_ACK';
     });
 
-    byId('btnAlarmTemplate').addEventListener('click', () => {
+    const btnAlarmTemplate = byId('btnAlarmTemplate');
+    if (btnAlarmTemplate) btnAlarmTemplate.addEventListener('click', () => {
       const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
       byId('publishPayload').value = 'a3 ' + timestamp + ' Test alarm message';
     });
 
-    byId('btnInfoTemplate').addEventListener('click', () => {
+    const btnInfoTemplate = byId('btnInfoTemplate');
+    if (btnInfoTemplate) btnInfoTemplate.addEventListener('click', () => {
       const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
       byId('publishPayload').value = 'a0 ' + timestamp + ' Test info message';
     });
 
-    byId('btnMuteTemplate').addEventListener('click', () => {
+    const btnMuteTemplate = byId('btnMuteTemplate');
+    if (btnMuteTemplate) btnMuteTemplate.addEventListener('click', () => {
       byId('publishPayload').value = 'S';
     });
 
-    byId('btnUnmuteTemplate').addEventListener('click', () => {
+    const btnUnmuteTemplate = byId('btnUnmuteTemplate');
+    if (btnUnmuteTemplate) btnUnmuteTemplate.addEventListener('click', () => {
       byId('publishPayload').value = 'U';
     });
   }
@@ -344,13 +350,17 @@
         }
       });
     }
-    byId('btnSendMessage').addEventListener('click', publishMessage);
+    const btnSendMessage = byId('btnSendMessage');
+    if (btnSendMessage) {
+      btnSendMessage.addEventListener('click', publishMessage);
+    }
     const sendWebBtn = byId('btnSendWebMessage');
     if (sendWebBtn) {
       sendWebBtn.addEventListener('click', sendWebMessage);
     }
 
-    byId('btnCopyWatch').addEventListener('click', async () => {
+    const btnCopyWatch = byId('btnCopyWatch');
+    if (btnCopyWatch) btnCopyWatch.addEventListener('click', async () => {
       try {
         const watchNode = byId('watchTopicCurrent');
         const watchTopic = (watchNode && watchNode.textContent) || '';

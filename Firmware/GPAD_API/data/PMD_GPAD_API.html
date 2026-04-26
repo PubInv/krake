@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PMD GPAD API</title>
+  <title>PMD Web UI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/style.css">
+  <style>
+    .console-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    .status-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .chip { border: 1px solid #d7e7dc; border-radius: 10px; background: #f8fbf9; padding: 9px 11px; font-size: .9rem; color: #315541; }
+    .chip strong { color: #113521; }
+    .topic-select { min-height: 140px; }
+    @media (min-width: 980px) { .console-grid { grid-template-columns: 1fr 1fr; } .console-grid .card-wide { grid-column: 1 / -1; } }
+  </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>PMD Web UI</span>
-    </div>
+    <div class="brand"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"><span>PMD Web UI</span></div>
     <button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>
   </header>
 
@@ -21,7 +26,6 @@
     <a href="/GDT_TrackHistory.html">GDT Track Record</a>
     <a href="/Electrical_testHistory.html">Electrical Test History</a>
     <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/broker-console">Broker Console</a>
     <a href="/PMD_GPAD_API">PMD Web UI</a>
     <a href="/manual">User Manual</a>
     <a href="/settings">Settings</a>
@@ -29,133 +33,129 @@
   </nav>
 
   <main class="container">
-    <section class="card">
-      <h1>PMD Alarm Publisher</h1>
-      <p class="subtitle">MQTT broker and topic setup live in <strong>Settings</strong>. This page can only publish to topics saved in Broker Console / Settings.</p>
+    <div class="status-strip">
+      <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
+      <div class="chip">Role: <strong id="deviceRole">Krake</strong></div>
+      <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
+      <div class="chip">Watched topics: <strong id="watchTopicCurrent">-</strong></div>
+      <div class="chip">KRAKEs seen: <strong id="krakeCount">0</strong></div>
+    </div>
 
-      <label for="topicSelect">Available publish topics</label>
-      <select id="topicSelect" class="text-input"></select>
+    <div class="console-grid">
+      <section class="card">
+        <h1>Issue Alarm (multi-topic)</h1>
+        <p class="subtitle">Select one or more topics and send PMD alarm payloads to all selected topics.</p>
+        <label for="topicSelect">Available publish topics</label>
+        <select id="topicSelect" class="text-input topic-select" multiple></select>
+        <div class="status-row">Selected topics: <code id="selectedTopic">-</code></div>
+        <div class="button-row">
+          <button class="action-btn" onclick="publishEmergency(0)">Level 0, OK</button>
+          <button class="action-btn" onclick="publishEmergency(1)">Level 1, INFO</button>
+          <button class="action-btn" onclick="publishEmergency(2)">Level 2, PROB</button>
+          <button class="action-btn" onclick="publishEmergency(3)">Level 3, WARN</button>
+          <button class="action-btn" onclick="publishEmergency(4)">Level 4, CRIT</button>
+          <button class="action-btn" onclick="publishEmergency(5)">Level 5, PANIC</button>
+          <button class="action-btn" onclick="publishEmergency(6)">Level 6, ALL</button>
+        </div>
+        <div class="status-row">Result: <strong id="result">-</strong></div>
+      </section>
 
-      <div class="status-row">Selected topic: <code id="selectedTopic">-</code></div>
-      <div class="status-row">Broker: <code id="brokerName">-</code></div>
-    </section>
+      <section class="card">
+        <h1>Send Message / Alarm</h1>
+        <label for="publishTopic">Topic</label>
+        <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+        <label for="publishPayload">Payload</label>
+        <textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea>
+        <div class="button-row">
+          <button id="btnSendMessage" class="action-btn" type="button">Send Message</button>
+          <button id="btnCopyWatch" class="action-btn secondary" type="button">Copy watched topic</button>
+        </div>
+        <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
+      </section>
 
-    <section class="card">
-      <h1>Issue Alarm</h1>
-      <p class="subtitle">Send GPAP alarm payloads to the selected topic.</p>
-      <div class="button-row">
-        <button class="action-btn" onclick="publishEmergency(0)">Level 0, OK</button>
-        <button class="action-btn" onclick="publishEmergency(1)">Level 1, INFO</button>
-        <button class="action-btn" onclick="publishEmergency(2)">Level 2, PROB</button>
-        <button class="action-btn" onclick="publishEmergency(3)">Level 3, WARN</button>
-        <button class="action-btn" onclick="publishEmergency(4)">Level 4, CRIT</button>
-        <button class="action-btn" onclick="publishEmergency(5)">Level 5, PANIC</button>
-        <button class="action-btn" onclick="publishEmergency(6)">Level 6, ALL</button>
-      </div>
-      <div class="status-row">Result: <strong id="result">-</strong></div>
-    </section>
+      <section class="card">
+        <h1>Topic Lists</h1>
+        <label for="watchTopic">Subscribe topics (comma-separated)</label>
+        <textarea id="watchTopic" class="text-input" rows="3" placeholder="topic/sub/1,topic/sub/2"></textarea>
+        <div class="button-row">
+          <button id="btnStartWatching" class="action-btn" type="button">Save Subscribe Topics</button>
+          <button id="btnClearWatch" class="action-btn secondary" type="button">Clear</button>
+        </div>
+
+        <label for="publishTopicList" style="margin-top:12px; display:block;">Publish topics (comma-separated)</label>
+        <textarea id="publishTopicList" class="text-input" rows="3" placeholder="topic/pub/1,topic/pub/2"></textarea>
+        <div class="button-row">
+          <button id="btnSavePublishTopics" class="action-btn" type="button">Save Publish Topics</button>
+          <button id="btnUsePublishList" class="action-btn secondary" type="button">Use First Publish Topic</button>
+        </div>
+      </section>
+
+      <section class="card card-wide">
+        <h1>Tracked Devices</h1>
+        <table class="status-table">
+          <thead><tr><th>Short ID</th><th>ID</th><th>Online</th><th>Topic</th><th>RSSI</th><th>Status</th><th>Last Topic</th><th>Last Status</th><th>Last Topic Msg</th></tr></thead>
+          <tbody id="krakeTableBody"><tr><td colspan="9">No tracked devices yet.</td></tr></tbody>
+        </table>
+      </section>
+    </div>
   </main>
 
-  <footer class="footer">
-    <div id="message" class="note"></div>
-  </footer>
+  <footer class="footer"><div id="message" class="note"></div></footer>
 
+  <script src="/broker_console.js"></script>
   <script>
     const byId = (id) => document.getElementById(id);
-
-    function toggleMenu() {
-      byId('sideMenu').classList.toggle('open');
+    function selectedTopics() {
+      const node = byId('topicSelect');
+      if (!node) return [];
+      return Array.from(node.selectedOptions).map((o) => o.value.trim()).filter(Boolean);
     }
-
-    function showMessage(msg, isError = false) {
-      const node = byId('message');
-      node.textContent = msg;
-      node.style.color = isError ? '#b00020' : '#146620';
+    function showSelectedTopics() {
+      const topics = selectedTopics();
+      byId('selectedTopic').textContent = topics.length ? topics.join(', ') : '-';
     }
-
-    function setResult(msg, isError = false) {
-      const node = byId('result');
-      node.textContent = msg;
-      node.style.color = isError ? '#b00020' : '#146620';
-    }
-
-    function normalizeTopicList(raw) {
-      return (raw || '').split(',').map((t) => t.trim()).filter(Boolean);
-    }
-
     async function postForm(url, bodyObj) {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(bodyObj)
-      });
+      const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(bodyObj) });
       const text = await response.text();
       if (!response.ok) throw new Error(text || ('HTTP ' + response.status));
       return text;
     }
-
     async function loadTopics() {
       const response = await fetch('/settings-data', { cache: 'no-store' });
       if (!response.ok) throw new Error('Unable to load MQTT settings');
       const data = await response.json();
-
-      const topics = normalizeTopicList(data.publishTopics || '');
-      if (data.publishDefaultTopic && !topics.includes(data.publishDefaultTopic)) {
-        topics.unshift(data.publishDefaultTopic);
-      }
-
+      const list = ((data.publishTopics || '').split(',').map((t) => t.trim()).filter(Boolean));
+      if (data.publishDefaultTopic && !list.includes(data.publishDefaultTopic)) list.unshift(data.publishDefaultTopic);
       const select = byId('topicSelect');
       select.innerHTML = '';
-      if (topics.length === 0) {
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.textContent = 'No configured publish topics (set in Settings/Broker Console)';
-        select.appendChild(opt);
-      } else {
-        topics.forEach((topic) => {
-          const opt = document.createElement('option');
-          opt.value = topic;
-          opt.textContent = topic;
-          select.appendChild(opt);
-        });
+      list.forEach((topic) => {
+        const opt = document.createElement('option'); opt.value = topic; opt.textContent = topic; select.appendChild(opt);
+      });
+      if (list.length === 0) {
+        const opt = document.createElement('option'); opt.value = ''; opt.textContent = 'No configured publish topics'; select.appendChild(opt);
       }
-
-      const current = data.publishDefaultTopic && topics.includes(data.publishDefaultTopic)
-        ? data.publishDefaultTopic
-        : (topics[0] || '');
-      select.value = current;
-      byId('selectedTopic').textContent = current || '-';
-      byId('brokerName').textContent = data.broker || '-';
+      if (data.publishDefaultTopic) {
+        Array.from(select.options).forEach((o) => { if (o.value === data.publishDefaultTopic) o.selected = true; });
+      }
+      if (!selectedTopics().length && select.options[0]) select.options[0].selected = true;
+      showSelectedTopics();
     }
-
     async function publishEmergency(level) {
-      const topic = byId('topicSelect').value.trim();
-      if (!topic) {
-        setResult('No available topic. Configure topics in Settings/Broker Console.', true);
-        return;
-      }
-
+      const topics = selectedTopics();
+      if (!topics.length) { byId('result').textContent = 'Select at least one topic.'; return; }
       const payload = 'a' + String(level) + ' MessageFromProcessing_PMD: a' + String(level);
-      try {
-        const result = await postForm('/broker-console/publish', { topic, payload });
-        setResult(result || 'published');
-        showMessage('Published level ' + level + ' to ' + topic + '.');
-      } catch (error) {
-        setResult(error.message, true);
-        showMessage('Publish failed: ' + error.message, true);
+      const outcomes = [];
+      for (const topic of topics) {
+        try { await postForm('/broker-console/publish', { topic, payload }); outcomes.push('OK:' + topic); }
+        catch (e) { outcomes.push('ERR:' + topic + ' (' + e.message + ')'); }
       }
+      byId('result').textContent = outcomes.join(' | ');
+      const msgNode = byId('message');
+      msgNode.textContent = 'Sent level ' + level + ' to ' + topics.length + ' topic(s).';
+      msgNode.style.color = outcomes.some((o) => o.startsWith('ERR')) ? '#b00020' : '#146620';
     }
-
-    byId('topicSelect').addEventListener('change', (event) => {
-      byId('selectedTopic').textContent = event.target.value || '-';
-    });
-
-    byId('menuToggle').addEventListener('click', toggleMenu);
-
-    loadTopics().catch((error) => {
-      showMessage(error.message, true);
-      setResult(error.message, true);
-    });
+    byId('topicSelect').addEventListener('change', showSelectedTopics);
+    loadTopics().catch((e) => { const m = byId('message'); m.textContent = e.message; m.style.color = '#b00020'; });
   </script>
 </body>
 </html>
