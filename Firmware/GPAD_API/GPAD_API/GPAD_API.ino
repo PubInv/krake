@@ -217,7 +217,7 @@ char publish_Default_Topic[MAX_TOPIC_LEN] = {0};
 const size_t DEVICE_ROLE_MAX_LEN = 12;
 char device_role[DEVICE_ROLE_MAX_LEN] = "Krake";
 const char *STATUS_DISCOVERY_TOPIC = "#";
-const uint8_t MAX_WATCH_TOPICS = 4;
+const uint8_t MAX_WATCH_TOPICS = 12;
 char watchedTopics[MAX_WATCH_TOPICS][MAX_TOPIC_LEN];
 uint8_t watchedTopicCount = 0;
 unsigned long wifiResetRequestedAtMs = 0;
@@ -1390,7 +1390,7 @@ void setupOTA()
               if (request->hasParam("subscribeTopics", true))
               {
                 String topics = request->getParam("subscribeTopics", true)->value();
-                if (!parseAndSetExtraTopics(topics))
+                parseAndSetExtraTopics(topics);
                 {
                   errorMessage += "invalid subscribeTopics;";
                 }
@@ -1512,6 +1512,7 @@ void setupOTA()
               }
               if (client.connected())
               {
+                String subscribeFailures;
                 for (uint8_t i = 0; i < previousWatchedTopicCount; i++)
                 {
                   if (previousWatchedTopics[i][0] != '\0')
@@ -1521,7 +1522,19 @@ void setupOTA()
                 }
                 for (uint8_t i = 0; i < watchedTopicCount; i++)
                 {
-                  client.subscribe(watchedTopics[i]);
+                  if (!client.subscribe(watchedTopics[i]))
+                  {
+                    if (subscribeFailures.length() > 0)
+                    {
+                      subscribeFailures += ",";
+                    }
+                    subscribeFailures += watchedTopics[i];
+                  }
+                }
+                if (subscribeFailures.length() > 0)
+                {
+                  request->send(500, "text/plain", "failed subscribe: " + subscribeFailures);
+                  return;
                 }
               }
               writeMqttConfig();
