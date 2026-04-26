@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MQTT Device Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
+  <main class="container">
+<section class="card">
+<div class="hero-row">
+<div>
+<p class="eyebrow">MQTT Web Monitor</p>
+<h1>Online Devices</h1>
+<p class="subtitle">Tracks devices by MAC-based topics, retained messages, and heartbeat timeout.</p>
+</div>
+<div class="broker offline" id="brokerStatus">Broker offline</div>
+</div>
+</section>
+<section class="card">
+<h1>Broker Connection</h1>
+<div class="form-grid">
+<label>Broker WSS URL<input class="text-input" id="brokerUrl" value="wss://public.cloud.shiftr.io"/></label>
+<label>Username<input class="text-input" id="username" value="public"/></label>
+<label>Password<input class="text-input" id="password" type="password" value="public"/></label>
+<button class="action-btn" id="connectBtn">Connect</button>
+<button class="action-btn secondary" disabled="" id="disconnectBtn">Disconnect</button>
+</div>
+</section>
+<section class="card">
+<h1>Publish command to all devices</h1>
+<div class="form-grid">
+<label>Command Preset
+          <select class="text-input" id="commandPreset">
+<option value="i">Info request: i</option>
+<option value="h">Help: h</option>
+<option value="s">Silence/Mute: s</option>
+<option value="u">Unmute: u</option>
+<option value="a1Test alarm from web app">Alarm level 1</option>
+<option value="a2Test alarm from web app">Alarm level 2</option>
+<option value="a5Test alarm from web app">Alarm level 5</option>
+</select>
+</label>
+<label>Custom command<input class="text-input" id="customCommand" placeholder="Or type custom GPAD/GPAP message"/></label>
+<label><input id="retain" type="checkbox"/> Retain</label>
+<button class="action-btn" disabled="" id="publishBtn">Publish</button>
+</div>
+<p class="status-row">Publishes to <code>&lt;MAC&gt;_ALM</code>, same as the Processing sketch.</p>
+</section>
+<section class="card stats">
+<div class="stat"><span id="onlineCount">0</span><small>Online</small></div>
+<div class="stat"><span id="offlineCount">0</span><small>Offline</small></div>
+<div class="stat"><span id="messageCount">0</span><small>Messages</small></div>
+</section>
+<section class="card">
+<h1>Device Registry</h1>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Name</th>
+<th>MAC</th>
+<th>Last topic</th>
+<th>Last seen</th>
+<th>Last message</th>
+</tr>
+</thead>
+<tbody id="deviceTable"></tbody>
+</table>
+</div>
+</section>
+<section class="card">
+<h1>Event Log</h1>
+<pre id="log"></pre>
+</section>
+</main>
+
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="/js/device-monitor.js"></script>
+</body>
+</html>

@@ -8,140 +8,37 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>Settings</span>
-    </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/broker-console">Broker Console</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
-
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
   <main class="container">
     <section class="card">
-      <h1>WiFi Connection</h1>
-      <p class="subtitle">Clear saved WiFi and reconnect KRAKE to a different network.</p>
+      <h1>WiFi Setup</h1><p class="subtitle">Save SSID/password to <code>/wifi.json</code> for reconnection on boot. Device will try all saved networks.</p>
+      <label for="ssid">SSID</label><input id="ssid" class="text-input" placeholder="Your network name">
+      <label for="password">Password</label><input id="password" type="password" class="text-input" placeholder="Your network password">
+      <div class="button-row"><button class="action-btn" onclick="saveWifi()">Save WiFi</button><button class="action-btn secondary" onclick="loadWifi()">Reload</button></div>
+      <div class="status-row">Stored SSID: <strong id="storedSsid">-</strong></div><div class="status-row">Saved networks: <strong id="storedCount">0</strong></div>
       <button class="action-btn danger" onclick="resetWifi()">Reset WiFi & Reconnect</button>
     </section>
-
     <section class="card">
-      <h1>Sound</h1>
-      <p class="subtitle">Mute or unmute KRAKE alarm audio remotely.</p>
-      <div class="button-row">
-        <button class="action-btn" onclick="setMuted(true)">Mute</button>
-        <button class="action-btn secondary" onclick="setMuted(false)">Unmute</button>
-      </div>
+      <h1>Sound</h1><p class="subtitle">Mute or unmute KRAKE alarm audio remotely.</p>
+      <div class="button-row"><button class="action-btn" onclick="setMuted(true)">Mute</button><button class="action-btn secondary" onclick="setMuted(false)">Unmute</button></div>
       <div class="status-row">Current status: <strong id="muteStatus">-</strong></div>
     </section>
-
     <section class="card">
-      <h1>MQTT</h1>
-      <p class="subtitle">Edit broker and set extra topics to subscribe (comma-separated).</p>
-
-      <label for="broker">Broker</label>
-      <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
-      <button class="action-btn" onclick="saveBroker()">Save Broker</button>
-
-      <label for="topics" style="margin-top:12px; display:block;">Extra Subscribe Topics</label>
-      <textarea id="topics" class="text-input" rows="3" placeholder="topic1,topic2"></textarea>
-      <button class="action-btn" onclick="saveTopics()">Save Topics</button>
-
-      <div class="status-row">Primary alarm topic: <code id="alarmTopic">-</code></div>
-      <div class="status-row">Ack topic: <code id="ackTopic">-</code></div>
+      <h1>MQTT</h1><p class="subtitle">Dynamic broker/topic/role assignment stored in <code>/mqtt.json</code>.</p>
+      <label for="role">Device Role</label><select id="role" class="text-input"><option value="Krake">Krake</option><option value="PMD">PMD</option></select>
+      <label for="broker">Broker</label><input id="broker" class="text-input" placeholder="broker.hivemq.com">
+      <label for="subscribeTopic">Alarm Receive Topic</label><input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM">
+      <label for="publishTopic">Default Publish Topic</label><input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK">
+      <label for="topics">Additional Watched Topics (comma-separated)</label><textarea id="topics" class="text-input" rows="3" placeholder="topic1,topic2"></textarea>
+      <label for="publishTopics">PMD/Krake Target Topics (comma-separated)</label><textarea id="publishTopics" class="text-input" rows="3" placeholder="topicA,topicB"></textarea>
+      <button class="action-btn" onclick="saveMqttConfig()">Save MQTT Config</button>
+      <div class="status-row">Alarm receive topic: <code id="alarmTopic">-</code></div><div class="status-row">Default publish topic: <code id="ackTopic">-</code></div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div id="message" class="note"></div>
-  </footer>
-
-  <script>
-    function toggleMenu() {
-      document.getElementById("sideMenu").classList.toggle("open");
-    }
-
-    function showMessage(msg, isError = false) {
-      const node = document.getElementById('message');
-      node.textContent = msg;
-      node.style.color = isError ? '#b00020' : '#146620';
-    }
-
-    async function postForm(url, bodyObj) {
-      const body = new URLSearchParams(bodyObj);
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
-      });
-      if (!res.ok) {
-        throw new Error(await res.text());
-      }
-      return await res.text();
-    }
-
-    async function refreshSettings() {
-      const res = await fetch('/settings-data');
-      if (!res.ok) throw new Error('Unable to load settings');
-      const data = await res.json();
-      document.getElementById('broker').value = data.broker || '';
-      document.getElementById('topics').value = data.extraTopics || '';
-      document.getElementById('muteStatus').textContent = data.muted ? 'Muted' : 'Unmuted';
-      document.getElementById('alarmTopic').textContent = data.alarmTopic || '-';
-      document.getElementById('ackTopic').textContent = data.ackTopic || '-';
-    }
-
-    async function resetWifi() {
-      if (!confirm('This will clear WiFi credentials and restart KRAKE. Continue?')) return;
-      try {
-        await postForm('/settings/wifi/reset', {});
-        showMessage('WiFi reset started. Device will restart shortly.');
-      } catch (e) {
-        showMessage('WiFi reset failed: ' + e.message, true);
-      }
-    }
-
-    async function setMuted(muted) {
-      try {
-        await postForm('/settings/mute', { muted: muted ? '1' : '0' });
-        showMessage(muted ? 'Krake muted.' : 'Krake unmuted.');
-        await refreshSettings();
-      } catch (e) {
-        showMessage('Failed to update mute status: ' + e.message, true);
-      }
-    }
-
-    async function saveBroker() {
-      try {
-        const broker = document.getElementById('broker').value.trim();
-        await postForm('/settings/broker', { broker });
-        showMessage('Broker updated and MQTT reconnected.');
-      } catch (e) {
-        showMessage('Failed to save broker: ' + e.message, true);
-      }
-    }
-
-    async function saveTopics() {
-      try {
-        const topics = document.getElementById('topics').value;
-        await postForm('/settings/topics', { topics });
-        showMessage('Topics updated and MQTT reconnected.');
-        await refreshSettings();
-      } catch (e) {
-        showMessage('Failed to save topics: ' + e.message, true);
-      }
-    }
-
-    refreshSettings().catch(e => showMessage(e.message, true));
-  </script>
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
+  <script src="/js/settings.js"></script>
 </body>
 </html>

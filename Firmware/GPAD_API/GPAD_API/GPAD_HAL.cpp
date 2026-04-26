@@ -54,7 +54,7 @@ extern char AlarmMessageBuffer[81];
 extern char macAddressString[13];
 
 // TODO: Remove this; for explanation only
-extern char publish_Ack_Topic[17];
+extern char publish_Ack_Topic[];
 
 #include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
 
