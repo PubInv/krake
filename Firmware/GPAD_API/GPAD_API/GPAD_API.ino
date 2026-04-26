@@ -1390,7 +1390,7 @@ void setupOTA()
               if (request->hasParam("subscribeTopics", true))
               {
                 String topics = request->getParam("subscribeTopics", true)->value();
-                if (!parseAndSetExtraTopics(topics))
+                parseAndSetExtraTopics(topics);
                 {
                   errorMessage += "invalid subscribeTopics;";
                 }
