@@ -45,87 +45,16 @@
     return text;
   }
 
-  function normalizeTopicList(raw) {
-    return raw
-      .split(',')
-      .map((topic) => topic.trim())
-      .filter(Boolean)
-      .join(',');
-  }
-
   function parsePrimaryId(topic) {
     if (!topic) return '-';
     const match = topic.match(/^([A-Za-z0-9]+)_(ACK|ALM)$/i);
     return match ? match[1] : topic;
   }
 
-  function ageText(seconds) {
-    if (seconds == null || seconds < 0) return '-';
-    if (seconds < 60) return seconds + 's';
-    const minutes = Math.floor(seconds / 60);
-    const remainder = seconds % 60;
-    return minutes + 'm ' + remainder + 's';
-  }
-
-  function renderKrakeTable(krakes) {
-    const tbody = byId('krakeTableBody');
-    const krakeCount = byId('krakeCount');
-    if (!tbody) {
-      if (krakeCount) {
-        krakeCount.textContent = String(Array.isArray(krakes) ? krakes.length : 0);
-      }
-      return;
-    }
-
-    if (!krakes || krakes.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9">No tracked devices yet.</td></tr>';
-      if (krakeCount) {
-        krakeCount.textContent = '0';
-      }
-      return;
-    }
-
-    const rows = krakes.map((krake) => {
-      const online = !!krake.online;
-      const topicActive = !!krake.topicParticipant;
-      const rowClass = online ? 'row-online' : 'row-offline';
-      const onlinePill = online
-        ? '<span class="pill ok">ONLINE</span>'
-        : '<span class="pill bad">OFFLINE</span>';
-      const topicPill = topicActive
-        ? '<span class="pill ok">ACTIVE</span>'
-        : '<span class="pill bad">IDLE</span>';
-
-      return [
-        '<tr class="' + rowClass + '">',
-        '<td>' + parsePrimaryId(krake.id) + '</td>',
-        '<td><code>' + (krake.id || '-') + '</code></td>',
-        '<td>' + onlinePill + '</td>',
-        '<td>' + topicPill + '</td>',
-        '<td>' + (Number.isFinite(krake.rssi) ? krake.rssi : '-') + '</td>',
-        '<td><code>' + (krake.status || '-') + '</code></td>',
-        '<td><code>' + (krake.lastTopic || '-') + '</code></td>',
-        '<td>' + ageText(krake.secondsSinceStatus) + '</td>',
-        '<td>' + ageText(krake.secondsSinceTopic) + '</td>',
-        '</tr>'
-      ].join('');
-    });
-
-    tbody.innerHTML = rows.join('');
-    if (krakeCount) {
-      krakeCount.textContent = String(krakes.length);
-    }
-  }
-
-  function updateWatchUi(watchedTopics) {
-    const normalized = normalizeTopicList(watchedTopics || '');
-    const watchTopic = byId('watchTopic');
-    if (watchTopic) {
-      watchTopic.value = normalized;
-    }
-    const watchTopicCurrent = byId('watchTopicCurrent');
-    if (watchTopicCurrent) {
-      watchTopicCurrent.textContent = normalized || '-';
+  function updatePublishTopicsUi(publishDefaultTopic) {
+    const publishTopic = byId('publishTopic');
+    if (publishTopic && !publishTopic.value.trim() && publishDefaultTopic) {
+      publishTopic.value = publishDefaultTopic;
     }
   }
 
@@ -137,70 +66,21 @@
       }
 
       const data = await response.json();
-      updateWatchUi(data.watchedTopics || data.watchedTopic || '');
-      renderKrakeTable(Array.isArray(data.krakes) ? data.krakes : []);
       const brokerName = byId('brokerName');
       if (brokerName) {
         brokerName.textContent = data.broker || brokerName.textContent;
       }
+      const roleNode = byId('deviceRole');
+      if (roleNode) {
+        roleNode.textContent = data.role || 'Krake';
+      }
+      updatePublishTopicsUi(data.publishDefaultTopic || '');
       const publishTopic = byId('publishTopic');
       if (publishTopic && !publishTopic.value.trim() && data.subscribeAlarmTopic) {
         publishTopic.value = data.subscribeAlarmTopic;
       }
     } catch (error) {
       showMessage('Broker data refresh failed: ' + error.message, true);
-    }
-  }
-
-  function appendWatchTopic(topic) {
-    const watchInput = byId('watchTopic');
-    if (!watchInput) return;
-    const current = normalizeTopicList(watchInput.value);
-    const parts = current ? current.split(',') : [];
-
-    if (!parts.includes(topic)) {
-      parts.push(topic);
-    }
-
-    watchInput.value = parts.join(',');
-  }
-
-  async function startWatchingTopics() {
-    const watchTopic = byId('watchTopic');
-    if (!watchTopic) {
-      showMessage('Topic monitor controls are not available on this page.', true);
-      return;
-    }
-    const topics = normalizeTopicList(watchTopic.value);
-    if (!topics) {
-      showMessage('Please provide at least one topic to watch.', true);
-      return;
-    }
-
-    try {
-      await postForm('/broker-console/topic', { topics });
-      showMessage('Watch topics updated.');
-      await refreshBrokerData();
-    } catch (error) {
-      showMessage('Failed to update watch topics: ' + error.message, true);
-    }
-  }
-
-  async function clearWatchTopics() {
-    const watchTopic = byId('watchTopic');
-    try {
-      await postForm('/broker-console/topic', { topics: '' });
-      if (watchTopic) {
-        watchTopic.value = '';
-      }
-      const watchTopicCurrent = byId('watchTopicCurrent');
-      if (watchTopicCurrent) {
-        watchTopicCurrent.textContent = '-';
-      }
-      showMessage('Watch topics cleared.');
-      await refreshBrokerData();
-    } catch (error) {
-      showMessage('Failed to clear watch topics: ' + error.message, true);
     }
   }
 
@@ -252,31 +132,37 @@
   }
 
   function setupTemplates() {
-    byId('btnUseAlm').addEventListener('click', () => {
+    const btnUseAlm = byId('btnUseAlm');
+    if (btnUseAlm) btnUseAlm.addEventListener('click', () => {
       const base = parsePrimaryId(byId('publishTopic').value.trim()).replace(/[^A-Za-z0-9]/g, '');
       byId('publishTopic').value = (base || 'AABBCCDDEEFF') + '_ALM';
     });
 
-    byId('btnUseAck').addEventListener('click', () => {
+    const btnUseAck = byId('btnUseAck');
+    if (btnUseAck) btnUseAck.addEventListener('click', () => {
       const base = parsePrimaryId(byId('publishTopic').value.trim()).replace(/[^A-Za-z0-9]/g, '');
       byId('publishTopic').value = (base || 'AABBCCDDEEFF') + '_ACK';
     });
 
-    byId('btnAlarmTemplate').addEventListener('click', () => {
+    const btnAlarmTemplate = byId('btnAlarmTemplate');
+    if (btnAlarmTemplate) btnAlarmTemplate.addEventListener('click', () => {
       const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
       byId('publishPayload').value = 'a3 ' + timestamp + ' Test alarm message';
     });
 
-    byId('btnInfoTemplate').addEventListener('click', () => {
+    const btnInfoTemplate = byId('btnInfoTemplate');
+    if (btnInfoTemplate) btnInfoTemplate.addEventListener('click', () => {
       const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
       byId('publishPayload').value = 'a0 ' + timestamp + ' Test info message';
     });
 
-    byId('btnMuteTemplate').addEventListener('click', () => {
+    const btnMuteTemplate = byId('btnMuteTemplate');
+    if (btnMuteTemplate) btnMuteTemplate.addEventListener('click', () => {
       byId('publishPayload').value = 'S';
     });
 
-    byId('btnUnmuteTemplate').addEventListener('click', () => {
+    const btnUnmuteTemplate = byId('btnUnmuteTemplate');
+    if (btnUnmuteTemplate) btnUnmuteTemplate.addEventListener('click', () => {
       byId('publishPayload').value = 'U';
     });
   }
@@ -287,40 +173,14 @@
       menuToggle.addEventListener('click', toggleMenu);
     }
 
-    const btnStartWatching = byId('btnStartWatching');
-    if (btnStartWatching) {
-      btnStartWatching.addEventListener('click', startWatchingTopics);
+    const btnSendMessage = byId('btnSendMessage');
+    if (btnSendMessage) {
+      btnSendMessage.addEventListener('click', publishMessage);
     }
-    const btnClearWatch = byId('btnClearWatch');
-    if (btnClearWatch) {
-      btnClearWatch.addEventListener('click', clearWatchTopics);
-    }
-    byId('btnSendMessage').addEventListener('click', publishMessage);
     const sendWebBtn = byId('btnSendWebMessage');
     if (sendWebBtn) {
       sendWebBtn.addEventListener('click', sendWebMessage);
     }
-
-    byId('btnCopyWatch').addEventListener('click', async () => {
-      try {
-        const watchNode = byId('watchTopicCurrent');
-        const watchTopic = (watchNode && watchNode.textContent) || '';
-        if (!watchTopic || watchTopic === '-') {
-          showMessage('No watched topic to copy.', true);
-          return;
-        }
-        await navigator.clipboard.writeText(watchTopic);
-        showMessage('Watched topic copied.');
-      } catch (error) {
-        showMessage('Clipboard unavailable in this browser.', true);
-      }
-    });
-
-    Array.from(document.querySelectorAll('.js-watch-topic')).forEach((button) => {
-      button.addEventListener('click', () => {
-        appendWatchTopic(button.dataset.topic || '');
-      });
-    });
 
     setupTemplates();
   }
