@@ -1,7 +1,7 @@
 :root {
   --bg: #f4f8f5;
-  --bg-soft: #8ecca0;
-  --surface: hsl(137, 44%, 76%);
+  --bg-soft: #e8f2eb;
+  --surface: #ffffff;
   --text: #1a3225;
   --muted: #4f6a5b;
   --line: #cee0d3;
@@ -144,7 +144,7 @@ h1 {
 .info-row {
   margin: 0;
   word-break: break-word;
-  background: hsla(138, 31%, 70%, 0.494);
+  background: #f8fbf9;
   border: 1px solid #e0ebe4;
   border-radius: 10px;
   padding: 10px 12px;
@@ -390,7 +390,7 @@ h1 {
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
     .monitor-box {
       background: #081217;
-      color:  #385c42;
+      color: #b7f9cc;
       border: 1px solid rgba(0, 183, 255, .25);
       border-radius: 10px;
       padding: 14px;
@@ -434,7 +434,7 @@ h1 {
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #0f5a2f 0%, var(--bg) 240px);
+      background: linear-gradient(180deg, #e9f6ed 0%, var(--bg) 240px);
       color: var(--text);
     }
     .page {
@@ -444,7 +444,7 @@ h1 {
     }
     .hero {
       background: linear-gradient(135deg, #0f5a2f 0%, #1f7a3d 60%, #39a35c 100%);
-      color: #66a078;
+      color: white;
       border-radius: 26px;
       padding: 28px;
       box-shadow: var(--shadow);
@@ -465,7 +465,7 @@ h1 {
     .subtitle {
       margin: 0;
       max-width: 820px;
-      color: #0f5a2f;
+      color: rgba(255,255,255,.92);
       line-height: 1.6;
     }
     .stats {
@@ -484,7 +484,7 @@ h1 {
     .stat-card {
       background: rgba(255,255,255,.12);
       border: 1px solid rgba(255,255,255,.14);
-      color: #8ecca056;
+      color: white;
       backdrop-filter: blur(6px);
     }
     .stat-label {
