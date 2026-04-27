@@ -29,8 +29,6 @@
 
 using namespace gpad_hal;
 
-extern IPAddress myIP;
-
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1); // For user Serial Port
 HardwareSerial uartSerial2(2); // For DFPLayer, audio
@@ -543,17 +541,23 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     serialport->println(onInfoMsg);
 
     // IP Address
-    // Serial.println(WiFi.localIP());
-
     onInfoMsg[0] = '\0';
     strcat(onInfoMsg, "IP Address: ");
-    // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
 
-    char ipString[] = "(0,0,0,0)";
-    // // sprintf(ipString, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-    // sprintf(ipString, "%d.%d.%d.%d",  myIP[0], myIP[1], myIP[2], myIP[3]);
+    IPAddress stationIp = WiFi.localIP();
+    IPAddress accessPointIp = WiFi.softAPIP();
+    IPAddress ip = stationIp;
 
-    strcat(onInfoMsg, ipString); // This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
+    // If we don't have a station address yet, fall back to AP address.
+    if (stationIp[0] == 0 && stationIp[1] == 0 && stationIp[2] == 0 && stationIp[3] == 0)
+    {
+      ip = accessPointIp;
+    }
+
+    char ipString[16];
+    snprintf(ipString, sizeof(ipString), "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+
+    strcat(onInfoMsg, ipString);
 
     client->publish(publish_Ack_Topic, onInfoMsg);
     serialport->println(onInfoMsg);
