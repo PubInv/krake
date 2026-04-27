@@ -1,3 +1,4 @@
+KrakeUI.mountLayout('MQTT Device Monitor');
 // Krake / PMD browser MQTT monitor using the same methodology as PMD_Processing_MQTT.pde
 // Method: MAC dictionary -> subscribe to <MAC>_ACK, <MAC>_ALM, <MAC>_STATUS, <MAC>_HEARTBEAT -> update last seen.
 

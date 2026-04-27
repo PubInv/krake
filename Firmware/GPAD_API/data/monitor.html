@@ -6,111 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/style.css">
-  <style>
-    .monitor-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
-    .monitor-box {
-      background: #081217;
-      color: #b7f9cc;
-      border: 1px solid rgba(0, 183, 255, .25);
-      border-radius: 10px;
-      padding: 14px;
-      min-height: 280px;
-      overflow: auto;
-      white-space: pre-wrap;
-      line-height: 1.35;
-    }
-    .status-chip {
-      display: inline-block;
-      background: rgba(0, 183, 255, .12);
-      border: 1px solid rgba(0, 183, 255, .35);
-      border-radius: 20px;
-      padding: 5px 10px;
-      margin: 4px 6px 0 0;
-      font-size: 13px;
-    }
-  </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-    <span>Factory Test / Developer Monitor</span>
-  </div>
-  <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-</header>
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
+  <main class="container">
+    <section class="card"><h1>Developer Monitor</h1><p class="subtitle">Live UART-only monitor reporting view.</p><div class="status-chip mono">Serial Monitor Port: <span id="serialPort">%SERIAL_PORT%</span></div><div class="status-chip mono">Baud: <span id="serialBaud">%SERIAL_BAUD%</span></div></section>
+    <section class="card"><div class="lcd-title">UART Pin Monitor</div><div id="uartText" class="monitor-box mono">Waiting for /status...</div></section>
+  </main>
 
-<nav id="sideMenu" class="side-menu">
-  <a href="/update">Update Firmware</a>
-  <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-  <a href="/Electrical_testHistory.html">Electrical Test History</a>
-  <a href="/monitor">Factory Test / Developer Monitor</a>
-  <a href="/device-monitor">MQTT Device Monitor</a>
-  <a href="/PMD_GPAD_API">PMD Web UI</a>
-  <a href="/manual">User Manual</a>
-  <a href="/settings">Settings</a>
-  <a class="menu-home" href="/index.html">Home</a>
-</nav>
-
-<main class="container">
-  <section class="card">
-    <h1>Developer Monitor</h1>
-    <p class="subtitle">Live UART-only monitor reporting view.</p>
-
-    <div class="status-chip mono">Serial Monitor Port: <span id="serialPort">%SERIAL_PORT%</span></div>
-    <div class="status-chip mono">Baud: <span id="serialBaud">%SERIAL_BAUD%</span></div>
-  </section>
-
-  <section class="card monitor-grid">
-    <div>
-      <div class="lcd-title">UART Pin Monitor</div>
-      <div id="uartText" class="monitor-box mono">Waiting for /status...</div>
-    </div>
-  </section>
-</main>
-
-<footer class="footer">
-  <a href="https://pubinv.org" target="_blank">pubinv.org</a>
-</footer>
-
-<script>
-  function toggleMenu() {
-    document.getElementById("sideMenu").classList.toggle("open");
-  }
-
-  async function fetchStatus() {
-    try {
-      const res = await fetch('/status');
-      if (!res.ok) return;
-      const data = await res.json();
-
-      document.getElementById('serialPort').textContent = data.serialPort || '-';
-      document.getElementById('serialBaud').textContent = data.serialBaud || '-';
-    } catch (e) {
-      document.getElementById('uartText').textContent = 'UART status fetch failed';
-    }
-  }
-
-  async function fetchSerialMonitor() {
-    try {
-      const res = await fetch('/serial-monitor');
-      if (!res.ok) return;
-      const text = await res.text();
-      const uartText = document.getElementById('uartText');
-      const nearBottom = uartText.scrollTop + uartText.clientHeight >= uartText.scrollHeight - 8;
-      uartText.textContent = text || '(No serial output yet)';
-      if (nearBottom) {
-        uartText.scrollTop = uartText.scrollHeight;
-      }
-    } catch (e) {
-      document.getElementById('uartText').textContent = 'Serial monitor fetch failed';
-    }
-  }
-
-  fetchStatus();
-  fetchSerialMonitor();
-  setInterval(fetchStatus, 1000);
-  setInterval(fetchSerialMonitor, 300);
-</script>
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
+  <script src="/js/monitor.js"></script>
 </body>
 </html>

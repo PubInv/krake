@@ -6,129 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/style.css">
-  <style>
-    .console-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-    .status-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 16px; }
-    .chip { border: 1px solid #d7e7dc; border-radius: 10px; background: #f8fbf9; padding: 9px 11px; font-size: .9rem; color: #315541; }
-    .chip strong { color: #113521; }
-    .topic-select { min-height: 140px; }
-    @media (min-width: 980px) { .console-grid { grid-template-columns: 1fr 1fr; } .console-grid .card-wide { grid-column: 1 / -1; } }
-  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"><span>PMD Web UI</span></div>
-    <button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
-
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
   <main class="container">
-    <div class="status-strip">
-      <div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div>
-      <div class="chip">Role: <strong id="deviceRole">Krake</strong></div>
-      <div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div>
-    </div>
-
+    <div class="status-strip"><div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div><div class="chip">Role: <strong id="deviceRole">Krake</strong></div><div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div></div>
     <div class="console-grid">
-      <section class="card">
-        <h1>Issue Alarm (multi-topic)</h1>
-        <p class="subtitle">Select one or more topics and send PMD alarm payloads to all selected topics.</p>
-        <label for="topicSelect">Available publish topics</label>
-        <select id="topicSelect" class="text-input topic-select" multiple></select>
-        <div class="status-row">Selected topics: <code id="selectedTopic">-</code></div>
-        <div class="button-row">
-          <button class="action-btn" onclick="publishEmergency(0)">Level 0, OK</button>
-          <button class="action-btn" onclick="publishEmergency(1)">Level 1, INFO</button>
-          <button class="action-btn" onclick="publishEmergency(2)">Level 2, PROB</button>
-          <button class="action-btn" onclick="publishEmergency(3)">Level 3, WARN</button>
-          <button class="action-btn" onclick="publishEmergency(4)">Level 4, CRIT</button>
-          <button class="action-btn" onclick="publishEmergency(5)">Level 5, PANIC</button>
-          <button class="action-btn" onclick="publishEmergency(6)">Level 6, ALL</button>
-        </div>
-        <div class="status-row">Result: <strong id="result">-</strong></div>
-      </section>
-
-      <section class="card">
-        <h1>Send Message / Alarm</h1>
-        <label for="publishTopic">Topic</label>
-        <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
-        <label for="publishPayload">Payload</label>
-        <textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea>
-        <div class="button-row">
-          <button id="btnSendMessage" class="action-btn" type="button">Send Message</button>
-        </div>
-        <div class="status-row">Publish result: <strong id="publishResult">-</strong></div>
-      </section>
+      <section class="card"><h1>Issue Alarm (multi-topic)</h1><p class="subtitle">Select one or more topics from Settings and send PMD alarm payloads to all selected topics.</p><label for="topicSelect">Available publish topics</label><select id="topicSelect" class="text-input topic-select" multiple></select><div class="status-row">Selected topics: <code id="selectedTopic">-</code></div><div class="button-row"><button class="action-btn" onclick="publishEmergency(0)">Level 0 OK</button><button class="action-btn" onclick="publishEmergency(1)">Level 1 INFO</button><button class="action-btn" onclick="publishEmergency(2)">Level 2 PROB</button><button class="action-btn" onclick="publishEmergency(3)">Level 3 WARN</button><button class="action-btn" onclick="publishEmergency(4)">Level 4 CRIT</button><button class="action-btn" onclick="publishEmergency(5)">Level 5 PANIC</button><button class="action-btn" onclick="publishEmergency(6)">Level 6 ALL</button></div><div class="status-row">Result: <strong id="result">-</strong></div></section>
+      <section class="card"><h1>Send Message / Alarm</h1><label for="publishTopic">Topic</label><input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM"><label for="publishPayload">Payload</label><textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea><div class="button-row"><button id="btnSendMessage" class="action-btn" type="button">Send Message</button></div><div class="status-row">Publish result: <strong id="publishResult">-</strong></div></section>
     </div>
   </main>
 
-  <footer class="footer"><div id="message" class="note"></div></footer>
-
-  <script src="/broker_console.js"></script>
-  <script>
-    const byId = (id) => document.getElementById(id);
-    function selectedTopics() {
-      const node = byId('topicSelect');
-      if (!node) return [];
-      return Array.from(node.selectedOptions).map((o) => o.value.trim()).filter(Boolean);
-    }
-    function showSelectedTopics() {
-      const topics = selectedTopics();
-      byId('selectedTopic').textContent = topics.length ? topics.join(', ') : '-';
-    }
-    async function postForm(url, bodyObj) {
-      const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(bodyObj) });
-      const text = await response.text();
-      if (!response.ok) throw new Error(text || ('HTTP ' + response.status));
-      return text;
-    }
-    async function loadTopics() {
-      const response = await fetch('/settings-data', { cache: 'no-store' });
-      if (!response.ok) throw new Error('Unable to load MQTT settings');
-      const data = await response.json();
-      const list = ((data.publishTopics || '').split(',').map((t) => t.trim()).filter(Boolean));
-      if (data.publishDefaultTopic && !list.includes(data.publishDefaultTopic)) list.unshift(data.publishDefaultTopic);
-      const select = byId('topicSelect');
-      select.innerHTML = '';
-      list.forEach((topic) => {
-        const opt = document.createElement('option'); opt.value = topic; opt.textContent = topic; select.appendChild(opt);
-      });
-      if (list.length === 0) {
-        const opt = document.createElement('option'); opt.value = ''; opt.textContent = 'No configured publish topics'; select.appendChild(opt);
-      }
-      if (data.publishDefaultTopic) {
-        Array.from(select.options).forEach((o) => { if (o.value === data.publishDefaultTopic) o.selected = true; });
-      }
-      if (!selectedTopics().length && select.options[0]) select.options[0].selected = true;
-      showSelectedTopics();
-    }
-    async function publishEmergency(level) {
-      const topics = selectedTopics();
-      if (!topics.length) { byId('result').textContent = 'Select at least one topic.'; return; }
-      const payload = 'a' + String(level) + ' MessageFromProcessing_PMD: a' + String(level);
-      const outcomes = [];
-      for (const topic of topics) {
-        try { await postForm('/broker-console/publish', { topic, payload }); outcomes.push('OK:' + topic); }
-        catch (e) { outcomes.push('ERR:' + topic + ' (' + e.message + ')'); }
-      }
-      byId('result').textContent = outcomes.join(' | ');
-      const msgNode = byId('message');
-      msgNode.textContent = 'Sent level ' + level + ' to ' + topics.length + ' topic(s).';
-      msgNode.style.color = outcomes.some((o) => o.startsWith('ERR')) ? '#b00020' : '#146620';
-    }
-    byId('topicSelect').addEventListener('change', showSelectedTopics);
-    loadTopics().catch((e) => { const m = byId('message'); m.textContent = e.message; m.style.color = '#b00020'; });
-  </script>
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
+  <script src="/js/pmd.js"></script>
 </body>
 </html>

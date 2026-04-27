@@ -3,7 +3,7 @@ Import("env")
 cpp_defines = [
     ("COMPANY_NAME", "PubInv "),   # For the Broker ID for MQTT 
     ("PROG_NAME", "GPAD_API "),    # This program
-    ("FIRMWARE_VERSION", "0.51 "), # Issue #432 for enclosure numbers issue #395 for for webpage bring up and last edits for the test and asembly procedure. 
+    ("FIRMWARE_VERSION", "0.51 "), # Issue #432 for enclosure numbers and webpage pringup 395 issue #395 for for webpage bring up and last edits for the test and asembly procedure. 
     ("LittleFS_VERSION", "0.1.2 "),
     ("MODEL_NAME", "KRAKE_"), 
     ("LICENSE", "GNU Affero General Public License, version 3 "),

@@ -1,271 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="stylesheet" href="/style.css">
-  <title>Unpowered Results</title>
-  <style>
-    :root {
-      --bg: #f2f8f3;
-      --surface: #ffffff;
-      --surface-2: #edf8f0;
-      --text: #153124;
-      --muted: #4d6758;
-      --line: #cfe3d5;
-      --accent: #1f7a3d;
-      --accent-soft: #e6f5eb;
-      --good: #135f31;
-      --good-bg: #e5f7eb;
-      --bad: #b42318;
-      --bad-bg: #fdecec;
-      --other: #4f6f18;
-      --other-bg: #f1f8df;
-      --shadow: 0 14px 34px rgba(24, 74, 44, 0.10);
-      --radius: 18px;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #e9f6ed 0%, var(--bg) 240px);
-      color: var(--text);
-    }
-    .page {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 28px 20px 60px;
-    }
-    .hero {
-      background: linear-gradient(135deg, #0f5a2f 0%, #1f7a3d 60%, #39a35c 100%);
-      color: white;
-      border-radius: 26px;
-      padding: 28px;
-      box-shadow: var(--shadow);
-      margin-bottom: 22px;
-    }
-    .eyebrow {
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0.9;
-      margin-bottom: 10px;
-    }
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(1.8rem, 3vw, 2.6rem);
-      line-height: 1.1;
-    }
-    .subtitle {
-      margin: 0;
-      max-width: 820px;
-      color: rgba(255,255,255,.92);
-      line-height: 1.6;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin: 22px 0;
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-    .stat-card {
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.14);
-      color: white;
-      backdrop-filter: blur(6px);
-    }
-    .stat-label {
-      font-size: .88rem;
-      opacity: .9;
-      margin-bottom: 8px;
-    }
-    .stat-value {
-      font-size: 1.7rem;
-      font-weight: 700;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    .search {
-      flex: 1 1 280px;
-      min-width: 240px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 0.98rem;
-      color: var(--text);
-      outline: none;
-    }
-    .filter-btn {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-size: 0.95rem;
-      cursor: pointer;
-    }
-    .filter-btn.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-    .meta {
-      color: var(--muted);
-      font-size: .95rem;
-      margin-bottom: 10px;
-    }
-    .table-wrap {
-      overflow: auto;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 1100px;
-    }
-    th, td {
-      padding: 14px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-      vertical-align: top;
-    }
-    th {
-      background: #f3faf5;
-      font-size: .85rem;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      color: var(--muted);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    tr:hover td {
-      background: #f7fcf8;
-    }
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: .85rem;
-    }
-    .status-pass { background: var(--good-bg); color: var(--good); }
-    .status-fail { background: var(--bad-bg); color: var(--bad); }
-    .status-other { background: var(--other-bg); color: var(--other); }
-    .mobile-list {
-      display: none;
-      gap: 14px;
-    }
-    .result-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-    }
-    .result-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 14px;
-      margin-top: 12px;
-    }
-    .field-label {
-      font-size: .78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      margin-bottom: 3px;
-    }
-    .field-value {
-      font-size: .96rem;
-      word-break: break-word;
-    }
-    @media (max-width: 860px) {
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .table-wrap { display: none; }
-      .mobile-list { display: grid; }
-    }
-  </style>
-</head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>Electrical Test History</span>
-    </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/broker-console">Broker Console</a>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
-
-  <div class="page">
-    <section class="hero">
-      <div class="eyebrow">Factory / QA subpage</div>
-      <h1>Unpowered Test Results</h1>
-      <p class="subtitle">A searchable view of the uploaded unpowered results dataset, suitable as a subpage inside a larger factory, testing, or inventory website.</p>
-      <div class="stats">
-        <div class="card stat-card">
-          <div class="stat-label">Total Records</div>
-          <div class="stat-value">18</div>
-        </div>
-        <div class="card stat-card">
-          <div class="stat-label">Pass</div>
-          <div class="stat-value">18</div>
-        </div>
-        <div class="card stat-card">
-          <div class="stat-label">Fail</div>
-          <div class="stat-value">0</div>
-        </div>
-        <div class="card stat-card">
-          <div class="stat-label">Other / Blank</div>
-          <div class="stat-value">0</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="controls">
-        <input id="searchInput" class="search" type="search" placeholder="Search by test run, meter, readings, notes..." />
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="PASS">Pass only</button>
-        <button class="filter-btn" data-filter="FAIL">Fail only</button>
-        <button class="filter-btn" data-filter="OTHER">Other</button>
-      </div>
-      <div id="resultMeta" class="meta">Showing 18 of 18 records.</div>
-
-      <div class="table-wrap">
-        <table id="resultsTable">
-          <thead><tr><th>Unpowered Id</th><th>Testrun Id</th><th>Meter Make</th><th>Meter Model</th><th>Meter Sn</th><th>Res Tp102 Tp101 Vin</th><th>Res Tp103 Tp101 5V</th><th>Res Tp201 Tp101 Vbus</th><th>Res Tp202 Tp101 V3</th><th>Res J103Pin2 Tp101 Ctrl Vcc</th><th>Pass Fail</th><th>Notes</th></tr></thead>
-          <tbody><tr><td>1</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<head><meta charset="UTF-8"><title>Electrical Test History</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" type="image/png" href="/favicon.png"><link rel="stylesheet" href="/style.css"></head>
+<body><header id="appHeader"></header><nav id="sideMenu"></nav>
+<div class="page">
+<section class="hero">
+<div class="eyebrow">Factory / QA subpage</div>
+<h1>Unpowered Test Results</h1>
+<!-- <p class="subtitle">A searchable view of the uploaded unpowered results dataset, suitable as a subpage inside a larger factory, testing, or inventory website.</p>
+<div class="stats">
+<div class="card stat-card">
+<div class="stat-label">Total Records</div>
+<div class="stat-value">18</div>
+</div>
+<div class="card stat-card">
+<div class="stat-label">Pass</div>
+<div class="stat-value">18</div>
+</div>
+<div class="card stat-card">
+<div class="stat-label">Fail</div>
+<div class="stat-value">0</div>
+</div>
+<div class="card stat-card">
+<div class="stat-label">Other / Blank</div>
+<div class="stat-value">0</div>
+</div> -->
+</div>
+</section>
+<section class="card">
+<div class="controls">
+<input class="search" id="searchInput" placeholder="Search by test run, meter, readings, notes..." type="search"/>
+<button class="filter-btn active" data-filter="all">All</button>
+<button class="filter-btn" data-filter="PASS">Pass only</button>
+<button class="filter-btn" data-filter="FAIL">Fail only</button>
+<button class="filter-btn" data-filter="OTHER">Other</button>
+</div>
+<div class="meta" id="resultMeta">Showing 18 of 18 records.</div>
+<div class="table-wrap">
+<table id="resultsTable">
+<thead><tr><th>Unpowered Id</th><th>Testrun Id</th><th>Meter Make</th><th>Meter Model</th><th>Meter Sn</th><th>Res Tp102 Tp101 Vin</th><th>Res Tp103 Tp101 5V</th><th>Res Tp201 Tp101 Vbus</th><th>Res Tp202 Tp101 V3</th><th>Res J103Pin2 Tp101 Ctrl Vcc</th><th>Pass Fail</th><th>Notes</th></tr></thead>
+<tbody><tr><td>1</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
 <tr><td>2</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
 <tr><td>3</td><td>4</td><td>NENG</td><td>AN9002</td><td>318015354.0</td><td>1.4 M ohm</td><td>1.17 M ohm</td><td>1.13 K ohm</td><td>330 ohm</td><td>6.2 M ohm</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
 <tr><td>4</td><td>5</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>12000000</td><td>960</td><td>10000000</td><td>350</td><td>20000000</td><td><span class="status-pill status-pass">PASS</span></td><td>J102 placed with jumper.</td></tr>
@@ -283,14 +56,11 @@
 <tr><td>16</td><td>17</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>11000000</td><td>1130</td><td>1130</td><td>303</td><td>303</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102</td></tr>
 <tr><td>17</td><td>18</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1170</td><td>1170</td><td>359</td><td>397</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102</td></tr>
 <tr><td>18</td><td>19</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1120</td><td>1120</td><td>296</td><td>293</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102nThen remove Jumper J102 to ship to Canada assembly.</td></tr></tbody>
-        </table>
-      </div>
-
-      <div id="mobileList" class="mobile-list"></div>
-    </section>
-  </div>
-
-  <script>
+</table>
+</div>
+<div class="mobile-list" id="mobileList"></div>
+</section>
+</div><script>
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("open");
     }
@@ -377,5 +147,5 @@
 
     render();
   </script>
-</body>
-</html>
+<script src="/js/common.js"></script><script>KrakeUI.mountLayout('Electrical Test History');</script>
+</body></html>

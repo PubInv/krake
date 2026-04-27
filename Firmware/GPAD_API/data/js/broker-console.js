@@ -1,4 +1,5 @@
 (function () {
+  if (window.KrakeUI) KrakeUI.mountLayout('Broker Console');
   const state = {
     pollHandle: null
   };
