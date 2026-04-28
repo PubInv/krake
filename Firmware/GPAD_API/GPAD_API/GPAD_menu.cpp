@@ -79,7 +79,7 @@ result actionResetConfirm(eventMask e)
   return proceed;
 }
 
-MENU(resetConfirmMenu, "Confirm Reset?", Menu::doNothing, Menu::noEvent, Menu::noStyle,
+MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
   OP("Yes - Reset", actionResetConfirm, enterEvent),
   OP("No  - Cancel", Menu::doNothing, Menu::noEvent)
 );
