@@ -128,8 +128,8 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 Serial.println("Debug defined >0")
 #endif
 
-    const int NUM_PREFICES = 5;
-char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i'};
+    const int NUM_PREFICES = 6;
+char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i', 'r'};
 
 void setup_spi()
 {
@@ -429,6 +429,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   if (!found)
   {
     printError(serialport);
+    return;
+  }
+
+  if (buf[0] == 'r')
+  {
+    serialport->println(F("Reset command received. Restarting device..."));
+    delay(100);
+    ESP.restart();
     return;
   }
 
