@@ -88,15 +88,7 @@ result action5(eventMask e)
   return proceed;
 }
 
-MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  OP("Acknowledge", action1, enterEvent),
-  OP("Dismiss", action2, enterEvent),
-  OP("Shelve", action3, enterEvent),
-  FIELD(volumeDFPlayer, "Volume", "%", 0, 30, 10, 1, action4, anyEvent, wrapStyle),
-     
-     SUBMENU(resetConfirmMenu),
-  OP("Exit Menu", action5, enterEvent)
-);
+
 
 result actionResetConfirm(eventMask e)
 {
@@ -114,6 +106,15 @@ MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
   OP("No  - Cancel", Menu::doNothing, Menu::noEvent)
 );
 
+MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
+  OP("Acknowledge", action1, enterEvent),
+  OP("Dismiss", action2, enterEvent),
+  OP("Shelve", action3, enterEvent),
+  FIELD(volumeDFPlayer, "Volume", "%", 0, 30, 10, 1, action4, anyEvent, wrapStyle),
+     
+     SUBMENU(resetConfirmMenu),
+  OP("Exit Menu", action5, enterEvent)
+);
 
 RotaryEventIn reIn(
     RotaryEventIn::EventType::BUTTON_CLICKED |        // select
