@@ -8,7 +8,7 @@
 
 void displayDFPlayerStats();
 
-void setupDFPlayer();
+void setupDFPlayer(bool skipSplash = false);
 bool dfPlayerResponding();
 void resetDFPlayer();
 

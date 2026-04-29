@@ -149,11 +149,11 @@ void resetDFPlayer()
   isDFPlayerDetected = false;
   mySerial1.end();
   delay(100);
-  setupDFPlayer();
+  setupDFPlayer(true); // skip splash during recovery
 }
 
 // Functions
-void setupDFPlayer()
+void setupDFPlayer(bool skipSplash)
 {
   // Debatably, this this should be in the GPAD_HAL, not here....but
   // it is modular to place it here.
@@ -174,20 +174,26 @@ void setupDFPlayer()
     Serial.println("DFPlayer Mini not detected or not working.");
     Serial.println("Check for missing SD Card.");
     isDFPlayerDetected = false;
+    return;
   }
   else
   {
     isDFPlayerDetected = true;
-    Serial.println("DFPlayer Mini detected!");
   }
 
   dfPlayer.setTimeOut(500);  // Set serial communication time out 500ms
 
-  // Detect TD5580 clone: readState() returns non-zero at idle on TD5580,
-  // whereas genuine DFRobot DFPlayerMini returns 0 when stopped.
-  // TD5580 blocks firmware execution if play commands are sent -- bail out early.
+  // Validate module with readState():
+  //   < 0 : timeout -- begin() false-positive (floating UART), treat as absent.
+  //   = 0 : genuine DFPlayer Mini stopped, proceed normally.
+  //   > 0 : TD5580 clone -- blocks on play commands, bail out early.
   delay(100);  // allow module to settle before querying state
   int moduleState = dfPlayer.readState();
+  if (moduleState < 0) {
+    Serial.println("DFPlayer: no response to readState() -- module absent or UART noise. Disabling audio.");
+    isDFPlayerDetected = false;
+    return;
+  }
   if (moduleState > 0) {
     Serial.println("*** DFPlayer: TD5580 clone detected (readState non-zero at idle). ***");
     Serial.println("*** Incompatible module -- audio disabled. Replace with genuine DFPlayer Mini or MP3-TF-16P. ***");
@@ -195,21 +201,24 @@ void setupDFPlayer()
     return;
   }
 
+  Serial.println("DFPlayer Mini detected!");
   dfPlayer.volume(volumeDFPlayer); // Set initial volume
 
-  dfPlayer.start(); // Todo, ?? necessary for DFPlayer processing
-  delay(1000);
-  //  dfPlayer.play(11);  //DFPlayer Splash
-  Serial.println("DFPlayer about to play.");
-  dfPlayer.play(9);
-  delay(100);
-  dfPlayer.stop();
-  delay(1000);
-  dfPlayer.previous();
-  delay(1500);
-  dfPlayer.play(); // DFPlayer Splash
-  Serial.println("DFPlayer / played");
-  displayDFPlayerStats();
+  if (!skipSplash)
+  {
+    dfPlayer.start();
+    delay(1000);
+    Serial.println("DFPlayer about to play.");
+    dfPlayer.play(9);
+    delay(100);
+    dfPlayer.stop();
+    delay(1000);
+    dfPlayer.previous();
+    delay(1500);
+    dfPlayer.play(); // DFPlayer Splash
+    Serial.println("DFPlayer / played");
+    displayDFPlayerStats();
+  }
 
 } // setupDFPLayer
 
