@@ -1800,12 +1800,24 @@ void loop()
 {
 #if defined HMWK || defined KRAKE
 
-  if (!client.loop())
   {
-    debugSerial.print(mqtt_broker_name);
-    debugSerial.print(" lost MQTT at: ");
-    debugSerial.println(millis());
-    reconnect();
+    const bool wasConnected = client.connected();
+    if (!client.loop())
+    {
+      debugSerial.print(mqtt_broker_name);
+      debugSerial.print(" lost MQTT at: ");
+      debugSerial.println(millis());
+      if (wasConnected && !running_menu)
+      {
+        showMqttStatusLCD(false);
+        playNotBusyLevel(problem);
+      }
+      reconnect();
+      if (client.connected() && !wasConnected && !running_menu)
+      {
+        restoreAlarmLevel(&debugSerial);
+      }
+    }
   }
 
   if (wifiResetRequestedAtMs != 0 && (millis() - wifiResetRequestedAtMs) > 750)
