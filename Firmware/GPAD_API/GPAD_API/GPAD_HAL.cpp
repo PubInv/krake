@@ -22,6 +22,7 @@
 #include "GPAD_HAL.h"
 #include "alarm_api.h"
 #include "gpad_utility.h"
+#include "gpad_debug.h"
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
@@ -120,16 +121,8 @@ volatile boolean process;
 
 byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 
-// Local DEBUG defines,  GPAD_HAL
-#define DEBUG 0
-// #define DEBUG 1
-
-#if (DEBUG > 0)
-Serial.println("Debug defined >0")
-#endif
-
-    const int NUM_PREFICES = 6;
-char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i', 'r'};
+    const int NUM_PREFICES = 7;
+char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i', 'r', 'd'};
 
 void setup_spi()
 {
@@ -193,7 +186,7 @@ void receive_byte(byte c)
 
 void updateFromSPI()
 {
-  if (DEBUG > 0)
+  if (gpad_debug_level > 0)
   {
     if (process)
     {
@@ -210,7 +203,7 @@ void updateFromSPI()
       event.msg[i] = (char)received_signal_raw_bytes[1 + i];
     }
 
-    if (DEBUG > 1)
+    if (gpad_debug_level > 1)
     {
       Serial.print(F("LVL: "));
       Serial.println(event.lvl);
@@ -340,20 +333,14 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
   Real_lcd.init();
   
   
-#if (DEBUG > 0)
-  serialport->println(F("Clear LCD"));
-#endif
+  if (gpad_debug_level > 0) serialport->println(F("Clear LCD"));
   clearLCD();
   delay(100);
-#if (DEBUG > 0)
-  serialport->println(F("Start LCD splash"));
-#endif
+  if (gpad_debug_level > 0) serialport->println(F("Start LCD splash"));
 
   splashLCD(wifiMode, deviceIp);
 
-#if (DEBUG > 0)
-  serialport->println(F("EndLCD splash"));
-#endif
+  if (gpad_debug_level > 0) serialport->println(F("EndLCD splash"));
 
   // Setup GPIO pins, Mute and lights
   pinMode(SWITCH_MUTE, INPUT_PULLUP);    // The SWITCH_MUTE is different on Atmega vs ESP32.  Is this redundant?
@@ -361,10 +348,7 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
 
   for (int i = 0; i < NUM_LIGHTS; i++)
   {
-#if (DEBUG > 0)
-    serialport->print(LIGHT[i]);
-    serialport->print(", ");
-#endif
+    if (gpad_debug_level > 0) { serialport->print(LIGHT[i]); serialport->print(", "); }
     pinMode(LIGHT[i], OUTPUT);
     // Rob trying to prevent resets
     // This is necessary on SN#3
@@ -394,18 +378,14 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
   uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1); // UART setup. On Homework2, LCD goes blank early
   uartSerial1.flush();                                        // Clear any Serial1 crud at reset.
 
-#if (DEBUG > 0)
-  serialport->println(F("uartSerial1 Setup"));
-#endif
+  if (gpad_debug_level > 0) serialport->println(F("uartSerial1 Setup"));
 #endif
 
   // Here initialize the UART2
   pinMode(RXD2, INPUT_PULLUP);
   uartSerial2.begin(UART2_BAUD_RATE, SERIAL_8N1, RXD2, TXD2); // UART setup
   uartSerial2.flush();
-#if (DEBUG > 0)
-  serialport->println(F("uartSerial2 Setup"));
-#endif
+  if (gpad_debug_level > 0) serialport->println(F("uartSerial2 Setup"));
 } // end GPAD_HAL_setup()
 
 // This routine should be refactored so that it only "interprets"
@@ -437,6 +417,23 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     serialport->println(F("Reset command received. Restarting device..."));
     delay(100);
     ESP.restart();
+    return;
+  }
+
+  if (buf[0] == 'd')
+  {
+    if (rlen >= 2 && buf[1] >= '0' && buf[1] <= '3')
+    {
+      gpad_debug_level = buf[1] - '0';
+      serialport->print(F("Debug level set to: "));
+      serialport->println(gpad_debug_level);
+    }
+    else
+    {
+      serialport->print(F("Debug level is: "));
+      serialport->println(gpad_debug_level);
+      serialport->println(F("Usage: d0=off d1=basic d2=verbose d3=trace"));
+    }
     return;
   }
 
