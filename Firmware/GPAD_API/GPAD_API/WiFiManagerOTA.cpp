@@ -1,5 +1,6 @@
 #include "WiFiManagerOTA.h"
 #include <LittleFS.h>
+#include "gpad_debug.h"
 
 namespace
 {
@@ -434,9 +435,7 @@ void WifiOTA::initLittleFS()
   }
   else
   {
-#if (DEBUG > 1)
-    Serial.println("LittleFS mounted successfully.");
-#endif
+  if (gpad_debug_level > 1) Serial.println("LittleFS mounted successfully.");
   }
 }
 
