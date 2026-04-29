@@ -3,6 +3,8 @@
 
 #include <WiFi.h>
 #include <WiFiManager.h>
+#include <LittleFS.h>
+#include <vector>
 
 extern const char *DEFAULT_SSID;
 extern String ledState;
@@ -13,6 +15,12 @@ namespace WifiOTA
     class Manager
     {
     public:
+        struct Credential
+        {
+            String ssid;
+            String password;
+        };
+
         Manager(WiFiClass &wifi, Print &print);
         ~Manager();
 
@@ -22,6 +30,9 @@ namespace WifiOTA
         void setApStartedCallback(std::function<void()> callback);
         wifi_mode_t getMode();
         IPAddress getAddress();
+        bool saveCredentials(const String &ssid, const String &password);
+        bool loadCredentials(String &ssid, String &password);
+        bool loadCredentialsList(std::vector<Credential> &credentials);
 
     private:
         WiFiClass &wifi;
@@ -33,6 +44,8 @@ namespace WifiOTA
         void ssidSaved();
         void ipSet();
         void apStarted();
+        bool connectStoredCredentials(const String &ssid, const String &password, unsigned long timeoutMs = 15000);
+        void startPortal(const char *const accessPointSsid);
     };
 
     void initLittleFS();

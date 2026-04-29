@@ -174,11 +174,12 @@ void setupDFPlayer(bool skipSplash)
     Serial.println("DFPlayer Mini not detected or not working.");
     Serial.println("Check for missing SD Card.");
     isDFPlayerDetected = false;
-    return;
+    return; // No module present -- skip all play/query commands that would block the main loop.
   }
   else
   {
     isDFPlayerDetected = true;
+     // Serial.println("DFPlayer Mini detected!");
   }
 
   dfPlayer.setTimeOut(500);  // Set serial communication time out 500ms
@@ -195,6 +196,7 @@ void setupDFPlayer(bool skipSplash)
     return;
   }
   if (moduleState > 0) {
+    Serial.println("DFPlayer Mini detected!");
     Serial.println("*** DFPlayer: TD5580 clone detected (readState non-zero at idle). ***");
     Serial.println("*** Incompatible module -- audio disabled. Replace with genuine DFPlayer Mini or MP3-TF-16P. ***");
     isDFPlayerDetected = false;
@@ -203,22 +205,21 @@ void setupDFPlayer(bool skipSplash)
 
   Serial.println("DFPlayer Mini detected!");
   dfPlayer.volume(volumeDFPlayer); // Set initial volume
-
-  if (!skipSplash)
-  {
-    dfPlayer.start();
-    delay(1000);
-    Serial.println("DFPlayer about to play.");
-    dfPlayer.play(9);
-    delay(100);
-    dfPlayer.stop();
-    delay(1000);
-    dfPlayer.previous();
-    delay(1500);
-    dfPlayer.play(); // DFPlayer Splash
-    Serial.println("DFPlayer / played");
-    displayDFPlayerStats();
-  }
+  
+  Serial.println("DFPlayer Mini detected!");
+  dfPlayer.start(); // Todo, ?? necessary for DFPlayer processing
+  delay(1000);
+  //  dfPlayer.play(11);  //DFPlayer Splash
+  Serial.println("DFPlayer about to play.");
+  dfPlayer.play(9);
+  delay(100);
+  dfPlayer.stop();
+  delay(1000);
+  dfPlayer.previous();
+  delay(1500);
+  dfPlayer.play(); // DFPlayer Splash
+  Serial.println("DFPlayer / played");
+  displayDFPlayerStats();
 
 } // setupDFPLayer
 

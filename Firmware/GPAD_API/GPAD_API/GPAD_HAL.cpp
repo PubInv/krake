@@ -29,8 +29,6 @@
 
 using namespace gpad_hal;
 
-extern IPAddress myIP;
-
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1); // For user Serial Port
 HardwareSerial uartSerial2(2); // For DFPLayer, audio
@@ -54,7 +52,7 @@ extern char AlarmMessageBuffer[81];
 extern char macAddressString[13];
 
 // TODO: Remove this; for explanation only
-extern char publish_Ack_Topic[17];
+extern char publish_Ack_Topic[];
 
 #include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
 
@@ -64,7 +62,9 @@ extern PubSubClient client;
 //  #include <LiquidCrystal_I2C.h>
 
 // https://github.com/johnrickman/LiquidCrystal_I2C
-LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
+
+LiquidCrystal_I2C Real_lcd(LCD_ADDRESS, 20, 4);
+LCDWrapper lcd;
 
 #include "DFPlayer.h"
 
@@ -128,8 +128,8 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 Serial.println("Debug defined >0")
 #endif
 
-    const int NUM_PREFICES = 5;
-char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i'};
+    const int NUM_PREFICES = 6;
+char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i', 'r'};
 
 void setup_spi()
 {
@@ -289,7 +289,7 @@ void muteButtonCallback(byte buttonEvent)
   case onPress:
     // Do something...
     local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
-    currentlyMuted = !currentlyMuted;
+    toggleMuted();
     start_of_song = millis();
     annunciateAlarmLevel(local_ptr_to_serial);
     printAlarmState(local_ptr_to_serial);
@@ -333,9 +333,13 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
   // Setup the SWITCH_ENCODER
   // Print instructions on DEBUG serial port
 
+  lcd.init(&Real_lcd);
   local_ptr_to_serial = serialport;
   Wire.begin();
-  lcd.init();
+  
+  Real_lcd.init();
+  
+  
 #if (DEBUG > 0)
   serialport->println(F("Clear LCD"));
 #endif
@@ -428,6 +432,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     return;
   }
 
+  if (buf[0] == 'r')
+  {
+    serialport->println(F("Reset command received. Restarting device..."));
+    delay(100);
+    ESP.restart();
+    return;
+  }
+
   const auto protocolMessage = gpap_message::GPAPMessage::deserialize(buf, rlen);
 
   serialport->print(F("Command: "));
@@ -438,13 +450,13 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   case gpap_message::MessageType::MUTE:
   {
     serialport->println(F("Muting Case!"));
-    currentlyMuted = true;
+    setMuted(true);
     break;
   }
   case gpap_message::MessageType::UNMUTE:
   {
     serialport->println(F("UnMuting Case!"));
-    currentlyMuted = false;
+    setMuted(false);
     break;
   }
   case gpap_message::MessageType::HELP:
@@ -537,17 +549,23 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     serialport->println(onInfoMsg);
 
     // IP Address
-    // Serial.println(WiFi.localIP());
-
     onInfoMsg[0] = '\0';
     strcat(onInfoMsg, "IP Address: ");
-    // //strcat(onInfoMsg, myIP.toString());  //This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
 
-    char ipString[] = "(0,0,0,0)";
-    // // sprintf(ipString, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-    // sprintf(ipString, "%d.%d.%d.%d",  myIP[0], myIP[1], myIP[2], myIP[3]);
+    IPAddress stationIp = WiFi.localIP();
+    IPAddress accessPointIp = WiFi.softAPIP();
+    IPAddress ip = stationIp;
 
-    strcat(onInfoMsg, ipString); // This returns Compilation error: request for member 'toString' in 'myIP', which is of non-class type 'IPAddress()'
+    // If we don't have a station address yet, fall back to AP address.
+    if (stationIp[0] == 0 && stationIp[1] == 0 && stationIp[2] == 0 && stationIp[3] == 0)
+    {
+      ip = accessPointIp;
+    }
+
+    char ipString[16];
+    snprintf(ipString, sizeof(ipString), "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+
+    strcat(onInfoMsg, ipString);
 
     client->publish(publish_Ack_Topic, onInfoMsg);
     serialport->println(onInfoMsg);

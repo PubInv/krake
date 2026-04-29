@@ -51,6 +51,9 @@ GPAPMessage GPAPMessage::deserialize(const char *const buffer, const std::size_t
 
     case MessageType::HELP:
         return GPAPMessage(HelpMessage());
+
+    default:
+        throw;
     }
 }
 

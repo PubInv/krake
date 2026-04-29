@@ -3,8 +3,12 @@
 use <Util_modules.scad>
 include <General_paramters.scad>
 
-include <imported_scadModels/dsub.scad>
+include <dsub.scad>
+use <PartNumbering.scad>
 
+PartName = "FPanl";
+PartVersion = "V4.0";
+Date = "26141";
 
 USBbOn    = Krake ? 0 : 1;
 USBcOn    = Krake ? 1 : 0;
@@ -22,8 +26,15 @@ RJ12On    = Krake_rev2_76mmSPK ? 1 : 1;
 DCOn      = Krake_rev2_76mmSPK ? 1 : 1;
 
 FPanL();
-
-module FPanL(){
+module FPanL()
+{
+    FPanL_m();
+    if(NumberingSystem == 1){
+    translate([-0.8,10,20])mirror([0,0,1])rotate([90,0,90])
+        numbering(0.9,4,PartName,PartVersion,Date);
+    }
+    }
+module FPanL_m(){
 
 centerDB9X = -25;
 centerDB9Y = -80;

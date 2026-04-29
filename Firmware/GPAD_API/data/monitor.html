@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Factory Test / Developer Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
+  <main class="container">
+    <section class="card"><h1>Developer Monitor</h1><p class="subtitle">Live UART-only monitor reporting view.</p><div class="status-chip mono">Serial Monitor Port: <span id="serialPort">%SERIAL_PORT%</span></div><div class="status-chip mono">Baud: <span id="serialBaud">%SERIAL_BAUD%</span></div></section>
+    <section class="card"><div class="lcd-title">UART Pin Monitor</div><div id="uartText" class="monitor-box mono">Waiting for /status...</div></section>
+  </main>
+
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
+  <script src="/js/monitor.js"></script>
+</body>
+</html>
