@@ -29,8 +29,13 @@ result action1(eventMask e)
   }
   char onLineMsg[32] = "Acknowledging!";
   client.publish(publish_Ack_Topic, onLineMsg);
-  Serial.print("Messgage sent to topic: ");
+  Serial.print("Message sent to topic: ");
   Serial.println(publish_Ack_Topic);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Acknowledged!");
+  lcd.setCursor(0, 1);
+  lcd.print("Alarm still active");
   return proceed;
 }
 result action2(eventMask e)
@@ -54,6 +59,13 @@ result action3(eventMask e)
   {
     Serial.println(F("Yes, I will take that action #3 !"));
   }
+  char emptyMsg[] = "";
+  alarm(silent, emptyMsg, &Serial);
+  annunciateAlarmLevel(&Serial);
+  char onLineMsg[32] = "Shelved!";
+  client.publish(publish_Ack_Topic, onLineMsg);
+  Serial.print("Message sent to topic: ");
+  Serial.println(publish_Ack_Topic);
   return proceed;
 }
 result action4(eventMask e)
