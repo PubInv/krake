@@ -30,6 +30,7 @@
 AlarmLevel currentLevel = silent;
 bool currentlyMuted = false;
 char AlarmMessageBuffer[MAX_BUFFER_SIZE];
+unsigned long muteTimeoutEndMillis = 0;
 const char *AlarmNames[] = {"OK   ", "INFO.", "PROB.", "WARN ", "CRIT.", "PANIC"};
 
 // This is the abstract alarm function. It CANNOT

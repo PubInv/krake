@@ -48,6 +48,7 @@ extern const char *AlarmNames[];
 extern AlarmLevel currentLevel;
 extern bool currentlyMuted;
 extern char AlarmMessageBuffer[81];
+extern unsigned long muteTimeoutEndMillis;
 
 extern char macAddressString[13];
 
@@ -290,6 +291,7 @@ void muteButtonCallback(byte buttonEvent)
     // Do something...
     local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
     toggleMuted();
+    muteTimeoutEndMillis = 0;
     start_of_song = millis();
     annunciateAlarmLevel(local_ptr_to_serial);
     printAlarmState(local_ptr_to_serial);
@@ -595,6 +597,13 @@ void GPAD_HAL_loop()
 #if defined(GPAD) // FLE??? Why is this conditional compile?
   muteButton.poll();
 #endif
+
+  if (muteTimeoutEndMillis > 0 && millis() >= muteTimeoutEndMillis)
+  {
+    muteTimeoutEndMillis = 0;
+    currentlyMuted = false;
+    annunciateAlarmLevel(local_ptr_to_serial);
+  }
 }
 
 /* Assumes LCD has been initilized
