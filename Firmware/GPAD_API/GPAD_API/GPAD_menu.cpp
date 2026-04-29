@@ -6,6 +6,7 @@
 #include "GPAD_HAL.h"
 #include "RickmanLiquidCrystal_I2C.h"
 #include "DFPlayer.h"
+#include "alarm_api.h"
 
 using namespace Menu;
 
@@ -28,8 +29,13 @@ result action1(eventMask e)
   }
   char onLineMsg[32] = "Acknowledging!";
   client.publish(publish_Ack_Topic, onLineMsg);
-  Serial.print("Messgage sent to topic: ");
+  Serial.print("Message sent to topic: ");
   Serial.println(publish_Ack_Topic);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Acknowledged!");
+  lcd.setCursor(0, 1);
+  lcd.print("Alarm still active");
   return proceed;
 }
 result action2(eventMask e)
@@ -38,6 +44,13 @@ result action2(eventMask e)
   {
     Serial.println(F("Yes, I will take that action #2 !"));
   }
+  char emptyMsg[] = "";
+  alarm(silent, emptyMsg, &Serial);      // sets currentLevel=0, clears AlarmMessageBuffer
+  annunciateAlarmLevel(&Serial);          // turns off LEDs, updates LCD, stops DFPlayer buzzer
+  char onLineMsg[32] = "Dismissed!";
+  client.publish(publish_Ack_Topic, onLineMsg);
+  Serial.print("Message sent to topic: ");
+  Serial.println(publish_Ack_Topic);
   return proceed;
 }
 result action3(eventMask e)
@@ -46,6 +59,13 @@ result action3(eventMask e)
   {
     Serial.println(F("Yes, I will take that action #3 !"));
   }
+  char emptyMsg[] = "";
+  alarm(silent, emptyMsg, &Serial);
+  annunciateAlarmLevel(&Serial);
+  char onLineMsg[32] = "Shelved!";
+  client.publish(publish_Ack_Topic, onLineMsg);
+  Serial.print("Message sent to topic: ");
+  Serial.println(publish_Ack_Topic);
   return proceed;
 }
 result action4(eventMask e)
@@ -68,6 +88,8 @@ result action5(eventMask e)
   return proceed;
 }
 
+
+
 result actionResetConfirm(eventMask e)
 {
   if (e == eventMask::enterEvent)
@@ -85,11 +107,12 @@ MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
 );
 
 MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  OP("Acknowledge", action1, anyEvent),
-  OP("Dismiss", action2, anyEvent),
-  OP("Shelve", action3, anyEvent),
+  OP("Acknowledge", action1, enterEvent),
+  OP("Dismiss", action2, enterEvent),
+  OP("Shelve", action3, enterEvent),
   FIELD(volumeDFPlayer, "Volume", "%", 0, 30, 10, 1, action4, anyEvent, wrapStyle),
-  SUBMENU(resetConfirmMenu),
+     
+     SUBMENU(resetConfirmMenu),
   OP("Exit Menu", action5, enterEvent)
 );
 
