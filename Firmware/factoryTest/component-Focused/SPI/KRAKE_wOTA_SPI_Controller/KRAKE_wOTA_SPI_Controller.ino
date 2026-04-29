@@ -156,7 +156,13 @@ void setup() {
     request->send(LittleFS, "/index.html", "text/html", false, processor);
   });
 
-  server.serveStatic("/", LittleFS, "/");
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/style.css", "text/css");
+  });
+
+  server.on("/favicon.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/favicon.png", "image/png");
+  });
   // Route to control LEDs using parameters
   server.on("/control", HTTP_GET, [](AsyncWebServerRequest *request) {
     if (request->hasParam("led") && request->hasParam("state")) {

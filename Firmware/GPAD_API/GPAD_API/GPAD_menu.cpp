@@ -14,12 +14,12 @@ extern bool running_menu;
 extern bool menu_just_exited;
 
 #define LEDPIN 12
-#define MAX_DEPTH 1
+#define MAX_DEPTH 2
 
 // This needs to be cleaned up; the PubSublcient and WiFi stuff needs to put into a
 // a module that is not in GPAD_API.ino
 extern PubSubClient client;
-extern char publish_Ack_Topic[17];
+extern char publish_Ack_Topic[];
 
 result action1(eventMask e)
 {
@@ -93,8 +93,27 @@ MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Dismiss", action2, enterEvent),
   OP("Shelve", action3, enterEvent),
   FIELD(volumeDFPlayer, "Volume", "%", 0, 30, 10, 1, action4, anyEvent, wrapStyle),
+     
+     SUBMENU(resetConfirmMenu),
   OP("Exit Menu", action5, enterEvent)
 );
+
+result actionResetConfirm(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    Serial.println(F("Reset confirmed. Restarting device..."));
+    delay(100);
+    ESP.restart();
+  }
+  return proceed;
+}
+
+MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
+  OP("Yes - Reset", actionResetConfirm, enterEvent),
+  OP("No  - Cancel", Menu::doNothing, Menu::noEvent)
+);
+
 
 RotaryEventIn reIn(
     RotaryEventIn::EventType::BUTTON_CLICKED |        // select

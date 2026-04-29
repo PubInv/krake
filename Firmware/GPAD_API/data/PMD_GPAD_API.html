@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PMD Web UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
+  <main class="container">
+    <div class="status-strip"><div class="chip">Program: <strong>PMD_Processing_MQTT</strong> (<strong>V0.37</strong>)</div><div class="chip">Role: <strong id="deviceRole">Krake</strong></div><div class="chip">Broker: <strong id="brokerName">public.cloud.shiftr.io</strong></div></div>
+    <div class="console-grid">
+      <section class="card"><h1>Issue Alarm (multi-topic)</h1><p class="subtitle">Select one or more topics from Settings and send PMD alarm payloads to all selected topics.</p><label for="topicSelect">Available publish topics</label><select id="topicSelect" class="text-input topic-select" multiple></select><div class="status-row">Selected topics: <code id="selectedTopic">-</code></div><div class="button-row"><button class="action-btn" onclick="publishEmergency(0)">Level 0 OK</button><button class="action-btn" onclick="publishEmergency(1)">Level 1 INFO</button><button class="action-btn" onclick="publishEmergency(2)">Level 2 PROB</button><button class="action-btn" onclick="publishEmergency(3)">Level 3 WARN</button><button class="action-btn" onclick="publishEmergency(4)">Level 4 CRIT</button><button class="action-btn" onclick="publishEmergency(5)">Level 5 PANIC</button><button class="action-btn" onclick="publishEmergency(6)">Level 6 ALL</button></div><div class="status-row">Result: <strong id="result">-</strong></div></section>
+      <section class="card"><h1>Send Message / Alarm</h1><label for="publishTopic">Topic</label><input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM"><label for="publishPayload">Payload</label><textarea id="publishPayload" class="text-input" rows="4" placeholder="a3 20260420_121212 Device alarm text"></textarea><div class="button-row"><button id="btnSendMessage" class="action-btn" type="button">Send Message</button></div><div class="status-row">Publish result: <strong id="publishResult">-</strong></div></section>
+    </div>
+  </main>
+
+  <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
+  <script src="/js/common.js"></script>
+  <script src="/js/pmd.js"></script>
+</body>
+</html>

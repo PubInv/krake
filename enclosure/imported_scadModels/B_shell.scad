@@ -4,6 +4,12 @@ include <StudModules.scad>
 
 include <General_paramters.scad>
 
+use <PartNumbering.scad>
+
+
+PartName = "BShell";
+PartVersion = "V4.0";
+Date = "26141";
 
 speaker_ring = 1;
 
@@ -59,6 +65,11 @@ SpeakerFlushRing(3.5,7.8-1.75,35, posx = SpeakerPositionX+2.5,posy =SpeakerPosit
     GPAD_BShell();
     }
 
+
+if(NumberingSystem == 1){
+    translate([60,15,2.8])mirror([0,1,0])rotate([0,180,0])
+        numbering(0.9,4,PartName,PartVersion,Date);
+    }
 
 }
 

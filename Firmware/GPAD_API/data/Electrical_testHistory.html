@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Electrical Test History</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" type="image/png" href="/favicon.png"><link rel="stylesheet" href="/style.css"></head>
+<body><header id="appHeader"></header><nav id="sideMenu"></nav>
+<div class="page">
+<section class="hero">
+<div class="eyebrow">Factory / QA subpage</div>
+<h1>Unpowered Test Results</h1>
+<!-- <p class="subtitle">A searchable view of the uploaded unpowered results dataset, suitable as a subpage inside a larger factory, testing, or inventory website.</p>
+<div class="stats">
+<div class="card stat-card">
+<div class="stat-label">Total Records</div>
+<div class="stat-value">18</div>
+</div>
+<div class="card stat-card">
+<div class="stat-label">Pass</div>
+<div class="stat-value">18</div>
+</div>
+<div class="card stat-card">
+<div class="stat-label">Fail</div>
+<div class="stat-value">0</div>
+</div>
+<div class="card stat-card">
+<div class="stat-label">Other / Blank</div>
+<div class="stat-value">0</div>
+</div> -->
+</div>
+</section>
+<section class="card">
+<div class="controls">
+<input class="search" id="searchInput" placeholder="Search by test run, meter, readings, notes..." type="search"/>
+<button class="filter-btn active" data-filter="all">All</button>
+<button class="filter-btn" data-filter="PASS">Pass only</button>
+<button class="filter-btn" data-filter="FAIL">Fail only</button>
+<button class="filter-btn" data-filter="OTHER">Other</button>
+</div>
+<div class="meta" id="resultMeta">Showing 18 of 18 records.</div>
+<div class="table-wrap">
+<table id="resultsTable">
+<thead><tr><th>Unpowered Id</th><th>Testrun Id</th><th>Meter Make</th><th>Meter Model</th><th>Meter Sn</th><th>Res Tp102 Tp101 Vin</th><th>Res Tp103 Tp101 5V</th><th>Res Tp201 Tp101 Vbus</th><th>Res Tp202 Tp101 V3</th><th>Res J103Pin2 Tp101 Ctrl Vcc</th><th>Pass Fail</th><th>Notes</th></tr></thead>
+<tbody><tr><td>1</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>2</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>3</td><td>4</td><td>NENG</td><td>AN9002</td><td>318015354.0</td><td>1.4 M ohm</td><td>1.17 M ohm</td><td>1.13 K ohm</td><td>330 ohm</td><td>6.2 M ohm</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>4</td><td>5</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>12000000</td><td>960</td><td>10000000</td><td>350</td><td>20000000</td><td><span class="status-pill status-pass">PASS</span></td><td>J102 placed with jumper.</td></tr>
+<tr><td>5</td><td>6</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>6</td><td>7</td><td>NENG</td><td>AN9002</td><td>318015354.0</td><td>2.1 M ohm</td><td>1.09 K ohm</td><td>1.099 K ohm</td><td>300 ohm</td><td>4.6 M ohm</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>7</td><td>8</td><td>NENG</td><td>AN9002</td><td>318015354.0</td><td>1.4 M ohm</td><td>1.1 K ohm</td><td>1.1 K ohm</td><td>300 ohm</td><td>4 M ohm</td><td><span class="status-pill status-pass">PASS</span></td><td>jumper added to J102</td></tr>
+<tr><td>8</td><td>9</td><td>NENG</td><td>AN9002</td><td>318015354.0</td><td>3 M ohm</td><td>1.1 K ohm</td><td>1.08 K ohm</td><td>200 ohm</td><td>7.8 M ohm</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>9</td><td>10</td><td>NENG</td><td>AN9002</td><td>318015354.0</td><td>2.6 M ohm</td><td>1.1  K ohm</td><td>1.1 K ohm</td><td>200 ohm</td><td>7 M ohm</td><td><span class="status-pill status-pass">PASS</span></td><td>—</td></tr>
+<tr><td>10</td><td>11</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1130</td><td>1130</td><td>305</td><td>303</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity Inspection 1, passnAdd Jumper J102</td></tr>
+<tr><td>11</td><td>12</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>3000000</td><td>1130</td><td>1130</td><td>298</td><td>296</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: PassnAdd Jumper J102</td></tr>
+<tr><td>12</td><td>13</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>3000000</td><td>1120</td><td>1120</td><td>295</td><td>294</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass Add Jumper J102</td></tr>
+<tr><td>13</td><td>14</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1130</td><td>1130</td><td>305</td><td>300</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: PassnAdd Jumper J102</td></tr>
+<tr><td>14</td><td>15</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>7200000</td><td>1120</td><td>1120</td><td>295</td><td>293</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102</td></tr>
+<tr><td>15</td><td>16</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1120</td><td>1120</td><td>298</td><td>296</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102</td></tr>
+<tr><td>16</td><td>17</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>11000000</td><td>1130</td><td>1130</td><td>303</td><td>303</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102</td></tr>
+<tr><td>17</td><td>18</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1170</td><td>1170</td><td>359</td><td>397</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102</td></tr>
+<tr><td>18</td><td>19</td><td>ASTRON AI</td><td>DM6000AR</td><td>2327610969.0</td><td>13000000</td><td>1120</td><td>1120</td><td>296</td><td>293</td><td><span class="status-pill status-pass">PASS</span></td><td>Polarity inspection: Pass nAdd Jumper J102nThen remove Jumper J102 to ship to Canada assembly.</td></tr></tbody>
+</table>
+</div>
+<div class="mobile-list" id="mobileList"></div>
+</section>
+</div><script>
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("open");
+    }
+
+    const rows = [{'unpowered_id': '1', 'testrun_id': '2', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '2', 'testrun_id': '3', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '3', 'testrun_id': '4', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '1.4 M ohm', 'res_tp103_tp101_5v': '1.17 M ohm', 'res_tp201_tp101_vbus': '1.13 K ohm', 'res_tp202_tp101_v3': '330 ohm', 'res_j103pin2_tp101_ctrl_vcc': '6.2 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '4', 'testrun_id': '5', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '12000000', 'res_tp103_tp101_5v': '960', 'res_tp201_tp101_vbus': '10000000', 'res_tp202_tp101_v3': '350', 'res_j103pin2_tp101_ctrl_vcc': '20000000', 'pass_fail': 'PASS', 'notes': 'J102 placed with jumper.'}, {'unpowered_id': '5', 'testrun_id': '6', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '6', 'testrun_id': '7', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '2.1 M ohm', 'res_tp103_tp101_5v': '1.09 K ohm', 'res_tp201_tp101_vbus': '1.099 K ohm', 'res_tp202_tp101_v3': '300 ohm', 'res_j103pin2_tp101_ctrl_vcc': '4.6 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '7', 'testrun_id': '8', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '1.4 M ohm', 'res_tp103_tp101_5v': '1.1 K ohm', 'res_tp201_tp101_vbus': '1.1 K ohm', 'res_tp202_tp101_v3': '300 ohm', 'res_j103pin2_tp101_ctrl_vcc': '4 M ohm', 'pass_fail': 'PASS', 'notes': 'jumper added to J102'}, {'unpowered_id': '8', 'testrun_id': '9', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '3 M ohm', 'res_tp103_tp101_5v': '1.1 K ohm', 'res_tp201_tp101_vbus': '1.08 K ohm', 'res_tp202_tp101_v3': '200 ohm', 'res_j103pin2_tp101_ctrl_vcc': '7.8 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '9', 'testrun_id': '10', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '2.6 M ohm', 'res_tp103_tp101_5v': '1.1  K ohm', 'res_tp201_tp101_vbus': '1.1 K ohm', 'res_tp202_tp101_v3': '200 ohm', 'res_j103pin2_tp101_ctrl_vcc': '7 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '10', 'testrun_id': '11', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '305', 'res_j103pin2_tp101_ctrl_vcc': '303', 'pass_fail': 'PASS', 'notes': 'Polarity Inspection 1, passnAdd Jumper J102'}, {'unpowered_id': '11', 'testrun_id': '12', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '3000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '298', 'res_j103pin2_tp101_ctrl_vcc': '296', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: PassnAdd Jumper J102'}, {'unpowered_id': '12', 'testrun_id': '13', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '3000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '295', 'res_j103pin2_tp101_ctrl_vcc': '294', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass Add Jumper J102'}, {'unpowered_id': '13', 'testrun_id': '14', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '305', 'res_j103pin2_tp101_ctrl_vcc': '300', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: PassnAdd Jumper J102'}, {'unpowered_id': '14', 'testrun_id': '15', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '7200000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '295', 'res_j103pin2_tp101_ctrl_vcc': '293', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '15', 'testrun_id': '16', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '298', 'res_j103pin2_tp101_ctrl_vcc': '296', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '16', 'testrun_id': '17', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '11000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '303', 'res_j103pin2_tp101_ctrl_vcc': '303', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '17', 'testrun_id': '18', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1170', 'res_tp201_tp101_vbus': '1170', 'res_tp202_tp101_v3': '359', 'res_j103pin2_tp101_ctrl_vcc': '397', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '18', 'testrun_id': '19', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '296', 'res_j103pin2_tp101_ctrl_vcc': '293', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102nThen remove Jumper J102 to ship to Canada assembly.'}];
+    const columns = ['unpowered_id', 'testrun_id', 'meter_make', 'meter_model', 'meter_sn', 'res_tp102_tp101_vin', 'res_tp103_tp101_5v', 'res_tp201_tp101_vbus', 'res_tp202_tp101_v3', 'res_j103pin2_tp101_ctrl_vcc', 'pass_fail', 'notes'];
+    const tableBody = document.querySelector('#resultsTable tbody');
+    const mobileList = document.getElementById('mobileList');
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
+    const resultMeta = document.getElementById('resultMeta');
+    let currentFilter = 'all';
+
+    function normalize(v) {
+      return (v ?? '').toString().trim();
+    }
+
+    function passFailClass(v) {
+      const x = normalize(v).toUpperCase();
+      if (x === 'PASS') return 'status-pass';
+      if (x === 'FAIL') return 'status-fail';
+      return 'status-other';
+    }
+
+    function matchesFilter(row) {
+      const v = normalize(row.pass_fail).toUpperCase();
+      if (currentFilter === 'all') return true;
+      if (currentFilter === 'OTHER') return v !== 'PASS' && v !== 'FAIL';
+      return v === currentFilter;
+    }
+
+    function matchesSearch(row, query) {
+      if (!query) return true;
+      const hay = Object.values(row).join(' ').toLowerCase();
+      return hay.includes(query);
+    }
+
+    function render() {
+      const query = searchInput.value.toLowerCase().trim();
+      const filtered = rows.filter(row => matchesFilter(row) && matchesSearch(row, query));
+
+      tableBody.innerHTML = filtered.map(row => {
+        const cells = columns.map(col => {
+          let val = normalize(row[col]) || '—';
+          if (col === 'pass_fail') {
+            val = `<span class="status-pill ${passFailClass(row[col])}">${val}</span>`;
+          }
+          return `<td>${val}</td>`;
+        }).join('');
+        return `<tr>${cells}</tr>`;
+      }).join('');
+
+      mobileList.innerHTML = filtered.map(row => {
+        const top = `
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:start;">
+            <div>
+              <div class="field-label">Test Run</div>
+              <div class="field-value">${normalize(row.testrun_id) || '—'}</div>
+            </div>
+            <span class="status-pill ${passFailClass(row.pass_fail)}">${normalize(row.pass_fail) || '—'}</span>
+          </div>
+        `;
+        const grid = columns.filter(c => c !== 'testrun_id' && c !== 'pass_fail').map(col => `
+          <div>
+            <div class="field-label">${col.replaceAll('_',' ')}</div>
+            <div class="field-value">${normalize(row[col]) || '—'}</div>
+          </div>
+        `).join('');
+        return `<article class="result-card">${top}<div class="result-grid">${grid}</div></article>`;
+      }).join('');
+
+      resultMeta.textContent = `Showing ${filtered.length} of ${rows.length} records.`;
+    }
+
+    searchInput.addEventListener('input', render);
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+      });
+    });
+
+    render();
+  </script>
+<script src="/js/common.js"></script><script>KrakeUI.mountLayout('Electrical Test History');</script>
+</body></html>

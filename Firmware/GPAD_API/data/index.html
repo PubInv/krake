@@ -1,24 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>KRAKE Web Server</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <title>Soft KRAKE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="topnav">
-        <h1>KRAKE Web Server</h1>
-       
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
+      <span>Public Invention</span>
     </div>
-    A public invention device
- 
- 	<a href = "update"> Update </a>
-	
- <br>
- <h6> Visit: pubinv.org </h6>
- 
+
+    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
+  </header>
+
+  <nav id="sideMenu" class="side-menu">
+    <a href="/update">Update Firmware</a>
+    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
+    <a href="/Electrical_testHistory.html">Electrical Test History</a>
+    <a href="/monitor">Factory Test / Developer Monitor</a>
+    <a href="/device-monitor">MQTT Device Monitor</a>
+    <a href="/PMD_GPAD_API">PMD Web UI</a>
+    <a href="/manual">User Manual</a>
+    <a href="/settings">Settings</a>
+    <a class="menu-home" href="/index.html">Home</a>
+  </nav>
+
+  <main class="container">
+    <section class="card">
+      <h1>KRAKE </h1>
+      <p class="subtitle">A Public Invention device</p>
+
+      <div class="info-row"><span class="label">Serial:</span><span id="serial" class="value">%SERIAL%</span></div>
+      <div class="info-row"><span class="label">URL:</span><span id="deviceUrl" class="value">%URL%</span></div>
+      <div class="info-row"><span class="label">IP:</span><span id="ip" class="value">%IP%</span></div>
+      <div class="info-row"><span class="label">MAC:</span><span id="mac" class="value">%MAC%</span></div>
+      <div class="info-row"><span class="label">WiFi RSSI:</span><span id="rssi" class="value">%RSSI%</span></div>
+      <div class="info-row"><span class="label">Uptime:</span><span id="uptime" class="value">%UPTIME%</span></div>
+      <div class="info-row"><span class="label">MQTT:</span><span id="mqtt" class="value">%MQTT%</span></div>
+      <div class="info-row"><span class="label">Firmware:</span><span id="firmware" class="value">%FIRMWARE_VERSION%</span></div>
+      <div class="info-row"><span class="label">Compiled:</span><span id="compiled" class="value">%COMPILED_AT%</span></div>
+        <!-- <div class="qr-box">
+        <img src="%QR%" alt="QR Code">
+      </div> -->
+    </section>
+
+    <section class="card">
+      <div class="lcd-title">Live LCD Output</div>
+      <div class="lcd-frame">
+        <div class="lcd-screen">
+          <div id="lcd0" class="lcd-line"></div>
+          <div id="lcd1" class="lcd-line"></div>
+          <div id="lcd2" class="lcd-line"></div>
+          <div id="lcd3" class="lcd-line"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="https://pubinv.org" target="_blank">pubinv.org</a>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("open");
+    }
+
+    function pad20(str) {
+      if (!str) return "                    ";
+      return (str + "                    ").substring(0, 20);
+    }
+
+    function updateLCD(lines) {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById("lcd" + i).textContent = pad20(lines[i]);
+      }
+    }
+
+    async function fetchLCD() {
+      try {
+        const res = await fetch("/lcd");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.lines) updateLCD(data.lines);
+      } catch (e) {
+        console.log("LCD fetch failed");
+      }
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch("/status");
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const setText = (id, value) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = value || "-";
+        };
+
+        setText("serial", data.serial || data.mac);
+        setText("ip", data.ip);
+        setText("mac", data.mac);
+        setText("rssi", data.rssi);
+        setText("uptime", data.uptime);
+        setText("mqtt", data.mqtt);
+        setText("firmware", data.firmware);
+        setText("compiled", data.compiled);
+        setText("deviceUrl", data.url);
+      } catch (e) {
+        console.log("Status fetch failed");
+      }
+    }
+
+    fetchLCD();
+    fetchStatus();
+
+    setInterval(fetchLCD, 1000);
+    setInterval(fetchStatus, 2000);
+  </script>
+
 </body>
 </html>

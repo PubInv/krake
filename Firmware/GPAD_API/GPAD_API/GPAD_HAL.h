@@ -168,6 +168,117 @@ namespace gpad_hal
   const GPAD_API gpadApi = GPAD_API(SemanticVersion(API_MAJOR_VERSION, API_MINOR_VERSION, API_PATCH_VERSION));
 }
 
+
+
+class LCDWrapper : public Print
+{
+public :
+  static const uint8_t LCD_COLS = 20;
+  static const uint8_t LCD_ROWS = 4;
+
+  LCDWrapper() : _LCD(nullptr), _cursorCol(0), _cursorRow(0)
+  {
+    resetMirror();
+  }
+
+  virtual size_t write(uint8_t b) override
+  {
+    if (_LCD == nullptr)
+    {
+      return 0;
+    }
+
+    if (b == '\r')
+    {
+      return 1;
+    }
+
+    if (b == '\n')
+    {
+      _cursorCol = 0;
+      _cursorRow = (_cursorRow + 1) % LCD_ROWS;
+      return 1;
+    }
+
+    _LCD->write(b);
+    if (_cursorRow < LCD_ROWS && _cursorCol < LCD_COLS)
+    {
+      _lcdMirror[_cursorRow][_cursorCol] = static_cast<char>(b);
+    }
+
+    if (_cursorCol < LCD_COLS)
+    {
+      _cursorCol++;
+    }
+
+    return 1;
+  }
+  void init(LiquidCrystal_I2C* _lcd)
+  {
+    _LCD = _lcd;
+    resetMirror();
+  }
+  void init()
+  {
+    _LCD->init();
+    resetMirror();
+  }
+  void clear(){
+    _LCD->clear();
+    resetMirror();
+  }
+  void backlight(){
+    _LCD->backlight();
+  }
+  void noBacklight(){
+    _LCD->noBacklight();
+  }
+  void setCursor(int16_t col, int16_t row){
+    _LCD->setCursor(col, row);
+    _cursorCol = constrain(col, 0, LCD_COLS - 1);
+    _cursorRow = constrain(row, 0, LCD_ROWS - 1);
+  }
+  void noBlink(){
+    _LCD->noBlink();
+  }
+  void blink(){
+    _LCD->blink();
+  }
+  void cursor(){
+    _LCD->cursor();
+  }
+  void noCursor(){
+    _LCD->noCursor();
+  }
+  String line(uint8_t row) const
+  {
+    if (row >= LCD_ROWS)
+    {
+      return String("");
+    }
+    return String(_lcdMirror[row]);
+  }
+private:
+  void resetMirror()
+  {
+    for (uint8_t row = 0; row < LCD_ROWS; row++)
+    {
+      for (uint8_t col = 0; col < LCD_COLS; col++)
+      {
+        _lcdMirror[row][col] = ' ';
+      }
+      _lcdMirror[row][LCD_COLS] = '\0';
+    }
+    _cursorCol = 0;
+    _cursorRow = 0;
+  }
+
+  LiquidCrystal_I2C* _LCD;
+  char _lcdMirror[LCD_ROWS][LCD_COLS + 1];
+  uint8_t _cursorCol;
+  uint8_t _cursorRow;
+};
+
 // SPI Functions....
 void setup_spi();
 void receive_byte(byte c);
@@ -185,5 +296,6 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceIp);
 void GPAD_HAL_loop();
 
-extern LiquidCrystal_I2C lcd;
+extern LiquidCrystal_I2C Real_lcd;
+extern LCDWrapper lcd;
 #endif

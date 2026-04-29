@@ -10,7 +10,8 @@
 
 #include <Wire.h>
 //    #include <LiquidCrystal_PCF8574.h>
-#include <LiquidCrystal_I2C.h>
+// #include <LiquidCrystal_I2C.h>
+#include "GPAD_HAL.h"
 
 namespace Menu
 {
@@ -18,8 +19,8 @@ namespace Menu
   class lcdOut : public cursorOut
   {
   public:
-    LiquidCrystal_I2C *device;
-    inline lcdOut(LiquidCrystal_I2C *o, idx_t *t, panelsList &p, menuOut::styles s = menuOut::minimalRedraw)
+    LCDWrapper *device;
+    inline lcdOut(LCDWrapper *o, idx_t *t, panelsList &p, menuOut::styles s = menuOut::minimalRedraw)
         : cursorOut(t, p, s), device(o) {}
     size_t write(uint8_t ch) override { return device->write(ch); }
     void clear() override

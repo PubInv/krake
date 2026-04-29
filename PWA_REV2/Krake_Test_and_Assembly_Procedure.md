@@ -118,24 +118,24 @@ Start with receiving the subassembly KRK-PL-0002 (Krake Rev2.1 PCB, plus BOM-TBD
 
 | Qty | Reference(s) | Value | Datasheet | Cost | Description |
 |---:|---|---|---|---:|---|
-| 1 | KRK-PL-0001 | Subassembly, Krake Contract Manufacture | ~ | 1,000 | As built from parts list PCBWay |
-| 1 | BZ601 | Speaker | ~ | 1 | 8 Ohm 2W Speaker, 28mm |
-| 1 | J603 | DFPlayermini | [DFPlayer Mini Manual](https://image.dfrobot.com/image/data/DFR0299/DFPlayer%20Mini%20Manul.pdf) | 3 | Mini MP3 Player |
-| 1 | SD601 | Micro_SD_Card_16GB | -- | 7 | SanDisk 16GB SDHC SDSDB-016G |
-| 1 | D105 | LED_RED | [Lite-On RED LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 0 | LED RED CLEAR T-1 3/4 |
-| 5 | D201–D205 | LED_WHITE | [Lite-On WHITE LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 1 | LED WHITE CLEAR T-1 3/4 |
+| 1 | KRK-PL-0001 | Subassembly, Krake Contract Manufacture | ~ | 217 $ /5 | As built from parts list PCBWay |
+| 1 | BZ601 | Speaker | ~ | 1 $ | 8 Ohm 2W Speaker, 28mm |
+| 1 | J603 | DFPlayermini | [DFPlayer Mini Manual](https://image.dfrobot.com/image/data/DFR0299/DFPlayer%20Mini%20Manul.pdf) | 3.5 $ | Mini MP3 Player |
+| 1 | SD601 | Micro_SD_Card_16GB | -- | 7 $ | SanDisk 16GB SDHC SDSDB-016G |
+| 1 | D105 | LED_RED | [Lite-On RED LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 0.2 $ | LED RED CLEAR T-1 3/4 |
+| 5 | D201–D205 | LED_WHITE | [Lite-On WHITE LED](http://optoelectronics.liteon.com/upload/download/DS20-2005-253/LTW-2R3D7.pdf) | 1 $ | LED WHITE CLEAR T-1 3/4 |
 | 4 | MF403, MF406, MF409, MF412 | Nut_4-40_0.1875 | [Keyelco Datasheet](https://www.keyelco.com/userAssets/file/M65p135.pdf) | $0.10 | #4-40 Hex Nut, 3/16\" Steel |
-| 1 | U302 | LCD_20x4_Character | -- | 5 | LCD 2004 20x4 Module |
-| 4 | MF401, MF404, MF407, MF410 | Screw_4-40_0.375 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 | 4-40 Phillips Pan Head, 3/8\" |
-| 4 | MF402, MF405, MF408, MF411 | Spacer_0.1875x0.125 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 | Nylon Spacer, 1/8\" Length |
+| 1 | U302 | LCD_20x4_Character | -- | 5 $ | LCD 2004 20x4 Module |
+| 4 | MF401, MF404, MF407, MF410 | Screw_4-40_0.375 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 1 $ | 4-40 Phillips Pan Head, 3/8\" |
+| 4 | MF402, MF405, MF408, MF411 | Spacer_0.1875x0.125 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 1 $ | Nylon Spacer, 1/8\" Length |
 | 6 | MF103, MF601–MF605 | LED_Standoff | -- | NA | General Alarm LED Standoffs |
-| 1 | MF801 | ENCLOSURE_KRAKE_VER1 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 1000000 | Plastic Enclosure |
-| 1 | MF802 | PCB_KRAKE_VER1 | Gerbers2501181555.zip | 1000000 | PCB for Krake Rev 2.1 |
+| 1 | MF801 | ENCLOSURE_KRAKE_VER1 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 $ | Plastic Enclosure |
+| 1 | MF802 | PCB_KRAKE_VER1 | Gerbers2501181555.zip | 35 $ /5 | PCB for Krake Rev 2.1 |
 | 2 | MF701, MF702 | Jackscrews_4-40 | [McMaster-Carr](https://www.mcmaster.com/catalog/128/3306) | 0 | Male–Female Cylinder Jackscrew |
 | 1 each | ENC801–ENC806 | Enclosure Parts | -- | -- | Top/bottom/front/rear panels, knob, mute cap |
-| 4 | MF807–MF810 | Screw_#6x1/2 | -- | -- | PanTorx Self-Tapping |
-| 4 | MF803–MF806 | Screw_2-32x3/8 | -- | -- | Self-Tapping Phillips Pan Head |
-| 1 | LB801 | Krake_Model_Serial | -- | -- | Serial Number Label |
+| 4 | MF807–MF810 | Screw_#6x1/2 | -- | 0.5 $ | PanTorx Self-Tapping |
+| 4 | MF803–MF806 | Screw_2-32x3/8 | -- | 0.5 $ | Self-Tapping Phillips Pan Head |
+| 1 | LB801 | Krake_Model_Serial | -- | 0 $ | Serial Number Label |
 
 *Additional details may be found in the source design files. Material types and categories can be added in extended tables as needed.*
 
@@ -412,12 +412,15 @@ The front panel LEDs provide visual alarm and status indication.
 1. Identify the LED footprints on the PCB and the corresponding LED colors (e.g., white vs. red).
   - 5 white LED's (D201-D205)
   - 1 red LED - Power ((D103) .
+
 3. For each LED:
    - Note the flat edge on the plastic body indicating the cathode.
    - <img width="200" height="210" alt="image" src="https://github.com/user-attachments/assets/baf3bd47-3918-4b86-a1b3-03e3834cc087" />
    - Align the flat edge with the flat indicator on the PCB silkscreen.
-   - Insert the LED and ensure consistent height above the PCB - to do this 3D print and use 6 of the LED spacer files "U_Box_V105_GPAD_LED_Standoff_single.stl" within enclosure/parts_toPrint
+   - Insert the LED spacer to ensure consistent height above the PCB - to do this 3D print and use 6 of the LED spacer files "U_Box_V105_GPAD_LED_Standoff_single.stl" within enclosure/parts_toPrint
+     <img width="245" height="350" alt="Screenshot 2026-04-19 at 10 26 37" src="https://github.com/user-attachments/assets/4417a096-1f9b-41e0-924b-6f2930c58bab" />
    - Solder the leads.
+     <img width="718" height="427" alt="Screenshot 2026-04-19 at 10 30 31" src="https://github.com/user-attachments/assets/cfd0bd27-ff2b-49b5-9a04-aa0cc505fbc2" />
    - Trim the leads carefully, taking care not to damage nearby transistors or other components.
 4. To avoid mixing LED colors:
    - Install and solder all white LEDs first, then close and set aside their packaging.
@@ -463,10 +466,13 @@ This section covers basic procedures for powering Krake and verifying that the a
   + OneButton.h by Matthias Hertel
 7. One upload is complete, navigate to the Serial Monitor within Arduino IDE
 8. Change the 'baud rate' to 115200
-9. Enter 'P' into the Serial Monitor
-10. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
-<img width="611" height="316" alt="image" src="https://github.com/user-attachments/assets/94affc1e-c702-4151-a7dc-2bc3370afdd9" />
+9. Test response by sending [R] in the command window
+10. Record MCU MAC address & factory firmware test version
+    <img width="1048" height="579" alt="Screenshot 2026-04-16 at 21 38 37" src="https://github.com/user-attachments/assets/0b73cbc3-be97-41c4-9d28-082645b76ef5" />
 
+11. Enter [P] into the Serial Monitor
+12. After entering P, the serial monitor will ask for provide instructions for each of the tests to determine a 'PASS' or 'FAIL', this will include answering 'Y' or 'N' and performing tasks (if it is required to carry out any test individually , simply enter the corresponding number from the menu below into the serial monitor)
+<img width="611" height="316" alt="image" src="https://github.com/user-attachments/assets/94affc1e-c702-4151-a7dc-2bc3370afdd9" />
  
 The Tests are as below - please read prior to performing tests to ensure you have all relevant information at hand  
 - [0] Power/ ID 
@@ -514,17 +520,28 @@ The Tests are as below - please read prior to performing tests to ensure you hav
   - Confirm prompt can be seen.
 
 - [C] SPI loopback
-  - **INFO REQ - NK** 
+  > Verify SPI communication by connecting the Master Out Slave In (MOSI) pin directly to the Master In Slave Out (MISO) pin.
+  > Physical Loopback (Hardware): Connect a jumper wire directly between the MOSI and MISO pins on your connector.
+  - Connect MOSI <-> MISO on SPI header for automatic test: We will cut one of the rj12 connectors and then we short pins 6 and 2, check below image
+  - The final step is to connect the SPI connector and run the test using the [C] command in the command window
+<img width="378" height="202" alt="Screenshot 2026-03-20 at 09 47 13" src="https://github.com/user-attachments/assets/b646a572-56c5-4894-9467-157a3f091bda" />
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/a5555051-7165-4dc1-916e-cbe89315409d" />
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/78e43602-270e-4509-8fed-89d6df922124" />
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/b1d02212-f62c-433f-974a-70180530508c" />
 
 - [D] RS-232 loopback
   - Use a short wire to connect **pins 2–3** on RS232.
   - Use a short wire to connect **pins 7–8** on RS232.
-<img width="1021" height="779" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
+<img height="534" alt="image" src="https://github.com/user-attachments/assets/0b29f446-e796-40c4-a15c-db2a9518fcce" />
 
 - [E] ElegantOTA 
-  - Once factory test is complete copy ip address given during factory test into browser, follow instructions on screen and append "/update" to the ip address to navigate to ElegantOTA Lite
-  - Upload .bin files "firmware_X.XX.bin" & "littlefs_X.XX.bin" (X.XX references the version number of the files, please use the most recent version which can be found **Location TBC - NK**) using ElegantOTA Lite Platform selecting OTA Mode "Firmware" & "LittleFS" respectively. Once uploaded navigate back to the IP address on the browser - this will now display the krake webserver with links to important information.
-    
+  - Once factory test is complete copy ip address given during factory test into browser, ElegantOTA server will start. Browse to http://IP/update:
+   > If the wifi needs to be setup: then you will go through: step [8] Wi-Fi STA (manual SSID/PASS)
+  -  After Wi-Fi STA connected successfully. ElegantOTA server will start. Browse to http://IP/update:
+  Example:  OTA endpoint: http://192.168.10.234/update
+  -   Verify that you see the ElegantOTA upload page:
+  <img  height="534" alt="Screenshot 2026-03-20 at 11 10 33" src="https://github.com/user-attachments/assets/4e69fa86-88dd-4bc0-a620-96ef6637fd53" />
+
 - [F] Mute Button + LED
   - Button: GPIO 35  |  LED: GPIO 13 (LED_Status))
   - Press the mute button twice. (q to quit)
@@ -537,10 +554,10 @@ After completing electrical and audio tests, each unit is loaded with the intend
 
 For each serial number:
 
-1. Load the final firmware.
+1. Load the final firmware:   - Upload .bin files "Krake_fw_vx.x.x.bin" & "Krake_littlefs_X.XX.bin" using the ElegantOTA platform (X.XX references the version number of the files, please use the most recent version which can be found at /releases  (Root Level).
+
 2. Record:
    - Firmware version string.
-   - MCU MAC address.
    - Date of final test and tester initials.
 3. Perform a brief smoke test of:
    - Power-up behavior and LCD initialization.
@@ -560,7 +577,13 @@ Units that pass all steps above are considered ready for integration into larger
   - "Recess_bottom.stl"
   - "SD_door.stl"
 2. Once all parts have been printed, the following tools and parts are required to add the threaded insert into the VESA and Speaker Mount.
-  - **insert information about tools etc for threaded inserts**
+  - **insert information about tools etc for threaded inserts
+  - Using M4 Threaded Inserts: <img width="300" height="216" alt="image" src="https://github.com/user-attachments/assets/d047879c-d173-45ce-bdac-6abd16ee2677" />
+  - After the threaded inserts are inserted, displaced plastic may obstruct the screws
+<img width="600" height="515" alt="image" src="https://github.com/user-attachments/assets/2e11dcef-0adb-405a-bb69-5bcbe3d10dc3" />
+  - To clear this use a 4mm tap from the inside of the enclosure
+<img width="500" height="375" alt="image" src="https://github.com/user-attachments/assets/c35904b4-81fd-463d-8da6-6f4903117785" />
+
 3. To assemble the enclosure the following is required:
   - "knob_Dshaft_15mmx6mmv1.3.stl"
   - "U_Box_V105_Krake_RevB_TSHELL_V3.stl"
@@ -570,7 +593,27 @@ Units that pass all steps above are considered ready for integration into larger
   - "U_Box_V104_General_Alarm_Device_button"
   - "Recess_bottom.stl"
   - "SD_door.stl
-  -  Diagram to show how parts correlate to eachother and what bolts, and screws are required
+  - 2 x D-Sub jack screws
+  - 4 x M3 screws (minimum M3 x 8)
+  - 4 x M4 
+  - 4 x MACH SCREW PAN PHILLIPS #2-32
+4. Begin by mounting the base plate (with the cut outs for COM, USB, Remote and DG) to the PCB using 2 x D-Sub jack screws onto the RS 232
+  ![WhatsApp Image 2026-03-26 at 9 51 07 AM](https://github.com/user-attachments/assets/31fe52c2-3f31-4758-b556-1396be904d39)
+5. Mount the rotary encoder knob and mute button onto the PCB
+ ![WhatsApp Image 2026-03-26 at 9 51 07 AM (1)](https://github.com/user-attachments/assets/1819caad-e89a-4d90-852c-3fa224ccc668)
+6. Using the rails inside the TSHELL slide the PCB and base plate into the TSHELL ensuring the LCD, LED, mute button and rotary encoder line up with the corresponding cut outs.
+7. Secure the PCB with 4 x M3 bolts
+ ![WhatsApp Image 2026-03-26 at 9 51 08 AM](https://github.com/user-attachments/assets/dc1cd65b-87cf-47d2-ad0f-a11f94b64c5e)
+8. Using the rails at the top of the enclosure slide the top blank plate into place
+9. Taking the speaker , align it with the holes within the speaker box and guide the cable through the hole to attach to the PCB
+10. Taking 4 x M4 bolts for the speaker mount , secure the speaker to the TSHELL
+  ![WhatsApp Image 2026-03-26 at 9 51 08 AM (5)](https://github.com/user-attachments/assets/92b44d6d-7278-4989-b76a-e4b2b3e8b870)
+11. Slide the SD_door into the Recess_ Bottom ensuring the prongs and the lip on the door extrude in opposite directions
+    ![WhatsApp Image 2026-03-26 at 9 51 08 AM (3)](https://github.com/user-attachments/assets/ca6dadea-8d0c-44b2-8832-c1a3e15250ca)
+  ![WhatsApp Image 2026-03-26 at 9 51 08 AM (2)](https://github.com/user-attachments/assets/a1dd9f7b-964d-4e2f-bac1-19c5b36227f1)
+12. Taking the BSHELL, slide the Recess_bottom into the cut out with the prongs facing downwards
+    <img width="320" height="240" alt="image" src="https://github.com/user-attachments/assets/de4985c2-0883-4371-8e4e-ed05de24c107" />
+14. Proceed to mount the BSHELL & TSHELL together using the 4 MACH SCREW PAN PHILLIPS #2-32
 
 **Ethics statements**  
 *To be completed if human or animal data are involved (likely not applicable for this purely hardware manufacturing article).*
