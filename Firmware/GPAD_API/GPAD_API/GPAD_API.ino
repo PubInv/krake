@@ -1813,7 +1813,7 @@ void loop()
         playAlarmLevel(problem);
       }
       reconnect();
-      if (client.connected() && !wasConnected && !running_menu)
+      if (client.connected() && !running_menu)
       {
         annunciateAlarmLevel(&debugSerial);
       }
