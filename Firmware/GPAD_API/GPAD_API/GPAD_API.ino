@@ -1810,12 +1810,12 @@ void loop()
       if (wasConnected && !running_menu)
       {
         showMqttStatusLCD(false);
-        playNotBusyLevel(problem);
+        playAlarmLevel(problem);
       }
       reconnect();
       if (client.connected() && !wasConnected && !running_menu)
       {
-        restoreAlarmLevel(&debugSerial);
+        annunciateAlarmLevel(&debugSerial);
       }
     }
   }
