@@ -401,8 +401,14 @@ bool playAlarmLevel(int alarmNumberToPlay)
     timer = millis();
 
     // If not busy play the alarm message
-    if ((0 > tracNumber < 0) || (numberFilesDF < tracNumber))
+    if (numberFilesDF <= 0)
     {
+      numberFilesDF = dfPlayer.readFileCounts();
+    }
+
+    if ((tracNumber <= 0) || (numberFilesDF <= 0) || (numberFilesDF < tracNumber))
+    {
+      Serial.printf("DFPlayer: invalid track request %d (available files: %d)\n", tracNumber, numberFilesDF);
       return false;
     }
     else // Valid track number
