@@ -47,6 +47,7 @@ void menu_opcoes()
 
 void checkSerial(void)
 {
+  if (!isDFPlayerDetected) return;
 
   // Waits for data entry via serial
   while (Serial.available() > 0)
@@ -129,108 +130,65 @@ void checkSerial(void)
   }
 } // end checkSerial
 
-// Ping the module to check it is still responding.
-// Uses readFileCounts() with one retry to tolerate a slow/busy SD card.
-// Returns true if the module replies, false if unresponsive.
-bool dfPlayerResponding()
-{
-  int c = dfPlayer.readFileCounts();
-  if (c >= 0) return true;
-  delay(150);
-  c = dfPlayer.readFileCounts();
-  return (c >= 0);
-}
-
-// Tear down the UART session and re-run setupDFPlayer() to recover a hung module.
-// Call this when dfPlayerResponding() returns false during operation.
-void resetDFPlayer()
-{
-  Serial.println("DFPlayer: resetting UART and reinitialising...");
-  isDFPlayerDetected = false;
-  mySerial1.end();
-  delay(100);
-  setupDFPlayer(true); // skip splash during recovery
-}
-
 // Functions
-void setupDFPlayer(bool skipSplash)
+void setupDFPlayer()
 {
-  // Debatably, this this should be in the GPAD_HAL, not here....but
-  // it is modular to place it here.
+  // DFPlayer BUSY pin is usually LOW while playing and HIGH when idle.
   pinMode(nDFPlayer_BUSY, INPUT_PULLUP);
 
-  //  Setup UART for DFPlayer
   Serial.println("UART2 Begin");
   mySerial1.begin(BAUD_DFPLAYER, SERIAL_8N1, RXD2, TXD2);
-  while (!mySerial1)
-  {
-    Serial.println("UART2 inot initilaized.");
-    delay(100);
-    ; // wait for DFPlayer serial port to connect.
-  }
-  Serial.println("Begin DFPlayer: isACK true, doReset false.");
-  if (!dfPlayer.begin(mySerial1, true, false))
+  delay(1000); // Give the DFPlayer and SD card time to boot.
+
+  // ACK=true can make some DFPlayer clones unstable or silent.
+  // Use ACK=false for the most compatible startup behavior.
+  Serial.println("Begin DFPlayer: isACK false, doReset false.");
+  if (!dfPlayer.begin(mySerial1, false, false))
   {
     Serial.println("DFPlayer Mini not detected or not working.");
-    Serial.println("Check for missing SD Card.");
+    Serial.println("Check wiring, common GND, SD card, and file names such as 0001.mp3.");
     isDFPlayerDetected = false;
-    return; // No module present -- skip all play/query commands that would block the main loop.
+    return;
   }
-  else
+
+  isDFPlayerDetected = true;
+  Serial.println("DFPlayer Mini detected!");
+
+  dfPlayer.setTimeOut(500);
+  delay(500);
+
+  dfPlayer.volume(volumeDFPlayer); // Range: 0 to 30
+  delay(300);
+
+  numberFilesDF = dfPlayer.readFileCounts();
+  Serial.print("SD Card FileCounts: ");
+  Serial.println(numberFilesDF);
+
+  if (numberFilesDF <= 0)
   {
-    isDFPlayerDetected = true;
-     // Serial.println("DFPlayer Mini detected!");
-  }
-
-  dfPlayer.setTimeOut(500);  // Set serial communication time out 500ms
-
-  // Validate module with readState():
-  //   < 0 : timeout -- begin() false-positive (floating UART), treat as absent.
-  //   = 0 : genuine DFPlayer Mini stopped, proceed normally.
-  //   > 0 : TD5580 clone -- blocks on play commands, bail out early.
-  delay(100);  // allow module to settle before querying state
-  int moduleState = dfPlayer.readState();
-  if (moduleState < 0) {
-    Serial.println("DFPlayer: no response to readState() -- module absent or UART noise. Disabling audio.");
-    isDFPlayerDetected = false;
-    return;
-  }
-  if (moduleState > 0) {
-    Serial.println("DFPlayer Mini detected!");
-    Serial.println("*** DFPlayer: TD5580 clone detected (readState non-zero at idle). ***");
-    Serial.println("*** Incompatible module -- audio disabled. Replace with genuine DFPlayer Mini or MP3-TF-16P. ***");
-    isDFPlayerDetected = false;
+    Serial.println("No MP3 files found. Format SD as FAT32 and name files 0001.mp3, 0002.mp3, etc.");
     return;
   }
 
-  Serial.println("DFPlayer Mini detected!");
-  dfPlayer.volume(volumeDFPlayer); // Set initial volume
-  
-  Serial.println("DFPlayer Mini detected!");
-  dfPlayer.start(); // Todo, ?? necessary for DFPlayer processing
-  delay(1000);
-  //  dfPlayer.play(11);  //DFPlayer Splash
-  Serial.println("DFPlayer about to play.");
-  dfPlayer.play(9);
-  delay(100);
-  dfPlayer.stop();
-  delay(1000);
-  dfPlayer.previous();
-  delay(1500);
-  dfPlayer.play(); // DFPlayer Splash
-  Serial.println("DFPlayer / played");
+  // Startup audio test: play track 1 and do NOT stop it immediately.
+  // The old code played track 9, stopped after 100 ms, then changed tracks,
+  // which could make the device appear silent.
+  Serial.println("DFPlayer startup test: playing track 1 for 5 seconds...");
+  dfPlayer.play(1);
+  delay(5000);
+
   displayDFPlayerStats();
-
-} // setupDFPLayer
+} // setupDFPlayer
 
 void setVolume(int zeroToThirty)
 {
-  dfPlayer.volume(zeroToThirty);
+  volumeDFPlayer = constrain(zeroToThirty, 0, 30);
+  dfPlayer.volume(volumeDFPlayer);
 }
 
 void displayDFPlayerStats()
 {
-  Serial.print("=================");
+  Serial.println("=================");
   Serial.print("dfPlayer State: ");
   Serial.println(dfPlayer.readState()); // read mp3 state
   Serial.print("dfPlayer Volume: ");
@@ -238,15 +196,15 @@ void displayDFPlayerStats()
   Serial.print("dfPlayer EQ: ");
   Serial.println(dfPlayer.readEQ()); // read EQ setting
   Serial.print("SD Card FileCounts: ");
-  Serial.println(dfPlayer.readFileCounts()); // read all file counts in SD card
+  numberFilesDF = dfPlayer.readFileCounts();
+  Serial.println(numberFilesDF); // save actual SD file count
   Serial.print("Current File Number: ");
-  numberFilesDF = dfPlayer.readCurrentFileNumber();
-  Serial.println(numberFilesDF); // Display the read current play file number
-  Serial.print("File Counts In Folder: ");
+  Serial.println(dfPlayer.readCurrentFileNumber());
+  Serial.print("File Counts In Folder 03: ");
   Serial.println(dfPlayer.readFileCountsInFolder(3)); // read file counts in folder SD:/03
-  //  dfPlayer.EQ(0);          // Normal equalization //Causes program lock up
-  Serial.print("=================");
+  Serial.println("=================");
 }
+
 void printDetail(uint8_t type, int value)
 {
   switch (type)
@@ -314,21 +272,6 @@ void printDetail(uint8_t type, int value)
 void dfPlayerUpdate(void)
 {
   if (!isDFPlayerDetected) return;
-
-  // Periodic health check every 10 seconds: ping the module and reset if hung.
-  static unsigned long healthTimer = millis();
-  const unsigned long healthInterval = 10000;
-  if (millis() - healthTimer > healthInterval)
-  {
-    healthTimer = millis();
-    if (!dfPlayerResponding())
-    {
-      Serial.println("DFPlayer health check failed -- attempting recovery.");
-      resetDFPlayer();
-      return;
-    }
-  }
-
   unsigned long timePlay = 3000; // Plays 3 seconds of all files.
   static unsigned long timer = millis();
   if (millis() - timer > timePlay)
@@ -389,42 +332,51 @@ bool playAlarmLevel(int alarmNumberToPlay)
 {
   if (!isDFPlayerDetected) return false;
 
-  static unsigned long timer = millis();
-
+  static unsigned long timer = 0;
   const unsigned long delayPlayLevel = 20;
-  //  const int MAX_ALARM_NUMBER = 6;
-  int tracNumber = alarmNumberToPlay;
 
-  if (millis() - timer > delayPlayLevel)
-  {
-    //  if (millis() - timer > 10000) {
-    timer = millis();
+  int trackNumber = alarmNumberToPlay;
 
-    // If not busy play the alarm message
-    if ((0 > tracNumber < 0) || (numberFilesDF < tracNumber))
-    {
-      return false;
-    }
-    else // Valid track number
-      if (HIGH == digitalRead(nDFPlayer_BUSY))
-      { // Should the test for busy be at the start of this function???
-        // mp3_next ();
-        dfPlayer.play(tracNumber);
-      }
-      else
-      {
-        Serial.println("Not done playing previous file");
-      }
-    if (dfPlayer.available())
-    {
-      printDetail(dfPlayer.readType(), dfPlayer.read()); // Print the detail message from DFPlayer to handle different errors and states.
-    }
-    return true;
-  }
-  else
+  if (millis() - timer <= delayPlayLevel)
   {
     return false;
   }
+
+  timer = millis();
+
+  // Refresh file count if it was not read yet.
+  if (numberFilesDF <= 0)
+  {
+    numberFilesDF = dfPlayer.readFileCounts();
+  }
+
+  if (trackNumber <= 0 || trackNumber > numberFilesDF)
+  {
+    Serial.print("Invalid DFPlayer track number: ");
+    Serial.print(trackNumber);
+    Serial.print(". Available files: ");
+    Serial.println(numberFilesDF);
+    return false;
+  }
+
+  if (HIGH == digitalRead(nDFPlayer_BUSY))
+  {
+    dfPlayer.play(trackNumber);
+    Serial.print("Playing DFPlayer track: ");
+    Serial.println(trackNumber);
+  }
+  else
+  {
+    Serial.println("DFPlayer is busy; previous file is still playing.");
+    return false;
+  }
+
+  if (dfPlayer.available())
+  {
+    printDetail(dfPlayer.readType(), dfPlayer.read());
+  }
+
+  return true;
 } // end of playAlarmLevel
 
 // void setupDFP() {

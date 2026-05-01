@@ -8,9 +8,7 @@
 
 void displayDFPlayerStats();
 
-void setupDFPlayer(bool skipSplash = false);
-bool dfPlayerResponding();
-void resetDFPlayer();
+void setupDFPlayer();
 
 bool playAlarmLevel(int alarmNumberToPlay);
 void playNotBusy();
@@ -19,8 +17,6 @@ void dfPlayerUpdate(void);
 
 void printDetail(uint8_t type, int value);
 
-void displayDFPlayerStats();
-
 void checkSerial(void);
 void menu_opcoes();
 void serialSplashDFP();
@@ -28,6 +24,8 @@ void serialSplashDFP();
 void setVolume(int zeroToThirty);
 
 extern int volumeDFPlayer;
+extern int numberFilesDF;
+extern bool isDFPlayerDetected;
 
 // void setupDFP();
 
