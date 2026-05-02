@@ -72,6 +72,32 @@ void toggleMuted()
   currentlyMuted = !currentlyMuted;
 }
 
+void setMuteTimeoutMinutes(unsigned long minutes)
+{
+  setMuted(true);
+  muteTimeoutEndMillis = millis() + (minutes * 60000UL);
+}
+
+void clearMuteTimeout()
+{
+  muteTimeoutEndMillis = 0;
+}
+
+void serviceMuteTimeout()
+{
+  if (muteTimeoutEndMillis == 0)
+  {
+    return;
+  }
+
+  // Use signed subtraction so timeout logic remains correct across millis() rollover.
+  if ((long)(millis() - muteTimeoutEndMillis) >= 0)
+  {
+    clearMuteTimeout();
+    setMuted(false);
+  }
+}
+
 AlarmLevel getCurrentAlarmLevel()
 {
   return currentLevel;

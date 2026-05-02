@@ -291,7 +291,7 @@ void muteButtonCallback(byte buttonEvent)
     // Do something...
     local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
     toggleMuted();
-    muteTimeoutEndMillis = 0;
+    clearMuteTimeout();
     start_of_song = millis();
     annunciateAlarmLevel(local_ptr_to_serial);
     printAlarmState(local_ptr_to_serial);
@@ -598,10 +598,10 @@ void GPAD_HAL_loop()
   muteButton.poll();
 #endif
 
-  if (muteTimeoutEndMillis > 0 && millis() >= muteTimeoutEndMillis)
+  const bool wasMuted = currentlyMuted;
+  serviceMuteTimeout();
+  if (wasMuted && !currentlyMuted)
   {
-    muteTimeoutEndMillis = 0;
-    currentlyMuted = false;
     annunciateAlarmLevel(local_ptr_to_serial);
   }
 }

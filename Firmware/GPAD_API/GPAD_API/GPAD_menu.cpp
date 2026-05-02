@@ -109,8 +109,7 @@ result actionMuteTimeout(eventMask e)
     Serial.print(F("Mute timeout set: "));
     Serial.print(muteTimeoutMinutes);
     Serial.println(F(" min"));
-    setMuted(true);
-    muteTimeoutEndMillis = millis() + ((unsigned long)muteTimeoutMinutes * 60000UL);
+    setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
     annunciateAlarmLevel(&Serial);
     lcd.clear();
     lcd.setCursor(0, 0);
