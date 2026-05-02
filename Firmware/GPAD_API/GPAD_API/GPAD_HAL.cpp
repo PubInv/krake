@@ -51,6 +51,7 @@ extern char AlarmMessageBuffer[81];
 extern unsigned long muteTimeoutEndMillis;
 
 extern char macAddressString[13];
+extern int muteTimeoutMinutes;
 
 // TODO: Remove this; for explanation only
 extern char publish_Ack_Topic[];
@@ -290,8 +291,19 @@ void muteButtonCallback(byte buttonEvent)
   case onPress:
     // Do something...
     local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
-    toggleMuted();
-    clearMuteTimeout();
+    if (isMuted())
+    {
+      setMuted(false);
+      clearMuteTimeout();
+      local_ptr_to_serial->println(F("Manual unmute."));
+    }
+    else
+    {
+      setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+      local_ptr_to_serial->print(F("Muted for "));
+      local_ptr_to_serial->print(muteTimeoutMinutes);
+      local_ptr_to_serial->println(F(" minute(s)."));
+    }
     start_of_song = millis();
     annunciateAlarmLevel(local_ptr_to_serial);
     printAlarmState(local_ptr_to_serial);
