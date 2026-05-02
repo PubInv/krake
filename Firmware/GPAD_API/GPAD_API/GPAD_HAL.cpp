@@ -51,6 +51,7 @@ extern char AlarmMessageBuffer[81];
 extern unsigned long muteTimeoutEndMillis;
 
 extern char macAddressString[13];
+extern int muteTimeoutMinutes;
 
 // TODO: Remove this; for explanation only
 extern char publish_Ack_Topic[];
@@ -290,8 +291,19 @@ void muteButtonCallback(byte buttonEvent)
   case onPress:
     // Do something...
     local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
-    toggleMuted();
-    muteTimeoutEndMillis = 0;
+    if (isMuted())
+    {
+      setMuted(false);
+      clearMuteTimeout();
+      local_ptr_to_serial->println(F("Manual unmute."));
+    }
+    else
+    {
+      setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+      local_ptr_to_serial->print(F("Muted for "));
+      local_ptr_to_serial->print(muteTimeoutMinutes);
+      local_ptr_to_serial->println(F(" minute(s)."));
+    }
     start_of_song = millis();
     annunciateAlarmLevel(local_ptr_to_serial);
     printAlarmState(local_ptr_to_serial);
@@ -590,6 +602,16 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 } // end interpretBuffer()
 
 // This has to be called periodically, at a minimum to handle the mute_button
+void muteTimeoutWatchdog(Stream *serialport)
+{
+  // Watchdog for timed mute: when duration expires, force unmute and re-annunciate.
+  if (isMuted() && serviceMuteTimeout())
+  {
+    serialport->println(F("Mute timeout expired. Auto-unmuting."));
+    annunciateAlarmLevel(serialport);
+  }
+}
+
 void GPAD_HAL_loop()
 {
   muteButton.poll();
@@ -598,12 +620,7 @@ void GPAD_HAL_loop()
   muteButton.poll();
 #endif
 
-  if (muteTimeoutEndMillis > 0 && millis() >= muteTimeoutEndMillis)
-  {
-    muteTimeoutEndMillis = 0;
-    currentlyMuted = false;
-    annunciateAlarmLevel(local_ptr_to_serial);
-  }
+  muteTimeoutWatchdog(local_ptr_to_serial);
 }
 
 /* Assumes LCD has been initilized
