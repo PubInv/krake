@@ -598,9 +598,7 @@ void GPAD_HAL_loop()
   muteButton.poll();
 #endif
 
-  const bool wasMuted = currentlyMuted;
-  serviceMuteTimeout();
-  if (wasMuted && !currentlyMuted)
+  if (serviceMuteTimeout())
   {
     annunciateAlarmLevel(local_ptr_to_serial);
   }

@@ -84,11 +84,11 @@ void clearMuteTimeout()
   muteTimeoutEndMillis = 0;
 }
 
-void serviceMuteTimeout()
+bool serviceMuteTimeout()
 {
   if (muteTimeoutEndMillis == 0)
   {
-    return;
+    return false;
   }
 
   // Use signed subtraction so timeout logic remains correct across millis() rollover.
@@ -96,7 +96,10 @@ void serviceMuteTimeout()
   {
     clearMuteTimeout();
     setMuted(false);
+    return true;
   }
+
+  return false;
 }
 
 AlarmLevel getCurrentAlarmLevel()

@@ -50,7 +50,7 @@ bool isMuted();
 void toggleMuted();
 void setMuteTimeoutMinutes(unsigned long minutes);
 void clearMuteTimeout();
-void serviceMuteTimeout();
+bool serviceMuteTimeout();
 
 AlarmLevel getCurrentAlarmLevel();
 char *getCurrentMessage();
