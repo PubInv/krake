@@ -19,6 +19,7 @@
 */
 #include "alarm_api.h"
 #include "gpad_utility.h"
+#include <Arduino.h>
 
 // here is the abstract "state" of the machine,
 // completely independent of hardware.
