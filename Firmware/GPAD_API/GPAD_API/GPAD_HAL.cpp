@@ -590,6 +590,16 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 } // end interpretBuffer()
 
 // This has to be called periodically, at a minimum to handle the mute_button
+void muteTimeoutWatchdog(Stream *serialport)
+{
+  // Watchdog for timed mute: when duration expires, force unmute and re-annunciate.
+  if (isMuted() && serviceMuteTimeout())
+  {
+    serialport->println(F("Mute timeout expired. Auto-unmuting."));
+    annunciateAlarmLevel(serialport);
+  }
+}
+
 void GPAD_HAL_loop()
 {
   muteButton.poll();
@@ -598,10 +608,7 @@ void GPAD_HAL_loop()
   muteButton.poll();
 #endif
 
-  if (serviceMuteTimeout())
-  {
-    annunciateAlarmLevel(local_ptr_to_serial);
-  }
+  muteTimeoutWatchdog(local_ptr_to_serial);
 }
 
 /* Assumes LCD has been initilized
