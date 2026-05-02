@@ -1856,6 +1856,13 @@ void loop()
     poll_GPAD_menu();
   }
 
+  // Run one final timeout service after command/network processing so
+  // timed unmute wins even if other paths re-assert mute during this loop.
+  if (serviceMuteTimeout())
+  {
+    annunciateAlarmLevel(&debugSerial);
+  }
+
   // if ((millis() / 10000) > cnt_actions) {
   //   cnt_actions++;
   //   navigate_to_n_and_execute(cnt_actions % 3);
