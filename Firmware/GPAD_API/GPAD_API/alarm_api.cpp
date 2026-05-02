@@ -32,6 +32,8 @@ AlarmLevel currentLevel = silent;
 bool currentlyMuted = false;
 char AlarmMessageBuffer[MAX_BUFFER_SIZE];
 unsigned long muteTimeoutEndMillis = 0;
+unsigned long muteTimeoutStartMillis = 0;
+unsigned long muteTimeoutDurationMillis = 0;
 const char *AlarmNames[] = {"OK   ", "INFO.", "PROB.", "WARN ", "CRIT.", "PANIC"};
 
 // This is the abstract alarm function. It CANNOT
@@ -76,12 +78,16 @@ void toggleMuted()
 void setMuteTimeoutMinutes(unsigned long minutes)
 {
   setMuted(true);
-  muteTimeoutEndMillis = millis() + (minutes * 60000UL);
+  muteTimeoutStartMillis = millis();
+  muteTimeoutDurationMillis = minutes * 60000UL;
+  muteTimeoutEndMillis = muteTimeoutStartMillis + muteTimeoutDurationMillis;
 }
 
 void clearMuteTimeout()
 {
   muteTimeoutEndMillis = 0;
+  muteTimeoutStartMillis = 0;
+  muteTimeoutDurationMillis = 0;
 }
 
 bool serviceMuteTimeout()
@@ -91,8 +97,7 @@ bool serviceMuteTimeout()
     return false;
   }
 
-  // Use signed subtraction so timeout logic remains correct across millis() rollover.
-  if ((long)(millis() - muteTimeoutEndMillis) >= 0)
+  if ((millis() - muteTimeoutStartMillis) >= muteTimeoutDurationMillis)
   {
     clearMuteTimeout();
     setMuted(false);
