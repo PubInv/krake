@@ -1020,12 +1020,6 @@ bool applyRoleSetting(const String &rawRole)
     device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
     return true;
   }
-  if (role.equalsIgnoreCase("PMD"))
-  {
-    strncpy(device_role, "PMD", DEVICE_ROLE_MAX_LEN - 1);
-    device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
-    return true;
-  }
   return false;
 }
 
@@ -1082,10 +1076,8 @@ void callback(char *topic, byte *payload, unsigned int length)
   // Note: We will check for topic or topics in the future...
   if (isManagedSubscribedTopic(topic))
   {
+    const bool ackTopic = endsWithAckTopic(topic);
     char mbuff[121];
-    debugSerial.print("Topic arrived [");
-    debugSerial.print(topic);
-    debugSerial.print("] ");
 
     // Put payload into mbuff[] a character array
     int m = min((unsigned int)length, (unsigned int)120);
@@ -1095,15 +1087,21 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
     mbuff[m] = '\0';
 
+    if (!ackTopic)
+    {
+      debugSerial.print("Topic arrived [");
+      debugSerial.print(topic);
+      debugSerial.print("] ");
 #if (DEBUG > 0)
-    debugSerial.print("|");
-    debugSerial.print(mbuff);
-    debugSerial.println("|");
+      debugSerial.print("|");
+      debugSerial.print(mbuff);
+      debugSerial.println("|");
 #endif
+      debugSerial.println("Received MQTT Msg.");
+    }
 
-    debugSerial.println("Received MQTT Msg.");
     const String payloadText = String(mbuff);
-    if (endsWithAckTopic(topic))
+    if (ackTopic)
     {
       updateKrakeStatusFromAck(topic, payloadText);
       return;
