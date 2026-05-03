@@ -19,6 +19,7 @@
 */
 #include "alarm_api.h"
 #include "gpad_utility.h"
+#include <Arduino.h>
 
 // here is the abstract "state" of the machine,
 // completely independent of hardware.
@@ -30,6 +31,9 @@
 AlarmLevel currentLevel = silent;
 bool currentlyMuted = false;
 char AlarmMessageBuffer[MAX_BUFFER_SIZE];
+unsigned long muteTimeoutEndMillis = 0;
+unsigned long muteTimeoutStartMillis = 0;
+unsigned long muteTimeoutDurationMillis = 0;
 const char *AlarmNames[] = {"OK   ", "INFO.", "PROB.", "WARN ", "CRIT.", "PANIC"};
 
 // This is the abstract alarm function. It CANNOT
@@ -69,6 +73,38 @@ bool isMuted()
 void toggleMuted()
 {
   currentlyMuted = !currentlyMuted;
+}
+
+void setMuteTimeoutMinutes(unsigned long minutes)
+{
+  setMuted(true);
+  muteTimeoutStartMillis = millis();
+  muteTimeoutDurationMillis = minutes * 60000UL;
+  muteTimeoutEndMillis = muteTimeoutStartMillis + muteTimeoutDurationMillis;
+}
+
+void clearMuteTimeout()
+{
+  muteTimeoutEndMillis = 0;
+  muteTimeoutStartMillis = 0;
+  muteTimeoutDurationMillis = 0;
+}
+
+bool serviceMuteTimeout()
+{
+  if (muteTimeoutEndMillis == 0)
+  {
+    return false;
+  }
+
+  if ((millis() - muteTimeoutStartMillis) >= muteTimeoutDurationMillis)
+  {
+    clearMuteTimeout();
+    setMuted(false);
+    return true;
+  }
+
+  return false;
 }
 
 AlarmLevel getCurrentAlarmLevel()

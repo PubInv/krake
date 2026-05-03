@@ -71,7 +71,6 @@
       <label for="role">Device Role</label>
       <select id="role" class="text-input">
         <option value="Krake">Krake</option>
-        <option value="PMD">PMD</option>
       </select>
       <label for="broker">Broker</label>
       <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
@@ -265,6 +264,7 @@
         setSoundButtonsBusy(false);
       }
     }
+
 
     async function saveMqttConfig() {
       try {

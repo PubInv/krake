@@ -36,6 +36,7 @@
     try { await KrakeUI.postForm('/settings/mute', { muted: muted ? '1' : '0' }); KrakeUI.showMessage(muted ? 'KRAKE muted.' : 'KRAKE unmuted.'); await refreshSettings(); }
     catch (e) { KrakeUI.showMessage('Failed to update mute status: ' + e.message, true); }
   }
+
   async function saveMqttConfig() {
     try {
       const role = KrakeUI.byId('role').value;

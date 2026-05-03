@@ -13,6 +13,7 @@ using namespace Menu;
 
 extern bool running_menu;
 extern bool menu_just_exited;
+extern unsigned long muteTimeoutEndMillis;
 
 #define LEDPIN 12
 #define MAX_DEPTH 2
@@ -112,10 +113,32 @@ result actionResetConfirm(eventMask e)
   return proceed;
 }
 
+int muteTimeoutMinutes = 5;
+
+result actionMuteTimeout(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    Serial.print(F("Mute timeout set: "));
+    Serial.print(muteTimeoutMinutes);
+    Serial.println(F(" min"));
+    setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+    annunciateAlarmLevel(&Serial);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Muted for:");
+    lcd.setCursor(0, 1);
+    lcd.print(muteTimeoutMinutes);
+    lcd.print(" minute(s)");
+  }
+  return proceed;
+}
+
 MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
   OP("Yes - Reset", actionResetConfirm, enterEvent),
   OP("No  - Cancel", Menu::doNothing, Menu::noEvent)
 );
+
 
 MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Acknowledge", action1, enterEvent),
