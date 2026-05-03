@@ -49,8 +49,9 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
   }
 
   static size_t writeIndex = 0;
+  bool processedCommand = false;
 
-  while (inputPort->available() > 0)
+  while (inputPort->available() > 0 && !processedCommand)
   {
     const int raw = inputPort->read();
     if (raw < 0)
@@ -82,6 +83,7 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
         interpretBuffer(buf, rlen, debugPort, client);
         annunciateAlarmLevel(debugPort);
         printAlarmState(debugPort);
+        processedCommand = true;
       }
       writeIndex = 0;
       continue;
@@ -96,6 +98,13 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
       // Overflow guard: reset buffer if a line grows too long.
       writeIndex = 0;
       printError(debugPort);
+      processedCommand = true;
     }
+  }
+
+  // Keep the scheduler/WDT serviced during burst traffic.
+  if (processedCommand)
+  {
+    yield();
   }
 }
