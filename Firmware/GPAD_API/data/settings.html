@@ -71,7 +71,6 @@
       <label for="role">Device Role</label>
       <select id="role" class="text-input">
         <option value="Krake">Krake</option>
-        <option value="PMD">PMD</option>
       </select>
       <label for="broker">Broker</label>
       <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
@@ -266,16 +265,6 @@
       }
     }
 
-    async function updateRole() {
-      try {
-        const role = byId('role').value;
-        await postForm('/config', { role });
-        showMessage(`Role updated to ${role}. MQTT reconnect triggered.`);
-        await refreshSettings();
-      } catch (e) {
-        showMessage('Failed to update role: ' + e.message, true);
-      }
-    }
 
     async function saveMqttConfig() {
       try {
@@ -301,7 +290,6 @@
       }
     }
 
-    byId('role').addEventListener('change', () => { updateRole(); });
     Promise.all([loadWifi(), refreshSettings()]).catch(e => showMessage(e.message, true));
   </script>
 </body>

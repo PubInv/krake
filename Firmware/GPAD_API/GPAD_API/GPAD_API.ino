@@ -320,11 +320,6 @@ void serialSplash()
   debugSerial.println();
 }
 
-bool isPmdRole()
-{
-  return strcasecmp(device_role, "PMD") == 0;
-}
-
 // A periodic message identifying the subscriber (Krake) is on line.
 void publishOnLineMsg(void)
 {
@@ -342,11 +337,6 @@ void publishOnLineMsg(void)
     debugSerial.print("Publish RSSI: ");
     debugSerial.println(rssi);
 #endif
-
-    if (!isPmdRole())
-    {
-      return;
-    }
 
     dtostrf(rssi, 1, 2, rssiString);
     char onLineMsg[32] = " online, RSSI:";
@@ -369,7 +359,6 @@ void reconnect()
 {
   int n = 0;
   const String clientId = String(COMPANY_NAME) + "-" + String(macAddressString);
-  const bool publishPresence = isPmdRole();
   const String willPayload = String(device_role) + " offline";
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES)
   {
@@ -377,18 +366,12 @@ void reconnect()
     debugSerial.print("Attempting MQTT connection at: ");
     debugSerial.print(millis());
     debugSerial.print("..... ");
-    const bool connected = publishPresence
-                               ? client.connect(clientId.c_str(), mqtt_user, mqtt_password, publish_Ack_Topic, 1, true, willPayload.c_str())
-                               : client.connect(clientId.c_str(), mqtt_user, mqtt_password);
-    if (connected)
+    if (client.connect(clientId.c_str(), mqtt_user, mqtt_password, publish_Ack_Topic, 1, true, willPayload.c_str()))
     {
       debugSerial.print("success at: ");
       debugSerial.println(millis());
-      if (publishPresence)
-      {
-        String onlinePayload = String(device_role) + " online";
-        client.publish(publish_Ack_Topic, onlinePayload.c_str(), true);
-      }
+      String onlinePayload = String(device_role) + " online";
+      client.publish(publish_Ack_Topic, onlinePayload.c_str(), true);
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
       client.subscribe(STATUS_DISCOVERY_TOPIC);
       for (uint8_t i = 0; i < subscribe_Extra_Topic_Count; i++)
@@ -1034,12 +1017,6 @@ bool applyRoleSetting(const String &rawRole)
   if (role.equalsIgnoreCase("Krake"))
   {
     strncpy(device_role, "Krake", DEVICE_ROLE_MAX_LEN - 1);
-    device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
-    return true;
-  }
-  if (role.equalsIgnoreCase("PMD"))
-  {
-    strncpy(device_role, "PMD", DEVICE_ROLE_MAX_LEN - 1);
     device_role[DEVICE_ROLE_MAX_LEN - 1] = '\0';
     return true;
   }
