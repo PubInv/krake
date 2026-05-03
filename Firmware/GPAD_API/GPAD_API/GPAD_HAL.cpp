@@ -809,6 +809,22 @@ void restoreAlarmLevel(Stream *serialport)
 
 void annunciateAlarmLevel(Stream *serialport)
 {
+  static unsigned long lastAnnunciateMs = 0;
+  const unsigned long now = millis();
+
+  if (serialport == nullptr)
+  {
+    return;
+  }
+
+  // Avoid long back-to-back UI/audio work under message bursts.
+  if ((now - lastAnnunciateMs) < 50)
+  {
+    unchanged_anunicateAlarmLevel(serialport);
+    return;
+  }
+  lastAnnunciateMs = now;
+
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
   showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
@@ -819,6 +835,8 @@ void annunciateAlarmLevel(Stream *serialport)
   {
     playNotBusyLevel(currentLevel);
   }
+
+  yield();
 }
 
 GPAD_API::GPAD_API(SemanticVersion version)
