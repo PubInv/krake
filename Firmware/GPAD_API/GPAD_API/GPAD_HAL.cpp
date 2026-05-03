@@ -26,6 +26,7 @@
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
 #include "GPAPMessage.h"
+#include "mqtt_handler.h"
 
 using namespace gpad_hal;
 
@@ -52,13 +53,6 @@ extern unsigned long muteTimeoutEndMillis;
 
 extern char macAddressString[13];
 extern int muteTimeoutMinutes;
-
-// TODO: Remove this; for explanation only
-extern char publish_Ack_Topic[];
-
-#include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
-
-extern PubSubClient client;
 
 // For LCD
 //  #include <LiquidCrystal_I2C.h>
@@ -130,8 +124,8 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 Serial.println("Debug defined >0")
 #endif
 
-    const int NUM_PREFICES = 6;
-char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i', 'r'};
+    const int NUM_PREFICES = 5;
+char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i'};
 
 void setup_spi()
 {
@@ -446,14 +440,6 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     return;
   }
 
-  if (buf[0] == 'r')
-  {
-    serialport->println(F("Reset command received. Restarting device..."));
-    delay(100);
-    ESP.restart();
-    return;
-  }
-
   const auto protocolMessage = gpap_message::GPAPMessage::deserialize(buf, rlen);
 
   serialport->print(F("Command: "));
@@ -480,16 +466,23 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   }
   case gpap_message::MessageType::ALARM:
   {
-    // In the case of an alarm state, the rest of the buffer is a message.
-    // we will read up to 60 characters from this buffer for display on our
-    // Arguably when we support mulitple states this will become more complicated.
-    char D = buf[1];
-    int N = D - '0';
-    serialport->println(N);
-    // WARNING: Shouldn't this be MAX_BUFFER_SIZE?
-    char msg[61];
-    msg[0] = '\0';
-    strncat(msg, buf, 60);
+    if (rlen < 2)
+    {
+      printError(serialport);
+      return;
+    }
+
+    int N = buf[1] - '0';
+    if (N < 0 || N >= NUM_LEVELS)
+    {
+      printError(serialport);
+      return;
+    }
+
+    char msg[MAX_BUFFER_SIZE];
+    size_t copyLen = min((size_t)rlen, sizeof(msg) - 1);
+    memcpy(msg, buf, copyLen);
+    msg[copyLen] = '\0';
     // This copy loooks uncessary, but is not...we want "alarm"
     // to be a completely independent and abstract function.
     // it should copy the msg buffer
@@ -509,14 +502,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     char str[20];
 
     strcat(onInfoMsg, FIRMWARE_VERSION);
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
 
     // Report API version
     strcat(onInfoMsg, "GPAD API Version: ");
     strcat(onInfoMsg, gpadApi.getVersion().toString().c_str());
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
 
@@ -527,7 +520,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "System up time (mills): ");
     sprintf(str, "%d", millis());
     strcat(onInfoMsg, str);
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Mute status
@@ -542,7 +535,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     {
       strcat(onInfoMsg, "NOT MUTED");
     }
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Alarm level
@@ -551,7 +544,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "Current alarm Level: ");
     sprintf(str, "%d", getCurrentAlarmLevel());
     strcat(onInfoMsg, str);
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Alarm message
@@ -559,7 +552,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "Current alarm message: ");
     //        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
     strcat(onInfoMsg, getCurrentMessage());
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // IP Address
@@ -581,7 +574,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     strcat(onInfoMsg, ipString);
 
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // serialport->print("myIP =");

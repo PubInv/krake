@@ -56,7 +56,11 @@ int alarm(AlarmLevel level, char *str, Stream *serialport)
   currentLevel = level;
   // This makes sure we erase the buffer even if msg is an empty string
   AlarmMessageBuffer[0] = '\0';
-  strcpy(AlarmMessageBuffer, str);
+  if (str != nullptr)
+  {
+    strncpy(AlarmMessageBuffer, str, MAX_BUFFER_SIZE - 1);
+    AlarmMessageBuffer[MAX_BUFFER_SIZE - 1] = '\0';
+  }
   return previousLevel;
 }
 
