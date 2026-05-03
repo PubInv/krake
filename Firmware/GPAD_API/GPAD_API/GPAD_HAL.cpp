@@ -26,8 +26,11 @@
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
 #include "mqtt_handler.h"
+#include <esp_system.h>
 
 using namespace gpad_hal;
+
+const char *resetReasonToString(esp_reset_reason_t reason);
 
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1); // For user Serial Port
@@ -568,6 +571,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
+    // Reset reason
+    onInfoMsg[0] = '\0';
+    strcat(onInfoMsg, "Reset reason: ");
+    const esp_reset_reason_t resetReason = esp_reset_reason();
+    strcat(onInfoMsg, resetReasonToString(resetReason));
+    if (client != nullptr) publishAck(client, onInfoMsg);
+    serialport->println(onInfoMsg);
+
     // serialport->print("myIP =");
     // serialport->println(myIP);   // Caused Error Multiple libraries were found for "WiFiManager.h"
 
@@ -865,4 +876,22 @@ std::string SemanticVersion::toString() const
   versionString.append(std::to_string(this->patch));
 
   return versionString;
+}
+const char *resetReasonToString(esp_reset_reason_t reason)
+{
+  switch (reason)
+  {
+  case ESP_RST_UNKNOWN: return "UNKNOWN";
+  case ESP_RST_POWERON: return "POWERON";
+  case ESP_RST_EXT: return "EXTERNAL";
+  case ESP_RST_SW: return "SOFTWARE";
+  case ESP_RST_PANIC: return "PANIC";
+  case ESP_RST_INT_WDT: return "INT_WDT";
+  case ESP_RST_TASK_WDT: return "TASK_WDT";
+  case ESP_RST_WDT: return "OTHER_WDT";
+  case ESP_RST_DEEPSLEEP: return "DEEPSLEEP";
+  case ESP_RST_BROWNOUT: return "BROWNOUT";
+  case ESP_RST_SDIO: return "SDIO";
+  default: return "UNMAPPED";
+  }
 }
