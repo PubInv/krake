@@ -121,7 +121,7 @@ extern HardwareSerial uartSerial1;
 #define TXD2 17
 #define RXD2 16
 #define UART2_BAUD_RATE 9600
-extern HardwareSerial uartSerial1;
+extern HardwareSerial uartSerial2;
 
 namespace gpad_hal
 {

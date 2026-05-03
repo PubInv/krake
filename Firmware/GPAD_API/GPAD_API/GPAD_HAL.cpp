@@ -25,9 +25,12 @@
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
-#include "GPAPMessage.h"
+#include "mqtt_handler.h"
+#include <esp_system.h>
 
 using namespace gpad_hal;
+
+const char *resetReasonToString(esp_reset_reason_t reason);
 
 // Use Serial1 for UART communication
 HardwareSerial uartSerial1(1); // For user Serial Port
@@ -52,13 +55,6 @@ extern unsigned long muteTimeoutEndMillis;
 
 extern char macAddressString[13];
 extern int muteTimeoutMinutes;
-
-// TODO: Remove this; for explanation only
-extern char publish_Ack_Topic[];
-
-#include <PubSubClient.h> // From library https://github.com/knolleary/pubsubclient
-
-extern PubSubClient client;
 
 // For LCD
 //  #include <LiquidCrystal_I2C.h>
@@ -129,9 +125,6 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 #if (DEBUG > 0)
 Serial.println("Debug defined >0")
 #endif
-
-    const int NUM_PREFICES = 6;
-char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i', 'r'};
 
 void setup_spi()
 {
@@ -428,68 +421,62 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
 // the Hardware Abstraction Layer.
 void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client)
 {
-  if (rlen < 1)
+  if (buf == nullptr || serialport == nullptr || rlen < 1)
   {
-    printError(serialport);
+    if (serialport != nullptr)
+    {
+      printError(serialport);
+    }
     return; // no action
   }
 
-  bool found = false;
-  for (int i = 0; i < NUM_PREFICES; i++)
-  {
-    if (buf[0] == legal_prefices[i])
-      found = true;
-  }
-  if (!found)
+  const char command = buf[0];
+  if (command == '\0')
   {
     printError(serialport);
     return;
   }
-
-  if (buf[0] == 'r')
-  {
-    serialport->println(F("Reset command received. Restarting device..."));
-    delay(100);
-    ESP.restart();
-    return;
-  }
-
-  const auto protocolMessage = gpap_message::GPAPMessage::deserialize(buf, rlen);
-
   serialport->print(F("Command: "));
-  serialport->printf("%c\n", protocolMessage.getMessageType());
+  serialport->printf("%c\n", command);
 
-  switch (protocolMessage.getMessageType())
+  switch (command)
   {
-  case gpap_message::MessageType::MUTE:
+  case 's':
   {
     serialport->println(F("Muting Case!"));
     setMuted(true);
     break;
   }
-  case gpap_message::MessageType::UNMUTE:
+  case 'u':
   {
     serialport->println(F("UnMuting Case!"));
     setMuted(false);
     break;
   }
-  case gpap_message::MessageType::HELP:
+  case 'h':
   {
     printInstructions(serialport);
     break;
   }
-  case gpap_message::MessageType::ALARM:
+  case 'a':
   {
-    // In the case of an alarm state, the rest of the buffer is a message.
-    // we will read up to 60 characters from this buffer for display on our
-    // Arguably when we support mulitple states this will become more complicated.
-    char D = buf[1];
-    int N = D - '0';
-    serialport->println(N);
-    // WARNING: Shouldn't this be MAX_BUFFER_SIZE?
-    char msg[61];
-    msg[0] = '\0';
-    strncat(msg, buf, 60);
+    if (rlen < 2)
+    {
+      printError(serialport);
+      return;
+    }
+
+    int N = buf[1] - '0';
+    if (N < 0 || N >= NUM_LEVELS)
+    {
+      printError(serialport);
+      return;
+    }
+
+    char msg[MAX_BUFFER_SIZE];
+    size_t copyLen = min((size_t)rlen, sizeof(msg) - 1);
+    memcpy(msg, buf, copyLen);
+    msg[copyLen] = '\0';
     // This copy loooks uncessary, but is not...we want "alarm"
     // to be a completely independent and abstract function.
     // it should copy the msg buffer
@@ -499,7 +486,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break;
   }
-  case gpap_message::MessageType::INFO:
+  case 'i':
   {
     // Firmware Version
     //  81+23 = Maximum string length
@@ -509,14 +496,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     char str[20];
 
     strcat(onInfoMsg, FIRMWARE_VERSION);
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
 
     // Report API version
     strcat(onInfoMsg, "GPAD API Version: ");
     strcat(onInfoMsg, gpadApi.getVersion().toString().c_str());
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
 
@@ -527,7 +514,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "System up time (mills): ");
     sprintf(str, "%d", millis());
     strcat(onInfoMsg, str);
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Mute status
@@ -542,7 +529,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     {
       strcat(onInfoMsg, "NOT MUTED");
     }
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Alarm level
@@ -551,7 +538,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "Current alarm Level: ");
     sprintf(str, "%d", getCurrentAlarmLevel());
     strcat(onInfoMsg, str);
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Alarm message
@@ -559,7 +546,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "Current alarm message: ");
     //        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
     strcat(onInfoMsg, getCurrentMessage());
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // IP Address
@@ -581,7 +568,15 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     strcat(onInfoMsg, ipString);
 
-    client->publish(publish_Ack_Topic, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
+    serialport->println(onInfoMsg);
+
+    // Reset reason
+    onInfoMsg[0] = '\0';
+    strcat(onInfoMsg, "Reset reason: ");
+    const esp_reset_reason_t resetReason = esp_reset_reason();
+    strcat(onInfoMsg, resetReasonToString(resetReason));
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // serialport->print("myIP =");
@@ -591,7 +586,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   }
   default:
   {
-    serialport->println(F("Unknown Command"));
+    printError(serialport);
     break;
   }
   }
@@ -685,9 +680,21 @@ bool printable(char c)
 // Remove unwanted characters....
 void filter_control_chars(char *msg)
 {
+  if (msg == nullptr)
+  {
+    return;
+  }
+
   size_t len = strlen(msg);
+  if (len >= MAX_BUFFER_SIZE)
+  {
+    len = MAX_BUFFER_SIZE - 1;
+    msg[len] = '\0';
+  }
+
   char buff[MAX_BUFFER_SIZE];
-  strcpy(buff, msg);
+  memcpy(buff, msg, len);
+  buff[len] = '\0';
   int k = 0;
   for (int i = 0; i < len; i++)
   {
@@ -813,6 +820,22 @@ void restoreAlarmLevel(Stream *serialport)
 
 void annunciateAlarmLevel(Stream *serialport)
 {
+  static unsigned long lastAnnunciateMs = 0;
+  const unsigned long now = millis();
+
+  if (serialport == nullptr)
+  {
+    return;
+  }
+
+  // Avoid long back-to-back UI/audio work under message bursts.
+  if ((now - lastAnnunciateMs) < 50)
+  {
+    unchanged_anunicateAlarmLevel(serialport);
+    return;
+  }
+  lastAnnunciateMs = now;
+
   start_of_song = millis();
   unchanged_anunicateAlarmLevel(serialport);
   showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
@@ -823,6 +846,8 @@ void annunciateAlarmLevel(Stream *serialport)
   {
     playNotBusyLevel(currentLevel);
   }
+
+  yield();
 }
 
 GPAD_API::GPAD_API(SemanticVersion version)
@@ -851,4 +876,22 @@ std::string SemanticVersion::toString() const
   versionString.append(std::to_string(this->patch));
 
   return versionString;
+}
+const char *resetReasonToString(esp_reset_reason_t reason)
+{
+  switch (reason)
+  {
+  case ESP_RST_UNKNOWN: return "UNKNOWN";
+  case ESP_RST_POWERON: return "POWERON";
+  case ESP_RST_EXT: return "EXTERNAL";
+  case ESP_RST_SW: return "SOFTWARE";
+  case ESP_RST_PANIC: return "PANIC";
+  case ESP_RST_INT_WDT: return "INT_WDT";
+  case ESP_RST_TASK_WDT: return "TASK_WDT";
+  case ESP_RST_WDT: return "OTHER_WDT";
+  case ESP_RST_DEEPSLEEP: return "DEEPSLEEP";
+  case ESP_RST_BROWNOUT: return "BROWNOUT";
+  case ESP_RST_SDIO: return "SDIO";
+  default: return "UNMAPPED";
+  }
 }
