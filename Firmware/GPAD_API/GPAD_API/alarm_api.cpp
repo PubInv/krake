@@ -48,15 +48,22 @@ int alarm(AlarmLevel level, char *str, Stream *serialport)
 {
   if (!(level >= 0 && level < NUM_LEVELS))
   {
-    serialport->println(F("Bad Level!"));
-    printError(serialport);
+    if (serialport != nullptr)
+    {
+      serialport->println(F("Bad Level!"));
+      printError(serialport);
+    }
     return -1;
   }
   int previousLevel = currentLevel;
   currentLevel = level;
   // This makes sure we erase the buffer even if msg is an empty string
   AlarmMessageBuffer[0] = '\0';
-  strcpy(AlarmMessageBuffer, str);
+  if (str != nullptr)
+  {
+    strncpy(AlarmMessageBuffer, str, MAX_BUFFER_SIZE - 1);
+    AlarmMessageBuffer[MAX_BUFFER_SIZE - 1] = '\0';
+  }
   return previousLevel;
 }
 

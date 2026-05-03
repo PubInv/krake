@@ -43,29 +43,68 @@ where C is an character, and D is a single digit.
 // a parameter passed in from the caller.
 void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
 {
-  // Now see if we have a serial command
-  int rlen;
-  // TODO: This code can probably hang; it needs to have
-  // timeouts added!
-  if (inputPort->available() > 0)
+  if (debugPort == nullptr || inputPort == nullptr)
   {
-    // TODO: MAKE NON-BLOCKING
-    // read the incoming bytes:
-    int rlen = inputPort->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
-    // readBytesUntil does not terminate the string!
-    buf[rlen] = '\0';
-    // prints the received data
-    debugPort->print(F("I received: "));
-    debugPort->print(rlen);
-    for (int i = 0; i < rlen; i++)
-      debugPort->print(buf[i]);
-    debugPort->println();
-    interpretBuffer(buf, rlen, inputPort, client);
-    // Now "light and scream"appropriately...
-    // This does not work on HMWK2 device
-    annunciateAlarmLevel(debugPort);
-    // removing in an attempt to make faster; reason for adding unknown  - rlr
-    //    delay(3000);
-    printAlarmState(debugPort);
+    return;
+  }
+
+  static size_t writeIndex = 0;
+  bool processedCommand = false;
+
+  while (inputPort->available() > 0 && !processedCommand)
+  {
+    const int raw = inputPort->read();
+    if (raw < 0)
+    {
+      break;
+    }
+
+    const char c = (char)raw;
+    if (c == '\r')
+    {
+      continue;
+    }
+
+    if (c == '\n')
+    {
+      const int rlen = (int)writeIndex;
+      buf[rlen] = '\0';
+
+      debugPort->print(F("I received: "));
+      debugPort->print(rlen);
+      for (int i = 0; i < rlen; i++)
+      {
+        debugPort->print(buf[i]);
+      }
+      debugPort->println();
+
+      if (rlen > 0)
+      {
+        interpretBuffer(buf, rlen, debugPort, client);
+        annunciateAlarmLevel(debugPort);
+        printAlarmState(debugPort);
+        processedCommand = true;
+      }
+      writeIndex = 0;
+      continue;
+    }
+
+    if (writeIndex < (COMMAND_BUFFER_SIZE - 1))
+    {
+      buf[writeIndex++] = c;
+    }
+    else
+    {
+      // Overflow guard: reset buffer if a line grows too long.
+      writeIndex = 0;
+      printError(debugPort);
+      processedCommand = true;
+    }
+  }
+
+  // Keep the scheduler/WDT serviced during burst traffic.
+  if (processedCommand)
+  {
+    yield();
   }
 }
