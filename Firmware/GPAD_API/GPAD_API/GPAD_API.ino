@@ -54,6 +54,7 @@
 #include "GPAD_HAL.h"
 #include "gpad_utility.h"
 #include "gpad_serial.h"
+#include "gpad_debug.h"
 #include "Wink.h"
 #include <math.h>
 
@@ -176,9 +177,8 @@ WifiOTA::Manager wifiManager(WiFi, debugSerial);
 
 #define DEBUG_SPI 0
 
-// #define DEBUG 0
-#define DEBUG 1
-// #define DEBUG 4
+// Debug level now set at runtime via LCD menu or serial command d0-d3.
+// See gpad_debug.h
 
 unsigned long last_command_ms;
 
@@ -333,10 +333,7 @@ void publishOnLineMsg(void)
     float rssi = WiFi.RSSI();
     char rssiString[8];
 
-#if (DEBUG > 1)
-    debugSerial.print("Publish RSSI: ");
-    debugSerial.println(rssi);
-#endif
+  if (gpad_debug_level > 1) { debugSerial.print("Publish RSSI: "); debugSerial.println(rssi); }
 
     dtostrf(rssi, 1, 2, rssiString);
     char onLineMsg[32] = " online, RSSI:";
@@ -1087,18 +1084,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
     mbuff[m] = '\0';
 
-    if (!ackTopic)
-    {
-      debugSerial.print("Topic arrived [");
-      debugSerial.print(topic);
-      debugSerial.print("] ");
-#if (DEBUG > 0)
-      debugSerial.print("|");
-      debugSerial.print(mbuff);
-      debugSerial.println("|");
-#endif
-      debugSerial.println("Received MQTT Msg.");
-    }
+  if (gpad_debug_level > 0) { debugSerial.print("|"); debugSerial.print(mbuff); debugSerial.println("|"); }
 
     const String payloadText = String(mbuff);
     if (ackTopic)
@@ -1632,9 +1618,7 @@ void setup()
   publish_Ack_Topic[0] = '\0';
   macAddressString[0] = '\0';
 
-#if (DEBUG > 1)
-  debugSerial.println("Call: GPAD_HAL_setup(&debugSerial)");
-#endif
+  if (gpad_debug_level > 1) debugSerial.println("Call: GPAD_HAL_setup(&debugSerial)");
 
   // Setup and present LCD splash screen
   // Setup the SWITCH_MUTE
@@ -1648,10 +1632,7 @@ void setup()
   IPAddress deviceAddress = wifiManager.getAddress();
   GPAD_HAL_setup(&debugSerial, wifiManager.getMode(), deviceAddress);
 
-#if (DEBUG > 0)
-  debugSerial.println("MAC: ");
-  debugSerial.println(macAddressString);
-#endif
+  if (gpad_debug_level > 0) { debugSerial.println("MAC: "); debugSerial.println(macAddressString); }
 
   debugSerial.setTimeout(SERIAL_TIMEOUT_MS);
   strncpy(mqtt_broker_name, DEFAULT_MQTT_BROKER_NAME, MQTT_BROKER_MAX_LEN - 1);
@@ -1663,9 +1644,7 @@ void setup()
   client.setServer(mqtt_broker_name, 1883); // Default MQTT port, this is a TCP port.
   client.setCallback(callback);
 
-#if (DEBUG > 0)
-  debugSerial.println("Starting WiFi as STA");
-#endif
+  if (gpad_debug_level > 0) debugSerial.println("Starting WiFi as STA");
 
   // Note: On Krake SN#3 only, performing this
   // while the Splash is on causes a reset, presumably
@@ -1689,11 +1668,7 @@ void setup()
   char buff[13];
   sprintf(buff, MACSTR_PLN, MAC2STR(mac));
 
-#if (DEBUG > 0)
-  printf("My mac is " MACSTR "\n", MAC2STR(mac));
-  debugSerial.print("MAC as char array: ");
-  debugSerial.println(buff);
-#endif
+  if (gpad_debug_level > 0) { printf("My mac is " MACSTR "\n", MAC2STR(mac)); debugSerial.print("MAC as char array: "); debugSerial.println(buff); }
 
   strcpy(macAddressString, buff);
   macAddressString[12] = '\0';
@@ -1705,12 +1680,7 @@ void setup()
   loadMqttConfig();
   client.setServer(mqtt_broker_name, 1883);
 
-#if (DEBUG > 1)
-  debugSerial.println("XXXXXXX");
-  debugSerial.println(subscribe_Alarm_Topic);
-  debugSerial.println(publish_Ack_Topic);
-  debugSerial.println("XXXXXXX");
-#endif
+  if (gpad_debug_level > 1) { debugSerial.println("XXXXXXX"); debugSerial.println(subscribe_Alarm_Topic); debugSerial.println(publish_Ack_Topic); debugSerial.println("XXXXXXX"); }
   // Setup SSID length is the length of the prefix, 'Krake_', which is 7
   // plus the length of the MAC address string, MAC_ADDRESS_STRING_LENGTH
   const size_t SETUP_SSID_LENGTH = 7 + MAC_ADDRESS_STRING_LENGTH;

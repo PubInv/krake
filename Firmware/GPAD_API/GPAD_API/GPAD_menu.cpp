@@ -7,6 +7,7 @@
 #include "RickmanLiquidCrystal_I2C.h"
 #include "DFPlayer.h"
 #include "alarm_api.h"
+#include "gpad_debug.h"
 
 using namespace Menu;
 
@@ -89,6 +90,18 @@ result action5(eventMask e)
   return proceed;
 }
 
+
+
+result actionDebugLevel(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    Serial.print(F("Debug level set to: "));
+    Serial.println(gpad_debug_level);
+  }
+  return proceed;
+}
+
 result actionResetConfirm(eventMask e)
 {
   if (e == eventMask::enterEvent)
@@ -132,7 +145,7 @@ MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Dismiss", action2, enterEvent),
   OP("Shelve", action3, enterEvent),
   FIELD(volumeDFPlayer, "Volume", "%", 0, 30, 10, 1, action4, anyEvent, wrapStyle),
-  FIELD(muteTimeoutMinutes, "Mute Time", "min", 1, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
+  FIELD(gpad_debug_level, "Debug Lvl", "", 0, 3, 1, 1, actionDebugLevel, enterEvent, wrapStyle),
   SUBMENU(resetConfirmMenu),
   OP("Exit Menu", action5, enterEvent)
 );
