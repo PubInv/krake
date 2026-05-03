@@ -320,6 +320,11 @@ void serialSplash()
   debugSerial.println();
 }
 
+bool isPmdRole()
+{
+  return strcasecmp(device_role, "PMD") == 0;
+}
+
 // A periodic message identifying the subscriber (Krake) is on line.
 void publishOnLineMsg(void)
 {
@@ -337,6 +342,11 @@ void publishOnLineMsg(void)
     debugSerial.print("Publish RSSI: ");
     debugSerial.println(rssi);
 #endif
+
+    if (!isPmdRole())
+    {
+      return;
+    }
 
     dtostrf(rssi, 1, 2, rssiString);
     char onLineMsg[32] = " online, RSSI:";
@@ -359,6 +369,7 @@ void reconnect()
 {
   int n = 0;
   const String clientId = String(COMPANY_NAME) + "-" + String(macAddressString);
+  const bool publishPresence = isPmdRole();
   const String willPayload = String(device_role) + " offline";
   while (!client.connected() && n < NUM_WIFI_RECONNECT_RETRIES)
   {
@@ -366,12 +377,18 @@ void reconnect()
     debugSerial.print("Attempting MQTT connection at: ");
     debugSerial.print(millis());
     debugSerial.print("..... ");
-    if (client.connect(clientId.c_str(), mqtt_user, mqtt_password, publish_Ack_Topic, 1, true, willPayload.c_str()))
+    const bool connected = publishPresence
+                               ? client.connect(clientId.c_str(), mqtt_user, mqtt_password, publish_Ack_Topic, 1, true, willPayload.c_str())
+                               : client.connect(clientId.c_str(), mqtt_user, mqtt_password);
+    if (connected)
     {
       debugSerial.print("success at: ");
       debugSerial.println(millis());
-      String onlinePayload = String(device_role) + " online";
-      client.publish(publish_Ack_Topic, onlinePayload.c_str(), true);
+      if (publishPresence)
+      {
+        String onlinePayload = String(device_role) + " online";
+        client.publish(publish_Ack_Topic, onlinePayload.c_str(), true);
+      }
       client.subscribe(subscribe_Alarm_Topic); // Subscribe to GPAD API alarms
       client.subscribe(STATUS_DISCOVERY_TOPIC);
       for (uint8_t i = 0; i < subscribe_Extra_Topic_Count; i++)
@@ -1082,10 +1099,8 @@ void callback(char *topic, byte *payload, unsigned int length)
   // Note: We will check for topic or topics in the future...
   if (isManagedSubscribedTopic(topic))
   {
+    const bool ackTopic = endsWithAckTopic(topic);
     char mbuff[121];
-    debugSerial.print("Topic arrived [");
-    debugSerial.print(topic);
-    debugSerial.print("] ");
 
     // Put payload into mbuff[] a character array
     int m = min((unsigned int)length, (unsigned int)120);
@@ -1095,15 +1110,21 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
     mbuff[m] = '\0';
 
+    if (!ackTopic)
+    {
+      debugSerial.print("Topic arrived [");
+      debugSerial.print(topic);
+      debugSerial.print("] ");
 #if (DEBUG > 0)
-    debugSerial.print("|");
-    debugSerial.print(mbuff);
-    debugSerial.println("|");
+      debugSerial.print("|");
+      debugSerial.print(mbuff);
+      debugSerial.println("|");
 #endif
+      debugSerial.println("Received MQTT Msg.");
+    }
 
-    debugSerial.println("Received MQTT Msg.");
     const String payloadText = String(mbuff);
-    if (endsWithAckTopic(topic))
+    if (ackTopic)
     {
       updateKrakeStatusFromAck(topic, payloadText);
       return;
