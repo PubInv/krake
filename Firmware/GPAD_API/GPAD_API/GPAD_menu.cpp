@@ -7,8 +7,12 @@
 #include "RickmanLiquidCrystal_I2C.h"
 #include "DFPlayer.h"
 #include "alarm_api.h"
+#include "mqtt_handler.h"
 
 using namespace Menu;
+
+
+extern PubSubClient client;
 
 extern bool running_menu;
 extern bool menu_just_exited;
@@ -17,11 +21,6 @@ extern unsigned long muteTimeoutEndMillis;
 #define LEDPIN 12
 #define MAX_DEPTH 2
 
-// This needs to be cleaned up; the PubSublcient and WiFi stuff needs to put into a
-// a module that is not in GPAD_API.ino
-extern PubSubClient client;
-extern char publish_Ack_Topic[];
-
 result action1(eventMask e)
 {
   if (e == eventMask::enterEvent)
@@ -29,9 +28,7 @@ result action1(eventMask e)
     Serial.println(F("Yes, I will take that action #1 !"));
   }
   char onLineMsg[32] = "Acknowledging!";
-  client.publish(publish_Ack_Topic, onLineMsg);
-  Serial.print("Message sent to topic: ");
-  Serial.println(publish_Ack_Topic);
+  publishAck(&client, onLineMsg);
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Acknowledged!");
@@ -49,9 +46,7 @@ result action2(eventMask e)
   alarm(silent, emptyMsg, &Serial);      // sets currentLevel=0, clears AlarmMessageBuffer
   annunciateAlarmLevel(&Serial);          // turns off LEDs, updates LCD, stops DFPlayer buzzer
   char onLineMsg[32] = "Dismissed!";
-  client.publish(publish_Ack_Topic, onLineMsg);
-  Serial.print("Message sent to topic: ");
-  Serial.println(publish_Ack_Topic);
+  publishAck(&client, onLineMsg);
   return proceed;
 }
 result action3(eventMask e)
@@ -64,9 +59,7 @@ result action3(eventMask e)
   alarm(silent, emptyMsg, &Serial);
   annunciateAlarmLevel(&Serial);
   char onLineMsg[32] = "Shelved!";
-  client.publish(publish_Ack_Topic, onLineMsg);
-  Serial.print("Message sent to topic: ");
-  Serial.println(publish_Ack_Topic);
+  publishAck(&client, onLineMsg);
   return proceed;
 }
 result action4(eventMask e)
