@@ -418,13 +418,21 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
 // the Hardware Abstraction Layer.
 void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client)
 {
-  if (rlen < 1)
+  if (buf == nullptr || serialport == nullptr || rlen < 1)
   {
-    printError(serialport);
+    if (serialport != nullptr)
+    {
+      printError(serialport);
+    }
     return; // no action
   }
 
   const char command = buf[0];
+  if (command == '\0')
+  {
+    printError(serialport);
+    return;
+  }
   serialport->print(F("Command: "));
   serialport->printf("%c\n", command);
 
@@ -485,14 +493,14 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     char str[20];
 
     strcat(onInfoMsg, FIRMWARE_VERSION);
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
 
     // Report API version
     strcat(onInfoMsg, "GPAD API Version: ");
     strcat(onInfoMsg, gpadApi.getVersion().toString().c_str());
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
     onInfoMsg[0] = '\0';
 
@@ -503,7 +511,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "System up time (mills): ");
     sprintf(str, "%d", millis());
     strcat(onInfoMsg, str);
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Mute status
@@ -518,7 +526,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     {
       strcat(onInfoMsg, "NOT MUTED");
     }
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Alarm level
@@ -527,7 +535,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "Current alarm Level: ");
     sprintf(str, "%d", getCurrentAlarmLevel());
     strcat(onInfoMsg, str);
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // Alarm message
@@ -535,7 +543,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     strcat(onInfoMsg, "Current alarm message: ");
     //        strcat(onInfoMsg, *getCurrentMessage());  Produced error error: invalid conversion from 'char' to 'const char*' [-fpermissive]
     strcat(onInfoMsg, getCurrentMessage());
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // IP Address
@@ -557,7 +565,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     strcat(onInfoMsg, ipString);
 
-    publishAck(client, onInfoMsg);
+    if (client != nullptr) publishAck(client, onInfoMsg);
     serialport->println(onInfoMsg);
 
     // serialport->print("myIP =");
@@ -661,9 +669,21 @@ bool printable(char c)
 // Remove unwanted characters....
 void filter_control_chars(char *msg)
 {
+  if (msg == nullptr)
+  {
+    return;
+  }
+
   size_t len = strlen(msg);
+  if (len >= MAX_BUFFER_SIZE)
+  {
+    len = MAX_BUFFER_SIZE - 1;
+    msg[len] = '\0';
+  }
+
   char buff[MAX_BUFFER_SIZE];
-  strcpy(buff, msg);
+  memcpy(buff, msg, len);
+  buff[len] = '\0';
   int k = 0;
   for (int i = 0; i < len; i++)
   {
