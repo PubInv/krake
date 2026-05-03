@@ -95,6 +95,80 @@ result actionResetConfirm(eventMask e)
 
 int muteTimeoutMinutes = 5;
 
+
+const uint32_t kBaudOptions[] = {1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200};
+const uint8_t kBaudOptionCount = sizeof(kBaudOptions) / sizeof(kBaudOptions[0]);
+const char *kSerialFormats[] = {"8-N-1"};
+const uint8_t kSerialFormatCount = sizeof(kSerialFormats) / sizeof(kSerialFormats[0]);
+const char *kFlowControlModes[] = {"Off", "RTS-CTS"};
+
+int comBaudRate = 9600;
+int comSerialFormatIndex = 0;
+int comFlowControlIndex = 0;
+
+
+
+result actionComSaveAndExit(eventMask e)
+{
+  if (e != eventMask::enterEvent)
+  {
+    return proceed;
+  }
+
+  bool baudOk = false;
+  for (uint8_t i = 0; i < kBaudOptionCount; i++)
+  {
+    if (kBaudOptions[i] == static_cast<uint32_t>(comBaudRate))
+    {
+      baudOk = true;
+      break;
+    }
+  }
+  if (!baudOk)
+  {
+    comBaudRate = 9600;
+  }
+
+  if (comSerialFormatIndex < 0 || comSerialFormatIndex >= kSerialFormatCount)
+  {
+    comSerialFormatIndex = 0;
+  }
+  if (comFlowControlIndex < 0 || comFlowControlIndex > 1)
+  {
+    comFlowControlIndex = 0;
+  }
+
+  setComPortBaudRate(static_cast<uint32_t>(comBaudRate));
+  setComPortSerialFormatIndex(static_cast<uint8_t>(comSerialFormatIndex));
+  setComPortFlowControl(comFlowControlIndex == 1 ? COM_FLOW_RTS_CTS : COM_FLOW_OFF);
+  applyComPortConfig(&Serial);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("COM saved");
+  lcd.setCursor(0, 1);
+  lcd.print(comBaudRate);
+  lcd.print(" ");
+  lcd.print(kSerialFormats[comSerialFormatIndex]);
+  lcd.setCursor(0, 2);
+  lcd.print("Flow:");
+  lcd.print(kFlowControlModes[comFlowControlIndex]);
+  return quit;
+}
+
+result actionComExitNoSave(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    const ComPortConfig &cfg = getComPortConfig();
+    comBaudRate = static_cast<int>(cfg.baudRate);
+    comSerialFormatIndex = static_cast<int>(cfg.serialFormatIndex);
+    comFlowControlIndex = (cfg.flowControl == COM_FLOW_RTS_CTS) ? 1 : 0;
+    return quit;
+  }
+  return proceed;
+}
+
 result actionMuteTimeout(eventMask e)
 {
   if (e == eventMask::enterEvent)
@@ -114,6 +188,15 @@ result actionMuteTimeout(eventMask e)
   return proceed;
 }
 
+
+MENU(comSetupMenu, "COM Setup", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
+  FIELD(comBaudRate, "Baud Rate", "", 1200, 115200, 9600, 1, Menu::doNothing, anyEvent, noStyle),
+  FIELD(comSerialFormatIndex, "Serial Format", "", 0, 0, 0, 1, Menu::doNothing, anyEvent, noStyle),
+  FIELD(comFlowControlIndex, "Flow Control", "", 0, 1, 0, 1, Menu::doNothing, anyEvent, noStyle),
+  OP("Save & Exit", actionComSaveAndExit, enterEvent),
+  OP("Exit (No Save)", actionComExitNoSave, enterEvent)
+);
+
 MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
   OP("Yes - Reset", actionResetConfirm, enterEvent),
   OP("No  - Cancel", Menu::doNothing, Menu::noEvent)
@@ -126,6 +209,7 @@ MENU(mainMenu, "Krake Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Shelve", action3, enterEvent),
   FIELD(volumeDFPlayer, "Volume", "%", 0, 30, 10, 1, action4, anyEvent, wrapStyle),
   FIELD(muteTimeoutMinutes, "Mute Time", "min", 1, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
+  SUBMENU(comSetupMenu),
   SUBMENU(resetConfirmMenu),
   OP("Exit Menu", action5, enterEvent)
 );
@@ -168,6 +252,10 @@ void registerRotaryEncoderPress()
 
 void setup_GPAD_menu()
 {
+  const ComPortConfig &cfg = getComPortConfig();
+  comBaudRate = static_cast<int>(cfg.baudRate);
+  comSerialFormatIndex = static_cast<int>(cfg.serialFormatIndex);
+  comFlowControlIndex = (cfg.flowControl == COM_FLOW_RTS_CTS) ? 1 : 0;
 }
 
 void poll_GPAD_menu()
