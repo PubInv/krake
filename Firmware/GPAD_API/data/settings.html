@@ -266,6 +266,17 @@
       }
     }
 
+    async function updateRole() {
+      try {
+        const role = byId('role').value;
+        await postForm('/config', { role });
+        showMessage(`Role updated to ${role}. MQTT reconnect triggered.`);
+        await refreshSettings();
+      } catch (e) {
+        showMessage('Failed to update role: ' + e.message, true);
+      }
+    }
+
     async function saveMqttConfig() {
       try {
         const role = byId('role').value;
@@ -290,6 +301,7 @@
       }
     }
 
+    byId('role').addEventListener('change', () => { updateRole(); });
     Promise.all([loadWifi(), refreshSettings()]).catch(e => showMessage(e.message, true));
   </script>
 </body>
