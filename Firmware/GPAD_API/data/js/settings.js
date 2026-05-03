@@ -36,6 +36,15 @@
     try { await KrakeUI.postForm('/settings/mute', { muted: muted ? '1' : '0' }); KrakeUI.showMessage(muted ? 'KRAKE muted.' : 'KRAKE unmuted.'); await refreshSettings(); }
     catch (e) { KrakeUI.showMessage('Failed to update mute status: ' + e.message, true); }
   }
+  async function updateRole() {
+    try {
+      const role = KrakeUI.byId('role').value;
+      await KrakeUI.postForm('/config', { role });
+      KrakeUI.showMessage(`Role updated to ${role}. MQTT reconnect triggered.`);
+      await refreshSettings();
+    } catch (e) { KrakeUI.showMessage('Failed to update role: ' + e.message, true); }
+  }
+
   async function saveMqttConfig() {
     try {
       const role = KrakeUI.byId('role').value;
@@ -50,6 +59,7 @@
     } catch (e) { KrakeUI.showMessage('Failed to save MQTT config: ' + e.message, true); }
   }
   window.saveWifi = saveWifi; window.loadWifi = () => loadWifi().catch(e => KrakeUI.showMessage('Unable to load WiFi settings: ' + e.message, true));
-  window.resetWifi = resetWifi; window.setMuted = setMuted; window.saveMqttConfig = saveMqttConfig;
+  KrakeUI.byId('role').addEventListener('change', () => { updateRole(); });
+  window.resetWifi = resetWifi; window.setMuted = setMuted; window.saveMqttConfig = saveMqttConfig; window.updateRole = updateRole;
   Promise.all([loadWifi(), refreshSettings()]).catch(e => KrakeUI.showMessage(e.message, true));
 })();
