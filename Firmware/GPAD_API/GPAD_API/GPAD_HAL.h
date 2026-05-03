@@ -123,6 +123,26 @@ extern HardwareSerial uartSerial1;
 #define UART2_BAUD_RATE 9600
 extern HardwareSerial uartSerial2;
 
+
+enum ComFlowControlMode : uint8_t
+{
+  COM_FLOW_OFF = 0,
+  COM_FLOW_RTS_CTS = 1,
+};
+
+struct ComPortConfig
+{
+  uint32_t baudRate;
+  uint8_t serialFormatIndex;
+  ComFlowControlMode flowControl;
+};
+
+const ComPortConfig &getComPortConfig();
+bool setComPortBaudRate(uint32_t baudRate);
+bool setComPortSerialFormatIndex(uint8_t serialFormatIndex);
+bool setComPortFlowControl(ComFlowControlMode flowControl);
+void applyComPortConfig(Stream *serialport);
+
 namespace gpad_hal
 {
 
