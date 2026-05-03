@@ -48,8 +48,11 @@ int alarm(AlarmLevel level, char *str, Stream *serialport)
 {
   if (!(level >= 0 && level < NUM_LEVELS))
   {
-    serialport->println(F("Bad Level!"));
-    printError(serialport);
+    if (serialport != nullptr)
+    {
+      serialport->println(F("Bad Level!"));
+      printError(serialport);
+    }
     return -1;
   }
   int previousLevel = currentLevel;

@@ -44,14 +44,13 @@ where C is an character, and D is a single digit.
 void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
 {
   // Now see if we have a serial command
-  int rlen;
   // TODO: This code can probably hang; it needs to have
   // timeouts added!
   if (inputPort->available() > 0)
   {
     // TODO: MAKE NON-BLOCKING
     // read the incoming bytes:
-    int rlen = inputPort->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE);
+    const int rlen = inputPort->readBytesUntil('\n', buf, COMMAND_BUFFER_SIZE - 1);
     // readBytesUntil does not terminate the string!
     buf[rlen] = '\0';
     // prints the received data
