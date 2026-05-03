@@ -153,8 +153,7 @@ result actionComSaveAndExit(eventMask e)
   lcd.setCursor(0, 2);
   lcd.print("Flow:");
   lcd.print(kFlowControlModes[comFlowControlIndex]);
-  Menu::doExit();
-  return proceed;
+  return quit;
 }
 
 result actionComExitNoSave(eventMask e)
@@ -165,7 +164,7 @@ result actionComExitNoSave(eventMask e)
     comBaudRate = static_cast<int>(cfg.baudRate);
     comSerialFormatIndex = static_cast<int>(cfg.serialFormatIndex);
     comFlowControlIndex = (cfg.flowControl == COM_FLOW_RTS_CTS) ? 1 : 0;
-    Menu::doExit();
+    return quit;
   }
   return proceed;
 }
