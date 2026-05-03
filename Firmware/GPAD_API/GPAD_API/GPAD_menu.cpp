@@ -108,7 +108,7 @@ int comFlowControlIndex = 0;
 
 
 
-result actionComSetup(eventMask e)
+result actionComSaveAndExit(eventMask e)
 {
   if (e != eventMask::enterEvent)
   {
@@ -145,7 +145,7 @@ result actionComSetup(eventMask e)
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("COM applied");
+  lcd.print("COM saved");
   lcd.setCursor(0, 1);
   lcd.print(comBaudRate);
   lcd.print(" ");
@@ -153,6 +153,20 @@ result actionComSetup(eventMask e)
   lcd.setCursor(0, 2);
   lcd.print("Flow:");
   lcd.print(kFlowControlModes[comFlowControlIndex]);
+  Menu::doExit();
+  return proceed;
+}
+
+result actionComExitNoSave(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    const ComPortConfig &cfg = getComPortConfig();
+    comBaudRate = static_cast<int>(cfg.baudRate);
+    comSerialFormatIndex = static_cast<int>(cfg.serialFormatIndex);
+    comFlowControlIndex = (cfg.flowControl == COM_FLOW_RTS_CTS) ? 1 : 0;
+    Menu::doExit();
+  }
   return proceed;
 }
 
@@ -177,10 +191,11 @@ result actionMuteTimeout(eventMask e)
 
 
 MENU(comSetupMenu, "COM Setup", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  FIELD(comBaudRate, "Baud", "", 1200, 115200, 9600, 1, Menu::doNothing, anyEvent, noStyle),
-  FIELD(comSerialFormatIndex, "Format", "", 0, 0, 0, 1, Menu::doNothing, anyEvent, noStyle),
-  FIELD(comFlowControlIndex, "Flow", "", 0, 1, 0, 1, Menu::doNothing, anyEvent, noStyle),
-  OP("Apply", actionComSetup, enterEvent)
+  FIELD(comBaudRate, "Baud Rate", "", 1200, 115200, 9600, 1, Menu::doNothing, anyEvent, noStyle),
+  FIELD(comSerialFormatIndex, "Serial Format", "", 0, 0, 0, 1, Menu::doNothing, anyEvent, noStyle),
+  FIELD(comFlowControlIndex, "Flow Control", "", 0, 1, 0, 1, Menu::doNothing, anyEvent, noStyle),
+  OP("Save & Exit", actionComSaveAndExit, enterEvent),
+  OP("Exit (No Save)", actionComExitNoSave, enterEvent)
 );
 
 MENU(resetConfirmMenu, "Reset", Menu::doNothing, Menu::noEvent, Menu::noStyle,
