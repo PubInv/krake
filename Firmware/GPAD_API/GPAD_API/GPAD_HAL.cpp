@@ -25,7 +25,6 @@
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
-#include "GPAPMessage.h"
 #include "mqtt_handler.h"
 
 using namespace gpad_hal;
@@ -123,9 +122,6 @@ byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
 #if (DEBUG > 0)
 Serial.println("Debug defined >0")
 #endif
-
-    const int NUM_PREFICES = 5;
-char legal_prefices[NUM_PREFICES] = {'h', 's', 'a', 'u', 'i'};
 
 void setup_spi()
 {
@@ -428,43 +424,30 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
     return; // no action
   }
 
-  bool found = false;
-  for (int i = 0; i < NUM_PREFICES; i++)
-  {
-    if (buf[0] == legal_prefices[i])
-      found = true;
-  }
-  if (!found)
-  {
-    printError(serialport);
-    return;
-  }
-
-  const auto protocolMessage = gpap_message::GPAPMessage::deserialize(buf, rlen);
-
+  const char command = buf[0];
   serialport->print(F("Command: "));
-  serialport->printf("%c\n", protocolMessage.getMessageType());
+  serialport->printf("%c\n", command);
 
-  switch (protocolMessage.getMessageType())
+  switch (command)
   {
-  case gpap_message::MessageType::MUTE:
+  case 's':
   {
     serialport->println(F("Muting Case!"));
     setMuted(true);
     break;
   }
-  case gpap_message::MessageType::UNMUTE:
+  case 'u':
   {
     serialport->println(F("UnMuting Case!"));
     setMuted(false);
     break;
   }
-  case gpap_message::MessageType::HELP:
+  case 'h':
   {
     printInstructions(serialport);
     break;
   }
-  case gpap_message::MessageType::ALARM:
+  case 'a':
   {
     if (rlen < 2)
     {
@@ -492,7 +475,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
 
     break;
   }
-  case gpap_message::MessageType::INFO:
+  case 'i':
   {
     // Firmware Version
     //  81+23 = Maximum string length
@@ -584,7 +567,7 @@ void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *clie
   }
   default:
   {
-    serialport->println(F("Unknown Command"));
+    printError(serialport);
     break;
   }
   }
