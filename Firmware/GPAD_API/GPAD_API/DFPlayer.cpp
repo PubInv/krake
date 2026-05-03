@@ -9,7 +9,7 @@ const int LED_PIN = 13; // Krake
 const int nDFPlayer_BUSY = 4; // active LOW BUSY pin from DFPlayer
 
 bool isDFPlayerDetected = false;
-int volumeDFPlayer = 20; // Range: 0 to 30
+int volumeDFPlayer = 20; // Range: 1 to 30
 int numberFilesDF = 0;   // Number of audio files found on SD card
 
 char command;
@@ -163,12 +163,12 @@ void setupDFPlayer()
   menu_opcoes();
 }
 
-void setVolume(int zeroToThirty)
+void setVolume(int oneToThirty)
 {
-  if (zeroToThirty < 0) zeroToThirty = 0;
-  if (zeroToThirty > 30) zeroToThirty = 30;
+  if (oneToThirty < 1) oneToThirty = 1;
+  if (oneToThirty > 30) oneToThirty = 30;
 
-  volumeDFPlayer = zeroToThirty;
+  volumeDFPlayer = oneToThirty;  
   if (isDFPlayerDetected)
   {
     dfPlayer.volume(volumeDFPlayer);
