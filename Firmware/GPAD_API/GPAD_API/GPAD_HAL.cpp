@@ -27,8 +27,124 @@
 #include "GPAD_menu.h"
 #include "mqtt_handler.h"
 #include <esp_system.h>
+#include <Preferences.h>
+#include <driver/uart.h>
 
 using namespace gpad_hal;
+
+
+namespace
+{
+  Preferences comPrefs;
+  const char *COM_PREF_NS = "comcfg";
+  const char *COM_PREF_BAUD = "baud";
+  const char *COM_PREF_FMT = "fmt";
+  const char *COM_PREF_FLOW = "flow";
+
+  const uint8_t SERIAL_FORMAT_COUNT = 1;
+  const uint32_t COM_DEFAULT_BAUD_RATE = 9600;
+  const uint8_t COM_DEFAULT_SERIAL_FORMAT_INDEX = 0; // 8-N-1
+  const ComFlowControlMode COM_DEFAULT_FLOW = COM_FLOW_OFF;
+
+  ComPortConfig comPortConfig = {COM_DEFAULT_BAUD_RATE, COM_DEFAULT_SERIAL_FORMAT_INDEX, COM_DEFAULT_FLOW};
+
+  bool isSupportedBaudRate(uint32_t baudRate)
+  {
+    switch (baudRate)
+    {
+    case 1200:
+    case 2400:
+    case 4800:
+    case 9600:
+    case 19200:
+    case 38400:
+    case 57600:
+    case 115200:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  uint32_t sanitizeBaudRate(uint32_t baudRate)
+  {
+    return isSupportedBaudRate(baudRate) ? baudRate : COM_DEFAULT_BAUD_RATE;
+  }
+
+  uint8_t sanitizeSerialFormatIndex(uint8_t serialFormatIndex)
+  {
+    return (serialFormatIndex < SERIAL_FORMAT_COUNT) ? serialFormatIndex : COM_DEFAULT_SERIAL_FORMAT_INDEX;
+  }
+
+  ComFlowControlMode sanitizeFlowControl(uint8_t flow)
+  {
+    return (flow == static_cast<uint8_t>(COM_FLOW_RTS_CTS)) ? COM_FLOW_RTS_CTS : COM_FLOW_OFF;
+  }
+
+  uint32_t loadComBaudRate() { return sanitizeBaudRate(comPrefs.getUInt(COM_PREF_BAUD, COM_DEFAULT_BAUD_RATE)); }
+  uint8_t loadComSerialFormatIndex() { return sanitizeSerialFormatIndex(comPrefs.getUChar(COM_PREF_FMT, COM_DEFAULT_SERIAL_FORMAT_INDEX)); }
+  ComFlowControlMode loadComFlowControl() { return sanitizeFlowControl(comPrefs.getUChar(COM_PREF_FLOW, static_cast<uint8_t>(COM_DEFAULT_FLOW))); }
+
+  uart_word_length_t uartDataBitsFromFormatIndex(uint8_t serialFormatIndex)
+  {
+    (void)serialFormatIndex;
+    return UART_DATA_8_BITS;
+  }
+}
+
+const ComPortConfig &getComPortConfig() { return comPortConfig; }
+
+bool setComPortBaudRate(uint32_t baudRate)
+{
+  if (!isSupportedBaudRate(baudRate)) return false;
+  comPortConfig.baudRate = baudRate;
+  comPrefs.putUInt(COM_PREF_BAUD, comPortConfig.baudRate);
+  return true;
+}
+
+bool setComPortSerialFormatIndex(uint8_t serialFormatIndex)
+{
+  if (serialFormatIndex >= SERIAL_FORMAT_COUNT) return false;
+  comPortConfig.serialFormatIndex = serialFormatIndex;
+  comPrefs.putUChar(COM_PREF_FMT, comPortConfig.serialFormatIndex);
+  return true;
+}
+
+bool setComPortFlowControl(ComFlowControlMode flowControl)
+{
+  if (flowControl != COM_FLOW_OFF && flowControl != COM_FLOW_RTS_CTS) return false;
+  comPortConfig.flowControl = flowControl;
+  comPrefs.putUChar(COM_PREF_FLOW, static_cast<uint8_t>(comPortConfig.flowControl));
+  return true;
+}
+
+void applyComPortConfig(Stream *serialport)
+{
+  uartSerial1.begin(comPortConfig.baudRate, SERIAL_8N1, RXD1, TXD1);
+  uartSerial1.flush();
+
+  const uart_word_length_t dbits = uartDataBitsFromFormatIndex(comPortConfig.serialFormatIndex);
+  uart_set_word_length(UART_NUM_1, dbits);
+  uart_set_parity(UART_NUM_1, UART_PARITY_DISABLE);
+  uart_set_stop_bits(UART_NUM_1, UART_STOP_BITS_1);
+
+  if (comPortConfig.flowControl == COM_FLOW_RTS_CTS)
+  {
+    uart_set_hw_flow_ctrl(UART_NUM_1, UART_HW_FLOWCTRL_CTS_RTS, 122);
+  }
+  else
+  {
+    uart_set_hw_flow_ctrl(UART_NUM_1, UART_HW_FLOWCTRL_DISABLE, 0);
+  }
+
+  if (serialport != nullptr)
+  {
+    serialport->print(F("COM UART1: "));
+    serialport->print(comPortConfig.baudRate);
+    serialport->print(F(", 8-N-1, flow="));
+    serialport->println((comPortConfig.flowControl == COM_FLOW_RTS_CTS) ? F("RTS/CTS") : F("off"));
+  }
+}
 
 const char *resetReasonToString(esp_reset_reason_t reason);
 
@@ -395,11 +511,12 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
   // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
 
 #if !defined(HMWK) // On Homework2, LCD goes blank early
-  // Here initialize the UART1
-  // FLE the Serial1 is faliing to terminate
-  //   pinMode(RXD1, INPUT_PULLUP);
-  uartSerial1.begin(UART1_BAUD_RATE, SERIAL_8N1, RXD1, TXD1); // UART setup. On Homework2, LCD goes blank early
-  uartSerial1.flush();                                        // Clear any Serial1 crud at reset.
+  comPrefs.begin(COM_PREF_NS, false);
+  comPortConfig.baudRate = loadComBaudRate();
+  comPortConfig.serialFormatIndex = loadComSerialFormatIndex();
+  comPortConfig.flowControl = loadComFlowControl();
+
+  applyComPortConfig(serialport);
 
 #if (DEBUG > 0)
   serialport->println(F("uartSerial1 Setup"));
