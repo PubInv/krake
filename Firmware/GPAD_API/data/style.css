@@ -97,6 +97,15 @@ body {
 
 .side-menu .menu-group.admin { color: #9a6700; }
 .side-menu .menu-group.developer { color: #b00020; }
+
+.side-menu .menu-section { border: 1px solid #d6e5da; border-radius: 10px; background: #fff; }
+.side-menu .menu-section summary { list-style: none; cursor: pointer; padding: 10px 12px; font-weight: 700; color: var(--text); }
+.side-menu .menu-section summary::-webkit-details-marker { display: none; }
+.side-menu .menu-links { padding: 0 6px 8px; }
+.side-menu .menu-unlock { width: 100%; margin-top: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid #d6e5da; background: #f7fbf8; color: var(--text); font-weight: 700; }
+.side-menu .menu-unlock-panel { margin-top: 8px; display: grid; gap: 8px; }
+.side-menu .hidden { display: none; }
+
 .side-menu a {
   display: block;
   padding: 12px 14px;

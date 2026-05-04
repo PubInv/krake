@@ -8,29 +8,8 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>Settings</span>
-    </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <div class="menu-group">Main Menu (User)</div>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/manual">User Manual</a>
-    <div class="menu-group admin">🟡 Admin</div>
-    <a href="/settings">Settings</a>
-    <a href="/update">Firmware Update</a>
-    <div class="menu-group developer">🔴 Developer</div>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/debug-logs">Debug / Logs</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
 
   <main class="container">
     <section class="card">
@@ -98,12 +77,10 @@
     <div id="message" class="note"></div>
   </footer>
 
+  <script src="/js/common.js"></script>
   <script>
+    KrakeUI.mountLayout('Settings');
     let cachedSettings = null;
-
-    function toggleMenu() {
-      document.getElementById('sideMenu').classList.toggle('open');
-    }
 
     function byId(id) {
       return document.getElementById(id);
