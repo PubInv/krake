@@ -1127,3 +1127,25 @@ summary:focus-visible {
   background: #b6cebF;
   border-color: #5d836e;
 }
+
+/* Contrast update: darker text and slightly deeper backgrounds */
+body, .page, .container, .card, .status-row, .field-value, td, th, label, p, h1, h2, h3 {
+  color: #13261d;
+}
+
+.card {
+  background: #eef4f0;
+}
+
+.table-wrap table thead th {
+  background: #dbe8e1;
+  color: #102219;
+}
+
+.table-wrap table tbody tr:nth-child(even) {
+  background: #f3f8f5;
+}
+
+.subtitle, .note {
+  color: #1f3a2e;
+}
