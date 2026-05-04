@@ -1236,9 +1236,6 @@ void setupOTA()
   server.on("/device-monitor.html", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/device-monitor.html", "text/html"); });
 
-  server.on("/debug-logs", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->redirect("/monitor"); });
-
   server.on("/lcd", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               String payload = "{\"lines\":[\"";
@@ -1492,7 +1489,7 @@ void setupOTA()
               request->send(200, "text/plain", "wifi reset scheduled"); });
 
   server.on("/broker-console", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->redirect("/settings"); });
+            { request->send(LittleFS, "/broker_console.html", "text/html"); });
 
   server.on("/broker-console/data", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "application/json", trackedKrakesJson()); });
