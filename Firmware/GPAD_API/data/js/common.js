@@ -2,7 +2,7 @@
   const navSections = [
     {
       id: 'user',
-      title: 'Main Menu (User)',
+      title: '👤 User',
       defaultOpen: true,
       minRole: 'user',
       items: [
@@ -12,7 +12,7 @@
     },
     {
       id: 'admin',
-      title: 'Admin',
+      title: '⚙️ Admin',
       defaultOpen: false,
       minRole: 'admin',
       items: [
@@ -22,7 +22,7 @@
     },
     {
       id: 'developer',
-      title: 'Developer',
+      title: '🛠 Developer',
       defaultOpen: false,
       minRole: 'developer',
       items: [
@@ -83,14 +83,18 @@
       return '<details class="menu-section"' + (section.defaultOpen ? ' open' : '') + '><summary>' + escapeHtml(section.title) + '</summary><div class="menu-links">' + links + '</div></details>';
     }).join('');
 
-    const unlockHtml = state.developerUnlocked
-      ? '<button id="devLockBtn" class="menu-unlock">Lock Developer Tools</button>'
-      : '<button id="devUnlockBtn" class="menu-unlock">Unlock Developer Mode</button><div id="devUnlockPanel" class="menu-unlock-panel hidden"><input id="devPassword" type="password" class="text-input" placeholder="Enter developer password"><button id="devSubmit" class="action-btn" type="button">Unlock</button><div id="devUnlockMsg" class="note"></div></div>';
+    const unlockHtml = '<div class="dev-switch-wrap"><label class="ios-switch" for="devModeSwitch"><input id="devModeSwitch" type="checkbox"' + (state.developerUnlocked ? ' checked' : '') + '><span class="slider"></span></label><div><div class="dev-switch-title">🔧 Unlock Developer Mode</div><div id="devUnlockMsg" class="note"></div></div></div><div id="devUnlockPanel" class="menu-unlock-panel' + (state.developerUnlocked ? ' hidden' : '') + '"><input id="devPassword" type="password" class="text-input" placeholder="Enter developer password"><button id="devSubmit" class="action-btn" type="button">Unlock</button></div>';
 
     navTarget.innerHTML = sectionHtml + unlockHtml + '<a class="menu-home" href="/index.html">Home</a>';
 
-    const unlockBtn = byId('devUnlockBtn');
-    if (unlockBtn) unlockBtn.addEventListener('click', () => byId('devUnlockPanel')?.classList.toggle('hidden'));
+    const devSwitch = byId('devModeSwitch');
+    if (devSwitch) devSwitch.addEventListener('change', (e) => {
+      if (!e.target.checked) {
+        state.developerUnlocked = false; state.currentRole = 'user'; persistState(); renderNav(navTarget); return;
+      }
+      byId('devUnlockPanel')?.classList.remove('hidden');
+      e.target.checked = false;
+    });
     const submitBtn = byId('devSubmit');
     if (submitBtn) submitBtn.addEventListener('click', () => {
       const input = byId('devPassword');
@@ -101,8 +105,6 @@
         showMessage('Incorrect developer password.', true, 'devUnlockMsg');
       }
     });
-    const lockBtn = byId('devLockBtn');
-    if (lockBtn) lockBtn.addEventListener('click', () => { state.developerUnlocked = false; state.currentRole = 'user'; persistState(); renderNav(navTarget); });
   }
 
   function mountLayout(title) {

@@ -1095,3 +1095,39 @@ summary:focus-visible {
 .side-menu .menu-unlock {
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
+
+
+.side-menu .menu-section {
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(14, 48, 30, 0.08);
+}
+
+.side-menu .menu-section .menu-links {
+  animation: menuFade .2s ease;
+}
+
+@keyframes menuFade {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dev-switch-wrap {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #d6e5da;
+  border-radius: 12px;
+  background: #f7fbf8;
+}
+
+.dev-switch-title { font-weight: 700; color: #234736; font-size: 0.92rem; }
+
+.ios-switch { position: relative; width: 46px; height: 28px; display: inline-block; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.ios-switch .slider { position: absolute; inset: 0; background: #c7d8cd; border-radius: 30px; transition: .2s; }
+.ios-switch .slider::before { content: ''; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: .2s; }
+.ios-switch input:checked + .slider { background: #1f7a3d; }
+.ios-switch input:checked + .slider::before { transform: translateX(18px); }
