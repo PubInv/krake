@@ -3,10 +3,11 @@ KrakeUI.mountLayout('MQTT Device Monitor');
 // Method: MAC dictionary -> subscribe to <MAC>_ACK, <MAC>_ALM, <MAC>_STATUS, <MAC>_HEARTBEAT -> update last seen.
 
 const OFFLINE_AFTER_MS = 30_000;
+const DEVICE_STORAGE_KEY = "krakeDeviceMonitor.macToName.v1";
 let client = null;
 let messageCount = 0;
 
-const macToName = {
+const defaultMacToName = {
   "3C61053EE100": "PPG_Lee / MinKrakeLeeE100",
   "F024F9F1B874": "KRAKE_LB0001",
   "142B2FEB1F00": "KRAKE_LB0002",
@@ -45,18 +46,41 @@ const macToName = {
   "3C61053DC954": "Not Homework2, Maryville TN"
 };
 
-const devices = Object.fromEntries(
-  Object.entries(macToName).map(([mac, name]) => [mac, {
-    mac,
-    name,
-    online: false,
-    lastSeen: null,
-    lastTopic: "—",
-    lastMessage: "No message yet"
-  }])
-);
+const macToName = loadRegistry();
+const devices = Object.fromEntries(Object.entries(macToName).map(([mac, name]) => [mac, buildDevice(mac, name)]));
+const subscribedMacs = new Set();
 
 const $ = (id) => document.getElementById(id);
+
+function buildDevice(mac, name) {
+  return { mac, name, online: false, lastSeen: null, lastTopic: "—", lastMessage: "No message yet" };
+}
+
+function loadRegistry() {
+  try {
+    const raw = localStorage.getItem(DEVICE_STORAGE_KEY);
+    if (!raw) return { ...defaultMacToName };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return { ...defaultMacToName };
+    const cleaned = {};
+    for (const [mac, name] of Object.entries(parsed)) {
+      const normalizedMac = normalizeMac(mac);
+      if (normalizedMac && typeof name === "string" && name.trim()) cleaned[normalizedMac] = name.trim();
+    }
+    return Object.keys(cleaned).length ? cleaned : { ...defaultMacToName };
+  } catch (_) {
+    return { ...defaultMacToName };
+  }
+}
+
+function persistRegistry() {
+  localStorage.setItem(DEVICE_STORAGE_KEY, JSON.stringify(macToName));
+}
+
+function normalizeMac(input) {
+  const normalized = String(input || "").replace(/[^A-Fa-f0-9]/g, "").toUpperCase();
+  return normalized.length === 12 ? normalized : null;
+}
 
 function log(line) {
   const stamp = new Date().toLocaleString();
@@ -72,42 +96,31 @@ function setBrokerStatus(online) {
   $("publishBtn").disabled = !online;
 }
 
-function normalizeTopic(topic) {
-  return topic.replace(/^\//, "");
-}
+function normalizeTopic(topic) { return topic.replace(/^\//, ""); }
 
 function macFromTopic(topic) {
-  const clean = normalizeTopic(topic);
-  const mac = clean.substring(0, 12).toUpperCase();
+  const mac = normalizeTopic(topic).substring(0, 12).toUpperCase();
   return macToName[mac] ? mac : null;
 }
 
 function topicSuffix(topic) {
-  const clean = normalizeTopic(topic).toUpperCase();
-  const parts = clean.split("_");
+  const parts = normalizeTopic(topic).toUpperCase().split("_");
   return parts.length > 1 ? parts[parts.length - 1] : "";
 }
 
 function markSeen(mac, topic, payload) {
   const device = devices[mac];
   if (!device) return;
-
   const text = String(payload ?? "");
   const suffix = topicSuffix(topic);
   const now = Date.now();
   device.lastTopic = normalizeTopic(topic);
   device.lastMessage = text;
-
-  // _ALM may contain retained command payloads and should not force a device online.
-  // Only presence/status channels update last-seen heartbeat state.
   if (suffix === "ACK" || suffix === "STATUS" || suffix === "HEARTBEAT") {
     device.lastSeen = now;
-
-    // Last Will / retained offline status support, if firmware publishes it.
     const lower = text.toLowerCase();
     device.online = !(lower.includes("offline") || lower.includes("disconnected"));
   }
-
   messageCount++;
   render();
 }
@@ -121,10 +134,7 @@ function render() {
     const timedOut = !d.lastSeen || now - d.lastSeen > OFFLINE_AFTER_MS;
     const isOnline = d.online && !timedOut;
     isOnline ? online++ : offline++;
-
-    const lastSeen = d.lastSeen
-      ? `${Math.round((now - d.lastSeen) / 1000)}s ago`
-      : "Never";
+    const lastSeen = d.lastSeen ? `${Math.round((now - d.lastSeen) / 1000)}s ago` : "Never";
 
     return `
       <tr>
@@ -134,6 +144,7 @@ function render() {
         <td><code>${escapeHtml(d.lastTopic)}</code></td>
         <td>${lastSeen}</td>
         <td>${escapeHtml(d.lastMessage).slice(0, 120)}</td>
+        <td><button class="action-btn secondary remove-device-btn" type="button" data-mac="${d.mac}">Remove</button></td>
       </tr>`;
   }).join("");
 
@@ -144,9 +155,16 @@ function render() {
 }
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, (ch) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
-  }[ch]));
+  return String(value).replace(/[&<>'"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[ch]));
+}
+
+function subscribeForMac(mac) {
+  if (!client || !client.connected || subscribedMacs.has(mac)) return;
+  client.subscribe(`${mac}_ACK`, { qos: 0 });
+  client.subscribe(`${mac}_ALM`, { qos: 0 });
+  client.subscribe(`${mac}_STATUS`, { qos: 0 });
+  client.subscribe(`${mac}_HEARTBEAT`, { qos: 0 });
+  subscribedMacs.add(mac);
 }
 
 function connect() {
@@ -155,27 +173,13 @@ function connect() {
   const password = $("password").value;
   const clientId = `WebMonitor_${Math.random().toString(16).slice(2)}_${Date.now()}`;
 
-  client = mqtt.connect(url, {
-    clientId,
-    username,
-    password,
-    clean: true,
-    reconnectPeriod: 2000,
-    connectTimeout: 8000,
-    keepalive: 15
-  });
+  client = mqtt.connect(url, { clientId, username, password, clean: true, reconnectPeriod: 2000, connectTimeout: 8000, keepalive: 15 });
 
   client.on("connect", () => {
     setBrokerStatus(true);
     log(`Connected as ${clientId}`);
-
-    for (const mac of Object.keys(macToName)) {
-      // Existing Processing sketch listens to ACK. Extra status/heartbeat topics make online tracking stronger.
-      client.subscribe(`${mac}_ACK`, { qos: 0 });
-      client.subscribe(`${mac}_ALM`, { qos: 0 });
-      client.subscribe(`${mac}_STATUS`, { qos: 0 });
-      client.subscribe(`${mac}_HEARTBEAT`, { qos: 0 });
-    }
+    subscribedMacs.clear();
+    for (const mac of Object.keys(macToName)) subscribeForMac(mac);
   });
 
   client.on("message", (topic, payloadBuffer) => {
@@ -195,27 +199,60 @@ function connect() {
 function disconnect() {
   if (client) client.end(true);
   client = null;
+  subscribedMacs.clear();
   setBrokerStatus(false);
   log("Disconnected by user");
 }
 
 function publishToAll() {
   if (!client || !client.connected) return;
-
   const custom = $("customCommand").value.trim();
   const preset = $("commandPreset").value;
   const message = custom || preset;
   const retain = $("retain").checked;
-
-  for (const mac of Object.keys(macToName)) {
-    client.publish(`${mac}_ALM`, message, { qos: 0, retain });
-  }
+  for (const mac of Object.keys(macToName)) client.publish(`${mac}_ALM`, message, { qos: 0, retain });
   log(`Published to all <MAC>_ALM topics: ${message}`);
+}
+
+function addDevice() {
+  const name = $("deviceNameInput").value.trim();
+  const mac = normalizeMac($("deviceMacInput").value);
+  if (!name) return log("Device name is required.");
+  if (!mac) return log("MAC address must be 12 hex characters.");
+  if (macToName[mac]) return log(`Device ${mac} already exists.`);
+
+  macToName[mac] = name;
+  devices[mac] = buildDevice(mac, name);
+  persistRegistry();
+  subscribeForMac(mac);
+  $("deviceNameInput").value = "";
+  $("deviceMacInput").value = "";
+  log(`Added device ${name} (${mac}).`);
+  render();
+}
+
+function removeDevice(mac) {
+  if (!macToName[mac]) return;
+  delete macToName[mac];
+  delete devices[mac];
+  persistRegistry();
+  if (client && client.connected) {
+    ["ACK", "ALM", "STATUS", "HEARTBEAT"].forEach((sfx) => client.unsubscribe(`${mac}_${sfx}`));
+  }
+  subscribedMacs.delete(mac);
+  log(`Removed device ${mac}.`);
+  render();
 }
 
 $("connectBtn").addEventListener("click", connect);
 $("disconnectBtn").addEventListener("click", disconnect);
 $("publishBtn").addEventListener("click", publishToAll);
+$("addDeviceBtn").addEventListener("click", addDevice);
+$("deviceTable").addEventListener("click", (event) => {
+  const button = event.target.closest(".remove-device-btn");
+  if (!button) return;
+  removeDevice(button.dataset.mac);
+});
 
 setInterval(render, 1000);
 render();
