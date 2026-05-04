@@ -3,9 +3,9 @@
   --bg-soft: #e8f2eb;
   --surface: #ffffff;
   --text: #1a3225;
-  --muted: #4f6a5b;
-  --line: #cee0d3;
-  --accent: #1f7a3d;
+  --muted: #355246;
+  --line: #bcd3c3;
+  --accent: #166534;
   --accent-strong: #fbfcfb;
   --accent-soft: #e6f3ea;
   --shadow: 0 14px 32px rgba(20, 66, 40, 0.1);
@@ -24,8 +24,8 @@ body {
 
 .topbar {
   height: 68px;
-  background: linear-gradient(120deg, var(--accent-strong), var(--accent));
-  color: #1f7a3d;
+  background: linear-gradient(120deg, #ecf7ef, var(--accent));
+  color: #0f2b1d;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,9 +55,9 @@ body {
 }
 
 .menu-toggle {
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  color: #0f2b1d;
+  border: 1px solid #cfe2d6;
   border-radius: 10px;
   font-size: 1.4rem;
   width: 42px;
@@ -440,7 +440,7 @@ h1 {
       --text: #153124;
       --muted: #4d6758;
       --line: #cfe3d5;
-      --accent: #1f7a3d;
+      --accent: #166534;
       --accent-soft: #e6f5eb;
       --good: #135f31;
       --good-bg: #e5f7eb;
@@ -640,7 +640,7 @@ h1 {
       --text: #163222;
       --muted: #4e6a5a;
       --line: #cfe4d5;
-      --accent: #1f7a3d;
+      --accent: #166534;
       --accent-2: #39a35c;
       --success-bg: #e5f7eb;
       --success-text: #135f31;
@@ -978,3 +978,46 @@ label { display: block; color: var(--muted); font-weight: 700; font-size: .9rem;
 .monitor-box { background: #081217; color: #b7f9cc; border: 1px solid rgba(0, 183, 255, .25); border-radius: 10px; padding: 14px; min-height: 280px; overflow: auto; white-space: pre-wrap; line-height: 1.35; }
 .status-chip { display: inline-block; background: rgba(0, 183, 255, .12); border: 1px solid rgba(0, 183, 255, .35); border-radius: 20px; padding: 5px 10px; margin: 4px 6px 0 0; font-size: 13px; }
 .page-note { font-size: .9rem; color: var(--muted); margin-top: 8px; }
+
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #14532d;
+  outline-offset: 2px;
+}
+
+.side-menu .menu-section summary {
+  background: #f8fcf9;
+}
+
+.side-menu .menu-section[open] summary {
+  border-bottom: 1px solid #d8e7dd;
+  background: #eef7f1;
+}
+
+.side-menu a:hover,
+.side-menu a:focus-visible {
+  background: #dff1e6;
+  border-color: #9dc5af;
+}
+
+.subtitle,
+.note {
+  color: #2f4a3f;
+}
+
+.action-btn {
+  background: #166534;
+  color: #ffffff;
+  border: 1px solid #14532d;
+}
+
+.action-btn.secondary {
+  background: #f1f7f3;
+  color: #123524;
+  border: 1px solid #9dc5af;
+}
