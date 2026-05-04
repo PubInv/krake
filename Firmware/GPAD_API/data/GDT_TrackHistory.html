@@ -316,25 +316,9 @@
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>GDT Track Record</span>
-    </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
+  <header id="appHeader"></header>
 
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
+  <nav id="sideMenu"></nav>
 
   <main class="subpage">
     <section class="hero">
@@ -408,11 +392,7 @@
   </main>
 
   <script>
-    function toggleMenu() {
-      document.getElementById("sideMenu").classList.toggle("open");
-    }
-
-    const devices = [
+        const devices = [
   {
     "childName": "US0006",
     "childKey": "Sb6uq9ZAiwrMMWQhrZ4FQv",
@@ -626,5 +606,7 @@
 
     render();
   </script>
+  <script src="/js/common.js"></script>
+  <script>KrakeUI.mountLayout('GDT Track Record');</script>
 </body>
 </html>
