@@ -29,7 +29,6 @@
         ['PMD Web UI', '/PMD_GPAD_API'],
         ['Factory Test / Developer Monitor', '/monitor'],
         ['MQTT Device Monitor', '/device-monitor'],
-        ['Debug / Logs', '/debug-logs'],
         ['Electrical Test History', '/Electrical_testHistory.html']
       ]
     }
