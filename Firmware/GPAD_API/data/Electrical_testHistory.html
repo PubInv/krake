@@ -60,6 +60,33 @@
 </div>
 <div class="mobile-list" id="mobileList"></div>
 </section>
+
+<section class="card">
+<h2>Powered Test Results</h2>
+<p class="subtitle">Add powered tests and save them in this browser (local storage). Optional remote sync endpoint can be configured below.</p>
+<div class="form-grid">
+<label>Test Run ID<input class="text-input" id="pwrTestrunId" placeholder="20"/></label>
+<label>VIN (V)<input class="text-input" id="pwrVin" placeholder="12.1"/></label>
+<label>5V Rail (V)<input class="text-input" id="pwr5v" placeholder="5.01"/></label>
+<label>3V3 Rail (V)<input class="text-input" id="pwr3v3" placeholder="3.30"/></label>
+<label>Status
+<select class="text-input" id="pwrStatus"><option>PASS</option><option>FAIL</option><option>OTHER</option></select>
+</label>
+<label>Notes<input class="text-input" id="pwrNotes" placeholder="Optional notes"/></label>
+<button class="action-btn" id="addPoweredBtn" type="button">Add Powered Record</button>
+</div>
+<div class="form-grid" style="margin-top:10px;">
+<label>Remote JSON endpoint (optional)
+<input class="text-input" id="pwrEndpoint" placeholder="https://script.google.com/macros/s/.../exec"/>
+</label>
+<button class="action-btn secondary" id="saveEndpointBtn" type="button">Save Endpoint</button>
+<button class="action-btn secondary" id="pullPoweredBtn" type="button">Fetch Remote</button>
+<button class="action-btn secondary" id="pushPoweredBtn" type="button">Push Remote</button>
+</div>
+<div class="status-row" id="poweredStatusMsg">Powered records: 0</div>
+<div class="table-wrap"><table id="poweredTable"><thead><tr><th>ID</th><th>Test Run</th><th>VIN</th><th>5V</th><th>3V3</th><th>Pass Fail</th><th>Notes</th><th>Saved</th></tr></thead><tbody></tbody></table></div>
+</section>
+
 </div><script>
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("open");
@@ -146,6 +173,71 @@
     });
 
     render();
+
+    const POWERED_STORAGE_KEY = 'krake.poweredTestHistory.v1';
+    const POWERED_ENDPOINT_KEY = 'krake.poweredTestEndpoint.v1';
+    const poweredTableBody = document.querySelector('#poweredTable tbody');
+
+    function loadPoweredRows() {
+      try { return JSON.parse(localStorage.getItem(POWERED_STORAGE_KEY) || '[]'); }
+      catch (_) { return []; }
+    }
+    function savePoweredRows(list) { localStorage.setItem(POWERED_STORAGE_KEY, JSON.stringify(list)); }
+    function loadEndpoint() { return localStorage.getItem(POWERED_ENDPOINT_KEY) || ''; }
+    function saveEndpoint(url) { localStorage.setItem(POWERED_ENDPOINT_KEY, url || ''); }
+
+    let poweredRows = loadPoweredRows();
+
+    function renderPowered() {
+      poweredTableBody.innerHTML = poweredRows.map((r, i) => `
+<tr>
+<td>${i + 1}</td><td>${normalize(r.testrun_id) || '—'}</td><td>${normalize(r.vin) || '—'}</td><td>${normalize(r.v5) || '—'}</td><td>${normalize(r.v3v3) || '—'}</td><td><span class="status-pill ${passFailClass(r.pass_fail)}">${normalize(r.pass_fail) || '—'}</span></td><td>${normalize(r.notes) || '—'}</td><td>${normalize(r.saved_at) || '—'}</td>
+</tr>`).join('');
+      document.getElementById('poweredStatusMsg').textContent = `Powered records: ${poweredRows.length}`;
+    }
+
+    document.getElementById('addPoweredBtn').addEventListener('click', () => {
+      const row = {
+        testrun_id: document.getElementById('pwrTestrunId').value.trim(),
+        vin: document.getElementById('pwrVin').value.trim(),
+        v5: document.getElementById('pwr5v').value.trim(),
+        v3v3: document.getElementById('pwr3v3').value.trim(),
+        pass_fail: document.getElementById('pwrStatus').value,
+        notes: document.getElementById('pwrNotes').value.trim(),
+        saved_at: new Date().toISOString()
+      };
+      poweredRows.unshift(row);
+      savePoweredRows(poweredRows);
+      renderPowered();
+    });
+
+    document.getElementById('saveEndpointBtn').addEventListener('click', () => {
+      saveEndpoint(document.getElementById('pwrEndpoint').value.trim());
+      document.getElementById('poweredStatusMsg').textContent = 'Endpoint saved.';
+    });
+
+    document.getElementById('pullPoweredBtn').addEventListener('click', async () => {
+      const endpoint = document.getElementById('pwrEndpoint').value.trim();
+      if (!endpoint) return;
+      const res = await fetch(endpoint, { cache: 'no-store' });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        poweredRows = data;
+        savePoweredRows(poweredRows);
+        renderPowered();
+      }
+    });
+
+    document.getElementById('pushPoweredBtn').addEventListener('click', async () => {
+      const endpoint = document.getElementById('pwrEndpoint').value.trim();
+      if (!endpoint) return;
+      await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(poweredRows) });
+      document.getElementById('poweredStatusMsg').textContent = 'Pushed to remote endpoint.';
+    });
+
+    document.getElementById('pwrEndpoint').value = loadEndpoint();
+    renderPowered();
+
   </script>
 <script src="/js/common.js"></script><script>KrakeUI.mountLayout('Electrical Test History');</script>
 </body></html>
