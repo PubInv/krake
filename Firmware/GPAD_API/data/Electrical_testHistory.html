@@ -34,6 +34,24 @@
 <button class="filter-btn" data-filter="FAIL">Fail only</button>
 <button class="filter-btn" data-filter="OTHER">Other</button>
 </div>
+<div class="form-grid" style="margin-top:10px;">
+<label>Unpowered ID<input class="text-input" id="unpId" placeholder="19"/></label>
+<label>Test Run ID<input class="text-input" id="unpRunId" placeholder="20"/></label>
+<label>Pass/Fail
+<select class="text-input" id="unpStatus"><option>PASS</option><option>FAIL</option><option>OTHER</option></select>
+</label>
+<label>Notes<input class="text-input" id="unpNotes" placeholder="Optional notes"/></label>
+<button class="action-btn" id="saveUnpoweredBtn" type="button">Add / Update Unpowered</button>
+</div>
+<div class="form-grid" style="margin-top:10px;">
+<label>Unpowered endpoint (optional)
+<input class="text-input" id="unpEndpoint" placeholder="https://script.google.com/macros/s/.../exec"/>
+</label>
+<button class="action-btn secondary" id="saveUnpEndpointBtn" type="button">Save Endpoint</button>
+<button class="action-btn secondary" id="pullUnpoweredBtn" type="button">Fetch Remote</button>
+<button class="action-btn secondary" id="pushUnpoweredBtn" type="button">Push Remote</button>
+</div>
+<div class="status-row" id="unpoweredStatusMsg">Click a row to edit it, then save.</div>
 <div class="meta" id="resultMeta">Showing 18 of 18 records.</div>
 <div class="table-wrap">
 <table id="resultsTable">
@@ -92,7 +110,7 @@
       document.getElementById("sideMenu").classList.toggle("open");
     }
 
-    const rows = [{'unpowered_id': '1', 'testrun_id': '2', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '2', 'testrun_id': '3', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '3', 'testrun_id': '4', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '1.4 M ohm', 'res_tp103_tp101_5v': '1.17 M ohm', 'res_tp201_tp101_vbus': '1.13 K ohm', 'res_tp202_tp101_v3': '330 ohm', 'res_j103pin2_tp101_ctrl_vcc': '6.2 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '4', 'testrun_id': '5', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '12000000', 'res_tp103_tp101_5v': '960', 'res_tp201_tp101_vbus': '10000000', 'res_tp202_tp101_v3': '350', 'res_j103pin2_tp101_ctrl_vcc': '20000000', 'pass_fail': 'PASS', 'notes': 'J102 placed with jumper.'}, {'unpowered_id': '5', 'testrun_id': '6', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '6', 'testrun_id': '7', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '2.1 M ohm', 'res_tp103_tp101_5v': '1.09 K ohm', 'res_tp201_tp101_vbus': '1.099 K ohm', 'res_tp202_tp101_v3': '300 ohm', 'res_j103pin2_tp101_ctrl_vcc': '4.6 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '7', 'testrun_id': '8', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '1.4 M ohm', 'res_tp103_tp101_5v': '1.1 K ohm', 'res_tp201_tp101_vbus': '1.1 K ohm', 'res_tp202_tp101_v3': '300 ohm', 'res_j103pin2_tp101_ctrl_vcc': '4 M ohm', 'pass_fail': 'PASS', 'notes': 'jumper added to J102'}, {'unpowered_id': '8', 'testrun_id': '9', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '3 M ohm', 'res_tp103_tp101_5v': '1.1 K ohm', 'res_tp201_tp101_vbus': '1.08 K ohm', 'res_tp202_tp101_v3': '200 ohm', 'res_j103pin2_tp101_ctrl_vcc': '7.8 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '9', 'testrun_id': '10', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '2.6 M ohm', 'res_tp103_tp101_5v': '1.1  K ohm', 'res_tp201_tp101_vbus': '1.1 K ohm', 'res_tp202_tp101_v3': '200 ohm', 'res_j103pin2_tp101_ctrl_vcc': '7 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '10', 'testrun_id': '11', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '305', 'res_j103pin2_tp101_ctrl_vcc': '303', 'pass_fail': 'PASS', 'notes': 'Polarity Inspection 1, passnAdd Jumper J102'}, {'unpowered_id': '11', 'testrun_id': '12', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '3000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '298', 'res_j103pin2_tp101_ctrl_vcc': '296', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: PassnAdd Jumper J102'}, {'unpowered_id': '12', 'testrun_id': '13', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '3000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '295', 'res_j103pin2_tp101_ctrl_vcc': '294', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass Add Jumper J102'}, {'unpowered_id': '13', 'testrun_id': '14', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '305', 'res_j103pin2_tp101_ctrl_vcc': '300', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: PassnAdd Jumper J102'}, {'unpowered_id': '14', 'testrun_id': '15', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '7200000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '295', 'res_j103pin2_tp101_ctrl_vcc': '293', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '15', 'testrun_id': '16', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '298', 'res_j103pin2_tp101_ctrl_vcc': '296', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '16', 'testrun_id': '17', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '11000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '303', 'res_j103pin2_tp101_ctrl_vcc': '303', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '17', 'testrun_id': '18', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1170', 'res_tp201_tp101_vbus': '1170', 'res_tp202_tp101_v3': '359', 'res_j103pin2_tp101_ctrl_vcc': '397', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '18', 'testrun_id': '19', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '296', 'res_j103pin2_tp101_ctrl_vcc': '293', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102nThen remove Jumper J102 to ship to Canada assembly.'}];
+    const defaultUnpoweredRows = [{'unpowered_id': '1', 'testrun_id': '2', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '2', 'testrun_id': '3', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '3', 'testrun_id': '4', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '1.4 M ohm', 'res_tp103_tp101_5v': '1.17 M ohm', 'res_tp201_tp101_vbus': '1.13 K ohm', 'res_tp202_tp101_v3': '330 ohm', 'res_j103pin2_tp101_ctrl_vcc': '6.2 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '4', 'testrun_id': '5', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '12000000', 'res_tp103_tp101_5v': '960', 'res_tp201_tp101_vbus': '10000000', 'res_tp202_tp101_v3': '350', 'res_j103pin2_tp101_ctrl_vcc': '20000000', 'pass_fail': 'PASS', 'notes': 'J102 placed with jumper.'}, {'unpowered_id': '5', 'testrun_id': '6', 'meter_make': '', 'meter_model': '', 'meter_sn': '', 'res_tp102_tp101_vin': '', 'res_tp103_tp101_5v': '', 'res_tp201_tp101_vbus': '', 'res_tp202_tp101_v3': '', 'res_j103pin2_tp101_ctrl_vcc': '', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '6', 'testrun_id': '7', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '2.1 M ohm', 'res_tp103_tp101_5v': '1.09 K ohm', 'res_tp201_tp101_vbus': '1.099 K ohm', 'res_tp202_tp101_v3': '300 ohm', 'res_j103pin2_tp101_ctrl_vcc': '4.6 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '7', 'testrun_id': '8', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '1.4 M ohm', 'res_tp103_tp101_5v': '1.1 K ohm', 'res_tp201_tp101_vbus': '1.1 K ohm', 'res_tp202_tp101_v3': '300 ohm', 'res_j103pin2_tp101_ctrl_vcc': '4 M ohm', 'pass_fail': 'PASS', 'notes': 'jumper added to J102'}, {'unpowered_id': '8', 'testrun_id': '9', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '3 M ohm', 'res_tp103_tp101_5v': '1.1 K ohm', 'res_tp201_tp101_vbus': '1.08 K ohm', 'res_tp202_tp101_v3': '200 ohm', 'res_j103pin2_tp101_ctrl_vcc': '7.8 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '9', 'testrun_id': '10', 'meter_make': 'NENG', 'meter_model': 'AN9002', 'meter_sn': '318015354.0', 'res_tp102_tp101_vin': '2.6 M ohm', 'res_tp103_tp101_5v': '1.1  K ohm', 'res_tp201_tp101_vbus': '1.1 K ohm', 'res_tp202_tp101_v3': '200 ohm', 'res_j103pin2_tp101_ctrl_vcc': '7 M ohm', 'pass_fail': 'PASS', 'notes': ''}, {'unpowered_id': '10', 'testrun_id': '11', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '305', 'res_j103pin2_tp101_ctrl_vcc': '303', 'pass_fail': 'PASS', 'notes': 'Polarity Inspection 1, passnAdd Jumper J102'}, {'unpowered_id': '11', 'testrun_id': '12', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '3000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '298', 'res_j103pin2_tp101_ctrl_vcc': '296', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: PassnAdd Jumper J102'}, {'unpowered_id': '12', 'testrun_id': '13', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '3000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '295', 'res_j103pin2_tp101_ctrl_vcc': '294', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass Add Jumper J102'}, {'unpowered_id': '13', 'testrun_id': '14', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '305', 'res_j103pin2_tp101_ctrl_vcc': '300', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: PassnAdd Jumper J102'}, {'unpowered_id': '14', 'testrun_id': '15', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '7200000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '295', 'res_j103pin2_tp101_ctrl_vcc': '293', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '15', 'testrun_id': '16', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '298', 'res_j103pin2_tp101_ctrl_vcc': '296', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '16', 'testrun_id': '17', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '11000000', 'res_tp103_tp101_5v': '1130', 'res_tp201_tp101_vbus': '1130', 'res_tp202_tp101_v3': '303', 'res_j103pin2_tp101_ctrl_vcc': '303', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '17', 'testrun_id': '18', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1170', 'res_tp201_tp101_vbus': '1170', 'res_tp202_tp101_v3': '359', 'res_j103pin2_tp101_ctrl_vcc': '397', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102'}, {'unpowered_id': '18', 'testrun_id': '19', 'meter_make': 'ASTRON AI', 'meter_model': 'DM6000AR', 'meter_sn': '2327610969.0', 'res_tp102_tp101_vin': '13000000', 'res_tp103_tp101_5v': '1120', 'res_tp201_tp101_vbus': '1120', 'res_tp202_tp101_v3': '296', 'res_j103pin2_tp101_ctrl_vcc': '293', 'pass_fail': 'PASS', 'notes': 'Polarity inspection: Pass nAdd Jumper J102nThen remove Jumper J102 to ship to Canada assembly.'}];
     const columns = ['unpowered_id', 'testrun_id', 'meter_make', 'meter_model', 'meter_sn', 'res_tp102_tp101_vin', 'res_tp103_tp101_5v', 'res_tp201_tp101_vbus', 'res_tp202_tp101_v3', 'res_j103pin2_tp101_ctrl_vcc', 'pass_fail', 'notes'];
     const tableBody = document.querySelector('#resultsTable tbody');
     const mobileList = document.getElementById('mobileList');
@@ -100,6 +118,19 @@
     const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
     const resultMeta = document.getElementById('resultMeta');
     let currentFilter = 'all';
+
+    const UNPOWERED_STORAGE_KEY = 'krake.unpoweredTestHistory.v1';
+    const UNPOWERED_ENDPOINT_KEY = 'krake.unpoweredTestEndpoint.v1';
+    function loadUnpoweredRows() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(UNPOWERED_STORAGE_KEY) || 'null');
+        return Array.isArray(raw) && raw.length ? raw : defaultUnpoweredRows;
+      } catch (_) { return defaultUnpoweredRows; }
+    }
+    function saveUnpoweredRows() { localStorage.setItem(UNPOWERED_STORAGE_KEY, JSON.stringify(unpoweredRows)); }
+    let unpoweredRows = loadUnpoweredRows();
+    let editingUnpoweredIndex = -1;
+
 
     function normalize(v) {
       return (v ?? '').toString().trim();
@@ -127,7 +158,7 @@
 
     function render() {
       const query = searchInput.value.toLowerCase().trim();
-      const filtered = rows.filter(row => matchesFilter(row) && matchesSearch(row, query));
+      const filtered = unpoweredRows.filter(row => matchesFilter(row) && matchesSearch(row, query));
 
       tableBody.innerHTML = filtered.map(row => {
         const cells = columns.map(col => {
@@ -137,7 +168,8 @@
           }
           return `<td>${val}</td>`;
         }).join('');
-        return `<tr>${cells}</tr>`;
+        const rowIndex = unpoweredRows.indexOf(row);
+        return `<tr data-unp-index="${rowIndex}">${cells}</tr>`;
       }).join('');
 
       mobileList.innerHTML = filtered.map(row => {
@@ -159,7 +191,7 @@
         return `<article class="result-card">${top}<div class="result-grid">${grid}</div></article>`;
       }).join('');
 
-      resultMeta.textContent = `Showing ${filtered.length} of ${rows.length} records.`;
+      resultMeta.textContent = `Showing ${filtered.length} of ${unpoweredRows.length} records.`;
     }
 
     searchInput.addEventListener('input', render);
@@ -173,6 +205,59 @@
     });
 
     render();
+
+
+    document.getElementById('unpEndpoint').value = localStorage.getItem(UNPOWERED_ENDPOINT_KEY) || '';
+    document.getElementById('saveUnpEndpointBtn').addEventListener('click', () => {
+      localStorage.setItem(UNPOWERED_ENDPOINT_KEY, document.getElementById('unpEndpoint').value.trim());
+      document.getElementById('unpoweredStatusMsg').textContent = 'Unpowered endpoint saved.';
+    });
+    document.getElementById('saveUnpoweredBtn').addEventListener('click', () => {
+      const row = {
+        unpowered_id: document.getElementById('unpId').value.trim(),
+        testrun_id: document.getElementById('unpRunId').value.trim(),
+        meter_make: '', meter_model: '', meter_sn: '',
+        res_tp102_tp101_vin: '', res_tp103_tp101_5v: '', res_tp201_tp101_vbus: '', res_tp202_tp101_v3: '', res_j103pin2_tp101_ctrl_vcc: '',
+        pass_fail: document.getElementById('unpStatus').value,
+        notes: document.getElementById('unpNotes').value.trim()
+      };
+      if (editingUnpoweredIndex >= 0) unpoweredRows[editingUnpoweredIndex] = { ...unpoweredRows[editingUnpoweredIndex], ...row };
+      else unpoweredRows.unshift(row);
+      editingUnpoweredIndex = -1;
+      saveUnpoweredRows();
+      render();
+      document.getElementById('unpoweredStatusMsg').textContent = 'Unpowered record saved locally.';
+    });
+    tableBody.addEventListener('click', (event) => {
+      const tr = event.target.closest('tr[data-unp-index]');
+      if (!tr) return;
+      const idx = Number(tr.dataset.unpIndex);
+      const row = unpoweredRows[idx];
+      if (!row) return;
+      editingUnpoweredIndex = idx;
+      document.getElementById('unpId').value = row.unpowered_id || '';
+      document.getElementById('unpRunId').value = row.testrun_id || '';
+      document.getElementById('unpStatus').value = (row.pass_fail || 'OTHER').toUpperCase();
+      document.getElementById('unpNotes').value = row.notes || '';
+      document.getElementById('unpoweredStatusMsg').textContent = `Editing unpowered row ${idx + 1}.`;
+    });
+    document.getElementById('pullUnpoweredBtn').addEventListener('click', async () => {
+      const endpoint = document.getElementById('unpEndpoint').value.trim();
+      if (!endpoint) return;
+      const res = await fetch(endpoint, { cache: 'no-store' });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        unpoweredRows = data;
+        saveUnpoweredRows();
+        render();
+      }
+    });
+    document.getElementById('pushUnpoweredBtn').addEventListener('click', async () => {
+      const endpoint = document.getElementById('unpEndpoint').value.trim();
+      if (!endpoint) return;
+      await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(unpoweredRows) });
+      document.getElementById('unpoweredStatusMsg').textContent = 'Unpowered records pushed to endpoint.';
+    });
 
     const POWERED_STORAGE_KEY = 'krake.poweredTestHistory.v1';
     const POWERED_ENDPOINT_KEY = 'krake.poweredTestEndpoint.v1';
