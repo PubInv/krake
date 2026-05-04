@@ -111,7 +111,7 @@
     const navTarget = byId('sideMenu');
     if (headerTarget) {
       headerTarget.className = 'topbar';
-      headerTarget.innerHTML = '<div class="brand"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"><span>' + escapeHtml(title || 'KRAKE') + '</span></div><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
+      headerTarget.innerHTML = '<a href="/index.html" class="brand" aria-label="Go to Home"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"><span>' + escapeHtml(title || 'KRAKE') + '</span></a><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
     }
     if (navTarget) { navTarget.className = 'side-menu'; renderNav(navTarget); }
     const menuToggle = byId('menuToggle');
