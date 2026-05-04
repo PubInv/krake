@@ -1,50 +1,28 @@
 (function () {
   if (window.KrakeUI) KrakeUI.mountLayout('Broker Console');
   const state = {
-    pollHandle: null
+    pollHandle: null,
+    lastRefreshFailed: false
   };
 
-  function byId(id) {
-    return document.getElementById(id);
-  }
-
-  function toggleMenu() {
-    byId('sideMenu').classList.toggle('open');
+  const byId = KrakeUI.byId;
+  function valueOf(id) {
+    const node = byId(id);
+    return node ? node.value : '';
   }
 
   function showMessage(message, isError = false) {
-    const node = byId('message');
-    node.textContent = message;
-    node.style.color = isError ? '#b00020' : '#146620';
+    KrakeUI.showMessage(message, isError, 'message');
   }
 
   function setPublishResult(message, isError = false) {
-    const node = byId('publishResult');
-    node.textContent = message;
-    node.style.color = isError ? '#b00020' : '#146620';
+    KrakeUI.showMessage(message, isError, 'publishResult');
   }
 
   function setWebMessageResult(message, isError = false) {
-    const node = byId('webMessageResult');
-    if (!node) return;
-    node.textContent = message;
-    node.style.color = isError ? '#b00020' : '#146620';
+    KrakeUI.showMessage(message, isError, 'webMessageResult');
   }
 
-  async function postForm(url, bodyObj) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(bodyObj)
-    });
-
-    const text = await response.text();
-    if (!response.ok) {
-      throw new Error(text || ('HTTP ' + response.status));
-    }
-
-    return text;
-  }
 
   function parsePrimaryId(topic) {
     if (!topic) return '-';
@@ -77,17 +55,21 @@
       }
       updatePublishTopicsUi(data.publishDefaultTopic || '');
       const publishTopic = byId('publishTopic');
-      if (publishTopic && !publishTopic.value.trim() && data.subscribeAlarmTopic) {
-        publishTopic.value = data.subscribeAlarmTopic;
+      if (publishTopic && !publishTopic.value.trim() && data.publishDefaultTopic) {
+        publishTopic.value = data.publishDefaultTopic;
+      }
+      if (state.lastRefreshFailed) {
+        showMessage('Broker data connection restored.');
+        state.lastRefreshFailed = false;
       }
     } catch (error) {
-      showMessage('Broker data refresh failed: ' + error.message, true);
+      state.lastRefreshFailed = true;
     }
   }
 
   async function publishMessage() {
-    const topic = byId('publishTopic').value.trim();
-    const payload = byId('publishPayload').value.trim();
+    const topic = valueOf('publishTopic').trim();
+    const payload = valueOf('publishPayload').trim();
 
     if (!topic || !payload) {
       setPublishResult('Topic and payload are required.', true);
@@ -95,7 +77,7 @@
     }
 
     try {
-      const result = await postForm('/broker-console/publish', { topic, payload });
+      const result = await KrakeUI.postForm('/broker-console/publish', { topic, payload });
       setPublishResult(result || 'Published');
       showMessage('MQTT message published.');
     } catch (error) {
@@ -105,7 +87,7 @@
   }
 
   async function sendWebMessage() {
-    const topic = byId('publishTopic').value.trim();
+    const topic = valueOf('publishTopic').trim();
     const textInput = byId('webMessageText');
     const messageText = textInput ? textInput.value.trim() : '';
 
@@ -122,7 +104,7 @@
     const payload = 'a0 ' + messageText;
 
     try {
-      const result = await postForm('/broker-console/publish', { topic, payload });
+      const result = await KrakeUI.postForm('/broker-console/publish', { topic, payload });
       setWebMessageResult(result || 'Published');
       showMessage('Webpage message published.');
       byId('publishPayload').value = payload;
@@ -169,10 +151,6 @@
   }
 
   function setupUiActions() {
-    const menuToggle = byId('menuToggle');
-    if (menuToggle) {
-      menuToggle.addEventListener('click', toggleMenu);
-    }
 
     const btnSendMessage = byId('btnSendMessage');
     if (btnSendMessage) {

@@ -75,9 +75,9 @@
       <label for="broker">Broker</label>
       <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
       <label for="subscribeTopic" style="margin-top:12px; display:block;">Primary Subscribe Topic</label>
-      <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+      <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
       <label for="publishTopic" style="margin-top:12px; display:block;">Primary Publish Topic</label>
-      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
+      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
 
       <label for="topics" style="margin-top:12px; display:block;">Extra Subscribe Topics (comma-separated)</label>
       <textarea id="topics" class="text-input" rows="3" placeholder="topic1,topic2"></textarea>
@@ -85,8 +85,8 @@
       <textarea id="publishTopics" class="text-input" rows="3" placeholder="topicA,topicB"></textarea>
       <button class="action-btn" onclick="saveMqttConfig()">Save MQTT Config</button>
 
-      <div class="status-row">Primary subscribe topic: <code id="alarmTopic">-</code></div>
-      <div class="status-row">Primary publish topic: <code id="ackTopic">-</code></div>
+      <div class="status-row">Primary subscribe topic (MAC_ACK): <code id="alarmTopic">-</code></div>
+      <div class="status-row">Primary publish topic (MAC_ALM): <code id="ackTopic">-</code></div>
     </section>
   </main>
 
@@ -197,7 +197,7 @@
       cachedSettings = data;
 
       byId('broker').value = data.broker || '';
-      byId('role').value = data.role || 'Krake';
+      byId('role').value = 'Krake';
       byId('topics').value = data.extraTopics || '';
       byId('publishTopics').value = data.publishTopics || '';
       byId('subscribeTopic').value = data.subscribeTopic || '';
@@ -268,7 +268,7 @@
 
     async function saveMqttConfig() {
       try {
-        const role = byId('role').value;
+        const role = "Krake";
         const broker = byId('broker').value.trim();
         const topics = byId('topics').value;
         const publishTopics = byId('publishTopics').value;
