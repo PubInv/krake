@@ -82,18 +82,31 @@ function macFromTopic(topic) {
   return macToName[mac] ? mac : null;
 }
 
+function topicSuffix(topic) {
+  const clean = normalizeTopic(topic).toUpperCase();
+  const parts = clean.split("_");
+  return parts.length > 1 ? parts[parts.length - 1] : "";
+}
+
 function markSeen(mac, topic, payload) {
   const device = devices[mac];
   if (!device) return;
 
   const text = String(payload ?? "");
-  device.lastSeen = Date.now();
+  const suffix = topicSuffix(topic);
+  const now = Date.now();
   device.lastTopic = normalizeTopic(topic);
   device.lastMessage = text;
 
-  // Last Will / retained offline status support, if firmware publishes it.
-  const lower = text.toLowerCase();
-  device.online = !(lower.includes("offline") || lower.includes("disconnected"));
+  // _ALM may contain retained command payloads and should not force a device online.
+  // Only presence/status channels update last-seen heartbeat state.
+  if (suffix === "ACK" || suffix === "STATUS" || suffix === "HEARTBEAT") {
+    device.lastSeen = now;
+
+    // Last Will / retained offline status support, if firmware publishes it.
+    const lower = text.toLowerCase();
+    device.online = !(lower.includes("offline") || lower.includes("disconnected"));
+  }
 
   messageCount++;
   render();
