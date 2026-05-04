@@ -9,26 +9,9 @@
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>Public Invention</span>
-    </div>
+  <header id="appHeader"></header>
 
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
+  <nav id="sideMenu"></nav>
 
   <main class="container">
     <section class="card">
@@ -66,10 +49,9 @@
     <a href="https://pubinv.org" target="_blank">pubinv.org</a>
   </footer>
 
+  <script src="/js/common.js"></script>
   <script>
-    function toggleMenu() {
-      document.getElementById("sideMenu").classList.toggle("open");
-    }
+    KrakeUI.mountLayout('Public Invention');
 
     function pad20(str) {
       if (!str) return "                    ";
