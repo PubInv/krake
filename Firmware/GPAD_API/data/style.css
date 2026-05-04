@@ -1021,3 +1021,43 @@ summary:focus-visible {
   color: #123524;
   border: 1px solid #9dc5af;
 }
+
+.side-menu {
+  backdrop-filter: blur(3px);
+}
+
+.side-menu .menu-section {
+  overflow: hidden;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.side-menu .menu-section[open] {
+  border-color: #9ec7b0;
+  box-shadow: 0 4px 14px rgba(22, 101, 52, 0.12);
+}
+
+.side-menu .menu-section summary {
+  position: relative;
+  padding-right: 32px;
+}
+
+.side-menu .menu-section summary::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 9px;
+  color: #24543b;
+  transition: transform .2s ease;
+}
+
+.side-menu .menu-section[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.side-menu .menu-links a {
+  margin: 2px 0;
+}
+
+.side-menu .menu-home {
+  text-align: center;
+}
