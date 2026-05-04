@@ -1,14 +1,18 @@
 
 (function () {
   const navItems = [
-    ['Update Firmware', '/update'],
+    ['Main Menu (User)', '', 'menu-group'],
     ['GDT Track Record', '/GDT_TrackHistory.html'],
-    ['Electrical Test History', '/Electrical_testHistory.html'],
+    ['User Manual', '/manual'],
+    ['Admin', '', 'menu-group admin'],
+    ['Settings', '/settings'],
+    ['Firmware Update', '/update'],
+    ['Developer', '', 'menu-group developer'],
+    ['PMD Web UI', '/PMD_GPAD_API'],
     ['Factory Test / Developer Monitor', '/monitor'],
     ['MQTT Device Monitor', '/device-monitor'],
-    ['PMD Web UI', '/PMD_GPAD_API'],
-    ['User Manual', '/manual'],
-    ['Settings', '/settings'],
+    ['Debug / Logs', '/debug-logs'],
+    ['Electrical Test History', '/Electrical_testHistory.html'],
     ['Home', '/index.html', 'menu-home']
   ];
 
@@ -61,7 +65,10 @@
     }
     if (navTarget) {
       navTarget.className = 'side-menu';
-      navTarget.innerHTML = navItems.map(([label, href, cls]) => '<a href="' + href + '"' + (cls ? ' class="' + cls + '"' : '') + '>' + escapeHtml(label) + '</a>').join('');
+      navTarget.innerHTML = navItems.map(([label, href, cls]) => {
+        if (!href) return '<div' + (cls ? ' class="' + cls + '"' : '') + '>' + escapeHtml(label) + '</div>';
+        return '<a href="' + href + '"' + (cls ? ' class="' + cls + '"' : '') + '>' + escapeHtml(label) + '</a>';
+      }).join('');
     }
     const menuToggle = byId('menuToggle');
     if (menuToggle) menuToggle.addEventListener('click', toggleMenu);

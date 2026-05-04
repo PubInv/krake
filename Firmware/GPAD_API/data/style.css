@@ -85,6 +85,18 @@ body {
   right: 0;
 }
 
+
+.side-menu .menu-group {
+  margin: 10px 12px 4px;
+  padding: 4px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.side-menu .menu-group.admin { color: #9a6700; }
+.side-menu .menu-group.developer { color: #b00020; }
 .side-menu a {
   display: block;
   padding: 12px 14px;
