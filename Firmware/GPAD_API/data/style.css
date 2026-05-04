@@ -1112,3 +1112,18 @@ summary:focus-visible {
 .card:last-child { margin-bottom: 10px; }
 
 .subtitle, .note, .label { color: #244235; }
+
+
+/* Settings page: darker secondary controls requested */
+#btnUnmute,
+#btnReloadWifi {
+  background: #cddfd4;
+  color: #0f2b1d;
+  border-color: #6f9a82;
+}
+
+#btnUnmute:hover,
+#btnReloadWifi:hover {
+  background: #b6cebF;
+  border-color: #5d836e;
+}
