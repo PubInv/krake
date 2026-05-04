@@ -1489,7 +1489,7 @@ void setupOTA()
               request->send(200, "text/plain", "wifi reset scheduled"); });
 
   server.on("/broker-console", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/broker_console.html", "text/html"); });
+            { request->redirect("/settings"); });
 
   server.on("/broker-console/data", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "application/json", trackedKrakesJson()); });

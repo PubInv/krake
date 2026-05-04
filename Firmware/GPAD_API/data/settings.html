@@ -200,11 +200,11 @@
       byId('role').value = 'Krake';
       byId('topics').value = data.extraTopics || '';
       byId('publishTopics').value = data.publishTopics || '';
-      byId('subscribeTopic').value = data.subscribeTopic || '';
-      byId('publishTopic').value = data.publishTopic || '';
+      byId('subscribeTopic').value = data.publishTopic || '';
+      byId('publishTopic').value = data.subscribeTopic || '';
       byId('muteStatus').textContent = data.muted ? 'Muted' : 'Unmuted';
-      byId('alarmTopic').textContent = data.subscribeTopic || '-';
-      byId('ackTopic').textContent = data.publishTopic || '-';
+      byId('alarmTopic').textContent = data.publishTopic || '-';
+      byId('ackTopic').textContent = data.subscribeTopic || '-';
       updateMuteTopicPreview(data);
       return data;
     }
@@ -272,16 +272,16 @@
         const broker = byId('broker').value.trim();
         const topics = byId('topics').value;
         const publishTopics = byId('publishTopics').value;
-        const subscribeTopic = byId('subscribeTopic').value.trim();
-        const publishTopic = byId('publishTopic').value.trim();
+        const subscribeTopicUi = byId('subscribeTopic').value.trim();
+        const publishTopicUi = byId('publishTopic').value.trim();
         await postForm('/config', {
           role,
           broker,
-          subscribeTopic,
-          publishTopic,
+          subscribeTopic: publishTopicUi,
+          publishTopic: subscribeTopicUi,
           subscribeTopics: topics,
           publishTopics,
-          publishDefaultTopic: publishTopic
+          publishDefaultTopic: publishTopicUi
         });
         showMessage('MQTT config updated and saved to /mqtt.json.');
         await refreshSettings();

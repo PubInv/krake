@@ -29,11 +29,11 @@
     setInputValue('role', data.role || 'Krake');
     setInputValue('topics', data.extraTopics || '');
     setInputValue('publishTopics', data.publishTopics || '');
-    setInputValue('subscribeTopic', data.subscribeTopic || '');
-    setInputValue('publishTopic', data.publishTopic || '');
+    setInputValue('subscribeTopic', data.publishTopic || '');
+    setInputValue('publishTopic', data.subscribeTopic || '');
     KrakeUI.setText('muteStatus', data.muted ? 'Muted' : 'Unmuted');
-    KrakeUI.setText('alarmTopic', data.subscribeTopic || '-');
-    KrakeUI.setText('ackTopic', data.publishTopic || '-');
+    KrakeUI.setText('alarmTopic', data.publishTopic || '-');
+    KrakeUI.setText('ackTopic', data.subscribeTopic || '-');
   }
   async function resetWifi() {
     if (!confirm('This will clear WiFi credentials and restart KRAKE. Continue?')) return;
@@ -49,11 +49,11 @@
     try {
       const role = 'Krake';
       const broker = getInputValue('broker').trim();
-      const subscribeTopic = getInputValue('subscribeTopic').trim();
-      const publishTopic = getInputValue('publishTopic').trim();
+      const subscribeTopicUi = getInputValue('subscribeTopic').trim();
+      const publishTopicUi = getInputValue('publishTopic').trim();
       const subscribeTopics = getInputValue('topics');
       const publishTopics = getInputValue('publishTopics');
-      await KrakeUI.postForm('/config', { role, broker, subscribeTopic, publishTopic, subscribeTopics, publishTopics, publishDefaultTopic: publishTopic });
+      await KrakeUI.postForm('/config', { role, broker, subscribeTopic: publishTopicUi, publishTopic: subscribeTopicUi, subscribeTopics, publishTopics, publishDefaultTopic: publishTopicUi });
       KrakeUI.showMessage('MQTT config updated and saved to /mqtt.json.');
       await refreshSettings();
     } catch (e) { KrakeUI.showMessage('Failed to save MQTT config: ' + e.message, true); }

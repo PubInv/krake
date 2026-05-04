@@ -6,7 +6,6 @@
     ['Electrical Test History', '/Electrical_testHistory.html'],
     ['Factory Test / Developer Monitor', '/monitor'],
     ['MQTT Device Monitor', '/device-monitor'],
-    ['Broker Console', '/broker-console'],
     ['PMD Web UI', '/PMD_GPAD_API'],
     ['User Manual', '/manual'],
     ['Settings', '/settings'],
