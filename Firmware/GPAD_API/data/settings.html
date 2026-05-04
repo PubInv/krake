@@ -8,25 +8,8 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img src="/favicon.png" alt="KRAKE icon" class="brand-icon">
-      <span>Settings</span>
-    </div>
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Open menu">☰</button>
-  </header>
-
-  <nav id="sideMenu" class="side-menu">
-    <a href="/update">Update Firmware</a>
-    <a href="/GDT_TrackHistory.html">GDT Track Record</a>
-    <a href="/Electrical_testHistory.html">Electrical Test History</a>
-    <a href="/monitor">Factory Test / Developer Monitor</a>
-    <a href="/device-monitor">MQTT Device Monitor</a>
-    <a href="/PMD_GPAD_API">PMD Web UI</a>
-    <a href="/manual">User Manual</a>
-    <a href="/settings">Settings</a>
-    <a class="menu-home" href="/index.html">Home</a>
-  </nav>
+  <header id="appHeader"></header>
+  <nav id="sideMenu"></nav>
 
   <main class="container">
     <section class="card">
@@ -75,9 +58,9 @@
       <label for="broker">Broker</label>
       <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
       <label for="subscribeTopic" style="margin-top:12px; display:block;">Primary Subscribe Topic</label>
-      <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
+      <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
       <label for="publishTopic" style="margin-top:12px; display:block;">Primary Publish Topic</label>
-      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
+      <input id="publishTopic" class="text-input" placeholder="AABBCCDDEEFF_ALM" />
 
       <label for="topics" style="margin-top:12px; display:block;">Extra Subscribe Topics (comma-separated)</label>
       <textarea id="topics" class="text-input" rows="3" placeholder="topic1,topic2"></textarea>
@@ -85,8 +68,8 @@
       <textarea id="publishTopics" class="text-input" rows="3" placeholder="topicA,topicB"></textarea>
       <button class="action-btn" onclick="saveMqttConfig()">Save MQTT Config</button>
 
-      <div class="status-row">Primary subscribe topic: <code id="alarmTopic">-</code></div>
-      <div class="status-row">Primary publish topic: <code id="ackTopic">-</code></div>
+      <div class="status-row">Primary subscribe topic (MAC_ACK): <code id="alarmTopic">-</code></div>
+      <div class="status-row">Primary publish topic (MAC_ALM): <code id="ackTopic">-</code></div>
     </section>
   </main>
 
@@ -94,203 +77,7 @@
     <div id="message" class="note"></div>
   </footer>
 
-  <script>
-    let cachedSettings = null;
-
-    function toggleMenu() {
-      document.getElementById('sideMenu').classList.toggle('open');
-    }
-
-    function byId(id) {
-      return document.getElementById(id);
-    }
-
-    function showMessage(msg, isError = false) {
-      const node = byId('message');
-      node.textContent = msg;
-      node.style.color = isError ? '#b00020' : '#146620';
-    }
-
-    async function postForm(url, bodyObj) {
-      const body = new URLSearchParams(bodyObj);
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
-      });
-      const text = await res.text();
-      if (!res.ok) {
-        throw new Error(text || ('HTTP ' + res.status));
-      }
-      return text;
-    }
-
-    function splitCsv(value) {
-      return String(value || '')
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean);
-    }
-
-    function uniqueList(items) {
-      return Array.from(new Set(items.map((item) => item.trim()).filter(Boolean)));
-    }
-
-    function getConfiguredPublishTopics(settings) {
-      const data = settings || cachedSettings || {};
-      return uniqueList([
-        data.publishDefaultTopic || '',
-        data.publishTopic || '',
-        ...splitCsv(data.publishTopics || '')
-      ]);
-    }
-
-    function updateMuteTopicPreview(settings) {
-      const topics = getConfiguredPublishTopics(settings);
-      const node = byId('muteCommandTopics');
-      if (node) node.textContent = topics.length ? topics.join(', ') : 'No publish topic configured';
-    }
-
-    function setSoundButtonsBusy(isBusy) {
-      byId('btnMute').disabled = isBusy;
-      byId('btnUnmute').disabled = isBusy;
-    }
-
-    async function loadWifi() {
-      try {
-        const res = await fetch('/wifi', { cache: 'no-store' });
-        if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
-        byId('ssid').value = data.ssid || '';
-        byId('storedSsid').textContent = data.hasStored ? (data.ssid || '(hidden)') : 'None';
-        byId('storedCount').textContent = (typeof data.count === 'number') ? String(data.count) : '0';
-      } catch (e) {
-        showMessage('Unable to load WiFi settings: ' + e.message, true);
-      }
-    }
-
-    async function saveWifi() {
-      const ssid = byId('ssid').value.trim();
-      const password = byId('password').value;
-      if (!ssid) {
-        showMessage('SSID is required.', true);
-        return;
-      }
-      if (!password || !password.trim()) {
-        showMessage('Password is required.', true);
-        return;
-      }
-
-      try {
-        await postForm('/wifi', { ssid, password });
-        showMessage('WiFi credentials saved. Device will retry all saved networks on boot.');
-        await loadWifi();
-      } catch (e) {
-        showMessage('Failed to save WiFi: ' + e.message, true);
-      }
-    }
-
-    async function refreshSettings() {
-      const res = await fetch('/settings-data', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Unable to load settings');
-      const data = await res.json();
-      cachedSettings = data;
-
-      byId('broker').value = data.broker || '';
-      byId('role').value = data.role || 'Krake';
-      byId('topics').value = data.extraTopics || '';
-      byId('publishTopics').value = data.publishTopics || '';
-      byId('subscribeTopic').value = data.subscribeTopic || '';
-      byId('publishTopic').value = data.publishTopic || '';
-      byId('muteStatus').textContent = data.muted ? 'Muted' : 'Unmuted';
-      byId('alarmTopic').textContent = data.subscribeTopic || '-';
-      byId('ackTopic').textContent = data.publishTopic || '-';
-      updateMuteTopicPreview(data);
-      return data;
-    }
-
-    async function resetWifi() {
-      if (!confirm('This will clear WiFi credentials and restart KRAKE. Continue?')) return;
-      try {
-        await postForm('/settings/wifi/reset', {});
-        showMessage('WiFi reset started. Device will restart shortly.');
-      } catch (e) {
-        showMessage('WiFi reset failed: ' + e.message, true);
-      }
-    }
-
-    async function publishMuteCommandToConfiguredTopics(muted) {
-      const topics = getConfiguredPublishTopics();
-      if (!topics.length) {
-        return ['No MQTT publish topics configured. Local mute state updated only.'];
-      }
-
-      // Matches the existing Broker Console templates:
-      // S = mute/silence, U = unmute.
-      const payload = muted ? 'S' : 'U';
-      const outcomes = [];
-
-      for (const topic of topics) {
-        try {
-          await postForm('/broker-console/publish', { topic, payload });
-          outcomes.push('OK: ' + topic);
-        } catch (error) {
-          outcomes.push('ERR: ' + topic + ' (' + error.message + ')');
-        }
-      }
-
-      return outcomes;
-    }
-
-    async function setMuted(muted) {
-      setSoundButtonsBusy(true);
-      byId('muteCommandResult').textContent = muted ? 'Muting...' : 'Unmuting...';
-
-      try {
-        // 1) Apply the local setting on this device, same purpose as the physical mute/unmute action.
-        await postForm('/settings/mute', { muted: muted ? '1' : '0' });
-
-        // 2) Also send the MQTT command to configured target topics, so Settings behaves like the command button.
-        const outcomes = await publishMuteCommandToConfiguredTopics(muted);
-        const hasError = outcomes.some((item) => item.startsWith('ERR:'));
-
-        byId('muteCommandResult').textContent = outcomes.join(' | ');
-        showMessage(muted ? 'Mute command applied.' : 'Unmute command applied.', hasError);
-        await refreshSettings();
-      } catch (e) {
-        byId('muteCommandResult').textContent = 'Failed';
-        showMessage('Failed to update mute status: ' + e.message, true);
-      } finally {
-        setSoundButtonsBusy(false);
-      }
-    }
-
-
-    async function saveMqttConfig() {
-      try {
-        const role = byId('role').value;
-        const broker = byId('broker').value.trim();
-        const topics = byId('topics').value;
-        const publishTopics = byId('publishTopics').value;
-        const subscribeTopic = byId('subscribeTopic').value.trim();
-        const publishTopic = byId('publishTopic').value.trim();
-        await postForm('/config', {
-          role,
-          broker,
-          subscribeTopic,
-          publishTopic,
-          subscribeTopics: topics,
-          publishTopics,
-          publishDefaultTopic: publishTopic
-        });
-        showMessage('MQTT config updated and saved to /mqtt.json.');
-        await refreshSettings();
-      } catch (e) {
-        showMessage('Failed to save MQTT config: ' + e.message, true);
-      }
-    }
-
-    Promise.all([loadWifi(), refreshSettings()]).catch(e => showMessage(e.message, true));
-  </script>
+  <script src="/js/common.js"></script>
+  <script src="/js/settings.js"></script>
 </body>
 </html>
