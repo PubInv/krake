@@ -57,6 +57,15 @@
 <div class="stat"><span id="messageCount">0</span><small>Messages</small></div>
 </section>
 <section class="card">
+<h1>Manage Devices</h1>
+<div class="form-grid">
+<label>Device name<input class="text-input" id="deviceNameInput" placeholder="KRAKE_US0015"/></label>
+<label>MAC address<input class="text-input" id="deviceMacInput" placeholder="F4650BC0B531" maxlength="12"/></label>
+<button class="action-btn" id="addDeviceBtn" type="button">Add device</button>
+</div>
+<p class="status-row">Add and remove devices for this browser session. Saved in local storage.</p>
+</section>
+<section class="card">
 <h1>Device Registry</h1>
 <div class="table-wrap">
 <table>
@@ -68,6 +77,7 @@
 <th>Last topic</th>
 <th>Last seen</th>
 <th>Last message</th>
+<th>Actions</th>
 </tr>
 </thead>
 <tbody id="deviceTable"></tbody>
