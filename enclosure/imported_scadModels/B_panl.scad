@@ -18,7 +18,7 @@ module B_panl_part()
  
  color("red")translate([-0.4,115,35])mirror([0,1,0])rotate([90,0,90])linear_extrude(height = 1, center = true, convexity = 10)
    scale(0.012)import (file = "KRAKE_3.dxf", layer = "0");
-    
+    color("red")translate([-0.8,130,39])mirror([0,1,0])rotate([90,0,90])linear_extrude(height = 1, center = false, convexity = 10)scale(0.1)import("PI-LogoTransparent.svg");
 }
  
  
