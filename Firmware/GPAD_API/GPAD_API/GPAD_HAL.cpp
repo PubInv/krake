@@ -746,6 +746,26 @@ void clearLCD(void)
   lcd.clear();
 }
 
+void showMqttStatusLCD(bool connected)
+{
+  lcd.init();
+  lcd.clear();
+  if (connected)
+  {
+    lcd.noBacklight();
+    return;
+  }
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("MQTT DISCONNECTED   ");
+  lcd.setCursor(0, 1);
+  lcd.print("Alarm status stale  ");
+  lcd.setCursor(0, 2);
+  lcd.print("Reconnecting...     ");
+  lcd.setCursor(0, 3);
+  lcd.print("                    ");
+}
+
 // Splash a message so we can tell the LCD is working
 void splashLCD(wifi_mode_t wifiMode, IPAddress &deviceIp)
 {
