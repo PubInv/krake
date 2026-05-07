@@ -77,6 +77,7 @@
 #include "DFPlayer.h"
 #include "GPAD_menu.h"
 
+
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
@@ -285,10 +286,10 @@ unsigned long nextLEDchangee_ms = 5000; // time in ms.
 void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
   debugSerial.print("\nWifi Disconnected. Reason: ");
   debugSerial.println(info.wifi_sta_disconnected.reason);
-  
+
   // OPTION A: Simple Reconnect
-  //WiFi.begin(); 
-  
+  //WiFi.begin();
+
   // OPTION B: Re-trigger WiFiManager Portal
   // wm.startConfigPortal("AutoConnectAP");
 }
@@ -1605,6 +1606,8 @@ void setupOTA()
 
 void setup()
 {
+
+
   pinMode(LED_BUILTIN, OUTPUT); // set the LED pin mode
   digitalWrite(LED_BUILTIN, HIGH);
   // Serial setup
@@ -1614,6 +1617,9 @@ void setup()
   {
     ; // wait for serial port to connect. Needed for native USB
   }
+
+  printMemStats(&debugSerial);
+
   serialSplash();
   // We call this a second time to get the MAC on the screen
   // clearLCD();
@@ -1754,7 +1760,7 @@ void setup()
   debugSerial.println(F("initLiffleFS"));
 
   server.begin(); // Start server web socket to render pages
-  
+
   debugSerial.println(F("iStart server web socket to render pages"));
 
   ElegantOTA.begin(&server);
@@ -1781,6 +1787,9 @@ void setup()
   debugSerial.println(F("Done With Setup!"));
   turnOnAllLamps();
   digitalWrite(LED_BUILTIN, LOW); // turn the LED off at end of setup
+
+  printMemStats(&debugSerial);
+
 } // end of setup()
 
 unsigned long last_ms = 0;
@@ -1790,15 +1799,23 @@ void toggle(int pin)
 }
 
 const unsigned long LOW_FREQ_DEBUG_MS = 20000;
-unsigned long time_since_LOW_FREQ_ms = 0;
+// unsigned long time_since_LOW_FREQ_ms = 0;
 
 int cnt_actions = 0;
 
 bool running_menu = false;
 bool menu_just_exited = false;
 
+unsigned long time_since_mem_stats = 0;
+const unsigned long MEM_TIMER_LIMT_MS = 30*1000;
 void loop()
 {
+  unsigned long now = millis();
+  if (now  > (MEM_TIMER_LIMT_MS +  time_since_mem_stats)) {
+    printMemStats(&debugSerial);
+    time_since_mem_stats = millis();
+  }
+
 #if defined HMWK || defined KRAKE
 
   if (!client.loop())

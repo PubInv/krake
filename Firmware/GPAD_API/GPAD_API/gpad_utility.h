@@ -20,6 +20,10 @@
 
 #ifndef GPAD_UTILITY
 #define GPAD_UTILITY 1
+
+#include "esp_system.h"
+#include "esp_heap_caps.h"
+
 #include <Stream.h>
 #ifndef COMPANY_NAME
 #define COMPANY_NAME ""
@@ -49,4 +53,5 @@
 void printError(Stream *serialport);
 void printInstructions(Stream *serialport);
 void printAlarmState(Stream *serialport);
+void printMemStats(Stream *serialport);
 #endif

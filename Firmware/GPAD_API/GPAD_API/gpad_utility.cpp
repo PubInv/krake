@@ -50,3 +50,18 @@ void printAlarmState(Stream *serialport)
     serialport->println(AlarmMessageBuffer);
   }
 }
+
+
+void printMemStats(Stream *serialport) {
+    // 1. Get total free heap across all regions
+    uint32_t free_heap = esp_get_free_heap_size();
+    serialport->printf("Total free heap: %u bytes\n", free_heap);
+
+    // 2. Get free heap with specific capabilities (e.g., 8-bit accessible memory)
+    size_t free_8bit = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    serialport->printf("Free 8-bit heap: %zu bytes\n", free_8bit);
+
+    // 3. Get the largest single contiguous block available (important for large allocations)
+    size_t max_block = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    serialport->printf("Largest free block: %zu bytes\n", max_block);
+}
