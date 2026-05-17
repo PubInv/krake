@@ -1,0 +1,7 @@
+{
+  "name": "littlefs_native",
+  "version": "0.1.0",
+  "build": {
+    "srcFilter": ["+<*.c>"]
+  }
+}
