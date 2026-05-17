@@ -1547,6 +1547,74 @@ String templateProcessor(const String &var)
   return WifiOTA::processor(var);
 }
 
+void addWebUiHeaders(AsyncWebServerResponse *response, bool noStore = true)
+{
+  if (response == nullptr)
+  {
+    return;
+  }
+  response->addHeader("Cache-Control", noStore ? "no-store, no-cache, must-revalidate, max-age=0" : "no-cache, max-age=60");
+  response->addHeader("Pragma", "no-cache");
+  response->addHeader("Expires", "0");
+  response->addHeader("X-Content-Type-Options", "nosniff");
+}
+
+void sendTextResponse(AsyncWebServerRequest *request, int code, const char *contentType, const String &body)
+{
+  AsyncWebServerResponse *response = request->beginResponse(code, contentType, body);
+  addWebUiHeaders(response);
+  request->send(response);
+}
+
+const char *contentTypeForPath(const char *path)
+{
+  if (path == nullptr)
+  {
+    return "application/octet-stream";
+  }
+  const char *dot = strrchr(path, '.');
+  if (dot == nullptr)
+  {
+    return "text/plain";
+  }
+  if (strcmp(dot, ".html") == 0)
+  {
+    return "text/html";
+  }
+  if (strcmp(dot, ".css") == 0)
+  {
+    return "text/css";
+  }
+  if (strcmp(dot, ".js") == 0)
+  {
+    return "application/javascript";
+  }
+  if (strcmp(dot, ".json") == 0)
+  {
+    return "application/json";
+  }
+  if (strcmp(dot, ".png") == 0)
+  {
+    return "image/png";
+  }
+  if (strcmp(dot, ".ico") == 0)
+  {
+    return "image/x-icon";
+  }
+  return "application/octet-stream";
+}
+
+bool isNoStorePath(const char *path)
+{
+  if (path == nullptr)
+  {
+    return true;
+  }
+  const char *dot = strrchr(path, '.');
+  return dot == nullptr || strcmp(dot, ".html") == 0 || strcmp(dot, ".js") == 0 ||
+         strcmp(dot, ".css") == 0 || strcmp(dot, ".json") == 0;
+}
+
 void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char *contentType)
 {
   char gzipPath[64];
@@ -1555,10 +1623,30 @@ void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char
   {
     AsyncWebServerResponse *response = request->beginResponse(LittleFS, gzipPath, contentType);
     response->addHeader("Content-Encoding", "gzip");
+    addWebUiHeaders(response, isNoStorePath(path));
     request->send(response);
     return;
   }
-  request->send(LittleFS, path, contentType);
+  if (LittleFS.exists(path))
+  {
+    AsyncWebServerResponse *response = request->beginResponse(LittleFS, path, contentType);
+    addWebUiHeaders(response, isNoStorePath(path));
+    request->send(response);
+    return;
+  }
+  sendTextResponse(request, 404, "text/plain", "not found");
+}
+
+void sendStaticFile(AsyncWebServerRequest *request, const char *path)
+{
+  sendStaticFile(request, path, contentTypeForPath(path));
+}
+
+void sendTemplateFile(AsyncWebServerRequest *request, const char *path)
+{
+  AsyncWebServerResponse *response = request->beginResponse(LittleFS, path, contentTypeForPath(path), false, templateProcessor);
+  addWebUiHeaders(response);
+  request->send(response);
 }
 
 // Elegant OTA Setup
@@ -1568,10 +1656,10 @@ void setupOTA()
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/index.html", "text/html", false, templateProcessor); });
+            { sendTemplateFile(request, "/index.html"); });
 
   server.on("/monitor", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/monitor.html", "text/html", false, templateProcessor); });
+            { sendTemplateFile(request, "/monitor.html"); });
 
   server.on("/device-monitor", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendStaticFile(request, "/device-monitor.html", "text/html"); });
@@ -1593,7 +1681,7 @@ void setupOTA()
               payload += "\",\"";
               payload += jsonEscape(lcd.line(3));
               payload += "\"]}";
-              request->send(200, "application/json", payload); });
+              sendTextResponse(request, 200, "application/json", payload); });
 
   server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request)
             {
@@ -1610,11 +1698,11 @@ void setupOTA()
               payload += "\"serialBaud\":\"" + String(BAUDRATE) + "\",";
               payload += "\"url\":\"" + jsonEscape(currentUrl()) + "\"";
               payload += "}";
-              request->send(200, "application/json", payload); });
+              sendTextResponse(request, 200, "application/json", payload); });
 
   server.on("/serial-monitor", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              request->send(200, "text/plain", serialLogBuffer); });
+              sendTextResponse(request, 200, "text/plain", serialLogBuffer); });
 
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendStaticFile(request, "/settings.html", "text/html"); });
@@ -1634,7 +1722,7 @@ void setupOTA()
               payload += "\"ssid\":\"" + jsonEscape(ssid) + "\",";
               payload += "\"count\":" + String(credentials.count);
               payload += "}";
-              request->send(200, "application/json", payload); });
+              sendTextResponse(request, 200, "application/json", payload); });
 
   server.on("/wifi", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -1719,7 +1807,7 @@ void setupOTA()
               payload += "\"role\":\"" + jsonEscape(String(device_role)) + "\",";
               payload += "\"muted\":" + String(isMuted() ? "true" : "false");
               payload += "}";
-              request->send(200, "application/json", payload); });
+              sendTextResponse(request, 200, "application/json", payload); });
 
   server.on("/config", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -1891,7 +1979,7 @@ void setupOTA()
             { request->redirect("/settings"); });
 
   server.on("/broker-console/data", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "application/json", trackedKrakesJson()); });
+            { sendTextResponse(request, 200, "application/json", trackedKrakesJson()); });
 
   server.on("/broker-console/topic", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -1991,10 +2079,19 @@ void setupOTA()
               }
               request->send(ok ? 200 : 500, "text/plain", ok ? "published" : "publish failed"); });
 
-  server.serveStatic("/", LittleFS, "/");
+  AsyncStaticWebHandler *staticHandler = &server.serveStatic("/", LittleFS, "/");
+  staticHandler->setDefaultFile("index.html");
+  staticHandler->setCacheControl("no-store, no-cache, must-revalidate, max-age=0");
 
   server.onNotFound([](AsyncWebServerRequest *request)
-                    { sendStaticFile(request, "/404.html", "text/html"); });
+                    {
+                      if (request->method() == AsyncWebRequestMethod::HTTP_GET)
+                      {
+                        sendStaticFile(request, "/index.html", "text/html");
+                        return;
+                      }
+                      sendTextResponse(request, 404, "text/plain", "not found");
+                    });
 
   // End of ELegant OTA Setup
 }

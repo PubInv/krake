@@ -241,15 +241,15 @@ namespace
   const uint8_t LCD_ROWS = 4;
   const uint8_t LCD_STATUS_COL = 16;
   const uint8_t LCD_MAIN_WIDTH = LCD_STATUS_COL;
-  const uint8_t LCD_ALARM_WINDOW_WIDTH = LCD_COLS * 2;
+  const uint8_t LCD_MSG_ROWS = 2;
+  const size_t MAX_ALARM_TEXT = 160;
+  const uint8_t MAX_WRAPPED_LINES = 8;
   const uint8_t ICON_WIFI = 1;
   const uint8_t ICON_VOLUME = 3;
   const uint8_t ICON_MUTE = 4;
   const uint8_t ICON_SETTINGS = 5;
   const uint8_t ALARM_ACTION_COUNT = 4;
   const unsigned long LCD_RENDER_MIN_INTERVAL_MS = 150;
-  const unsigned long LCD_SCROLL_STEP_MS = 400;
-  const unsigned long LCD_SCROLL_PAUSE_MS = 1500;
 
   bool alarmUiUpdatePending = false;
   bool alarmAudioUpdatePending = false;
@@ -263,10 +263,10 @@ namespace
   uint8_t alarmActionSelection = 0;
   uint8_t alarmQueueCount = 0;
   unsigned long lastLcdRenderMs = 0;
-  char alarmDisplayBuffer[128] = "";
-  size_t scrollIndex = 0;
-  unsigned long lastScrollMs = 0;
-  bool scrollEnabled = false;
+  char alarmText[MAX_ALARM_TEXT] = "";
+  char wrappedLines[MAX_WRAPPED_LINES][LCD_COLS + 1];
+  uint8_t wrappedLineCount = 0;
+  uint8_t alarmPage = 0;
   bool iconFocusActive = false;
   enum LcdFocus : uint8_t
   {
@@ -404,26 +404,280 @@ namespace
     }
   }
 
-  void renderTwoLineMessageWindow(char rows[LCD_ROWS][LCD_COLS + 1], const char *msg, size_t offset)
+  void clearWrappedLines()
   {
-    char alarmWindow[LCD_ALARM_WINDOW_WIDTH + 1];
-    memset(alarmWindow, ' ', LCD_ALARM_WINDOW_WIDTH);
-    alarmWindow[LCD_ALARM_WINDOW_WIDTH] = '\0';
-
-    const size_t len = strlen(msg);
-    for (size_t i = 0; i < LCD_ALARM_WINDOW_WIDTH; i++)
+    wrappedLineCount = 0;
+    for (uint8_t row = 0; row < MAX_WRAPPED_LINES; row++)
     {
-      size_t src = offset + i;
-      if (src < len)
+      memset(wrappedLines[row], ' ', LCD_COLS);
+      wrappedLines[row][LCD_COLS] = '\0';
+    }
+  }
+
+  bool copyJsonFieldValue(const char *src, const char *key, char *dst, size_t dstSize)
+  {
+    if (src == nullptr || key == nullptr || dst == nullptr || dstSize == 0)
+    {
+      return false;
+    }
+
+    char pattern[24];
+    snprintf(pattern, sizeof(pattern), "\"%s\"", key);
+    const char *keyPos = strstr(src, pattern);
+    if (keyPos == nullptr)
+    {
+      return false;
+    }
+
+    const char *colon = strchr(keyPos + strlen(pattern), ':');
+    if (colon == nullptr)
+    {
+      return false;
+    }
+
+    const char *value = colon + 1;
+    while (*value == ' ')
+    {
+      value++;
+    }
+
+    const bool quoted = (*value == '"');
+    if (quoted)
+    {
+      value++;
+    }
+
+    size_t out = 0;
+    for (; *value != '\0' && out + 1 < dstSize; value++)
+    {
+      if (quoted)
       {
-        alarmWindow[i] = msg[src];
+        if (*value == '"')
+        {
+          break;
+        }
+        if (*value == '\\' && value[1] != '\0')
+        {
+          value++;
+          switch (*value)
+          {
+          case 'n':
+          case 'r':
+          case 't':
+            dst[out++] = ' ';
+            break;
+          default:
+            dst[out++] = *value;
+            break;
+          }
+          continue;
+        }
+      }
+      else if (*value == ',' || *value == '}')
+      {
+        break;
+      }
+
+      dst[out++] = *value;
+    }
+    dst[out] = '\0';
+    return out > 0;
+  }
+
+  void extractReadableAlarmPayload(const char *src, char *dst, size_t dstSize)
+  {
+    if (dstSize == 0)
+    {
+      return;
+    }
+    dst[0] = '\0';
+    if (src == nullptr)
+    {
+      return;
+    }
+
+    const char *keys[] = {"message", "msg", "alarm", "content", "description", "text"};
+    for (uint8_t i = 0; i < (sizeof(keys) / sizeof(keys[0])); i++)
+    {
+      if (copyJsonFieldValue(src, keys[i], dst, dstSize))
+      {
+        return;
       }
     }
 
-    memcpy(rows[1], alarmWindow, LCD_COLS);
+    const char *payload = src;
+    const char *lastPipe = strrchr(src, '|');
+    if (lastPipe != nullptr && lastPipe[1] != '\0')
+    {
+      payload = lastPipe + 1;
+    }
+    else if (strncmp(src, "GPAP:", 5) == 0)
+    {
+      payload = src + 5;
+    }
+
+    snprintf(dst, dstSize, "%s", payload);
+  }
+
+  void sanitizeAlarmText(const char *src, char *dst, size_t dstSize)
+  {
+    if (dstSize == 0)
+    {
+      return;
+    }
+    dst[0] = '\0';
+    if (src == nullptr)
+    {
+      return;
+    }
+
+    char readable[MAX_ALARM_TEXT];
+    extractReadableAlarmPayload(src, readable, sizeof(readable));
+
+    size_t out = 0;
+    bool lastWasSpace = true;
+    for (size_t in = 0; readable[in] != '\0' && out + 1 < dstSize; in++)
+    {
+      char c = readable[in];
+      if (c == '\r' || c == '\n' || c == '\t')
+      {
+        c = ' ';
+      }
+      if (c < 32 || c > 126)
+      {
+        continue;
+      }
+      if (c == ' ')
+      {
+        if (lastWasSpace)
+        {
+          continue;
+        }
+        lastWasSpace = true;
+      }
+      else
+      {
+        lastWasSpace = false;
+      }
+      dst[out++] = c;
+    }
+    while (out > 0 && dst[out - 1] == ' ')
+    {
+      out--;
+    }
+    dst[out] = '\0';
+  }
+
+  void wrapAlarmTextToLines(const char *text)
+  {
+    clearWrappedLines();
+    if (text == nullptr || text[0] == '\0')
+    {
+      copyText(wrappedLines[0], 0, LCD_COLS, "No alarm message");
+      wrappedLineCount = 1;
+      alarmPage = 0;
+      return;
+    }
+
+    size_t pos = 0;
+    const size_t len = strlen(text);
+    while (pos < len && wrappedLineCount < MAX_WRAPPED_LINES)
+    {
+      while (pos < len && text[pos] == ' ')
+      {
+        pos++;
+      }
+      if (pos >= len)
+      {
+        break;
+      }
+
+      size_t remaining = len - pos;
+      size_t take = (remaining > LCD_COLS) ? LCD_COLS : remaining;
+      if (remaining > LCD_COLS)
+      {
+        int breakAt = -1;
+        for (int i = LCD_COLS; i >= 0; i--)
+        {
+          if (text[pos + i] == ' ')
+          {
+            breakAt = i;
+            break;
+          }
+        }
+        if (breakAt > 4)
+        {
+          take = static_cast<size_t>(breakAt);
+        }
+      }
+
+      memcpy(wrappedLines[wrappedLineCount], text + pos, take);
+      wrappedLines[wrappedLineCount][LCD_COLS] = '\0';
+      wrappedLineCount++;
+      pos += take;
+    }
+
+    if (wrappedLineCount == 0)
+    {
+      copyText(wrappedLines[0], 0, LCD_COLS, "No alarm message");
+      wrappedLineCount = 1;
+    }
+    if (pos < len)
+    {
+      wrappedLines[wrappedLineCount - 1][LCD_COLS - 3] = '.';
+      wrappedLines[wrappedLineCount - 1][LCD_COLS - 2] = '.';
+      wrappedLines[wrappedLineCount - 1][LCD_COLS - 1] = '.';
+    }
+    alarmPage = 0;
+  }
+
+  uint8_t alarmPageCount()
+  {
+    if (wrappedLineCount == 0)
+    {
+      return 1;
+    }
+    return (wrappedLineCount + (LCD_MSG_ROWS - 1)) / LCD_MSG_ROWS;
+  }
+
+  void renderAlarmPage(char rows[LCD_ROWS][LCD_COLS + 1])
+  {
+    const uint8_t lineIndex = alarmPage * LCD_MSG_ROWS;
+    memcpy(rows[1], lineIndex < wrappedLineCount ? wrappedLines[lineIndex] : "                    ", LCD_COLS);
     rows[1][LCD_COLS] = '\0';
-    memcpy(rows[2], alarmWindow + LCD_COLS, LCD_COLS);
+    memcpy(rows[2], (lineIndex + 1) < wrappedLineCount ? wrappedLines[lineIndex + 1] : "                    ", LCD_COLS);
     rows[2][LCD_COLS] = '\0';
+  }
+
+  bool setAlarmPage(uint8_t page)
+  {
+    const uint8_t pages = alarmPageCount();
+    if (pages <= 1)
+    {
+      alarmPage = 0;
+      return false;
+    }
+    alarmPage = page % pages;
+    return true;
+  }
+
+  bool moveAlarmPage(bool clockwise)
+  {
+    const uint8_t pages = alarmPageCount();
+    if (pages <= 1)
+    {
+      alarmPage = 0;
+      return false;
+    }
+    if (clockwise)
+    {
+      alarmPage = (alarmPage + 1) % pages;
+    }
+    else
+    {
+      alarmPage = (alarmPage == 0) ? (pages - 1) : (alarmPage - 1);
+    }
+    return true;
   }
 
   void formatMain(char *row, const char *fmt, ...)
@@ -1559,13 +1813,23 @@ bool alarmActionSelectorHandleRotation(bool clockwise)
 
   if (alarmIsActive())
   {
-    if (lcdUiState == MAIN_PAGE && lcdFocus >= FOCUS_WIFI && lcdFocus <= FOCUS_SETTINGS)
+    if (lcdUiState == MAIN_PAGE && iconFocusActive && lcdFocus >= FOCUS_WIFI && lcdFocus <= FOCUS_SETTINGS)
     {
       iconFocusActive = true;
       lcdFocus = nextFocus(lcdFocus, clockwise);
       markLcdDirty();
       requestAlarmRefresh(local_ptr_to_serial, false);
       return true;
+    }
+
+    if (lcdUiState == MAIN_PAGE && !iconFocusActive)
+    {
+      if (moveAlarmPage(clockwise))
+      {
+        markLcdDirty();
+        requestAlarmRefresh(local_ptr_to_serial, false);
+        return true;
+      }
     }
 
     const bool wasSelectingAlarmAction = (lcdUiState == ALARM_ACTION_SELECT);
@@ -1691,8 +1955,17 @@ bool alarmActionSelectorHandlePress()
     return true;
   }
 
+  if (alarmIsActive() && lcdUiState == MAIN_PAGE && !iconFocusActive)
+  {
+    showAlarmActions();
+    requestAlarmRefresh(local_ptr_to_serial, false);
+    return true;
+  }
+
   if (alarmIsActive() && lcdUiState != ALARM_ACTION_SELECT && lcdFocus == FOCUS_ALARM_ACTIONS)
   {
+    showAlarmActions();
+    requestAlarmRefresh(local_ptr_to_serial, false);
     return true;
   }
 
@@ -1941,8 +2214,6 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
   }
 
   alarmQueueCount = (level == silent) ? 0 : 1;
-  char cleanMsg[MAX_BUFFER_SIZE];
-  filterCopy(cleanMsg, sizeof(cleanMsg), msg);
 
   if (lcdUiState == INFO_PAGE)
   {
@@ -1969,6 +2240,9 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
   }
   else if (level == silent)
   {
+    alarmText[0] = '\0';
+    clearWrappedLines();
+    alarmPage = 0;
     if (lcdUiState == ALARM_ACTION_SELECT)
     {
       lcdUiState = MAIN_PAGE;
@@ -1991,16 +2265,9 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
   }
   else
   {
-    if (alarmQueueCount > 1)
-    {
-      formatMain(rows[0], "PAQ:+ NEXT");
-    }
-    else
-    {
-      formatMain(rows[0], "PAQ:1");
-    }
-
-    char displayText[sizeof(alarmDisplayBuffer)];
+    char cleanMsg[MAX_ALARM_TEXT];
+    sanitizeAlarmText(msg, cleanMsg, sizeof(cleanMsg));
+    char displayText[MAX_ALARM_TEXT];
     if (currentAlarmType[0] != '\0')
     {
       snprintf(displayText, sizeof(displayText), "%s %s %s", alarmLevelLabel(level), currentAlarmType, cleanMsg);
@@ -2010,49 +2277,43 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
       snprintf(displayText, sizeof(displayText), "%s %s", alarmLevelLabel(level), cleanMsg);
     }
 
-    const size_t displayLen = strlen(displayText);
-    if (displayLen <= LCD_ALARM_WINDOW_WIDTH)
+    if (strcmp(alarmText, displayText) != 0)
     {
-      scrollEnabled = false;
-      scrollIndex = 0;
-      lastScrollMs = millis();
-      renderTwoLineMessageWindow(rows, displayText, 0);
+      snprintf(alarmText, sizeof(alarmText), "%s", displayText);
+      wrapAlarmTextToLines(alarmText);
+      iconFocusActive = false;
+    }
+
+    const uint8_t pages = alarmPageCount();
+    if (alarmPage >= pages)
+    {
+      setAlarmPage(0);
+    }
+
+    if (alarmQueueCount > 1)
+    {
+      if (pages > 1)
+      {
+        formatMain(rows[0], "PAQ:+ P%u/%u", static_cast<unsigned>(alarmPage + 1), static_cast<unsigned>(pages));
+      }
+      else
+      {
+        formatMain(rows[0], "PAQ:+ NEXT");
+      }
     }
     else
     {
-      if (!scrollEnabled || strcmp(alarmDisplayBuffer, displayText) != 0)
+      if (pages > 1)
       {
-        strncpy(alarmDisplayBuffer, displayText, sizeof(alarmDisplayBuffer) - 1);
-        alarmDisplayBuffer[sizeof(alarmDisplayBuffer) - 1] = '\0';
-        scrollIndex = 0;
-        lastScrollMs = millis();
-        scrollEnabled = true;
+        formatMain(rows[0], "PAQ:1 P%u/%u", static_cast<unsigned>(alarmPage + 1), static_cast<unsigned>(pages));
       }
-
-      const unsigned long now = millis();
-      const size_t maxScrollIndex = displayLen - LCD_ALARM_WINDOW_WIDTH;
-      if (scrollIndex > maxScrollIndex)
+      else
       {
-        scrollIndex = maxScrollIndex;
+        formatMain(rows[0], "PAQ:1");
       }
-
-      const bool atEnd = (scrollIndex == maxScrollIndex);
-      const unsigned long intervalMs = atEnd ? LCD_SCROLL_PAUSE_MS : LCD_SCROLL_STEP_MS;
-      if ((now - lastScrollMs) >= intervalMs)
-      {
-        if (atEnd)
-        {
-          scrollIndex = 0;
-        }
-        else
-        {
-          scrollIndex++;
-        }
-        lastScrollMs = now;
-      }
-
-      renderTwoLineMessageWindow(rows, alarmDisplayBuffer, scrollIndex);
     }
+
+    renderAlarmPage(rows);
 
     if (lcdUiState == ALARM_ACTION_SELECT)
     {
