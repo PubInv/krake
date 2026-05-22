@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Krake - Open Source Alarm Device</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero" id="top">
+    <nav class="nav">
+      <a class="brand" href="#top"><img src="assets/extracted-005.png" alt="Krake logo"></a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#works">How it works</a>
+        <a href="#team">Team</a>
+      </div>
+    </nav>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1>Nature perfected the alarm, we open sourced it.</h1>
+        <a class="button" href="https://github.com/PubInv/krake" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <img class="device" src="assets/extracted-002.png" alt="Krake alarm device">
+    </div>
+    <p class="tagline">A wireless alarm device purpose-built for life's critical moments</p>
+  </header>
+
+  <main>
+    <section class="about" id="about">
+      <div class="about-card">
+        <h2>About Krake</h2>
+        <p>Based on the Public Invention General Purpose Alarm Device, Krake is a wireless alarm device. It flashes lights, plays audio files such as speech, music, and alarm sounds, and adds GPAD functionality with a rotary encoder.</p>
+        <p>Krake is an annunciator meant to alert a human to something needing attention. It has been developed primarily by volunteer Nagham Kheir, with oversight from volunteer invention coach Lee Erickson.</p>
+        <img class="oshw" src="assets/extracted-007.png" alt="Open Source Hardware certification US002818">
+      </div>
+    </section>
+
+    <section class="name-section">
+      <div>
+        <h2>The Name</h2>
+        <p>The hope was to develop the initial design for a wireless alarm device to alert nearby parties of a particular state.</p>
+        <p>We developed the name of this invention team based on a crake: a bird with a distinctive, slightly alarming cry.</p>
+        <p>We changed the spelling as a joke. “Flaycrake” is an old term for a scarecrow, which also aligned with our mission.</p>
+      </div>
+      <div class="name-art">
+        <img src="assets/extracted-009.png" alt="Krake bird logo">
+        <div class="bird-note"><img src="assets/extracted-010.png" alt="Crake bird"><span>The male corn crake's advertising call is a loud, repetitive, grating “krek krek”.</span></div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="section-title-row"><h2>Everything an alarm should be</h2><span>FEATURES</span></div>
+      <div class="feature-grid">
+        <article><span>🔊</span><h3>Multilingual audio</h3><p>Custom speech and sounds via SD card.</p></article>
+        <article><span>📶</span><h3>Wi-Fi & MQTT</h3><p>Alerts over your local network or internet.</p></article>
+        <article><span>💡</span><h3>5 LED levels</h3><p>Steady or blinking, visible across a room.</p></article>
+        <article><span>⚙️</span><h3>Rotary knob</h3><p>Navigate settings without external device.</p></article>
+        <article><span>⚡</span><h3>Flexible power</h3><p>USB-C, barrel jack, or RJ12.</p></article>
+        <article><span>🔇</span><h3>Mute button</h3><p>Silence audio instantly with one press.</p></article>
+        <article><span>🐙</span><h3>Fully open source</h3><p>AGPL firmware, CERN OHL hardware.</p></article>
+        <article><span>✚</span><h3>HL7 compatible</h3><p>Works with medical data standards.</p></article>
+      </div>
+    </section>
+
+    <section class="needs" id="needs">
+      <div class="photo-strip"><img src="assets/extracted-012.png" alt="Care at home"><img src="assets/extracted-013.png" alt="Medical equipment use"></div>
+      <h2>Who needs Krake?</h2>
+      <div class="need-grid">
+        <article><h3>Care at Home</h3><p>Alert an elderly person living alone to a fall or blood pressure drop, giving family peace of mind from anywhere.</p></article>
+        <article><h3>Medical Equipment</h3><p>For ventilators and critical devices, Krake provides a dedicated alarm channel for life-threatening mechanical failures.</p></article>
+        <article><h3>IT Infrastructure</h3><p>Alert on-site staff when a server overheats, a UPS fails, or network connectivity drops.</p></article>
+      </div>
+    </section>
+
+    <section class="how" id="works">
+      <div class="how-head"><h2>Simple by design</h2><span>HOW IT WORKS</span></div>
+      <div class="steps">
+        <article><b>1</b><h3>Condition detected</h3><p>A sensor, medical device, or network message triggers an alarm event.</p></article>
+        <article><b>2</b><h3>Krake receives it</h3><p>Alert arrives wirelessly via MQTT over your local network or internet.</p></article>
+        <article><b>3</b><h3>You're alerted</h3><p>Lights flash, audio plays, and acknowledgement is sent back.</p></article>
+      </div>
+    </section>
+
+    <section class="open">
+      <div class="open-logo"><img src="assets/extracted-014.png" alt="Public Invention logo"></div>
+      <div>
+        <h2>Built in the open, for everyone</h2>
+        <p>Krake is a Public Invention project developed entirely by volunteers. The hardware is licensed under CERN OHL and the firmware under AGPL 3.0. Fork it, improve it, build on it.</p>
+        <a class="button outline" href="https://github.com/PubInv/krake" target="_blank" rel="noopener">PubInv / krake</a>
+      </div>
+    </section>
+
+    <section class="team" id="team">
+      <h2>The Team</h2>
+      <div class="team-wrap">
+        <div class="map" aria-hidden="true"></div>
+        <div class="people">
+          <article><img src="assets/extracted-022.png" alt="Lee Erickson"><h3>Lee Erickson</h3><p>Invention Coach</p></article>
+          <article><img src="assets/extracted-025.png" alt="Robert Read"><h3>Robert L. Read</h3><p>Invention Coach</p></article>
+          <article><img src="assets/extracted-028.png" alt="Yehia Shahaby"><h3>Yehia Shahaby</h3><p>Public Inventor</p></article>
+          <article><img src="assets/extracted-016.png" alt="Nagham Kheir"><h3>Nagham Kheir</h3><p>Invention Coach</p></article>
+          <article><img src="assets/extracted-031.png" alt="Courtney Lucick"><h3>Courtney Lucick</h3><p>Public Inventor</p></article>
+          <article><img src="assets/extracted-019.png" alt="Yukti"><h3>Yukti</h3><p>Public Inventor</p></article>
+          <article><img src="assets/extracted-034.png" alt="Juhandre Knoetze"><h3>Juhandre Knoetze</h3><p>Public Inventor</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
