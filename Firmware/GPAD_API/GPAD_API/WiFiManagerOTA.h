@@ -56,7 +56,9 @@ namespace WifiOTA
         void startPortal(const char *const accessPointSsid);
     };
 
-    void initLittleFS();
+    bool initLittleFS();
+    bool isLittleFSMounted();
+    void printLittleFSDiagnostics(Print &print);
     String processor(const String &var);
 };
 

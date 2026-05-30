@@ -4,6 +4,7 @@
 namespace
 {
   const char *WIFI_CREDENTIALS_PATH = "/wifi.json";
+  bool littleFsMounted = false;
 
   String jsonEscape(const String &value)
   {
@@ -200,6 +201,11 @@ void Manager::startConfigPortal(const char *const accessPointSsid, unsigned long
 bool Manager::forgetSavedCredentials()
 {
   this->wifiManager.resetSettings();
+  if (!littleFsMounted)
+  {
+    this->print.println(F("Cannot remove wifi.json: LittleFS is unavailable."));
+    return false;
+  }
   if (LittleFS.exists(WIFI_CREDENTIALS_PATH))
   {
     return LittleFS.remove(WIFI_CREDENTIALS_PATH);
@@ -222,6 +228,12 @@ IPAddress Manager::getAddress()
 
 bool Manager::saveCredentials(const String &ssid, const String &password)
 {
+  if (!littleFsMounted)
+  {
+    this->print.println(F("Cannot save wifi.json: LittleFS is unavailable."));
+    return false;
+  }
+
   String trimmedSsid = ssid;
   String trimmedPassword = password;
   trimmedSsid.trim();
@@ -290,6 +302,11 @@ bool Manager::loadCredentials(String &ssid, String &password)
 bool Manager::loadCredentialsList(CredentialList &credentials)
 {
   credentials.count = 0;
+  if (!littleFsMounted)
+  {
+    this->print.println(F("Cannot load wifi.json: LittleFS is unavailable."));
+    return false;
+  }
   if (!LittleFS.exists(WIFI_CREDENTIALS_PATH))
   {
     return false;
@@ -447,18 +464,64 @@ void Manager::apStarted()
   }
 }
 
-void WifiOTA::initLittleFS()
+bool WifiOTA::initLittleFS()
 {
-  if (!LittleFS.begin(true))
+  littleFsMounted = LittleFS.begin(false);
+  if (!littleFsMounted)
   {
-    Serial.println(F("An error occurred while mounting LittleFS."));
+    Serial.println(F("LittleFS mount failed. Filesystem unavailable; refusing to auto-format."));
+    Serial.println(F("Upload the LittleFS image or format explicitly during service."));
+    return false;
   }
-  else
+
+  printLittleFSDiagnostics(Serial);
+  return true;
+}
+
+bool WifiOTA::isLittleFSMounted()
+{
+  return littleFsMounted;
+}
+
+void WifiOTA::printLittleFSDiagnostics(Print &print)
+{
+  print.println(F("=== LittleFS diagnostics ==="));
+  print.print(F("Mounted: "));
+  print.println(littleFsMounted ? F("yes") : F("no"));
+  if (!littleFsMounted)
   {
-#if (DEBUG > 1)
-    Serial.println("LittleFS mounted successfully.");
-#endif
+    print.println(F("============================"));
+    return;
   }
+
+  print.print(F("Total bytes: "));
+  print.println(LittleFS.totalBytes());
+  print.print(F("Used bytes: "));
+  print.println(LittleFS.usedBytes());
+
+  File root = LittleFS.open("/");
+  if (!root || !root.isDirectory())
+  {
+    print.println(F("Unable to list filesystem root."));
+    print.println(F("============================"));
+    return;
+  }
+
+  File file = root.openNextFile();
+  if (!file)
+  {
+    print.println(F("Filesystem root is empty. Upload the LittleFS image."));
+  }
+  while (file)
+  {
+    print.print(F("  "));
+    print.print(file.name());
+    print.print(F(" ("));
+    print.print(file.size());
+    print.println(F(" bytes)"));
+    file = root.openNextFile();
+  }
+  print.println(F("============================"));
 }
 
 String WifiOTA::processor(const String &var)

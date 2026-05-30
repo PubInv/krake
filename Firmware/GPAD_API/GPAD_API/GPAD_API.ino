@@ -1098,6 +1098,12 @@ bool parseCsvIntoTopics(const String &rawTopics, char dest[][MAX_TOPIC_LEN], uin
 
 bool writeMqttConfig()
 {
+  if (!WifiOTA::isLittleFSMounted())
+  {
+    debugSerial.println(F("Cannot save /mqtt.json: LittleFS is unavailable."));
+    return false;
+  }
+
   File file = LittleFS.open(MQTT_CONFIG_PATH, "w");
   if (!file)
   {
@@ -1122,6 +1128,12 @@ bool writeMqttConfig()
 
 bool loadMqttConfig()
 {
+  if (!WifiOTA::isLittleFSMounted())
+  {
+    debugSerial.println(F("Cannot load /mqtt.json: LittleFS is unavailable."));
+    return false;
+  }
+
   if (!LittleFS.exists(MQTT_CONFIG_PATH))
   {
     return false;
@@ -1525,6 +1537,12 @@ bool isNoStorePath(const char *path)
 
 void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char *contentType)
 {
+  if (!WifiOTA::isLittleFSMounted())
+  {
+    sendTextResponse(request, 503, "text/plain", "LittleFS unavailable");
+    return;
+  }
+
   char gzipPath[64];
   snprintf(gzipPath, sizeof(gzipPath), "%s.gz", path);
   if (LittleFS.exists(gzipPath))
@@ -1552,6 +1570,17 @@ void sendStaticFile(AsyncWebServerRequest *request, const char *path)
 
 void sendTemplateFile(AsyncWebServerRequest *request, const char *path)
 {
+  if (!WifiOTA::isLittleFSMounted())
+  {
+    sendTextResponse(request, 503, "text/plain", "LittleFS unavailable");
+    return;
+  }
+  if (!LittleFS.exists(path))
+  {
+    sendTextResponse(request, 404, "text/plain", "not found");
+    return;
+  }
+
   AsyncWebServerResponse *response = request->beginResponse(LittleFS, path, contentTypeForPath(path), false, templateProcessor);
   addWebUiHeaders(response);
   request->send(response);
@@ -1563,6 +1592,21 @@ void setupOTA()
 {
 
   // Route for root / web page
+  server.on("/littlefs-status", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+              String payload = "{\"mounted\":";
+              payload += WifiOTA::isLittleFSMounted() ? "true" : "false";
+              if (WifiOTA::isLittleFSMounted())
+              {
+                payload += ",\"totalBytes\":" + String(LittleFS.totalBytes());
+                payload += ",\"usedBytes\":" + String(LittleFS.usedBytes());
+                payload += ",\"indexPresent\":" + String(LittleFS.exists("/index.html") ? "true" : "false");
+                payload += ",\"wifiConfigPresent\":" + String(LittleFS.exists("/wifi.json") ? "true" : "false");
+                payload += ",\"mqttConfigPresent\":" + String(LittleFS.exists(MQTT_CONFIG_PATH) ? "true" : "false");
+              }
+              payload += "}";
+              sendTextResponse(request, 200, "application/json", payload); });
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendTemplateFile(request, "/index.html"); });
 
