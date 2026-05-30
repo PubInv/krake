@@ -24,6 +24,13 @@ extern bool selectMqttBrokerOption(uint8_t index);
 #define MAX_DEPTH 3
 
 static bool settingsExitRequested = false;
+static unsigned long lastMenuInteractionMs = 0;
+const unsigned long MENU_INACTIVITY_TIMEOUT_MS = 120000;
+
+static void noteMenuInteraction()
+{
+  lastMenuInteractionMs = millis();
+}
 
 void reset_menu_navigation();
 static void finishReturnToMainPage();
@@ -376,6 +383,7 @@ NAVROOT(nav, mainMenu, MAX_DEPTH, in, out);
 
 void registerRotationEvent(bool CW)
 {
+  noteMenuInteraction();
   DBG_PRINT(F("CW: "));
   DBG_PRINTLN(CW);
   reIn.registerEvent(CW ? RotaryEventIn::EventType::ROTARY_CW
@@ -384,6 +392,7 @@ void registerRotationEvent(bool CW)
 
 void registerRotaryEncoderPress()
 {
+  noteMenuInteraction();
   reIn.registerEvent(RotaryEventIn::EventType::BUTTON_CLICKED);
 }
 
@@ -397,6 +406,13 @@ void setup_GPAD_menu()
 
 void poll_GPAD_menu()
 {
+  if (running_menu && (millis() - lastMenuInteractionMs) >= MENU_INACTIVITY_TIMEOUT_MS)
+  {
+    DBG_PRINTLN(F("Menu inactivity timeout. Returning to main page."));
+    finishReturnToMainPage();
+    return;
+  }
+
   nav.poll();
   if (settingsExitRequested)
   {
@@ -435,6 +451,7 @@ void open_settings_menu_at(int n)
 void reset_menu_navigation()
 {
   running_menu = true;
+  noteMenuInteraction();
   nav.reset();
 }
 
