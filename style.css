@@ -148,3 +148,30 @@ nav a:hover {
     scroll-margin-top: 106px;
   }
 }
+
+
+/* Deploy fix: reserve image height and avoid blank-looking anchor jumps */
+.visual-section img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #2e6842;
+}
+
+.visual-section {
+  min-height: auto;
+  background: #2e6842;
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 560px;
+}
+
+/* For hash links like /#team */
+#team {
+  scroll-margin-top: 72px;
+}
+
+@media (max-width: 720px) {
+  #team {
+    scroll-margin-top: 110px;
+  }
+}
