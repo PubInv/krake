@@ -1601,9 +1601,10 @@ void setupOTA()
                 payload += ",\"totalBytes\":" + String(LittleFS.totalBytes());
                 payload += ",\"usedBytes\":" + String(LittleFS.usedBytes());
                 payload += ",\"indexPresent\":" + String(LittleFS.exists("/index.html") ? "true" : "false");
-                payload += ",\"wifiConfigPresent\":" + String(LittleFS.exists("/wifi.json") ? "true" : "false");
+                payload += ",\"wifiConfigMirrorPresent\":" + String(LittleFS.exists("/wifi.json") ? "true" : "false");
                 payload += ",\"mqttConfigPresent\":" + String(LittleFS.exists(MQTT_CONFIG_PATH) ? "true" : "false");
               }
+              payload += ",\"wifiCredentialsStored\":" + String(wifiManager.hasSavedCredentials() ? "true" : "false");
               payload += "}";
               sendTextResponse(request, 200, "application/json", payload); });
 
@@ -1706,10 +1707,10 @@ void setupOTA()
               }
               if (!wifiManager.saveCredentials(trimmedSsid, trimmedPassword))
               {
-                request->send(500, "text/plain", "failed to save wifi.json");
+                request->send(500, "text/plain", "failed to save WiFi credentials");
                 return;
               }
-              request->send(200, "text/plain", "wifi.json saved; restart or reconnect the device to apply"); });
+              request->send(200, "text/plain", "WiFi credentials saved; restart or reconnect the device to apply"); });
 
   server.on("/manual", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendStaticFile(request, "/manual.html", "text/html"); });
@@ -2309,10 +2310,9 @@ void serviceDeferredReset()
   if (wifiResetRequestedAtMs != 0 && (millis() - wifiResetRequestedAtMs) > 750)
   {
     debugSerial.println(F("Resetting WiFi credentials and restarting."));
-    if (LittleFS.exists("/wifi.json"))
+    if (!wifiManager.forgetSavedCredentials())
     {
-      LittleFS.remove("/wifi.json");
-      debugSerial.println(F("Removed /wifi.json"));
+      debugSerial.println(F("Warning: failed to clear all stored WiFi credentials."));
     }
     WiFi.disconnect(true, true);
     delay(150);

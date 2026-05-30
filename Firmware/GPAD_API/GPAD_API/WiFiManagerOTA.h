@@ -41,6 +41,7 @@ namespace WifiOTA
         bool saveCredentials(const String &ssid, const String &password);
         bool loadCredentials(String &ssid, String &password);
         bool loadCredentialsList(CredentialList &credentials);
+        bool hasSavedCredentials();
 
     private:
         WiFiClass &wifi;
