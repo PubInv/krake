@@ -273,20 +273,11 @@ bool selectBroker(uint8_t index)
   return selected;
 }
 
-result actionBrokerPublic(eventMask e)
-{
-  if (e == eventMask::enterEvent)
-  {
-    selectBroker(0);
-  }
-  return proceed;
-}
-
 result actionBrokerKrake(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
-    selectBroker(1);
+    selectBroker(0);
   }
   return proceed;
 }
@@ -335,8 +326,7 @@ MENU(wifiMenu, "WiFi", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
 );
 
 MENU(brokerMenu, "Broker", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  OP("1 Krake PubInv", actionBrokerKrake, enterEvent),
-  OP("2 Public Shiftr", actionBrokerPublic, enterEvent),
+  OP("Krake PubInv", actionBrokerKrake, enterEvent),
   OP("Back", actionBack, enterEvent)
 );
 
@@ -357,7 +347,7 @@ MENU(developerMenu, "Developer Mode", Menu::doNothing, Menu::noEvent, Menu::wrap
 MENU(mainMenu, "Settings", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Info", actionInfo, enterEvent),
   SUBMENU(wifiMenu),
-  FIELD(volumeDFPlayer, "Volume", "%", 1, 30, 20, 1, action4, enterEvent, wrapStyle),
+  FIELD(volumeDFPlayer, "Volume", "%", 1, 100, 20, 1, action4, enterEvent, wrapStyle),
   SUBMENU(muteMenu),
   SUBMENU(developerMenu),
   SUBMENU(resetConfirmMenu),

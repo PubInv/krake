@@ -353,7 +353,7 @@ namespace
     case PAGE_WIFI:
       return 1;
     case PAGE_BROKER:
-      return 3;
+      return 2;
     case PAGE_MUTE:
       return 3;
     case PAGE_MAIN:
@@ -958,7 +958,7 @@ namespace
         }
         else if (lcdPage == PAGE_BROKER)
         {
-          optionRow = (lcdPageOption == 0) ? 1 : (lcdPageOption == 1 ? 2 : 3);
+          optionRow = (lcdPageOption == 0) ? 1 : 3;
         }
         else if (lcdPage == PAGE_MUTE)
         {
@@ -1913,11 +1913,6 @@ bool alarmActionSelectorHandlePress()
       if (lcdPageOption == 0)
       {
         resetLcdUiToMainPage();
-        showActionFeedback(selectMqttBrokerOption(1) ? "Broker selected" : "Broker failed");
-      }
-      else if (lcdPageOption == 1)
-      {
-        resetLcdUiToMainPage();
         showActionFeedback(selectMqttBrokerOption(0) ? "Broker selected" : "Broker failed");
       }
       else
@@ -2128,9 +2123,9 @@ void renderWifiPage(char rows[LCD_ROWS][LCD_COLS + 1])
 void renderBrokerPage(char rows[LCD_ROWS][LCD_COLS + 1])
 {
   formatFullRow(rows[0], "Broker Select");
-  formatFullRow(rows[1], "%c1 Krake PubInv", lcdPageOption == 0 ? '>' : ' ');
-  formatFullRow(rows[2], "%c2 Public Shiftr", lcdPageOption == 1 ? '>' : ' ');
-  formatFullRow(rows[3], "%cBack", lcdPageOption == 2 ? '>' : ' ');
+  formatFullRow(rows[1], "%cKrake PubInv", lcdPageOption == 0 ? '>' : ' ');
+  formatFullRow(rows[2], " Fixed broker");
+  formatFullRow(rows[3], "%cBack", lcdPageOption == 1 ? '>' : ' ');
 }
 
 void renderMutePage(char rows[LCD_ROWS][LCD_COLS + 1])

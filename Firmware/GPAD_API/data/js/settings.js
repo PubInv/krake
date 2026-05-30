@@ -48,12 +48,11 @@
   async function saveMqttConfig() {
     try {
       const role = 'Krake';
-      const broker = getInputValue('broker').trim();
       const subscribeTopicUi = getInputValue('subscribeTopic').trim();
       const publishTopicUi = getInputValue('publishTopic').trim();
       const subscribeTopics = getInputValue('topics');
       const publishTopics = getInputValue('publishTopics');
-      await KrakeUI.postForm('/config', { role, broker, subscribeTopic: publishTopicUi, publishTopic: subscribeTopicUi, subscribeTopics, publishTopics, publishDefaultTopic: publishTopicUi });
+      await KrakeUI.postForm('/config', { role, subscribeTopic: publishTopicUi, publishTopic: subscribeTopicUi, subscribeTopics, publishTopics, publishDefaultTopic: publishTopicUi });
       KrakeUI.showMessage('MQTT config updated and saved to /mqtt.json.');
       await refreshSettings();
     } catch (e) { KrakeUI.showMessage('Failed to save MQTT config: ' + e.message, true); }
