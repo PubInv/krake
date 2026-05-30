@@ -178,13 +178,10 @@ extern int muteTimeoutMinutes;
 extern char currentAlarmId[11];
 extern char currentAlarmType[4];
 extern PubSubClient client;
-extern char mqtt_broker_name[];
-extern uint8_t selectedBrokerIndex;
-extern uint8_t activeBrokerIndex;
+extern const char *const MQTT_BROKER_NAME;
 extern uint8_t mqttFailCount;
 extern const char *mqttStateDescription(int state);
 extern const char *brokerConnectionStateText();
-extern bool selectMqttBrokerOption(uint8_t index);
  
 // For LCD
 //  #include <LiquidCrystal_I2C.h>
@@ -818,7 +815,7 @@ namespace
     {
       return '_';
     }
-    return (mqttFailCount > 0 || activeBrokerIndex != selectedBrokerIndex) ? '?' : '_';
+    return mqttFailCount > 0 ? '?' : '_';
   }
 
   uint8_t volumeStatusIcon()
@@ -1397,7 +1394,7 @@ void printSystemInfo(Stream *serialport, PubSubClient *mqttClient)
   currentSsid(value, sizeof(value));
   snprintf(line, sizeof(line), "SSID: %s", value);
   printAndPublishStatusLine(serialport, mqttClient, line);
-  snprintf(line, sizeof(line), "Broker: %s", mqtt_broker_name);
+  snprintf(line, sizeof(line), "Broker: %s", MQTT_BROKER_NAME);
   printAndPublishStatusLine(serialport, mqttClient, line);
   snprintf(line, sizeof(line), "MQTT: %s", brokerConnectionStateText());
   printAndPublishStatusLine(serialport, mqttClient, line);
@@ -1926,7 +1923,7 @@ bool alarmActionSelectorHandlePress()
       if (lcdPageOption == 0)
       {
         resetLcdUiToMainPage();
-        showActionFeedback(selectMqttBrokerOption(0) ? "Broker selected" : "Broker failed");
+        showActionFeedback("Fixed broker");
       }
       else
       {

@@ -18,7 +18,6 @@ extern char currentAlarmId[11];
 extern bool running_menu;
 extern bool menu_just_exited;
 extern unsigned long muteTimeoutEndMillis;
-extern bool selectMqttBrokerOption(uint8_t index);
 
 #define LEDPIN 12
 #define MAX_DEPTH 3
@@ -273,23 +272,16 @@ result actionWifiStatus(eventMask e)
   return proceed;
 }
 
-bool selectBroker(uint8_t index)
-{
-  const bool selected = selectMqttBrokerOption(index);
-  running_menu = false;
-  menu_just_exited = false;
-  Menu::doExit();
-  resetLcdUiToMainPage();
-  showActionFeedback(selected ? "Broker selected" : "Broker failed");
-  requestAlarmRefresh(&Serial, false);
-  return selected;
-}
-
 result actionBrokerKrake(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
-    selectBroker(0);
+    running_menu = false;
+    menu_just_exited = false;
+    Menu::doExit();
+    resetLcdUiToMainPage();
+    showActionFeedback("Fixed broker");
+    requestAlarmRefresh(&Serial, false);
   }
   return proceed;
 }

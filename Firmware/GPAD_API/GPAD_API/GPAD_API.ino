@@ -192,27 +192,12 @@ WifiOTA::Manager wifiManager(WiFi, debugSerial);
 #endif
 
 // MQTT Broker
-const char *DEFAULT_MQTT_BROKER_NAME = "krakepubinv.cloud.shiftr.io";
+extern const char *const MQTT_BROKER_NAME = "krakepubinv.cloud.shiftr.io";
+const uint16_t MQTT_BROKER_PORT = 1883;
 const char *const MQTT_USER = "krakepubinv";
 const char *const MQTT_PASSWORD = "DlDmkWjp4I4kgDcA";
 const size_t MQTT_BROKER_MAX_LEN = 64;
 const char *MQTT_CONFIG_PATH = "/mqtt.json";
-char mqtt_broker_name[MQTT_BROKER_MAX_LEN] = {0};
-struct BrokerOption
-{
-  uint8_t index;
-  const char *name;
-  const char *host;
-  uint16_t port;
-  const char *notes;
-};
-const BrokerOption brokerOptions[] = {
-    {1, "Krake PubInv", DEFAULT_MQTT_BROKER_NAME, 1883, "Project broker"},
-};
-const uint8_t BROKER_OPTION_COUNT = sizeof(brokerOptions) / sizeof(brokerOptions[0]);
-const uint8_t DEFAULT_BROKER_INDEX = 0;
-uint8_t selectedBrokerIndex = DEFAULT_BROKER_INDEX;
-uint8_t activeBrokerIndex = DEFAULT_BROKER_INDEX;
 uint8_t mqttFailCount = 0;
 const uint8_t MAX_EXTRA_TOPICS = 4;
 const size_t MAX_TOPIC_LEN = 64;
@@ -270,8 +255,7 @@ bool isAllowedPublishTopic(const String &topic);
 bool extractJsonString(const String &json, const char *key, String &value, int startPos = 0, int *valueEndPos = nullptr);
 bool writeMqttConfig();
 bool loadMqttConfig();
-void applyActiveMqttBrokerConfig();
-bool selectMqttBrokerOption(uint8_t index);
+void applyMqttBrokerConfig();
 bool parseCsvIntoTopics(const String &rawTopics, char dest[][MAX_TOPIC_LEN], uint8_t &count, uint8_t maxTopics);
 String joinTopicsCsv(const char topics[][MAX_TOPIC_LEN], uint8_t count);
 
@@ -343,7 +327,7 @@ void serialSplash()
   debugSerial.print(F("Alarm Topic: "));
   debugSerial.println(subscribe_Alarm_Topic);
   debugSerial.print(F("Broker: "));
-  debugSerial.println(mqtt_broker_name);
+  debugSerial.println(MQTT_BROKER_NAME);
   debugSerial.print(F("Compiled at: "));
   debugSerial.println(F(__DATE__ " " __TIME__)); // compile date that is used for a unique identifier
   debugSerial.println(F(LICENSE));
@@ -402,33 +386,10 @@ void requestMqttReconnect()
   }
 }
 
-void applyActiveMqttBrokerConfig()
+void applyMqttBrokerConfig()
 {
-  if (activeBrokerIndex >= BROKER_OPTION_COUNT)
-  {
-    activeBrokerIndex = DEFAULT_BROKER_INDEX;
-  }
-
-  const BrokerOption &broker = brokerOptions[activeBrokerIndex];
-  strncpy(mqtt_broker_name, broker.host, MQTT_BROKER_MAX_LEN - 1);
-  mqtt_broker_name[MQTT_BROKER_MAX_LEN - 1] = '\0';
-  client.setServer(broker.host, broker.port);
+  client.setServer(MQTT_BROKER_NAME, MQTT_BROKER_PORT);
   client.setSocketTimeout(MQTT_SOCKET_TIMEOUT_SECONDS);
-}
-
-bool selectMqttBrokerOption(uint8_t index)
-{
-  if (index >= BROKER_OPTION_COUNT)
-  {
-    return false;
-  }
-
-  selectedBrokerIndex = index;
-  activeBrokerIndex = index;
-  applyActiveMqttBrokerConfig();
-  writeMqttConfig();
-  requestMqttReconnect();
-  return true;
 }
 
 bool reconnect(bool force = false)
@@ -453,7 +414,7 @@ bool reconnect(bool force = false)
   }
   lastMqttReconnectAttemptMs = now;
   mqttReconnectRequested = false;
-  applyActiveMqttBrokerConfig();
+  applyMqttBrokerConfig();
   brokerState = BROKER_CONNECTING;
 
   char clientId[sizeof(COMPANY_NAME) + MAC_ADDRESS_STRING_LENGTH + 1];
@@ -463,7 +424,7 @@ bool reconnect(bool force = false)
   debugSerial.print("Attempting MQTT connection at: ");
   debugSerial.print(millis());
   debugSerial.print(" broker=");
-  debugSerial.print(mqtt_broker_name);
+  debugSerial.print(MQTT_BROKER_NAME);
   debugSerial.print(" user=");
   debugSerial.print(MQTT_USER);
   debugSerial.print(" ip=");
@@ -483,11 +444,6 @@ bool reconnect(bool force = false)
     debugSerial.println(millis());
     mqttFailCount = 0;
     brokerState = BROKER_CONNECTED;
-    if (selectedBrokerIndex != activeBrokerIndex)
-    {
-      selectedBrokerIndex = activeBrokerIndex;
-      writeMqttConfig();
-    }
     char onlinePayload[DEVICE_ROLE_MAX_LEN + 8];
     snprintf(onlinePayload, sizeof(onlinePayload), "%s online", device_role);
     queueMqtt(publish_Ack_Topic, onlinePayload, true);
@@ -858,9 +814,7 @@ String trackedKrakesJson()
   payload += "\",\"mqttConnected\":" + String(client.connected() ? "true" : "false") + ",";
   payload += "\"mqttState\":" + String(client.state()) + ",";
   payload += "\"mqttStateText\":\"" + jsonEscape(String(mqttStateDescription(client.state()))) + "\",";
-  payload += "\"selectedBrokerIndex\":" + String(selectedBrokerIndex) + ",";
-  payload += "\"activeBrokerIndex\":" + String(activeBrokerIndex) + ",";
-  payload += "\"broker\":\"" + jsonEscape(String(mqtt_broker_name)) + "\",";
+  payload += "\"broker\":\"" + jsonEscape(String(MQTT_BROKER_NAME)) + "\",";
   payload += "\"subscribeAlarmTopic\":\"" + jsonEscape(String(subscribe_Alarm_Topic)) + "\",";
   payload += "\"publishAckTopic\":\"" + jsonEscape(String(publish_Ack_Topic)) + "\",";
   payload += "\"publishDefaultTopic\":\"" + jsonEscape(String(publish_Default_Topic)) + "\",";
@@ -1196,7 +1150,6 @@ bool loadMqttConfig()
       value.toCharArray(device_role, DEVICE_ROLE_MAX_LEN);
     }
   }
-  applyActiveMqttBrokerConfig();
   return true;
 }
 
@@ -1250,16 +1203,8 @@ bool applyBrokerSetting(const String &broker)
     return false;
   }
 
-  for (uint8_t i = 0; i < BROKER_OPTION_COUNT; i++)
-  {
-    if (normalized.equalsIgnoreCase(brokerOptions[i].host) ||
-        normalized.equalsIgnoreCase(brokerOptions[i].name))
-    {
-      return selectMqttBrokerOption(i);
-    }
-  }
-
-  return false;
+  return normalized.equalsIgnoreCase(MQTT_BROKER_NAME) ||
+         normalized.equalsIgnoreCase("Krake PubInv");
 }
 
 bool applyRoleSetting(const String &rawRole)
@@ -1724,30 +1669,11 @@ void setupOTA()
   server.on("/settings-data", HTTP_GET, [](AsyncWebServerRequest *request)
             {
               String payload = "{";
-              payload += "\"broker\":\"" + jsonEscape(String(mqtt_broker_name)) + "\",";
+              payload += "\"broker\":\"" + jsonEscape(String(MQTT_BROKER_NAME)) + "\",";
               payload += "\"mqttConnected\":" + String(client.connected() ? "true" : "false") + ",";
               payload += "\"mqttState\":" + String(client.state()) + ",";
               payload += "\"mqttStateText\":\"" + jsonEscape(String(mqttStateDescription(client.state()))) + "\",";
               payload += "\"brokerState\":\"" + jsonEscape(String(brokerConnectionStateText())) + "\",";
-              payload += "\"selectedBrokerIndex\":" + String(selectedBrokerIndex) + ",";
-              payload += "\"activeBrokerIndex\":" + String(activeBrokerIndex) + ",";
-              payload += "\"brokerOptions\":[";
-              for (uint8_t i = 0; i < BROKER_OPTION_COUNT; i++)
-              {
-                if (i > 0)
-                {
-                  payload += ",";
-                }
-                payload += "{";
-                payload += "\"index\":" + String(brokerOptions[i].index) + ",";
-                payload += "\"name\":\"" + jsonEscape(String(brokerOptions[i].name)) + "\",";
-                payload += "\"host\":\"" + jsonEscape(String(brokerOptions[i].host)) + "\",";
-                payload += "\"port\":" + String(brokerOptions[i].port) + ",";
-                payload += "\"notes\":\"" + jsonEscape(String(brokerOptions[i].notes)) + "\",";
-                payload += "\"active\":" + String(i == selectedBrokerIndex ? "true" : "false");
-                payload += "}";
-              }
-              payload += "],";
               payload += "\"subscribeTopic\":\"" + jsonEscape(String(subscribe_Alarm_Topic)) + "\",";
               payload += "\"publishTopic\":\"" + jsonEscape(String(publish_Ack_Topic)) + "\",";
               payload += "\"extraTopics\":\"" + jsonEscape(joinedExtraTopics()) + "\",";
@@ -1879,7 +1805,8 @@ void setupOTA()
                 request->send(400, "text/plain", "invalid broker");
                 return;
               }
-              request->send(200, "text/plain", "broker updated"); });
+              requestMqttReconnect();
+              request->send(200, "text/plain", "broker reconnect requested"); });
 
   server.on("/settings/topics", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -2095,13 +2022,10 @@ void setup()
 #endif
 
   debugSerial.setTimeout(SERIAL_TIMEOUT_MS);
-  strncpy(mqtt_broker_name, DEFAULT_MQTT_BROKER_NAME, MQTT_BROKER_MAX_LEN - 1);
-  mqtt_broker_name[MQTT_BROKER_MAX_LEN - 1] = '\0';
   clearExtraTopics();
   clearPublishTopics();
   clearTrackedKrakes();
   clearWatchedTopics();
-  applyActiveMqttBrokerConfig(); // PubSubClient uses MQTT over TCP, not WSS.
   client.setCallback(callback);
 
 #if (DEBUG > 0)
@@ -2144,7 +2068,7 @@ void setup()
   publish_Default_Topic[MAX_TOPIC_LEN - 1] = '\0';
 
   loadMqttConfig();
-  applyActiveMqttBrokerConfig();
+  applyMqttBrokerConfig();
 
 #if (DEBUG > 1)
   debugSerial.println("XXXXXXX");
@@ -2257,7 +2181,7 @@ void serviceMqttClient()
     if (!client.loop())
     {
 #if (DEBUG > 0)
-      debugSerial.print(mqtt_broker_name);
+      debugSerial.print(MQTT_BROKER_NAME);
       debugSerial.print(" lost MQTT at: ");
       debugSerial.println(millis());
 #endif
