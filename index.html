@@ -9,47 +9,76 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="site" aria-label="Krake website">
-    <div class="poster-wrap" id="top">
-      <img class="poster" src="assets/krake-website.png" width="455" height="2048" alt="Krake website design">
+  <header class="site-header">
+    <a class="site-title" href="#top">Krake</a>
+    <nav aria-label="Main navigation">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#needs">Use cases</a>
+      <a href="#works">How it works</a>
+      <a href="#team">Team</a>
+      <a class="github-link" href="https://github.com/PubInv/krake" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
 
-      <!-- External clickable links -->
-      <a class="hotspot logo-home" href="#top" aria-label="Back to top"></a>
-      <a class="hotspot github-top" href="https://github.com/PubInv/krake" target="_blank" rel="noopener" aria-label="Open Krake GitHub repository"></a>
-      <a class="hotspot pubinv-link" href="https://github.com/PubInv/krake" target="_blank" rel="noopener" aria-label="Open PubInv Krake repository"></a>
-
-      <!-- Internal section hotspots -->
-      <a class="hotspot about-hotspot" href="#about" aria-label="Go to About Krake"></a>
-      <a class="hotspot name-hotspot" href="#name" aria-label="Go to The Name"></a>
-      <a class="hotspot features-hotspot" href="#features" aria-label="Go to Features"></a>
-      <a class="hotspot needs-hotspot" href="#needs" aria-label="Go to Who needs Krake"></a>
-      <a class="hotspot works-hotspot" href="#works" aria-label="Go to How it works"></a>
-      <a class="hotspot open-hotspot" href="#open" aria-label="Go to Built in the public"></a>
-      <a class="hotspot team-hotspot" href="#team" aria-label="Go to The Team"></a>
-
-      <!-- Anchor points aligned to the visual image -->
-      <span id="about" class="anchor about-anchor"></span>
-      <span id="name" class="anchor name-anchor"></span>
-      <span id="features" class="anchor features-anchor"></span>
-      <span id="needs" class="anchor needs-anchor"></span>
-      <span id="works" class="anchor works-anchor"></span>
-      <span id="open" class="anchor open-anchor"></span>
-      <span id="team" class="anchor team-anchor"></span>
-    </div>
-
-    <section class="sr-content" aria-label="Krake searchable content">
-      <h1>Nature perfected the alarm, we open sourced it</h1>
-      <p>A wireless alarm device purpose-built for life’s critical moments.</p>
-      <h2>About Krake</h2>
-      <p>Krake is a wireless open-source alarm device based on the Public Invention General Purpose Alarm Device.</p>
-      <h2>Features</h2>
-      <p>Multilingual audio, Wi‑Fi and MQTT, LED levels, rotary knob, flexible power, mute button, open-source licensing, and HL7 compatibility.</p>
-      <h2>Who needs Krake?</h2>
-      <p>Care at home, medical equipment, and IT infrastructure.</p>
-      <h2>How it works</h2>
-      <p>Condition detected. Krake receives it. You are alerted.</p>
-      <h2>The Team</h2>
-      <p>Lee Erickson, Robert L. Read, Yehia Shahaby, Nagham Kheir, Courtney Ludick, Yukti, and Juhandre Knoetze.</p>
+  <main>
+    
+    <section class="visual-section" id="top" aria-labelledby="top-title">
+      <img src="assets/section-01.png" alt="Nature perfected the alarm, we open sourced it">
+      <a class="hotspot hero-github" href="https://github.com/PubInv/krake" target="_blank" rel="noopener" aria-label="Open Krake GitHub repository"></a>
+      <div class="section-text">
+        <h2 id="top-title">Nature perfected the alarm, we open sourced it</h2>
+        <p>A wireless alarm device purpose-built for life's critical moments.</p>
+      </div>
+    </section>
+    <section class="visual-section" id="about" aria-labelledby="about-title">
+      <img src="assets/section-02.png" alt="About Krake">
+      
+      <div class="section-text">
+        <h2 id="about-title">About Krake</h2>
+        <p>Krake is an open-source wireless alarm device based on the Public Invention General Purpose Alarm Device.</p>
+      </div>
+    </section>
+    <section class="visual-section" id="name" aria-labelledby="name-title">
+      <img src="assets/section-03.png" alt="The Name">
+      
+      <div class="section-text">
+        <h2 id="name-title">The Name</h2>
+        <p>The name Krake is based on the crake bird and its distinctive alarming call.</p>
+      </div>
+    </section>
+    <section class="visual-section" id="features" aria-labelledby="features-title">
+      <img src="assets/section-04.png" alt="Everything an alarm should be">
+      
+      <div class="section-text">
+        <h2 id="features-title">Everything an alarm should be</h2>
+        <p>Features include multilingual audio, Wi-Fi, MQTT, LEDs, rotary control, mute, and open-source licensing.</p>
+      </div>
+    </section>
+    <section class="visual-section" id="needs" aria-labelledby="needs-title">
+      <img src="assets/section-05.png" alt="Who needs Krake?">
+      
+      <div class="section-text">
+        <h2 id="needs-title">Who needs Krake?</h2>
+        <p>Krake supports care at home, medical equipment, and IT infrastructure alarm needs.</p>
+      </div>
+    </section>
+    <section class="visual-section" id="works" aria-labelledby="works-title">
+      <img src="assets/section-06.png" alt="Simple by design">
+      
+      <div class="section-text">
+        <h2 id="works-title">Simple by design</h2>
+        <p>Condition detected, Krake receives it, and the human is alerted.</p>
+      </div>
+    </section>
+    
+    <section class="visual-section" id="team" aria-labelledby="team-title">
+      <img src="assets/section-08.png" alt="The Team">
+      
+      <div class="section-text">
+        <h2 id="team-title">The Team</h2>
+        <p>The Krake team includes invention coaches and public inventors.</p>
+      </div>
     </section>
   </main>
 </body>
