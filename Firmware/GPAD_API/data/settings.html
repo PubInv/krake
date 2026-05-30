@@ -49,14 +49,14 @@
 
     <section class="card">
       <h1>MQTT</h1>
-      <p class="subtitle">Krake PubInv is the fixed broker. Topic settings are stored in <code>/mqtt.json</code>.</p>
+      <p class="subtitle">Dynamic broker/topic/role assignment stored in <code>/mqtt.json</code>.</p>
 
       <label for="role">Device Role</label>
       <select id="role" class="text-input">
         <option value="Krake">Krake</option>
       </select>
       <label for="broker">Broker</label>
-      <input id="broker" class="text-input" value="krakepubinv.cloud.shiftr.io" readonly />
+      <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
       <label for="subscribeTopic" style="margin-top:12px; display:block;">Primary Subscribe Topic</label>
       <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
       <label for="publishTopic" style="margin-top:12px; display:block;">Primary Publish Topic</label>
