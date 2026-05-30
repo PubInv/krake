@@ -27,9 +27,14 @@ static bool settingsExitRequested = false;
 static unsigned long lastMenuInteractionMs = 0;
 const unsigned long MENU_INACTIVITY_TIMEOUT_MS = 120000;
 
-static void noteMenuInteraction()
+void noteMenuInteraction()
 {
   lastMenuInteractionMs = millis();
+}
+
+bool menuInactivityTimedOut()
+{
+  return (millis() - lastMenuInteractionMs) >= MENU_INACTIVITY_TIMEOUT_MS;
 }
 
 void reset_menu_navigation();
@@ -406,7 +411,7 @@ void setup_GPAD_menu()
 
 void poll_GPAD_menu()
 {
-  if (running_menu && (millis() - lastMenuInteractionMs) >= MENU_INACTIVITY_TIMEOUT_MS)
+  if (running_menu && menuInactivityTimedOut())
   {
     DBG_PRINTLN(F("Menu inactivity timeout. Returning to main page."));
     finishReturnToMainPage();

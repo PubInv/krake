@@ -1626,6 +1626,11 @@ void GPAD_HAL_loop()
   muteTimeoutWatchdog(local_ptr_to_serial);
   static unsigned long lastDashboardRefreshMs = 0;
   const unsigned long now = millis();
+  if (lcdUiState == ICON_MENU && menuInactivityTimedOut())
+  {
+    DBG_PRINTLN(F("LCD icon menu inactivity timeout. Returning to main page."));
+    returnToMainPage();
+  }
   if (lcdUiState == ACTION_FEEDBACK && (now - actionFeedbackStartMs) >= ACTION_FEEDBACK_DURATION_MS)
   {
     actionFeedbackText[0] = '\0';
@@ -1777,6 +1782,10 @@ void executeSelectedAlarmAction()
 
 bool alarmActionSelectorHandleRotation(bool clockwise)
 {
+  if (lcdUiState == ICON_MENU)
+  {
+    noteMenuInteraction();
+  }
   if (lcdUiState == INFO_PAGE && lcdPage == PAGE_INFO)
   {
     if (clockwise)
@@ -1887,6 +1896,10 @@ bool alarmActionSelectorHandleRotation(bool clockwise)
 
 bool alarmActionSelectorHandlePress()
 {
+  if (lcdUiState == ICON_MENU)
+  {
+    noteMenuInteraction();
+  }
   if (lcdUiState == INFO_PAGE)
   {
     returnToMainPage();
@@ -1999,6 +2012,10 @@ bool alarmActionSelectorHandlePress()
   else
   {
     executeSelectedAlarmAction();
+  }
+  if (lcdUiState == ICON_MENU)
+  {
+    noteMenuInteraction();
   }
   markLcdDirty();
   requestAlarmRefresh(local_ptr_to_serial, false);

@@ -10,6 +10,8 @@ void open_settings_menu_at(int n);
 
 void registerRotationEvent(bool CW);
 void registerRotaryEncoderPress();
+void noteMenuInteraction();
+bool menuInactivityTimedOut();
 
 void reset_menu_navigation();
 void returnToMainPage();
