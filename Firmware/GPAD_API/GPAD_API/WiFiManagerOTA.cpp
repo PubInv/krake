@@ -7,6 +7,9 @@ namespace
   const char *WIFI_CREDENTIALS_PATH = "/wifi.json";
   const char *WIFI_PREFERENCES_NAMESPACE = "krake-wifi";
   const char *WIFI_PREFERENCES_KEY = "networks";
+  const unsigned long WIFI_PORTAL_TIMEOUT_SECONDS = 60;
+  const unsigned long WIFI_STORED_CREDENTIALS_BUDGET_MS = 15000;
+  const unsigned long WIFI_STORED_CREDENTIAL_ATTEMPT_MS = 5000;
   bool littleFsMounted = false;
 
   bool saveCredentialsToPreferences(const String &payload)
@@ -140,6 +143,8 @@ void Manager::initialize()
   // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
   // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
   this->wifi.mode(WIFI_STA);
+  // Never leave setup blocked forever if credentials were erased or invalid.
+  this->wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_SECONDS);
 }
 
 Manager::~Manager() {}
@@ -149,8 +154,19 @@ void Manager::connect(const char *const accessPointSsid)
   CredentialList credentials;
   if (this->loadCredentialsList(credentials))
   {
+    const unsigned long credentialsStartMs = millis();
     for (size_t index = 0; index < credentials.count; ++index)
     {
+      const unsigned long elapsedMs = millis() - credentialsStartMs;
+      if (elapsedMs >= WIFI_STORED_CREDENTIALS_BUDGET_MS)
+      {
+        this->print.println(F("Stored WiFi retry budget exhausted; starting recovery portal."));
+        break;
+      }
+      const unsigned long remainingMs = WIFI_STORED_CREDENTIALS_BUDGET_MS - elapsedMs;
+      const unsigned long attemptMs = (remainingMs < WIFI_STORED_CREDENTIAL_ATTEMPT_MS)
+                                          ? remainingMs
+                                          : WIFI_STORED_CREDENTIAL_ATTEMPT_MS;
 #if (DEBUG_LEVEL > 0)
       this->print.print(F("Trying saved WiFi "));
       this->print.print(index + 1);
@@ -160,7 +176,7 @@ void Manager::connect(const char *const accessPointSsid)
       this->print.println(credentials.items[index].ssid);
 #endif
 
-      if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password))
+      if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password, attemptMs))
       {
         this->print.println(F("Connected using stored WiFi credentials."));
         this->ipSet();
@@ -169,6 +185,7 @@ void Manager::connect(const char *const accessPointSsid)
     }
   }
 
+  this->print.println(F("Starting bounded WiFi recovery portal."));
   this->startPortal(accessPointSsid);
 }
 
@@ -212,7 +229,7 @@ void Manager::startPortal(const char *const accessPointSsid)
 
   if (!connectSuccess)
   {
-    this->print.println(F("WiFiManager portal completed without connection."));
+    this->print.println(F("WiFiManager recovery portal timed out; continuing device startup."));
   }
 }
 
