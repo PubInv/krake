@@ -1,4 +1,10 @@
 (function () {
+  const mqttBroker = Object.freeze({
+    hostname: 'krakepubinv.cloud.shiftr.io',
+    wssUrl: 'wss://krakepubinv.cloud.shiftr.io',
+    embedUrl: 'https://krakepubinv.cloud.shiftr.io/embed?widgets=1',
+    username: 'krakepubinv'
+  });
   const navSections = [
     {
       id: 'user',
@@ -7,7 +13,7 @@
       minRole: 'user',
       items: [
         ['GDT Track Record', '/GDT_TrackHistory.html'],
-        ['User Manual', '/manual']
+        ['User Manual', '/manual.html']
       ]
     },
     {
@@ -16,7 +22,7 @@
       defaultOpen: false,
       minRole: 'admin',
       items: [
-        ['Settings', '/settings'],
+        ['Settings', '/settings.html'],
         ['Firmware Update', '/update']
       ]
     },
@@ -26,9 +32,9 @@
       defaultOpen: false,
       minRole: 'developer',
       items: [
-        ['PMD Web UI', '/PMD_GPAD_API'],
-        ['Factory Test / Developer Monitor', '/monitor'],
-        ['MQTT Device Monitor', '/device-monitor'],
+        ['PMD Web UI', '/PMD_GPAD_API.html'],
+        ['Factory Test / Developer Monitor', '/monitor.html'],
+        ['MQTT Device Monitor', '/device-monitor.html'],
         ['Electrical Test History', '/Electrical_testHistory.html']
       ]
     }
@@ -86,7 +92,7 @@
       ? '<button id="devLockBtn" class="menu-unlock">🔒 Lock Developer Tools</button><div id="devUnlockMsg" class="note"></div>'
       : '<button id="devUnlockBtn" class="menu-unlock">🔧 Unlock Developer Mode</button><div id="devUnlockPanel" class="menu-unlock-panel hidden"><input id="devPassword" type="password" class="text-input" placeholder="Enter developer password"><button id="devSubmit" class="action-btn" type="button">Unlock</button><div id="devUnlockMsg" class="note"></div></div>';
 
-    navTarget.innerHTML = sectionHtml + unlockHtml + '<a class="menu-home" href="/index.html">Home</a>';
+    navTarget.innerHTML = sectionHtml + unlockHtml + '<a class="menu-home" href="/">Home</a>';
 
     const unlockBtn = byId('devUnlockBtn');
     if (unlockBtn) unlockBtn.addEventListener('click', () => byId('devUnlockPanel')?.classList.toggle('hidden'));
@@ -110,7 +116,7 @@
     const navTarget = byId('sideMenu');
     if (headerTarget) {
       headerTarget.className = 'topbar';
-      headerTarget.innerHTML = '<div class="brand"><a href="/index.html" aria-label="Go to Home"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"></a><span>' + escapeHtml(title || 'KRAKE') + '</span></div><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
+      headerTarget.innerHTML = '<div class="brand"><a href="/" aria-label="Go to Home"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"></a><span>' + escapeHtml(title || 'KRAKE') + '</span></div><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
     }
     if (navTarget) { navTarget.className = 'side-menu'; renderNav(navTarget); }
     const menuToggle = byId('menuToggle');
@@ -118,5 +124,5 @@
   }
   function setText(id, value, fallback = '-') { const node = byId(id); if (node) node.textContent = value || fallback; }
 
-  window.KrakeUI = { byId, escapeHtml, splitCsv, unique, getPublishTopics, postForm, getJson, showMessage, toggleMenu, mountLayout, setText };
+  window.KrakeUI = { mqttBroker, byId, escapeHtml, splitCsv, unique, getPublishTopics, postForm, getJson, showMessage, toggleMenu, mountLayout, setText };
 })();
