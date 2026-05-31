@@ -22,7 +22,6 @@
 #define GPAD_HAL_H
 #include <Stream.h>
 // #include <Arduino.h>
-#include <PubSubClient.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFi.h>
 
@@ -314,10 +313,21 @@ void showWifiStatusPage();
 const char *lcdUiStateName();
 void drawLcdStatusIconsNow();
 void noteLcdQueueMessageReceived();
+void noteLcdUiInteraction();
 void clearLCD(void);
 void splashLCD(wifi_mode_t wifiMode, const IPAddress &deviceIp);
 
-bool interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client);
+struct InterpretedCommand
+{
+  bool includeAudioRefresh = false;
+  bool publishSystemInfo = false;
+  bool publishResetAck = false;
+  bool restartRequested = false;
+};
+
+typedef void (*SystemInfoLineHandler)(const char *line);
+void printSystemInfo(Stream *serialport, SystemInfoLineHandler lineHandler = nullptr);
+InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport);
 
 // This module has to be initialized and called each time through the superloop
 void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceIp);

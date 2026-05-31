@@ -14,7 +14,7 @@ constexpr int SW = 34;  // Rotary encoder Switch pin
 #endif
 
 // Encoder setup and logic functions
-void initRotator();
+bool initRotator();
 void updateRotator();
 void IRAM_ATTR checkPositionISR();
 

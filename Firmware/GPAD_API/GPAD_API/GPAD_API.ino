@@ -53,6 +53,7 @@
 #include "alarm_api.h"
 #include "GPAD_HAL.h"
 #include "gpad_utility.h"
+#include "setup_status.h"
 #include "gpad_serial.h"
 #include "Wink.h"
 #include <math.h>
@@ -185,9 +186,6 @@ WifiOTA::Manager wifiManager(WiFi, debugSerial);
 #define GPAD_VERSION1
 
 #define DEBUG_SPI 0
-
-#define DEBUG 0
-// #define DEBUG 4
 
 #ifndef ENABLE_HEAP_DIAGNOSTICS
 #define ENABLE_HEAP_DIAGNOSTICS 0
@@ -434,7 +432,7 @@ bool customMqttBrokerConfigured()
 bool saveMqttBrokerPreferences()
 {
   Preferences prefs;
-  if (!prefs.begin(MQTT_PREF_NS, false)) return false;
+  if (!prefs.begin(MQTT_PREF_NS, false)) { setSetupError(SETUP_ERROR_MQTT_PREFERENCES); return false; }
   prefs.putUChar(MQTT_PREF_PROFILE, static_cast<uint8_t>(mqttBrokerProfile));
   prefs.putString(MQTT_PREF_BROKER, customMqttBrokerName);
   prefs.putString(MQTT_PREF_USER, customMqttUser);
@@ -446,7 +444,7 @@ bool saveMqttBrokerPreferences()
 void loadMqttBrokerPreferences()
 {
   Preferences prefs;
-  if (!prefs.begin(MQTT_PREF_NS, true)) return;
+  if (!prefs.begin(MQTT_PREF_NS, true)) { setSetupError(SETUP_ERROR_MQTT_PREFERENCES); return; }
   String broker = prefs.getString(MQTT_PREF_BROKER, "");
   String user = prefs.getString(MQTT_PREF_USER, "");
   String password = prefs.getString(MQTT_PREF_PASSWORD, "");
@@ -1390,7 +1388,43 @@ void turnOffAllLamps()
   digitalWrite(LIGHT4, LOW);
 }
 
-// Handeler for MQTT subscribed messages
+// Application-layer actions for parsed commands and menu responses
+bool publishAlarmAction(const char *responseType, const char *alarmId)
+{
+  return publishGPAPResponse(&client, responseType, alarmId);
+}
+
+bool mqttClientConnected()
+{
+  return client.connected();
+}
+
+void publishSystemInfoLine(const char *line)
+{
+  if (client.connected())
+  {
+    publishAck(&client, line);
+  }
+}
+
+void applyInterpretedCommand(const InterpretedCommand &result, Stream *serialport)
+{
+  requestAlarmRefresh(serialport, result.includeAudioRefresh);
+  if (result.publishSystemInfo && client.connected())
+  {
+    printSystemInfo(nullptr, publishSystemInfoLine);
+  }
+  if (result.publishResetAck && client.connected())
+  {
+    publishAck(&client, "Software reset requested.");
+  }
+  if (result.restartRequested)
+  {
+    delay(100);
+    ESP.restart();
+  }
+}
+
 void callback(char *topic, byte *payload, unsigned int length)
 {
   // Note: We will check for topic or topics in the future...
@@ -1427,8 +1461,8 @@ void callback(char *topic, byte *payload, unsigned int length)
     }
     noteLcdQueueMessageReceived();
     markWatchedTopicParticipant(topic);
-    const bool includeAudioRefresh = interpretBuffer(mbuff, m, &debugSerial, &client); // Process the MQTT message
-    requestAlarmRefresh(&debugSerial, includeAudioRefresh);
+    const InterpretedCommand result = interpretBuffer(mbuff, m, &debugSerial); // Process the MQTT message
+    applyInterpretedCommand(result, &debugSerial);
   }
 } // end call back
 
@@ -2223,11 +2257,6 @@ void setup()
   debugSerial.begin(BAUDRATE);
   serialLogBuffer[0] = '\0';
   serialLogLength = 0;
-  const unsigned long serialStartMs = millis();
-  while (!debugSerial && !millisIntervalElapsed(millis(), serialStartMs, 2000))
-  {
-    delay(10); // wait briefly for native USB without starving the scheduler
-  }
   serialSplash();
   // We call this a second time to get the MAC on the screen
   // clearLCD();
@@ -2257,7 +2286,13 @@ void setup()
   // Setup the SWITCH_MUTE
   // Setup the SWITCH_ENCODER
 
-  WifiOTA::initLittleFS();
+  if (!WifiOTA::initLittleFS())
+  {
+    setSetupError(SETUP_ERROR_LITTLEFS);
+  }
+
+  volumeDFPlayer = loadVolumeSetting(volumeDFPlayer);
+  muteTimeoutMinutes = loadMuteTimeoutMinutesSetting(muteTimeoutMinutes);
 
   volumeDFPlayer = loadVolumeSetting(volumeDFPlayer);
   muteTimeoutMinutes = loadMuteTimeoutMinutesSetting(muteTimeoutMinutes);
@@ -2282,21 +2317,6 @@ void setup()
 
 #if (DEBUG > 0)
   debugSerial.println("Starting WiFi as STA");
-#endif
-
-  // Note: On Krake SN#3 only, performing this
-  // while the Splash is on causes a reset, presumably
-  // because too much power is drawn. I am using a conditional
-  // to isolate this as much as possible, while
-  // still allowing us to use a single code base for all hardware
-  // devices -- rlr
-
-#if (LIMIT_POWER_DRAW)
-  clearLCD();
-#endif
-
-#if (LIMIT_POWER_DRAW)
-  splashLCD();
 #endif
 
   // setup_spi();
@@ -2369,7 +2389,10 @@ void setup()
 #endif
 
 
-  initRotator();
+  if (!initRotator())
+  {
+    debugSerial.println(F("Warning: rotary encoder unavailable; continuing setup."));
+  }
 #if (DEBUG > 0)
   debugSerial.println(F("initRotator"));
 #endif
@@ -2456,7 +2479,7 @@ void serviceMqttClient()
 
 void serviceRuntimeDiagnostics()
 {
-#if ENABLE_DEBUG_LOGS
+#if DEBUG_LEVEL >= 2
   static unsigned long lastDiagnosticsMs = 0;
   const unsigned long now = millis();
   if (lastDiagnosticsMs != 0 && !millisIntervalElapsed(now, lastDiagnosticsMs, 10000))
@@ -2528,11 +2551,11 @@ void loop()
   GPAD_HAL_loop();
   serviceMqttClient();
 
-  processSerial(&debugSerial, &debugSerial, &client);
+  processSerial(&debugSerial, &debugSerial);
   serviceMqttClient();
 
   // Here we also process the UART1 using the same routine.
-  processSerial(&debugSerial, &uartSerial1, &client);
+  processSerial(&debugSerial, &uartSerial1);
   serviceMqttClient();
 
   // Here we will listen for an SPI command...
