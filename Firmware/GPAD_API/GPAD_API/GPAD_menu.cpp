@@ -9,6 +9,8 @@
 #include "alarm_api.h"
 #include "mqtt_handler.h"
 #include "debug_macros.h"
+#include "gpad_utility.h"
+#include "operator_settings.h"
 
 using namespace Menu;
 
@@ -18,6 +20,7 @@ extern char currentAlarmId[11];
 extern bool running_menu;
 extern bool menu_just_exited;
 extern unsigned long muteTimeoutEndMillis;
+extern bool selectMqttBrokerProfile(uint8_t profile, bool persist);
 
 #define LEDPIN 12
 #define MAX_DEPTH 3
@@ -33,7 +36,7 @@ void noteMenuInteraction()
 
 bool menuInactivityTimedOut()
 {
-  return (millis() - lastMenuInteractionMs) >= MENU_INACTIVITY_TIMEOUT_MS;
+  return millisIntervalElapsed(millis(), lastMenuInteractionMs, MENU_INACTIVITY_TIMEOUT_MS);
 }
 
 void reset_menu_navigation();
@@ -100,6 +103,7 @@ result action4(eventMask e)
   DBG_PRINT(F("volume value: "));
   DBG_PRINTLN(volumeDFPlayer);
   setVolume(volumeDFPlayer);
+  saveVolumeSetting(volumeDFPlayer);
   return proceed;
 }
 // result action5(eventMask e)
@@ -235,6 +239,7 @@ result actionMuteTimeout(eventMask e)
     DBG_PRINT(F("Mute timeout set: "));
     DBG_PRINT(muteTimeoutMinutes);
     DBG_PRINTLN(F(" min"));
+    saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     requestAlarmRefresh(&Serial);
   }
   return proceed;
@@ -244,6 +249,7 @@ result actionMuteNow(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
+    saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
     requestAlarmRefresh(&Serial);
   }
@@ -280,7 +286,21 @@ result actionBrokerKrake(eventMask e)
     menu_just_exited = false;
     Menu::doExit();
     resetLcdUiToMainPage();
-    showActionFeedback("Fixed broker");
+    showActionFeedback(selectMqttBrokerProfile(0, true) ? "Krake broker" : "Save failed");
+    requestAlarmRefresh(&Serial, false);
+  }
+  return proceed;
+}
+
+result actionBrokerCustom(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    running_menu = false;
+    menu_just_exited = false;
+    Menu::doExit();
+    resetLcdUiToMainPage();
+    showActionFeedback(selectMqttBrokerProfile(1, true) ? "Custom broker" : "Set custom on web");
     requestAlarmRefresh(&Serial, false);
   }
   return proceed;
@@ -331,6 +351,7 @@ MENU(wifiMenu, "WiFi", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
 
 MENU(brokerMenu, "Broker", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Krake PubInv", actionBrokerKrake, enterEvent),
+  OP("Saved Custom", actionBrokerCustom, enterEvent),
   OP("Back", actionBack, enterEvent)
 );
 
