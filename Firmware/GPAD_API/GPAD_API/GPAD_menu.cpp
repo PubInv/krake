@@ -9,6 +9,8 @@
 #include "alarm_api.h"
 #include "mqtt_handler.h"
 #include "debug_macros.h"
+#include "gpad_utility.h"
+#include "operator_settings.h"
 
 using namespace Menu;
 
@@ -18,12 +20,24 @@ extern char currentAlarmId[11];
 extern bool running_menu;
 extern bool menu_just_exited;
 extern unsigned long muteTimeoutEndMillis;
-extern bool selectMqttBrokerOption(uint8_t index);
+extern bool selectMqttBrokerProfile(uint8_t profile, bool persist);
 
 #define LEDPIN 12
 #define MAX_DEPTH 3
 
 static bool settingsExitRequested = false;
+static unsigned long lastMenuInteractionMs = 0;
+const unsigned long MENU_INACTIVITY_TIMEOUT_MS = 120000;
+
+void noteMenuInteraction()
+{
+  lastMenuInteractionMs = millis();
+}
+
+bool menuInactivityTimedOut()
+{
+  return millisIntervalElapsed(millis(), lastMenuInteractionMs, MENU_INACTIVITY_TIMEOUT_MS);
+}
 
 void reset_menu_navigation();
 static void finishReturnToMainPage();
@@ -89,6 +103,7 @@ result action4(eventMask e)
   DBG_PRINT(F("volume value: "));
   DBG_PRINTLN(volumeDFPlayer);
   setVolume(volumeDFPlayer);
+  saveVolumeSetting(volumeDFPlayer);
   return proceed;
 }
 // result action5(eventMask e)
@@ -224,6 +239,7 @@ result actionMuteTimeout(eventMask e)
     DBG_PRINT(F("Mute timeout set: "));
     DBG_PRINT(muteTimeoutMinutes);
     DBG_PRINTLN(F(" min"));
+    saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     requestAlarmRefresh(&Serial);
   }
   return proceed;
@@ -233,6 +249,7 @@ result actionMuteNow(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
+    saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
     requestAlarmRefresh(&Serial);
   }
@@ -261,32 +278,30 @@ result actionWifiStatus(eventMask e)
   return proceed;
 }
 
-bool selectBroker(uint8_t index)
-{
-  const bool selected = selectMqttBrokerOption(index);
-  running_menu = false;
-  menu_just_exited = false;
-  Menu::doExit();
-  resetLcdUiToMainPage();
-  showActionFeedback(selected ? "Broker selected" : "Broker failed");
-  requestAlarmRefresh(&Serial, false);
-  return selected;
-}
-
-result actionBrokerPublic(eventMask e)
-{
-  if (e == eventMask::enterEvent)
-  {
-    selectBroker(0);
-  }
-  return proceed;
-}
-
 result actionBrokerKrake(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
-    selectBroker(1);
+    running_menu = false;
+    menu_just_exited = false;
+    Menu::doExit();
+    resetLcdUiToMainPage();
+    showActionFeedback(selectMqttBrokerProfile(0, true) ? "Krake broker" : "Save failed");
+    requestAlarmRefresh(&Serial, false);
+  }
+  return proceed;
+}
+
+result actionBrokerCustom(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    running_menu = false;
+    menu_just_exited = false;
+    Menu::doExit();
+    resetLcdUiToMainPage();
+    showActionFeedback(selectMqttBrokerProfile(1, true) ? "Custom broker" : "Set custom on web");
+    requestAlarmRefresh(&Serial, false);
   }
   return proceed;
 }
@@ -335,8 +350,8 @@ MENU(wifiMenu, "WiFi", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
 );
 
 MENU(brokerMenu, "Broker", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  OP("1 Krake PubInv", actionBrokerKrake, enterEvent),
-  OP("2 Public Shiftr", actionBrokerPublic, enterEvent),
+  OP("Krake PubInv", actionBrokerKrake, enterEvent),
+  OP("Saved Custom", actionBrokerCustom, enterEvent),
   OP("Back", actionBack, enterEvent)
 );
 
@@ -357,7 +372,7 @@ MENU(developerMenu, "Developer Mode", Menu::doNothing, Menu::noEvent, Menu::wrap
 MENU(mainMenu, "Settings", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Info", actionInfo, enterEvent),
   SUBMENU(wifiMenu),
-  FIELD(volumeDFPlayer, "Volume", "%", 1, 30, 20, 1, action4, enterEvent, wrapStyle),
+  FIELD(volumeDFPlayer, "Volume", "%", 1, 100, 20, 1, action4, enterEvent, wrapStyle),
   SUBMENU(muteMenu),
   SUBMENU(developerMenu),
   SUBMENU(resetConfirmMenu),
@@ -386,6 +401,7 @@ NAVROOT(nav, mainMenu, MAX_DEPTH, in, out);
 
 void registerRotationEvent(bool CW)
 {
+  noteMenuInteraction();
   DBG_PRINT(F("CW: "));
   DBG_PRINTLN(CW);
   reIn.registerEvent(CW ? RotaryEventIn::EventType::ROTARY_CW
@@ -394,6 +410,7 @@ void registerRotationEvent(bool CW)
 
 void registerRotaryEncoderPress()
 {
+  noteMenuInteraction();
   reIn.registerEvent(RotaryEventIn::EventType::BUTTON_CLICKED);
 }
 
@@ -407,6 +424,13 @@ void setup_GPAD_menu()
 
 void poll_GPAD_menu()
 {
+  if (running_menu && menuInactivityTimedOut())
+  {
+    DBG_PRINTLN(F("Menu inactivity timeout. Returning to main page."));
+    finishReturnToMainPage();
+    return;
+  }
+
   nav.poll();
   if (settingsExitRequested)
   {
@@ -445,6 +469,7 @@ void open_settings_menu_at(int n)
 void reset_menu_navigation()
 {
   running_menu = true;
+  noteMenuInteraction();
   nav.reset();
 }
 

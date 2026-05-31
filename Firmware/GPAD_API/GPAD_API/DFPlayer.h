@@ -21,7 +21,7 @@ void checkSerial(void);
 void menu_opcoes();
 void serialSplashDFP();
 
-void setVolume(int oneToThirty);
+void setVolume(int oneToHundred);
 
 extern int volumeDFPlayer;
 extern int numberFilesDF;
