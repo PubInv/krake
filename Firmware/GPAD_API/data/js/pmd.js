@@ -12,7 +12,7 @@
   async function loadTopics() {
     const data = await KrakeUI.getJson('/settings-data');
     KrakeUI.setText('deviceRole', data.role || 'Krake');
-    KrakeUI.setText('brokerName', data.broker || 'krakepubinv.cloud.shiftr.io');
+    KrakeUI.setText('brokerName', data.broker || KrakeUI.mqttBroker.hostname);
     const list = KrakeUI.getPublishTopics(data);
     const select = KrakeUI.byId('topicSelect');
     select.innerHTML = '';
