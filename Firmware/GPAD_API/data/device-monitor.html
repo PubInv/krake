@@ -24,14 +24,14 @@
 <section class="card">
 <h1>Shiftr MQTT Broker Monitor</h1>
 <div class="embed-wrap">
-<iframe src="https://krakepubinv.cloud.shiftr.io/embed?widgets=1" width="980" height="900" frameborder="0" allowfullscreen></iframe>
+<iframe id="brokerEmbed" title="Krake PubInv Shiftr broker monitor" width="980" height="900" frameborder="0" allowfullscreen></iframe>
 </div>
 </section>
 <section class="card">
 <h1>Broker Connection</h1>
 <div class="form-grid">
-<label>Broker WSS URL<input class="text-input" id="brokerUrl" value="wss://krakepubinv.cloud.shiftr.io" readonly/></label>
-<label>Username<input class="text-input" id="username" value="krakepubinv" readonly/></label>
+<label>Broker WSS URL<input class="text-input" id="brokerUrl" readonly/></label>
+<label>Username<input class="text-input" id="username" readonly/></label>
 <label>Password<input class="text-input" id="password" type="password" placeholder="Enter Krake PubInv password"/></label>
 <button class="action-btn" id="connectBtn">Connect</button>
 <button class="action-btn secondary" disabled="" id="disconnectBtn">Disconnect</button>

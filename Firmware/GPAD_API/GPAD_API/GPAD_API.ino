@@ -1480,7 +1480,7 @@ bool isNoStorePath(const char *path)
          strcmp(dot, ".css") == 0 || strcmp(dot, ".json") == 0;
 }
 
-void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char *contentType)
+void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char *contentType, int statusCode = 200)
 {
   if (!WifiOTA::isLittleFSMounted())
   {
@@ -1493,6 +1493,7 @@ void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char
   if (LittleFS.exists(gzipPath))
   {
     AsyncWebServerResponse *response = request->beginResponse(LittleFS, gzipPath, contentType);
+    response->setCode(statusCode);
     response->addHeader("Content-Encoding", "gzip");
     addWebUiHeaders(response, isNoStorePath(path));
     request->send(response);
@@ -1501,6 +1502,7 @@ void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char
   if (LittleFS.exists(path))
   {
     AsyncWebServerResponse *response = request->beginResponse(LittleFS, path, contentType);
+    response->setCode(statusCode);
     addWebUiHeaders(response, isNoStorePath(path));
     request->send(response);
     return;
@@ -1511,6 +1513,24 @@ void sendStaticFile(AsyncWebServerRequest *request, const char *path, const char
 void sendStaticFile(AsyncWebServerRequest *request, const char *path)
 {
   sendStaticFile(request, path, contentTypeForPath(path));
+}
+
+void sendSourceFile(AsyncWebServerRequest *request, const char *path, const char *contentType)
+{
+  if (!WifiOTA::isLittleFSMounted())
+  {
+    sendTextResponse(request, 503, "text/plain", "LittleFS unavailable");
+    return;
+  }
+  if (!LittleFS.exists(path))
+  {
+    sendTextResponse(request, 404, "text/plain", "not found");
+    return;
+  }
+
+  AsyncWebServerResponse *response = request->beginResponse(LittleFS, path, contentType);
+  addWebUiHeaders(response, isNoStorePath(path));
+  request->send(response);
 }
 
 void sendTemplateFile(AsyncWebServerRequest *request, const char *path)
@@ -1555,6 +1575,18 @@ void setupOTA()
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendTemplateFile(request, "/index.html"); });
+
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+            { sendSourceFile(request, "/style.css", "text/css"); });
+
+  server.on("/index.html", HTTP_GET, [](AsyncWebServerRequest *request)
+            { sendTemplateFile(request, "/index.html"); });
+
+  server.on("/manual", HTTP_GET, [](AsyncWebServerRequest *request)
+            { sendStaticFile(request, "/manual.html", "text/html"); });
+
+  server.on("/PMD_GPAD_API", HTTP_GET, [](AsyncWebServerRequest *request)
+            { sendStaticFile(request, "/PMD_GPAD_API.html", "text/html"); });
 
   server.on("/monitor", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendTemplateFile(request, "/monitor.html"); });
@@ -1604,9 +1636,6 @@ void setupOTA()
 
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendStaticFile(request, "/settings.html", "text/html"); });
-
-  server.on("/setup", HTTP_GET, [](AsyncWebServerRequest *request)
-            { sendStaticFile(request, "/setup.html", "text/html"); });
 
   server.on("/wifi", HTTP_GET, [](AsyncWebServerRequest *request)
             {
@@ -1935,7 +1964,7 @@ void setupOTA()
                     {
                       if (request->method() == AsyncWebRequestMethod::HTTP_GET)
                       {
-                        sendStaticFile(request, "/index.html", "text/html");
+                        sendStaticFile(request, "/404.html", "text/html", 404);
                         return;
                       }
                       sendTextResponse(request, 404, "text/plain", "not found");
