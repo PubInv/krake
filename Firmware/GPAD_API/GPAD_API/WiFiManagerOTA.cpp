@@ -1,6 +1,7 @@
 #include "WiFiManagerOTA.h"
 #include <LittleFS.h>
 #include <Preferences.h>
+#include "gpad_utility.h"
 
 namespace
 {
@@ -157,7 +158,7 @@ void Manager::connect(const char *const accessPointSsid)
     const unsigned long credentialsStartMs = millis();
     for (size_t index = 0; index < credentials.count; ++index)
     {
-      const unsigned long elapsedMs = millis() - credentialsStartMs;
+      const uint32_t elapsedMs = elapsedMillis(millis(), credentialsStartMs);
       if (elapsedMs >= WIFI_STORED_CREDENTIALS_BUDGET_MS)
       {
         this->print.println(F("Stored WiFi retry budget exhausted; starting recovery portal."));
@@ -475,7 +476,7 @@ bool Manager::connectStoredCredentials(const String &ssid, const String &passwor
 
   this->wifi.begin(ssid.c_str(), password.c_str());
   const unsigned long startMs = millis();
-  while ((millis() - startMs) < timeoutMs)
+  while (!millisIntervalElapsed(millis(), startMs, timeoutMs))
   {
     if (this->wifi.status() == WL_CONNECTED)
     {
