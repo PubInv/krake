@@ -3,7 +3,8 @@
     hostname: 'krakepubinv.cloud.shiftr.io',
     wssUrl: 'wss://krakepubinv.cloud.shiftr.io',
     embedUrl: 'https://krakepubinv.cloud.shiftr.io/embed?widgets=1',
-    username: 'krakepubinv'
+    username: 'krakepubinv',
+    profiles: [{ id: 'krake', label: 'Krake PubInv', wssUrl: 'wss://krakepubinv.cloud.shiftr.io', username: 'krakepubinv' }, { id: 'custom', label: 'Custom broker' }]
   });
   const navSections = [
     {

@@ -83,8 +83,8 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
 
       if (rlen > 0)
       {
-        interpretBuffer(buf, rlen, debugPort, client);
-        requestAlarmRefresh(debugPort);
+        const bool includeAudioRefresh = interpretBuffer(buf, rlen, debugPort, client);
+        requestAlarmRefresh(debugPort, includeAudioRefresh);
         printAlarmState(debugPort);
         processedCommand = true;
       }
@@ -100,6 +100,7 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
     {
       // Overflow guard: reset buffer if a line grows too long.
       writeIndex = 0;
+      cancelPendingAlarmAudio();
       printError(debugPort);
       processedCommand = true;
     }

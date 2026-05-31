@@ -1,6 +1,7 @@
 #include "DFPlayer.h"
 #include "gpad_utility.h"
 #include "debug_macros.h"
+#include "operator_settings.h"
 #include <DFRobotDFPlayerMini.h>
 
 DFRobotDFPlayerMini dfPlayer;
@@ -85,6 +86,7 @@ void checkSerial(void)
     if (command == '+')
     {
       setVolume(volumeDFPlayer + 1);
+      saveVolumeSetting(volumeDFPlayer);
       DBG_PRINT(F("Current volume: "));
       DBG_PRINT(volumeDFPlayer);
       DBG_PRINTLN(F("%"));
@@ -94,6 +96,7 @@ void checkSerial(void)
     if (command == '-')
     {
       setVolume(volumeDFPlayer - 1);
+      saveVolumeSetting(volumeDFPlayer);
       DBG_PRINT(F("Current volume: "));
       DBG_PRINT(volumeDFPlayer);
       DBG_PRINTLN(F("%"));
@@ -121,7 +124,7 @@ namespace
 void delayWithYield(const unsigned long durationMs)
 {
   const unsigned long startMs = millis();
-  while ((millis() - startMs) < durationMs)
+  while (!millisIntervalElapsed(millis(), startMs, durationMs))
   {
     delay(10);
     yield();
@@ -374,7 +377,7 @@ bool playAlarmLevel(int alarmNumberToPlay)
   static unsigned long timer = 0;
   const unsigned long delayPlayLevel = 100;
 
-  if (millis() - timer <= delayPlayLevel)
+  if (!millisIntervalElapsed(millis(), timer, delayPlayLevel + 1))
   {
     return false;
   }
