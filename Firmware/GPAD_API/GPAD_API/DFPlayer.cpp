@@ -1,6 +1,8 @@
 #include "DFPlayer.h"
 #include "gpad_utility.h"
 #include "debug_macros.h"
+#include "operator_settings.h"
+#include "setup_status.h"
 #include <DFRobotDFPlayerMini.h>
 
 DFRobotDFPlayerMini dfPlayer;
@@ -85,6 +87,7 @@ void checkSerial(void)
     if (command == '+')
     {
       setVolume(volumeDFPlayer + 1);
+      saveVolumeSetting(volumeDFPlayer);
       DBG_PRINT(F("Current volume: "));
       DBG_PRINT(volumeDFPlayer);
       DBG_PRINTLN(F("%"));
@@ -94,6 +97,7 @@ void checkSerial(void)
     if (command == '-')
     {
       setVolume(volumeDFPlayer - 1);
+      saveVolumeSetting(volumeDFPlayer);
       DBG_PRINT(F("Current volume: "));
       DBG_PRINT(volumeDFPlayer);
       DBG_PRINTLN(F("%"));
@@ -121,7 +125,7 @@ namespace
 void delayWithYield(const unsigned long durationMs)
 {
   const unsigned long startMs = millis();
-  while ((millis() - startMs) < durationMs)
+  while (!millisIntervalElapsed(millis(), startMs, durationMs))
   {
     delay(10);
     yield();
@@ -144,6 +148,7 @@ void setupDFPlayer()
     DBG_PRINTLN(F("DFPlayer Mini not detected or not responding."));
     DBG_PRINTLN(F("Check wiring, power, SD card, and file names."));
     isDFPlayerDetected = false;
+    setSetupError(SETUP_ERROR_DFPLAYER);
     return;
   }
 
@@ -172,14 +177,12 @@ void setupDFPlayer()
   if (numberFilesDF <= 0)
   {
     DBG_PRINTLN(F("Warning: no audio files detected. Use FAT32 SD card and files like 0001.mp3, 0002.mp3."));
+    setSetupError(SETUP_ERROR_DFPLAYER_FILES);
   }
 
-  DBG_PRINTLN(F("DFPlayer startup test: playing track 1."));
-  dfPlayer.play(1);
-  delayWithYield(3000); // Give enough time to hear output without starving the scheduler/WDT.
-
-  displayDFPlayerStats();
-  menu_opcoes();
+  // Do not play a startup track or run slow diagnostic queries during setup.
+  // The device remains available even if optional audio hardware is missing.
+  DBG_PRINTLN(F("DFPlayer initialized without blocking startup playback."));
 }
 
 void setVolume(int oneToHundred)
@@ -374,7 +377,7 @@ bool playAlarmLevel(int alarmNumberToPlay)
   static unsigned long timer = 0;
   const unsigned long delayPlayLevel = 100;
 
-  if (millis() - timer <= delayPlayLevel)
+  if (!millisIntervalElapsed(millis(), timer, delayPlayLevel + 1))
   {
     return false;
   }
