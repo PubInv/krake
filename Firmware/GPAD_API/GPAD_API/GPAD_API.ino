@@ -1515,6 +1515,24 @@ void sendStaticFile(AsyncWebServerRequest *request, const char *path)
   sendStaticFile(request, path, contentTypeForPath(path));
 }
 
+void sendSourceFile(AsyncWebServerRequest *request, const char *path, const char *contentType)
+{
+  if (!WifiOTA::isLittleFSMounted())
+  {
+    sendTextResponse(request, 503, "text/plain", "LittleFS unavailable");
+    return;
+  }
+  if (!LittleFS.exists(path))
+  {
+    sendTextResponse(request, 404, "text/plain", "not found");
+    return;
+  }
+
+  AsyncWebServerResponse *response = request->beginResponse(LittleFS, path, contentType);
+  addWebUiHeaders(response, isNoStorePath(path));
+  request->send(response);
+}
+
 void sendTemplateFile(AsyncWebServerRequest *request, const char *path)
 {
   if (!WifiOTA::isLittleFSMounted())
@@ -1557,6 +1575,9 @@ void setupOTA()
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendTemplateFile(request, "/index.html"); });
+
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+            { sendSourceFile(request, "/style.css", "text/css"); });
 
   server.on("/index.html", HTTP_GET, [](AsyncWebServerRequest *request)
             { sendTemplateFile(request, "/index.html"); });
