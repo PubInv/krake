@@ -86,7 +86,7 @@
       ? '<button id="devLockBtn" class="menu-unlock">🔒 Lock Developer Tools</button><div id="devUnlockMsg" class="note"></div>'
       : '<button id="devUnlockBtn" class="menu-unlock">🔧 Unlock Developer Mode</button><div id="devUnlockPanel" class="menu-unlock-panel hidden"><input id="devPassword" type="password" class="text-input" placeholder="Enter developer password"><button id="devSubmit" class="action-btn" type="button">Unlock</button><div id="devUnlockMsg" class="note"></div></div>';
 
-    navTarget.innerHTML = sectionHtml + unlockHtml + '<a class="menu-home" href="/index.html">Home</a>';
+    navTarget.innerHTML = sectionHtml + unlockHtml + '<a class="menu-home" href="/">Home</a>';
 
     const unlockBtn = byId('devUnlockBtn');
     if (unlockBtn) unlockBtn.addEventListener('click', () => byId('devUnlockPanel')?.classList.toggle('hidden'));
@@ -110,7 +110,7 @@
     const navTarget = byId('sideMenu');
     if (headerTarget) {
       headerTarget.className = 'topbar';
-      headerTarget.innerHTML = '<div class="brand"><a href="/index.html" aria-label="Go to Home"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"></a><span>' + escapeHtml(title || 'KRAKE') + '</span></div><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
+      headerTarget.innerHTML = '<div class="brand"><a href="/" aria-label="Go to Home"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"></a><span>' + escapeHtml(title || 'KRAKE') + '</span></div><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
     }
     if (navTarget) { navTarget.className = 'side-menu'; renderNav(navTarget); }
     const menuToggle = byId('menuToggle');
