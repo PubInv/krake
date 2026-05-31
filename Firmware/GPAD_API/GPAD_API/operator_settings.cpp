@@ -1,5 +1,6 @@
 #include "operator_settings.h"
 #include <Preferences.h>
+#include "setup_status.h"
 
 namespace
 {
@@ -17,7 +18,7 @@ namespace
   bool saveUChar(const char *key, int value)
   {
     Preferences prefs;
-    if (!prefs.begin(OPERATOR_PREF_NS, false)) return false;
+    if (!prefs.begin(OPERATOR_PREF_NS, false)) { setSetupError(SETUP_ERROR_OPERATOR_PREFERENCES); return false; }
     const size_t written = prefs.putUChar(key, static_cast<uint8_t>(value));
     prefs.end();
     return written == sizeof(uint8_t);
@@ -27,7 +28,7 @@ namespace
 int loadVolumeSetting(int fallbackPercent)
 {
   Preferences prefs;
-  if (!prefs.begin(OPERATOR_PREF_NS, true)) return clampSetting(fallbackPercent, OPERATOR_VOLUME_MIN_PERCENT, OPERATOR_VOLUME_MAX_PERCENT);
+  if (!prefs.begin(OPERATOR_PREF_NS, true)) { setSetupError(SETUP_ERROR_OPERATOR_PREFERENCES); return clampSetting(fallbackPercent, OPERATOR_VOLUME_MIN_PERCENT, OPERATOR_VOLUME_MAX_PERCENT); }
   const int safeFallback = clampSetting(fallbackPercent, OPERATOR_VOLUME_MIN_PERCENT, OPERATOR_VOLUME_MAX_PERCENT);
   const int volume = prefs.getUChar(OPERATOR_PREF_VOLUME, static_cast<uint8_t>(safeFallback));
   prefs.end();
@@ -37,7 +38,7 @@ int loadVolumeSetting(int fallbackPercent)
 int loadMuteTimeoutMinutesSetting(int fallbackMinutes)
 {
   Preferences prefs;
-  if (!prefs.begin(OPERATOR_PREF_NS, true)) return clampSetting(fallbackMinutes, OPERATOR_MUTE_TIMEOUT_MIN_MINUTES, OPERATOR_MUTE_TIMEOUT_MAX_MINUTES);
+  if (!prefs.begin(OPERATOR_PREF_NS, true)) { setSetupError(SETUP_ERROR_OPERATOR_PREFERENCES); return clampSetting(fallbackMinutes, OPERATOR_MUTE_TIMEOUT_MIN_MINUTES, OPERATOR_MUTE_TIMEOUT_MAX_MINUTES); }
   const int safeFallback = clampSetting(fallbackMinutes, OPERATOR_MUTE_TIMEOUT_MIN_MINUTES, OPERATOR_MUTE_TIMEOUT_MAX_MINUTES);
   const int minutes = prefs.getUChar(OPERATOR_PREF_MUTE_MIN, static_cast<uint8_t>(safeFallback));
   prefs.end();
