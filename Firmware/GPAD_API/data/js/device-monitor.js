@@ -5,6 +5,12 @@ const DEVICE_STORAGE_KEY = 'krakeDeviceMonitor.registry.v2';
 let client = null;
 let messageCount = 0;
 
+function loadBrokerDefaults() {
+  $('brokerEmbed').src = KrakeUI.mqttBroker.embedUrl;
+  $('brokerUrl').value = KrakeUI.mqttBroker.wssUrl;
+  $('username').value = KrakeUI.mqttBroker.username;
+}
+
 const defaultDevices = [
   ['3C61053EE100', 'PPG_Lee / MinKrakeLeeE100'], ['F024F9F1B874', 'KRAKE_LB0001'],
   ['142B2FEB1F00', 'KRAKE_LB0002'], ['142B2FEB1C64', 'KRAKE_LB0003'], ['142B2FEB1E24', 'KRAKE_LB0004'],
@@ -182,5 +188,7 @@ $('deviceTable').addEventListener('click', (event) => {
   if (button) removeDevice(button.dataset.mac);
 });
 
+loadBrokerDefaults();
+setBrokerStatus(false);
 setInterval(render, 1000);
 render();

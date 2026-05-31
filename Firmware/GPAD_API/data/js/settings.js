@@ -25,7 +25,7 @@
   }
   async function refreshSettings() {
     const data = await KrakeUI.getJson('/settings-data');
-    setInputValue('broker', data.broker || '');
+    setInputValue('broker', data.broker || KrakeUI.mqttBroker.hostname);
     setInputValue('role', data.role || 'Krake');
     setInputValue('topics', data.extraTopics || '');
     setInputValue('publishTopics', data.publishTopics || '');

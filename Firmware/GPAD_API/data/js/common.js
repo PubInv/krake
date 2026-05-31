@@ -1,4 +1,10 @@
 (function () {
+  const mqttBroker = Object.freeze({
+    hostname: 'krakepubinv.cloud.shiftr.io',
+    wssUrl: 'wss://krakepubinv.cloud.shiftr.io',
+    embedUrl: 'https://krakepubinv.cloud.shiftr.io/embed?widgets=1',
+    username: 'krakepubinv'
+  });
   const navSections = [
     {
       id: 'user',
@@ -7,7 +13,7 @@
       minRole: 'user',
       items: [
         ['GDT Track Record', '/GDT_TrackHistory.html'],
-        ['User Manual', '/manual']
+        ['User Manual', '/manual.html']
       ]
     },
     {
@@ -16,7 +22,7 @@
       defaultOpen: false,
       minRole: 'admin',
       items: [
-        ['Settings', '/settings'],
+        ['Settings', '/settings.html'],
         ['Firmware Update', '/update']
       ]
     },
@@ -26,9 +32,9 @@
       defaultOpen: false,
       minRole: 'developer',
       items: [
-        ['PMD Web UI', '/PMD_GPAD_API'],
-        ['Factory Test / Developer Monitor', '/monitor'],
-        ['MQTT Device Monitor', '/device-monitor'],
+        ['PMD Web UI', '/PMD_GPAD_API.html'],
+        ['Factory Test / Developer Monitor', '/monitor.html'],
+        ['MQTT Device Monitor', '/device-monitor.html'],
         ['Electrical Test History', '/Electrical_testHistory.html']
       ]
     }
@@ -118,5 +124,5 @@
   }
   function setText(id, value, fallback = '-') { const node = byId(id); if (node) node.textContent = value || fallback; }
 
-  window.KrakeUI = { byId, escapeHtml, splitCsv, unique, getPublishTopics, postForm, getJson, showMessage, toggleMenu, mountLayout, setText };
+  window.KrakeUI = { mqttBroker, byId, escapeHtml, splitCsv, unique, getPublishTopics, postForm, getJson, showMessage, toggleMenu, mountLayout, setText };
 })();
