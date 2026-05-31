@@ -24,16 +24,18 @@
 <section class="card">
 <h1>Shiftr MQTT Broker Monitor</h1>
 <div class="embed-wrap">
-<iframe src="https://krakepubinv.cloud.shiftr.io/embed?widgets=1" width="600" height="400" frameborder="0" allowfullscreen></iframe>
+<iframe id="brokerEmbed" title="Krake PubInv Shiftr broker monitor" width="980" height="900" frameborder="0" allowfullscreen></iframe>
 </div>
 </section>
 <section class="card">
 <h1>Broker Connection</h1>
 <div class="form-grid">
-<label>Broker WSS URL<input class="text-input" id="brokerUrl" value="wss://public.cloud.shiftr.io"/></label>
-<label>Username<input class="text-input" id="username" value="public"/></label>
-<label>Password<input class="text-input" id="password" type="password" value="public"/></label>
+<label>Broker Profile<select class="text-input" id="brokerProfile"><option value="krake">Krake PubInv</option><option value="custom">Custom broker</option></select></label>
+<label>Broker WSS URL<input class="text-input" id="brokerUrl" placeholder="wss://mqtt.example.org"/></label>
+<label>Username<input class="text-input" id="username" autocomplete="username"/></label>
+<label>Password<input class="text-input" id="password" type="password" placeholder="Enter password if required" autocomplete="current-password" required/></label>
 <button class="action-btn" id="connectBtn">Connect</button>
+<p class="status-row">Enter the selected broker password when required. The monitor stops automatic retries after an authorization rejection so an incorrect password does not flood the event log.</p>
 <button class="action-btn secondary" disabled="" id="disconnectBtn">Disconnect</button>
 </div>
 </section>
@@ -52,10 +54,11 @@
 </select>
 </label>
 <label>Custom command<input class="text-input" id="customCommand" placeholder="Or type custom GPAD/GPAP message"/></label>
-<label><input id="retain" type="checkbox"/> Retain</label>
+<label><input id="retain" type="checkbox"/> Retain published command</label>
+<label><input id="clearRetained" type="checkbox"/> Clear retained messages instead of publishing</label>
 <button class="action-btn" disabled="" id="publishBtn">Publish</button>
 </div>
-<p class="status-row">Publishes to <code>&lt;MAC&gt;_ALM</code>, same as the Processing sketch.</p>
+<p class="status-row">Publishes to <code>&lt;MAC&gt;_ALM</code>, same as the Processing sketch. Select clear retained messages to publish an empty retained payload to every tracked alarm topic.</p>
 </section>
 <section class="card stats">
 <div class="stat"><span id="onlineCount">0</span><small>Online</small></div>

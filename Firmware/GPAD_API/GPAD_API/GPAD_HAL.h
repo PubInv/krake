@@ -22,19 +22,10 @@
 #define GPAD_HAL_H
 #include <Stream.h>
 // #include <Arduino.h>
-#include <PubSubClient.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFi.h>
 
-// On Nov. 5th, 2024, we image 3 different hardware platforms.
-// The GPAD exists, and is working: https://www.hardware-x.com/article/S2468-0672(24)00084-1/fulltext
-// The "HMWK2" device exists as an intermediate design, and we are working on this.
-// The "Krake" has not yet been designed.
-// Note: The GPAD is based on an Arduino UNO, but the HMWK2 and KRAKE goes to ESP32.
-
-// Define only ONE of these hardware options.
-// #define GPAD 1
-// #define HMWK 1
+// This firmware target builds the ESP32 Krake hardware.
 #define KRAKE 1
 
 // Use these to choose the I2C address of LCD
@@ -74,33 +65,11 @@
 #define LED_BUILTIN 13
 #endif
 
-// This should be done with an "#elif", but I can't get it to work
-#if defined(HMWK)
-
-// #define SWITCH_MUTE 34
-#define SWITCH_MUTE 0 // Boot button
-#define LED_D9 23
-#define LIGHT0 15
-#define LIGHT1 4
-#define LIGHT2 5
-#define LIGHT3 18
-#define LIGHT4 19
-// The HMWK use a dev kit LED
-#define LED_BUILTIN 2
-
-#endif
-
 #ifdef GPAD_VERSION1 // The Version 1 PCB.
 // #define SS 7                                // nCS aka /SS Input on GPAD Version 1 PCB.
 
-#if defined(HMWK)
-// const int LED_D9 = 23;  // Mute1 LED on PMD
-#define LED_PIN 23     // for GPAD LIGHT0
-#define BUTTON_PIN 2   // GPAD Button to GND,  10K Resistor to +5V.
-#else                  // compile for an UNO, for example...
 #define LED_PIN PD3    // for GPAD LIGHT0
 #define BUTTON_PIN PD2 // GPAD Button to GND,  10K Resistor to +5V.
-#endif
 
 #else // The proof of concept wiring.
 #define LED_PIN 7
@@ -326,6 +295,7 @@ void receive_byte(byte c);
 void updateFromSPI();
 
 void restoreAlarmLevel(Stream *serialport);
+void cancelPendingAlarmAudio();
 void requestAlarmRefresh(Stream *serialport, bool includeAudio = true);
 void showMainLcdFrameNow(Stream *serialport);
 void unchanged_anunicateAlarmLevel(Stream *serialport);
@@ -343,10 +313,21 @@ void showWifiStatusPage();
 const char *lcdUiStateName();
 void drawLcdStatusIconsNow();
 void noteLcdQueueMessageReceived();
+void noteLcdUiInteraction();
 void clearLCD(void);
 void splashLCD(wifi_mode_t wifiMode, const IPAddress &deviceIp);
 
-void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client);
+struct InterpretedCommand
+{
+  bool includeAudioRefresh = false;
+  bool publishSystemInfo = false;
+  bool publishResetAck = false;
+  bool restartRequested = false;
+};
+
+typedef void (*SystemInfoLineHandler)(const char *line);
+void printSystemInfo(Stream *serialport, SystemInfoLineHandler lineHandler = nullptr);
+InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport);
 
 // This module has to be initialized and called each time through the superloop
 void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceIp);

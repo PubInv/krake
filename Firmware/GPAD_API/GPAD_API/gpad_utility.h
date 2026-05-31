@@ -21,6 +21,7 @@
 #ifndef GPAD_UTILITY
 #define GPAD_UTILITY 1
 #include <Stream.h>
+#include <stdint.h>
 #ifndef COMPANY_NAME
 #define COMPANY_NAME ""
 #endif
@@ -42,9 +43,39 @@
 #endif
 #define DEVICE_UNDER_TEST "Krake: DFPlayer" // This is GPAD code, but if it is used in testing...
 
-// THIS IS FOR DEBUGGING
-// #define LIMIT_POWER_DRAW 1  //FLE on 20260119
-#define LIMIT_POWER_DRAW 0
+// Arduino millis() is a wrapping 32-bit counter.  Keep intervals within half
+// its range and compare elapsed time with unsigned subtraction so rollover is
+// handled without special cases.
+const uint32_t MILLIS_MAX_SAFE_INTERVAL_MS = 0x7FFFFFFFUL;
+inline uint32_t elapsedMillis(uint32_t now, uint32_t startedAt)
+{
+  return now - startedAt;
+}
+inline bool millisIntervalElapsed(uint32_t now, uint32_t startedAt, uint32_t intervalMs)
+{
+  return elapsedMillis(now, startedAt) >= intervalMs;
+}
+inline bool millisDeadlineReached(uint32_t now, uint32_t deadline)
+{
+  return static_cast<int32_t>(now - deadline) >= 0;
+}
+
+// Arduino millis() is a wrapping 32-bit counter.  Keep intervals within half
+// its range and compare elapsed time with unsigned subtraction so rollover is
+// handled without special cases.
+const uint32_t MILLIS_MAX_SAFE_INTERVAL_MS = 0x7FFFFFFFUL;
+inline uint32_t elapsedMillis(uint32_t now, uint32_t startedAt)
+{
+  return now - startedAt;
+}
+inline bool millisIntervalElapsed(uint32_t now, uint32_t startedAt, uint32_t intervalMs)
+{
+  return elapsedMillis(now, startedAt) >= intervalMs;
+}
+inline bool millisDeadlineReached(uint32_t now, uint32_t deadline)
+{
+  return static_cast<int32_t>(now - deadline) >= 0;
+}
 
 void printError(Stream *serialport);
 void printInstructions(Stream *serialport);

@@ -185,7 +185,7 @@ The local settings menu includes:
 
 The Krake normally operates as a Wi-Fi station connected to a local network.
 
-For setup and provisioning, the Krake can create a temporary Wi-Fi access point using WiFiManager and LittleFS credential storage.
+For setup and provisioning, the Krake can create a temporary Wi-Fi access point using WiFiManager. Wi-Fi credentials are stored in ESP32 NVS so they survive LittleFS UI uploads.
 
 ## Features
 
@@ -196,7 +196,8 @@ For setup and provisioning, the Krake can create a temporary Wi-Fi access point 
 * MQTT connectivity monitoring
 * LCD network status display
 
-Credentials are stored locally using LittleFS.
+Wi-Fi credentials are stored locally in ESP32 NVS. A `/wifi.json` LittleFS mirror is maintained for backward compatibility and diagnostics, but NVS is authoritative so uploading a new LittleFS image does not erase the reconnect list.
+At startup, saved-network retries and the fallback WiFiManager recovery portal are time-bounded so a missing or invalid configuration cannot indefinitely block the Krake hardware loop.
 
 ---
 
