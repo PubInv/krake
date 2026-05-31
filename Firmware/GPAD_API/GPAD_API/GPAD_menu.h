@@ -4,6 +4,7 @@
 void setup_GPAD_menu();
 
 extern int muteTimeoutMinutes;
+extern int alarmRepeatSeconds;
 
 void poll_GPAD_menu();
 

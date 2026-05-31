@@ -79,6 +79,46 @@
   }
   function toggleMenu() { const menu = byId('sideMenu'); if (menu) menu.classList.toggle('open'); }
 
+  function mountFooter() {
+    let footer = document.querySelector('footer.footer');
+    if (!footer) {
+      footer = document.createElement('footer');
+      footer.className = 'footer';
+      document.body.appendChild(footer);
+    }
+
+    let links = footer.querySelector('.footer-links');
+    if (!links) {
+      links = document.createElement('div');
+      links.className = 'footer-links';
+      const message = footer.querySelector('#message');
+      footer.insertBefore(links, message || footer.firstChild);
+    }
+
+    if (!links.querySelector('[data-footer-link="pubinv"]')) {
+      const websiteLink = footer.querySelector('a[href="https://pubinv.org"]') || document.createElement('a');
+      websiteLink.href = 'https://pubinv.org';
+      websiteLink.target = '_blank';
+      websiteLink.rel = 'noopener noreferrer';
+      websiteLink.dataset.footerLink = 'pubinv';
+      websiteLink.textContent = 'pubinv.org';
+      links.appendChild(websiteLink);
+    }
+
+    if (!links.querySelector('[data-footer-link="github"]')) {
+      const githubLink = document.createElement('a');
+      githubLink.href = 'https://github.com/PubInv/krake';
+      githubLink.target = '_blank';
+      githubLink.rel = 'noopener noreferrer';
+      githubLink.className = 'github-link';
+      githubLink.dataset.footerLink = 'github';
+      githubLink.setAttribute('aria-label', 'View KRAKE source code on GitHub');
+      githubLink.title = 'View KRAKE on GitHub';
+      githubLink.innerHTML = '<svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 .7a11.3 11.3 0 0 0-3.6 22c.6.1.8-.2.8-.5v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.9 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.2c0 .3.2.6.8.5A11.3 11.3 0 0 0 12 .7Z"/></svg><span class="visually-hidden">GitHub</span>';
+      links.appendChild(githubLink);
+    }
+  }
+
   function renderNav(navTarget) {
     const sections = navSections.filter((section) => {
       if (section.id === 'developer') return state.developerUnlocked;
@@ -120,6 +160,7 @@
       headerTarget.innerHTML = '<div class="brand"><a href="/" aria-label="Go to Home"><img src="/favicon.png" alt="KRAKE icon" class="brand-icon"></a><span>' + escapeHtml(title || 'KRAKE') + '</span></div><button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>';
     }
     if (navTarget) { navTarget.className = 'side-menu'; renderNav(navTarget); }
+    mountFooter();
     const menuToggle = byId('menuToggle');
     if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
   }

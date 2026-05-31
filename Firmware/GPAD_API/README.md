@@ -26,14 +26,19 @@ As the documentation says, you **do not** have to follow all steps in the CLI gu
 mentioned below, it is required to install the shell commands for the `make` command to function correctly.
 
 ### Build
-In the this directory, there is a "make" file. If you have make installed, you can run "make". There are two targets:
+In this directory, there is a `makefile`. If you have `make` installed, run `make` or `make build` to compile the firmware without requiring a connected device. The available targets are:
 
-    1. run --- this does a compile and upload, and begins running a "monitor", which prints the output of the serial monitor and allows commands to be typed in, just as they are typically done in the Arduino IDE.
-    2. monitor --- this does a reset and runs the monitor without doing a fully reset.
+1. `build` --- compiles the firmware image. This is the default target used by `make`.
+2. `upload` --- compiles and uploads the firmware image to a connected device.
+3. `run` --- uploads the firmware image and begins running a monitor, which prints serial output and allows commands to be typed in, just as in the Arduino IDE.
+4. `monitor` --- runs the serial monitor without uploading a new firmware image.
 
 These commands are implemented on the command line as:
 
 ```
+    make
+    make build
+    make upload
     make run
     make monitor
 ```
@@ -58,3 +63,14 @@ Installing/flashing a new firmware image requires the device, Krake, to be set i
 3. While still holding BOOT, press and release the RESET button once.
 4. Release the BOOT button.
 5. The chip is now in boot mode. You can run your flasher and the port should respond.
+
+# Runtime Connectivity and SPI Broker Mirror
+WiFi credentials remain stored until explicitly cleared. Developers can clear saved WiFi credentials from the LCD `Developer Mode` menu or from the served settings page; the device then restarts into its normal WiFi setup flow.
+
+Every topic/payload pair queued for MQTT publication is also queued independently for transmission from the Krake ESP32 VSPI controller. This keeps the local SPI output available even when WiFi or MQTT is offline. The controller uses a 1 MHz, MSB-first, SPI mode 0 link with `SCLK=18`, `MISO=19`, `MOSI=23`, and chip-select `SS=15`. Each transfer is one frame:
+
+```
+"KRK1" | retain byte | topic length byte | payload length byte | topic bytes | payload bytes
+```
+
+The built-in LED retains its heartbeat and adds connection indicators: two short winks after WiFi connects and three short winks after MQTT connects.

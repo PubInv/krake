@@ -83,6 +83,7 @@
 #include "GPAD_menu.h"
 #include "mqtt_handler.h"
 #include "operator_settings.h"
+#include "spi_broker_mirror.h"
 #include "debug_macros.h"
 
 AsyncWebServer server(80);
@@ -238,6 +239,7 @@ const unsigned long MQTT_RECONNECT_INTERVAL_MS = 3000;
 const uint16_t MQTT_SOCKET_TIMEOUT_SECONDS = 1;
 unsigned long lastMqttReconnectAttemptMs = 0;
 bool mqttReconnectRequested = false;
+bool wifiConnectWinkIssued = false;
 enum BrokerState : uint8_t
 {
   BROKER_WAITING_WIFI,
@@ -280,6 +282,7 @@ const char *activeMqttBrokerLabel();
 const char *connectedMqttBroker();
 bool customMqttBrokerConfigured();
 void requestMqttReconnect();
+void requestWifiCredentialsReset();
 bool selectMqttBrokerProfile(uint8_t profile, bool persist = true);
 bool configureCustomMqttBroker(const String &broker, const String &user, const String &password);
 bool saveMqttBrokerPreferences();
@@ -333,6 +336,7 @@ void onWiFiDisconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   // Force immediate reconnect attempt in loop (including AP mode).
   lastWiFiReconnectAttemptMs = 0;
+  wifiConnectWinkIssued = false;
 }
 
 
@@ -582,6 +586,7 @@ bool reconnect(bool force = false)
     {
       client.subscribe(watchedTopics[i]);
     }
+    queueWinkPattern(3); // Triple wink: MQTT connected.
     return true;
   }
 
@@ -1895,6 +1900,7 @@ void setupOTA()
               payload += "\"role\":\"" + jsonEscape(String(device_role)) + "\",";
               payload += "\"volume\":" + String(volumeDFPlayer) + ",";
               payload += "\"muteTimeoutMinutes\":" + String(muteTimeoutMinutes) + ",";
+              payload += "\"alarmRepeatSeconds\":" + String(alarmRepeatSeconds) + ",";
               payload += "\"muted\":" + String(isMuted() ? "true" : "false");
               payload += "}";
               sendTextResponse(request, 200, "application/json", payload); });
@@ -2008,15 +2014,17 @@ void setupOTA()
 
   server.on("/settings/sound", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              if (!request->hasParam("volume", true) || !request->hasParam("muteTimeoutMinutes", true))
+              if (!request->hasParam("volume", true) || !request->hasParam("muteTimeoutMinutes", true) || !request->hasParam("alarmRepeatSeconds", true))
               {
                 request->send(400, "text/plain", "missing sound setting");
                 return;
               }
               String volumeText = request->getParam("volume", true)->value();
               String muteMinutesText = request->getParam("muteTimeoutMinutes", true)->value();
+              String repeatSecondsText = request->getParam("alarmRepeatSeconds", true)->value();
               volumeText.trim();
               muteMinutesText.trim();
+              repeatSecondsText.trim();
               for (size_t i = 0; i < volumeText.length(); i++)
               {
                 if (!isDigit(volumeText[i]))
@@ -2033,18 +2041,29 @@ void setupOTA()
                   return;
                 }
               }
+              for (size_t i = 0; i < repeatSecondsText.length(); i++)
+              {
+                if (!isDigit(repeatSecondsText[i]))
+                {
+                  request->send(400, "text/plain", "invalid sound setting");
+                  return;
+                }
+              }
               const int requestedVolume = volumeText.toInt();
               const int requestedMuteMinutes = muteMinutesText.toInt();
-              if (volumeText.length() == 0 || muteMinutesText.length() == 0 ||
+              const int requestedRepeatSeconds = repeatSecondsText.toInt();
+              if (volumeText.length() == 0 || muteMinutesText.length() == 0 || repeatSecondsText.length() == 0 ||
                   requestedVolume < OPERATOR_VOLUME_MIN_PERCENT || requestedVolume > OPERATOR_VOLUME_MAX_PERCENT ||
-                  requestedMuteMinutes < OPERATOR_MUTE_TIMEOUT_MIN_MINUTES || requestedMuteMinutes > OPERATOR_MUTE_TIMEOUT_MAX_MINUTES)
+                  requestedMuteMinutes < OPERATOR_MUTE_TIMEOUT_MIN_MINUTES || requestedMuteMinutes > OPERATOR_MUTE_TIMEOUT_MAX_MINUTES ||
+                  requestedRepeatSeconds < OPERATOR_ALARM_REPEAT_MIN_SECONDS || requestedRepeatSeconds > OPERATOR_ALARM_REPEAT_MAX_SECONDS)
               {
                 request->send(400, "text/plain", "invalid sound setting");
                 return;
               }
               setVolume(requestedVolume);
               muteTimeoutMinutes = requestedMuteMinutes;
-              if (!saveVolumeSetting(volumeDFPlayer) || !saveMuteTimeoutMinutesSetting(muteTimeoutMinutes))
+              alarmRepeatSeconds = requestedRepeatSeconds;
+              if (!saveVolumeSetting(volumeDFPlayer) || !saveMuteTimeoutMinutesSetting(muteTimeoutMinutes) || !saveAlarmRepeatSecondsSetting(alarmRepeatSeconds))
               {
                 request->send(500, "text/plain", "failed to save sound setting");
                 return;
@@ -2095,7 +2114,7 @@ void setupOTA()
 
   server.on("/settings/wifi/reset", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-              wifiResetRequestedAtMs = millis();
+              requestWifiCredentialsReset();
               request->send(200, "text/plain", "wifi reset scheduled"); });
 
   server.on("/broker-console", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -2230,6 +2249,11 @@ void setupOTA()
 void handleWifiConnected()
 {
 #if defined(KRAKE)
+  if (!wifiConnectWinkIssued)
+  {
+    queueWinkPattern(2); // Double wink: WiFi connected.
+    wifiConnectWinkIssued = true;
+  }
   if (!client.connected())
   {
     reconnect(true);
@@ -2293,6 +2317,7 @@ void setup()
 
   volumeDFPlayer = loadVolumeSetting(volumeDFPlayer);
   muteTimeoutMinutes = loadMuteTimeoutMinutesSetting(muteTimeoutMinutes);
+  alarmRepeatSeconds = loadAlarmRepeatSecondsSetting(alarmRepeatSeconds);
 
   WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   wifiManager.initialize();
@@ -2311,6 +2336,9 @@ void setup()
   clearTrackedKrakes();
   clearWatchedTopics();
   client.setCallback(callback);
+#if defined(KRAKE)
+  initializeSpiBrokerMirror();
+#endif
 
 #if (DEBUG > 0)
   debugSerial.println("Starting WiFi as STA");
@@ -2500,6 +2528,13 @@ void serviceRuntimeDiagnostics()
 #endif
 }
 
+void requestWifiCredentialsReset()
+{
+#if defined(KRAKE)
+  wifiResetRequestedAtMs = millis();
+#endif
+}
+
 void serviceDeferredReset()
 {
 #if defined(KRAKE)
@@ -2538,6 +2573,9 @@ void loop()
 {
   // MQTT gets the first and most frequent slices so inbound bursts are drained
   // before comparatively slow LCD/menu/audio work is serviced.
+#if defined(KRAKE)
+  serviceSpiBrokerMirror();
+#endif
   serviceWiFiReconnect();
   serviceMqttClient();
   serviceDeferredReset();
@@ -2579,6 +2617,7 @@ void loop()
 
 #if defined(KRAKE)
   publishOnLineMsg();
+  serviceSpiBrokerMirror();
   serviceHeapDiagnostics();
   serviceRuntimeDiagnostics();
   wink(); // The builtin LED

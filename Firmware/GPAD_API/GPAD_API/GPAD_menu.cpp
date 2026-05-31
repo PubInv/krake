@@ -20,6 +20,7 @@ extern bool running_menu;
 extern bool menu_just_exited;
 extern unsigned long muteTimeoutEndMillis;
 extern bool selectMqttBrokerProfile(uint8_t profile, bool persist);
+extern void requestWifiCredentialsReset();
 
 #define LEDPIN 12
 #define MAX_DEPTH 3
@@ -153,7 +154,23 @@ result actionResetConfirm(eventMask e)
   return proceed;
 }
 
+result actionWifiCredentialsClearConfirm(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    DBG_PRINTLN(F("WiFi credential clear confirmed. Scheduling restart..."));
+    running_menu = false;
+    menu_just_exited = false;
+    Menu::doExit();
+    resetLcdUiToMainPage();
+    showActionFeedback("Clearing WiFi...");
+    requestWifiCredentialsReset();
+  }
+  return proceed;
+}
+
 int muteTimeoutMinutes = 5;
+int alarmRepeatSeconds = OPERATOR_ALARM_REPEAT_DEFAULT_SECONDS;
 
 
 const uint32_t kBaudOptions[] = {1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200};
@@ -231,6 +248,18 @@ result actionMuteTimeout(eventMask e)
     DBG_PRINTLN(F(" min"));
     saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     requestAlarmRefresh(&Serial);
+  }
+  return proceed;
+}
+
+result actionAlarmRepeatSeconds(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    DBG_PRINT(F("Alarm repeat interval set: "));
+    DBG_PRINT(alarmRepeatSeconds);
+    DBG_PRINTLN(F(" sec"));
+    saveAlarmRepeatSecondsSetting(alarmRepeatSeconds);
   }
   return proceed;
 }
@@ -334,6 +363,11 @@ MENU(resetConfirmMenu, "Reset Device", Menu::doNothing, Menu::noEvent, Menu::noS
   OP("Back", actionBack, enterEvent)
 );
 
+MENU(wifiCredentialsClearMenu, "Clear WiFi Creds?", Menu::doNothing, Menu::noEvent, Menu::noStyle,
+  OP("Confirm Clear", actionWifiCredentialsClearConfirm, enterEvent),
+  OP("Back", actionBack, enterEvent)
+);
+
 MENU(wifiMenu, "WiFi", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Status / Web UI", actionWifiStatus, enterEvent),
   OP("Back", actionBack, enterEvent)
@@ -356,6 +390,7 @@ MENU(developerMenu, "Developer Mode", Menu::doNothing, Menu::noEvent, Menu::wrap
   SUBMENU(brokerMenu),
   SUBMENU(comSetupMenu),
   OP("Diagnostics", actionDiagnostics, enterEvent),
+  SUBMENU(wifiCredentialsClearMenu),
   OP("Back", actionBack, enterEvent)
 );
 
@@ -363,6 +398,7 @@ MENU(mainMenu, "Settings", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   OP("Info", actionInfo, enterEvent),
   SUBMENU(wifiMenu),
   FIELD(volumeDFPlayer, "Volume", "%", 1, 100, 20, 1, action4, enterEvent, wrapStyle),
+  FIELD(alarmRepeatSeconds, "Alarm Repeat", "sec", 1, 300, 10, 1, actionAlarmRepeatSeconds, enterEvent, wrapStyle),
   SUBMENU(muteMenu),
   SUBMENU(developerMenu),
   SUBMENU(resetConfirmMenu),

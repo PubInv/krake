@@ -12,7 +12,7 @@ void displayDFPlayerStats();
 
 bool playAlarmLevel(int alarmNumberToPlay);
 void playNotBusy();
-void playNotBusyLevel(int level);
+bool playNotBusyLevel(int level);
 void dfPlayerUpdate(void);
 
 void printDetail(uint8_t type, int value);

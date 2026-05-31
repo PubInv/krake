@@ -3,36 +3,90 @@
 // Date: 20241013
 // LICENSE "GNU Affero General Public License, version 3 "
 
-// Heart beat aka activity indicator LED.
-// Set LED for Uno or ESP32 Dev Kit on board blue LED.
+// Heart beat aka activity indicator LED, plus queued connection indicators.
 #include <Arduino.h>
 #include "gpad_utility.h"
 
-// Wink the LED
+namespace
+{
+  const uint8_t KRAKE_LED_BUILTIN = 13;
+  const unsigned long HEARTBEAT_ON_MS = 1400;
+  const unsigned long HEARTBEAT_OFF_MS = 500;
+  const unsigned long PATTERN_ON_MS = 120;
+  const unsigned long PATTERN_OFF_MS = 140;
+  volatile uint8_t pendingPatternPulses = 0;
+}
+
+void queueWinkPattern(uint8_t pulseCount)
+{
+  if (pulseCount > pendingPatternPulses)
+  {
+    pendingPatternPulses = pulseCount;
+  }
+}
+
 void wink(void)
 {
-  // TODO
-  const int LED_BUILTIN = 13; // Krake ESP32 activity LED
-  pinMode(LED_BUILTIN, OUTPUT);
-  // const int HIGH_TIME_LED = 900;
-  // const int LOW_TIME_LED = 100;
-  const int HIGH_TIME_LED = 1400;
-  const int LOW_TIME_LED = 500;
-  static unsigned long lastLEDtime = 0;
-  static unsigned long nextLEDchange = 500; // time in ms.
-  const uint32_t now = millis();
-  if (millisIntervalElapsed(now, lastLEDtime, nextLEDchange))
+  static bool initialized = false;
+  static bool ledOn = false;
+  static bool patternActive = false;
+  static uint8_t patternPulsesRemaining = 0;
+  static unsigned long lastLedChangeMs = 0;
+  static unsigned long nextLedChangeMs = HEARTBEAT_OFF_MS;
+  const unsigned long now = millis();
+
+  if (!initialized)
   {
-    if (digitalRead(LED_BUILTIN) == LOW)
+    pinMode(KRAKE_LED_BUILTIN, OUTPUT);
+    digitalWrite(KRAKE_LED_BUILTIN, LOW);
+    initialized = true;
+  }
+
+  if (!patternActive && pendingPatternPulses > 0)
+  {
+    patternPulsesRemaining = pendingPatternPulses;
+    pendingPatternPulses = 0;
+    patternActive = true;
+    ledOn = true;
+    digitalWrite(KRAKE_LED_BUILTIN, HIGH);
+    lastLedChangeMs = now;
+    nextLedChangeMs = PATTERN_ON_MS;
+    return;
+  }
+
+  if (!millisIntervalElapsed(now, lastLedChangeMs, nextLedChangeMs))
+  {
+    return;
+  }
+
+  if (patternActive)
+  {
+    if (ledOn)
     {
-      digitalWrite(LED_BUILTIN, HIGH); // turn the LED on (HIGH is the voltage level)
-      nextLEDchange = HIGH_TIME_LED;
+      ledOn = false;
+      digitalWrite(KRAKE_LED_BUILTIN, LOW);
+      if (--patternPulsesRemaining == 0)
+      {
+        patternActive = false;
+        nextLedChangeMs = HEARTBEAT_OFF_MS;
+      }
+      else
+      {
+        nextLedChangeMs = PATTERN_OFF_MS;
+      }
     }
     else
     {
-      digitalWrite(LED_BUILTIN, LOW); // turn the LED on (HIGH is the voltage level)
-      nextLEDchange = LOW_TIME_LED;
+      ledOn = true;
+      digitalWrite(KRAKE_LED_BUILTIN, HIGH);
+      nextLedChangeMs = PATTERN_ON_MS;
     }
-    lastLEDtime = now;
   }
-} // end LED wink
+  else
+  {
+    ledOn = !ledOn;
+    digitalWrite(KRAKE_LED_BUILTIN, ledOn ? HIGH : LOW);
+    nextLedChangeMs = ledOn ? HEARTBEAT_ON_MS : HEARTBEAT_OFF_MS;
+  }
+  lastLedChangeMs = now;
+}

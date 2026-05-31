@@ -321,12 +321,14 @@ struct InterpretedCommand
 {
   bool includeAudioRefresh = false;
   bool publishSystemInfo = false;
+  bool responseIsJson = false;
   bool publishResetAck = false;
   bool restartRequested = false;
 };
 
 typedef void (*SystemInfoLineHandler)(const char *line);
 void printSystemInfo(Stream *serialport, SystemInfoLineHandler lineHandler = nullptr);
+void printSystemInfoJson(Stream *serialport);
 InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport);
 
 // This module has to be initialized and called each time through the superloop
