@@ -833,10 +833,19 @@ namespace
     dest[out] = '\0';
   }
 
-  void disableLcdHardwareCursor()
+  void updateMainPageCursor()
   {
+    // Nested screens render stable text markers. Only the main-page WiFi,
+    // broker, mute, and settings icons use the LCD hardware cursor, and the
+    // cursor remains steady instead of blinking over the selected icon.
     lcd.noBlink();
     lcd.noCursor();
+    if (!running_menu && lcdUiState == MAIN_PAGE && iconFocusActive &&
+        lcdFocus >= FOCUS_WIFI && lcdFocus <= FOCUS_SETTINGS)
+    {
+      lcd.setCursor(LCD_STATUS_COL + static_cast<uint8_t>(lcdFocus) - FOCUS_WIFI, 0);
+      lcd.cursor();
+    }
   }
 
   uint8_t wifiStatusIcon()
@@ -974,10 +983,7 @@ namespace
       lastLcdRenderMs = now;
     }
 
-    // Keep the LCD hardware cursor disabled. Every interactive screen renders
-    // a stable text marker instead, so the current rotary selection never
-    // disappears during the controller's blink cycle.
-    disableLcdHardwareCursor();
+    updateMainPageCursor();
     lcdDirty = false;
   }
 
@@ -2220,24 +2226,6 @@ void filter_control_chars(char *msg)
   msg[k] = '\0';
 }
 
-const char *lcdFocusLabel()
-{
-  switch (lcdFocus)
-  {
-  case FOCUS_WIFI:
-    return "WiFi";
-  case FOCUS_BROKER:
-    return "Broker";
-  case FOCUS_MUTE:
-    return "Mute";
-  case FOCUS_SETTINGS:
-    return "Settings";
-  case FOCUS_ALARM_ACTIONS:
-  default:
-    return "Alarm actions";
-  }
-}
-
 void renderAlarmActionChoices(char *row)
 {
   static const char *choices[ALARM_ACTION_COUNT] = {
@@ -2485,11 +2473,6 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
   {
     formatFullRow(rows[3], "%s", actionFeedbackText);
   }
-  else if (lcdUiState == MAIN_PAGE && iconFocusActive)
-  {
-    formatFullRow(rows[3], "Select: %s", lcdFocusLabel());
-  }
-
   (void)muted;
   writeStatusIcons(rows);
   renderRows(rows);
