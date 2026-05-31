@@ -25,8 +25,8 @@
 #include <SPI.h>
 #include "WiFiManagerOTA.h"
 #include "GPAD_menu.h"
+#include "mqtt_handler.h"
 #include "debug_macros.h"
-#include "setup_status.h"
 #include <esp_system.h>
 #include <esp_wifi.h>
 #include <Preferences.h>
@@ -155,50 +155,16 @@ const char *resetReasonToString(esp_reset_reason_t reason);
 HardwareSerial uartSerial1(1); // For user Serial Port
 HardwareSerial uartSerial2(2); // For DFPLayer, audio
 
-namespace
-{
-constexpr unsigned long BUTTON_DEBOUNCE_MS = 35;
-class DebouncedButton
-{
-public:
-  typedef void (*PressedHandler)();
-  void begin(uint8_t pin, PressedHandler handler)
-  {
-    _pin = pin;
-    _handler = handler;
-    _rawPressed = digitalRead(_pin) == LOW;
-    _stablePressed = _rawPressed;
-    _changedAt = millis();
-  }
-  void poll()
-  {
-    const bool rawPressed = digitalRead(_pin) == LOW;
-    const unsigned long now = millis();
-    if (rawPressed != _rawPressed)
-    {
-      _rawPressed = rawPressed;
-      _changedAt = now;
-    }
-    if (_stablePressed != _rawPressed && millisIntervalElapsed(now, _changedAt, BUTTON_DEBOUNCE_MS))
-    {
-      _stablePressed = _rawPressed;
-      if (_stablePressed && _handler != nullptr)
-      {
-        _handler();
-      }
-    }
-  }
-private:
-  uint8_t _pin = 0;
-  PressedHandler _handler = nullptr;
-  bool _rawPressed = false;
-  bool _stablePressed = false;
-  unsigned long _changedAt = 0;
-};
+#include <DailyStruggleButton.h>
+// Time in ms you need to hold down the button to be considered a long press
+unsigned int longPressTime = 1000;
+// How many times you need to hit the button to be considered a multi-hit
+byte multiHitTarget = 2;
+// How fast you need to hit all buttons to be considered a multi-hit
+unsigned int multiHitTime = 400;
 
-DebouncedButton muteButton;
-DebouncedButton encoderSwitchButton;
-}
+DailyStruggleButton muteButton;
+DailyStruggleButton encoderSwitchButton;
 
 extern const char *AlarmNames[];
 extern AlarmLevel currentLevel;
@@ -211,14 +177,14 @@ extern char macAddressString[13];
 extern int muteTimeoutMinutes;
 extern char currentAlarmId[11];
 extern char currentAlarmType[4];
-extern bool mqttClientConnected();
+extern PubSubClient client;
+extern char mqtt_broker_name[];
+extern uint8_t selectedBrokerIndex;
+extern uint8_t activeBrokerIndex;
 extern uint8_t mqttFailCount;
-extern const char *activeMqttBrokerLabel();
-extern const char *connectedMqttBroker();
-extern bool customMqttBrokerConfigured();
-extern bool selectMqttBrokerProfile(uint8_t profile, bool persist);
 extern const char *mqttStateDescription(int state);
 extern const char *brokerConnectionStateText();
+extern bool selectMqttBrokerOption(uint8_t index);
  
 // For LCD
 //  #include <LiquidCrystal_I2C.h>
@@ -334,9 +300,7 @@ namespace
   uint8_t lcdPageOption = 0;
   char actionFeedbackText[LCD_COLS + 1] = "";
   unsigned long actionFeedbackStartMs = 0;
-  unsigned long lastLcdUiInteractionMs = 0;
   const unsigned long ACTION_FEEDBACK_DURATION_MS = 2500;
-  const unsigned long LCD_FRAME_INACTIVITY_TIMEOUT_MS = 120000;
   char previousLcdRows[LCD_ROWS][LCD_COLS + 1] = {
       "                    ",
       "                    ",
@@ -374,16 +338,7 @@ namespace
   void setLcdUiState(LcdUiState state)
   {
     lcdUiState = state;
-    if (state != MAIN_PAGE)
-    {
-      lastLcdUiInteractionMs = millis();
-    }
     markLcdDirty();
-  }
-
-  bool lcdFrameInactivityTimedOut(unsigned long now)
-  {
-    return lcdUiState != MAIN_PAGE && millisIntervalElapsed(now, lastLcdUiInteractionMs, LCD_FRAME_INACTIVITY_TIMEOUT_MS);
   }
 
   bool alarmIsActive()
@@ -753,7 +708,7 @@ namespace
     }
 
     const unsigned long now = millis();
-    if (millisDeadlineReached(now, muteTimeoutEndMillis))
+    if ((now - muteTimeoutEndMillis) < 0x80000000UL)
     {
       return 0;
     }
@@ -793,7 +748,7 @@ namespace
 
   const char *mqttStatusText()
   {
-    if (mqttClientConnected())
+    if (client.connected())
     {
       return "Connected";
     }
@@ -855,7 +810,7 @@ namespace
 
   uint8_t brokerStatusIcon()
   {
-    if (mqttClientConnected())
+    if (client.connected())
     {
       return 'B';
     }
@@ -863,7 +818,7 @@ namespace
     {
       return '_';
     }
-    return mqttFailCount > 0 ? '?' : '_';
+    return (mqttFailCount > 0 || activeBrokerIndex != selectedBrokerIndex) ? '?' : '_';
   }
 
   uint8_t volumeStatusIcon()
@@ -955,7 +910,7 @@ namespace
   void renderRows(char rows[LCD_ROWS][LCD_COLS + 1])
   {
     const unsigned long now = millis();
-    if (!lcdDirty && lastLcdRenderMs != 0 && !millisIntervalElapsed(now, lastLcdRenderMs, LCD_RENDER_MIN_INTERVAL_MS))
+    if (!lcdDirty && lastLcdRenderMs != 0 && (now - lastLcdRenderMs) < LCD_RENDER_MIN_INTERVAL_MS)
     {
       return;
     }
@@ -1003,7 +958,7 @@ namespace
         }
         else if (lcdPage == PAGE_BROKER)
         {
-          optionRow = (lcdPageOption == 0) ? 1 : 3;
+          optionRow = (lcdPageOption == 0) ? 1 : (lcdPageOption == 1 ? 2 : 3);
         }
         else if (lcdPage == PAGE_MUTE)
         {
@@ -1035,16 +990,10 @@ namespace
     }
   }
 
-  bool isDue(const uint32_t now, const uint32_t lastRun, const uint32_t interval)
+  bool isDue(const unsigned long now, const unsigned long lastRun, const unsigned long interval)
   {
-    return lastRun == 0 || millisIntervalElapsed(now, lastRun, interval);
+    return lastRun == 0 || (now - lastRun) >= interval;
   }
-}
-
-void cancelPendingAlarmAudio()
-{
-  alarmAudioUpdatePending = false;
-  pendingAlarmAudioLevel = silent;
 }
 
 // in general, we want tones to last forever, although
@@ -1065,6 +1014,14 @@ volatile byte indx = 0;
 volatile boolean process;
 
 byte received_signal_raw_bytes[MAX_BUFFER_SIZE];
+
+// Local DEBUG defines,  GPAD_HAL
+#define DEBUG 0
+// #define DEBUG 1
+
+#if (DEBUG > 0)
+Serial.println("Debug defined >0");
+#endif
 
 void setup_spi()
 {
@@ -1100,7 +1057,11 @@ void setup_spi()
 const int SPI_BYTE_TIMEOUT_MS = 200; // we don't get the next byte this fast, we reset.
 volatile unsigned long last_byte_ms = 0;
 
-#if defined(GPAD) // compile for an UNO, for example...
+#if defined(HMWK)
+// void IRAM_ATTR ISR() {
+//    receive_byte(SPDR);
+// }
+#elif defined(GPAD) // compile for an UNO, for example...
 ISR(SPI_STC_vect) // Inerrrput routine function
 {
   receive_byte(SPDR);
@@ -1162,34 +1123,121 @@ void updateFromSPI()
   }
 }
 
-void encoderSwitchPressed()
+// Have to get a serialport here
+
+// void myCallback(byte buttonEvent) {
+void encoderSwitchCallback(byte buttonEvent)
 {
-  DBG_VERBOSE_PRINTLN(F("ENCODER_SWITCH pressed"));
-  if (running_menu)
+  switch (buttonEvent)
   {
-    registerRotaryEncoderPress();
-  }
-  else if (!alarmActionSelectorHandlePress())
-  {
-    setLcdUiState(SETTINGS_MENU);
-    reset_menu_navigation();
+  case onPress:
+    // Do something...
+    local_ptr_to_serial->println(F("ENCODER_SWITCH onPress"));
+    // currentlyMuted = !currentlyMuted;
+    // start_of_song = millis();
+    // annunciateAlarmLevel(local_ptr_to_serial);
+    // printAlarmState(local_ptr_to_serial);
+
+    if (running_menu)
+    {
+      registerRotaryEncoderPress();
+    }
+    else if (!alarmActionSelectorHandlePress())
+    {
+      setLcdUiState(SETTINGS_MENU);
+      reset_menu_navigation();
+    }
+    break;
+  case onRelease:
+    // Do nothing...
+    local_ptr_to_serial->println(F("ENCODER_SWITCH onRelease"));
+    break;
+  case onHold:
+    // Do nothing...
+    // local_ptr_to_serial->println(F("ENCODER_SWITCH onHold"));
+    break;
+    // onLongPress is indidcated when you hold onto the button
+  // more than longPressTime in milliseconds
+  case onLongPress:
+    DBG_PRINT(F("ENCODER_SWITCH Button Long Pressed For "));
+    DBG_PRINT(longPressTime);
+    DBG_PRINTLN(F("ms"));
+    returnToMainPage();
+    break;
+
+  // onMultiHit is indicated when you hit the button
+  // multiHitTarget times within multihitTime in milliseconds
+  case onMultiHit:
+    DBG_PRINT(F("Encoder Switch Button Pressed "));
+    DBG_PRINT(multiHitTarget);
+    DBG_PRINT(F(" times in "));
+    DBG_PRINT(multiHitTime);
+    DBG_PRINTLN(F("ms"));
+    break;
+  default:
+    DBG_PRINT(F("Encoder Switch buttonEvent but not recognized case: "));
+    DBG_PRINTLN(buttonEvent);
+    break;
   }
 }
 
-void muteButtonPressed()
+// Have to get a serialport here
+// void myCallback(byte buttonEvent) {
+void muteButtonCallback(byte buttonEvent)
 {
-  if (isMuted())
+  switch (buttonEvent)
   {
-    setMuted(false);
-    clearMuteTimeout();
+  case onPress:
+    // Do something...
+    local_ptr_to_serial->println(F("SWITCH_MUTE onPress"));
+    if (isMuted())
+    {
+      setMuted(false);
+      clearMuteTimeout();
+      local_ptr_to_serial->println(F("Manual unmute."));
+    }
+    else
+    {
+      setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+      local_ptr_to_serial->print(F("Muted for "));
+      local_ptr_to_serial->print(muteTimeoutMinutes);
+      local_ptr_to_serial->println(F(" minute(s)."));
+      
+    }
+    start_of_song = millis();
+    requestAlarmRefresh(local_ptr_to_serial);
+    printAlarmState(local_ptr_to_serial);
+    break;
+  case onRelease:
+    // Do nothing...
+    local_ptr_to_serial->println(F("SWITCH_MUTE onRelease"));
+    break;
+  case onHold:
+    // Do nothing...
+    local_ptr_to_serial->println(F("SWITCH_MUTE onHold"));
+    break;
+    // onLongPress is indidcated when you hold onto the button
+  // more than longPressTime in milliseconds
+  case onLongPress:
+    DBG_PRINT(F("SWITCH_MUTE Long Pressed For "));
+    DBG_PRINT(longPressTime);
+    DBG_PRINTLN(F("ms"));
+    break;
+
+  // onMultiHit is indicated when you hit the button
+  // multiHitTarget times within multihitTime in milliseconds
+  case onMultiHit:
+    DBG_PRINT(F("Button Pressed "));
+    DBG_PRINT(multiHitTarget);
+    DBG_PRINT(F(" times in "));
+    DBG_PRINT(multiHitTime);
+    DBG_PRINTLN(F("ms"));
+    break;
+  default:
+    DBG_PRINT(F("Mute buttonEvent but not recognized case: "));
+    DBG_PRINTLN(buttonEvent);
+    break;
   }
-  else
-  {
-    setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
-  }
-  start_of_song = millis();
-  requestAlarmRefresh(local_ptr_to_serial);
-  printAlarmState(local_ptr_to_serial);
 }
 
 void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceIp)
@@ -1239,19 +1287,23 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
   }
   serialport->println("");
 
-  muteButton.begin(SWITCH_MUTE, muteButtonPressed);
-  encoderSwitchButton.begin(SWITCH_ENCODER, encoderSwitchPressed);
+  muteButton.set(SWITCH_MUTE, muteButtonCallback);
+  muteButton.enableLongPress(longPressTime);
+  muteButton.enableMultiHit(multiHitTime, multiHitTarget);
+
+  // SW4.set(GPIO_SW4, SendEmergMessage, INT_PULL_UP);
+  //   encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback, INT_PULL_UP);
+  encoderSwitchButton.set(SWITCH_ENCODER, encoderSwitchCallback);
+  encoderSwitchButton.enableLongPress(longPressTime);
+  encoderSwitchButton.enableMultiHit(multiHitTime, multiHitTarget);
 
   printInstructions(serialport);
   AlarmMessageBuffer[0] = '\0';
 
   // digitalWrite(LED_BUILTIN, LOW);   // turn the LED off at end of setup
 
-  if (!comPrefs.begin(COM_PREF_NS, false))
-  {
-    setSetupError(SETUP_ERROR_COM_PREFERENCES);
-    serialport->println(F("Warning: COM preferences unavailable; using defaults."));
-  }
+#if !defined(HMWK) // On Homework2, LCD goes blank early
+  comPrefs.begin(COM_PREF_NS, false);
   comPortConfig.baudRate = loadComBaudRate();
   comPortConfig.serialFormatIndex = loadComSerialFormatIndex();
   comPortConfig.flowControl = loadComFlowControl();
@@ -1260,6 +1312,7 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
 
 #if (DEBUG > 0)
   serialport->println(F("uartSerial1 Setup"));
+#endif
 #endif
 
   // Here initialize the UART2
@@ -1271,8 +1324,10 @@ void GPAD_HAL_setup(Stream *serialport, wifi_mode_t wifiMode, IPAddress &deviceI
 #endif
 } // end GPAD_HAL_setup()
 
-// Interpret transport-independent commands.  The caller applies returned
-// transport actions such as MQTT acknowledgements or restart requests.
+// This routine should be refactored so that it only "interprets"
+// the character buffer and returns an "abstract" command to be acted on
+// elseshere. This will allow us to remove the PubSubClient from the this file,
+// the Hardware Abstraction Layer.
 
 class CharBufferPrint : public Print
 {
@@ -1302,16 +1357,12 @@ private:
   size_t _pos;
 };
 
-void reportStatusLine(Stream *serialport, SystemInfoLineHandler lineHandler, const char *line)
+void printAndPublishStatusLine(Stream *serialport, PubSubClient *mqttClient, const char *line)
 {
-  const char *safeLine = line != nullptr ? line : "";
-  if (serialport != nullptr)
+  serialport->println(line != nullptr ? line : "");
+  if (mqttClient != nullptr && mqttClient->connected())
   {
-    serialport->println(safeLine);
-  }
-  if (lineHandler != nullptr)
-  {
-    lineHandler(safeLine);
+    publishAck(mqttClient, line);
   }
 }
 
@@ -1328,65 +1379,55 @@ void formatUptime(char *dest, size_t destLen)
   snprintf(dest, destLen, "%02lu:%02lu:%02lu", hours, minutes, seconds);
 }
 
-void printSystemInfo(Stream *serialport, SystemInfoLineHandler lineHandler)
+void printSystemInfo(Stream *serialport, PubSubClient *mqttClient)
 {
   char value[80];
-  reportStatusLine(serialport, lineHandler, "=== KRAKE SYSTEM INFO ===");
+  printAndPublishStatusLine(serialport, mqttClient, "=== KRAKE SYSTEM INFO ===");
   snprintf(value, sizeof(value), "KRAKE-%.6s", macAddressString + 6);
   char line[128];
   snprintf(line, sizeof(line), "SN: %s", value);
-  reportStatusLine(serialport, lineHandler, line);
+  printAndPublishStatusLine(serialport, mqttClient, line);
   snprintf(line, sizeof(line), "FW: %s", FIRMWARE_VERSION);
-  reportStatusLine(serialport, lineHandler, line);
+  printAndPublishStatusLine(serialport, mqttClient, line);
   ipAddressText(value, sizeof(value));
   snprintf(line, sizeof(line), "IP: %s", value);
-  reportStatusLine(serialport, lineHandler, line);
+  printAndPublishStatusLine(serialport, mqttClient, line);
   snprintf(line, sizeof(line), "MAC: %s", macAddressString);
-  reportStatusLine(serialport, lineHandler, line);
+  printAndPublishStatusLine(serialport, mqttClient, line);
   currentSsid(value, sizeof(value));
   snprintf(line, sizeof(line), "SSID: %s", value);
-  reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Broker profile: %s", activeMqttBrokerLabel());
-  reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "MQTT: %s (%s)", brokerConnectionStateText(), connectedMqttBroker());
-  reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Connected broker: %s", connectedMqttBroker());
-  reportStatusLine(serialport, lineHandler, line);
+  printAndPublishStatusLine(serialport, mqttClient, line);
+  snprintf(line, sizeof(line), "Broker: %s", mqtt_broker_name);
+  printAndPublishStatusLine(serialport, mqttClient, line);
+  snprintf(line, sizeof(line), "MQTT: %s", brokerConnectionStateText());
+  printAndPublishStatusLine(serialport, mqttClient, line);
   snprintf(line, sizeof(line), "Heap: %lu", static_cast<unsigned long>(ESP.getFreeHeap()));
-  reportStatusLine(serialport, lineHandler, line);
+  printAndPublishStatusLine(serialport, mqttClient, line);
   formatUptime(value, sizeof(value));
   snprintf(line, sizeof(line), "Uptime: %s", value);
-  reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Reset reason: %s", resetReasonToString(esp_reset_reason()));
-  reportStatusLine(serialport, lineHandler, line);
-  formatSetupErrors(value, sizeof(value));
-  snprintf(line, sizeof(line), "Setup errors: %s", value);
-  reportStatusLine(serialport, lineHandler, line);
-  reportStatusLine(serialport, lineHandler, "=========================");
+  printAndPublishStatusLine(serialport, mqttClient, line);
+  printAndPublishStatusLine(serialport, mqttClient, "=========================");
 }
 
 void showStatusLCD(AlarmLevel level, bool muted, char *msg);
 
-InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
+void interpretBuffer(char *buf, int rlen, Stream *serialport, PubSubClient *client)
 {
   if (buf == nullptr || serialport == nullptr || rlen < 1)
   {
-    cancelPendingAlarmAudio();
     if (serialport != nullptr)
     {
       printError(serialport);
     }
-    return {}; // no action
+    return; // no action
   }
 
   const char command = buf[0];
   if (command == '\0')
   {
-    cancelPendingAlarmAudio();
     printError(serialport);
-    return {};
+    return;
   }
-  InterpretedCommand result;
   serialport->print(F("Command: "));
   serialport->printf("%c\n", command);
 
@@ -1396,14 +1437,12 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
   {
     serialport->println(F("Muting Case!"));
     setMuted(true);
-    result.includeAudioRefresh = true;
     break;
   }
   case 'u':
   {
     serialport->println(F("UnMuting Case!"));
     setMuted(false);
-    result.includeAudioRefresh = true;
     break;
   }
   case 'h':
@@ -1418,9 +1457,8 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
     if (gpMessage.getMessageType() != gpap_message::MessageType::ALARM)
     {
       serialport->println(F("GPAP alarm parse failed."));
-      cancelPendingAlarmAudio();
       printError(serialport);
-      return {};
+      return;
     }
 
     const auto &alarmMessage = gpMessage.getAlarmMessage();
@@ -1447,9 +1485,8 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
     if (N < 0 || N >= NUM_LEVELS)
     {
       serialport->println(F("Invalid GPAP alarm severity."));
-      cancelPendingAlarmAudio();
       printError(serialport);
-      return {};
+      return;
     }
 
     char msg[MAX_BUFFER_SIZE];
@@ -1463,39 +1500,31 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
     serialport->println(msg);
 
     alarm((AlarmLevel)N, msg, serialport);
-    if (N == silent)
-    {
-      // GPAP a0 is an informational message: retain and display its content,
-      // but cancel stale deferred audio and never schedule new playback.
-      cancelPendingAlarmAudio();
-      serialport->println(F("GPAP informational message received; audio playback skipped."));
-    }
-    else
-    {
-      result.includeAudioRefresh = true;
-    }
     break;
   }
   case 'I':
   case 'i':
   {
-    printSystemInfo(serialport);
-    result.publishSystemInfo = true;
+    printSystemInfo(serialport, client);
     break;
   }
   case 'R':
   case 'r':
   {
     serialport->println(F("Software reset requested."));
+    if (client != nullptr && client->connected())
+    {
+      publishAck(client, "Software reset requested.");
+    }
     showActionFeedback("System restarting");
+    requestAlarmRefresh(serialport, false);
     showStatusLCD(currentLevel, currentlyMuted, AlarmMessageBuffer);
-    result.publishResetAck = true;
-    result.restartRequested = true;
+    delay(100);
+    ESP.restart();
     break;
   }
   default:
   {
-    cancelPendingAlarmAudio();
     printError(serialport);
     break;
   }
@@ -1503,7 +1532,7 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
   serialport->print(F("currentlyMuted : "));
   serialport->println(currentlyMuted);
   serialport->println(F("interpret Done"));
-  return result;
+  // FLE  delay(3000);
 } // end interpretBuffer()
 
 void muteTimeoutWatchdog(Stream *serialport)
@@ -1549,7 +1578,7 @@ void serviceAlarmUiAudio(Stream *serialport)
   const unsigned long settleMs = (alarmUiPendingRequestCount >= ALARM_UI_BURST_REQUEST_COUNT)
                                      ? ALARM_UI_BURST_SETTLE_MS
                                      : ALARM_UI_NORMAL_SETTLE_MS;
-  if (!millisIntervalElapsed(now, lastAlarmUiRequestMs, settleMs))
+  if ((now - lastAlarmUiRequestMs) < settleMs)
   {
     return;
   }
@@ -1590,16 +1619,14 @@ void GPAD_HAL_loop()
 {
   muteButton.poll();
   encoderSwitchButton.poll();
+#if defined(GPAD) // FLE??? Why is this conditional compile?
+  muteButton.poll();
+#endif
 
   muteTimeoutWatchdog(local_ptr_to_serial);
   static unsigned long lastDashboardRefreshMs = 0;
   const unsigned long now = millis();
-  if (lcdFrameInactivityTimedOut(now))
-  {
-    DBG_PRINTLN(F("LCD frame inactivity timeout. Returning to main page."));
-    returnToMainPage();
-  }
-  if (lcdUiState == ACTION_FEEDBACK && millisIntervalElapsed(now, actionFeedbackStartMs, ACTION_FEEDBACK_DURATION_MS))
+  if (lcdUiState == ACTION_FEEDBACK && (now - actionFeedbackStartMs) >= ACTION_FEEDBACK_DURATION_MS)
   {
     actionFeedbackText[0] = '\0';
     setLcdUiState(MAIN_PAGE);
@@ -1655,11 +1682,6 @@ void drawLcdStatusIconsNow()
 void noteLcdQueueMessageReceived()
 {
   markLcdDirty();
-}
-
-void noteLcdUiInteraction()
-{
-  lastLcdUiInteractionMs = millis();
 }
 
 void resetLcdUiToMainPage()
@@ -1755,11 +1777,6 @@ void executeSelectedAlarmAction()
 
 bool alarmActionSelectorHandleRotation(bool clockwise)
 {
-  noteLcdUiInteraction();
-  if (lcdUiState == ICON_MENU)
-  {
-    noteMenuInteraction();
-  }
   if (lcdUiState == INFO_PAGE && lcdPage == PAGE_INFO)
   {
     if (clockwise)
@@ -1870,11 +1887,6 @@ bool alarmActionSelectorHandleRotation(bool clockwise)
 
 bool alarmActionSelectorHandlePress()
 {
-  noteLcdUiInteraction();
-  if (lcdUiState == ICON_MENU)
-  {
-    noteMenuInteraction();
-  }
   if (lcdUiState == INFO_PAGE)
   {
     returnToMainPage();
@@ -1901,12 +1913,12 @@ bool alarmActionSelectorHandlePress()
       if (lcdPageOption == 0)
       {
         resetLcdUiToMainPage();
-        showActionFeedback(selectMqttBrokerProfile(0, true) ? "Krake broker" : "Save failed");
+        showActionFeedback(selectMqttBrokerOption(1) ? "Broker selected" : "Broker failed");
       }
       else if (lcdPageOption == 1)
       {
         resetLcdUiToMainPage();
-        showActionFeedback(selectMqttBrokerProfile(1, true) ? "Custom broker" : "Set custom on web");
+        showActionFeedback(selectMqttBrokerOption(0) ? "Broker selected" : "Broker failed");
       }
       else
       {
@@ -1993,10 +2005,6 @@ bool alarmActionSelectorHandlePress()
   {
     executeSelectedAlarmAction();
   }
-  if (lcdUiState == ICON_MENU)
-  {
-    noteMenuInteraction();
-  }
   markLcdDirty();
   requestAlarmRefresh(local_ptr_to_serial, false);
   return true;
@@ -2023,6 +2031,7 @@ void splashLCD(wifi_mode_t wifiMode, const IPAddress &deviceIp)
 {
   lcd.init(); // initialize the lcd
   // Print a message to the LCD.
+  // #if (!LIMIT_POWER_DRAW)
   lcd.backlight();
   // #else
   //   lcd.noBacklight();
@@ -2118,9 +2127,9 @@ void renderWifiPage(char rows[LCD_ROWS][LCD_COLS + 1])
 
 void renderBrokerPage(char rows[LCD_ROWS][LCD_COLS + 1])
 {
-  formatFullRow(rows[0], "Broker:%s", activeMqttBrokerLabel());
-  formatFullRow(rows[1], "%cKrake PubInv", lcdPageOption == 0 ? '>' : ' ');
-  formatFullRow(rows[2], "%cCustom%s", lcdPageOption == 1 ? '>' : ' ', customMqttBrokerConfigured() ? "" : " (web)");
+  formatFullRow(rows[0], "Broker Select");
+  formatFullRow(rows[1], "%c1 Krake PubInv", lcdPageOption == 0 ? '>' : ' ');
+  formatFullRow(rows[2], "%c2 Public Shiftr", lcdPageOption == 1 ? '>' : ' ');
   formatFullRow(rows[3], "%cBack", lcdPageOption == 2 ? '>' : ' ');
 }
 
@@ -2354,6 +2363,7 @@ void unchanged_anunicateAlarmLevel(Stream *serialport)
   unsigned char light_lvl = LIGHT_LEVEL[currentLevel][note];
   set_light_level(light_lvl);
   // TODO: Change this to our device types
+// #if !defined(HMWK)
 #if defined(GPAD)
   if (!currentlyMuted)
   {

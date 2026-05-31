@@ -87,9 +87,7 @@ void setMuteTimeoutMinutes(unsigned long minutes)
 {
   setMuted(true);
   muteTimeoutStartMillis = millis();
-  const unsigned long maxSafeMinutes = MILLIS_MAX_SAFE_INTERVAL_MS / 60000UL;
-  const unsigned long safeMinutes = minutes > maxSafeMinutes ? maxSafeMinutes : minutes;
-  muteTimeoutDurationMillis = safeMinutes * 60000UL;
+  muteTimeoutDurationMillis = minutes * 60000UL;
   muteTimeoutEndMillis = muteTimeoutStartMillis + muteTimeoutDurationMillis;
 }
 
@@ -107,7 +105,7 @@ bool serviceMuteTimeout()
     return false;
   }
 
-  if (millisIntervalElapsed(millis(), muteTimeoutStartMillis, muteTimeoutDurationMillis))
+  if ((millis() - muteTimeoutStartMillis) >= muteTimeoutDurationMillis)
   {
     clearMuteTimeout();
     setMuted(false);

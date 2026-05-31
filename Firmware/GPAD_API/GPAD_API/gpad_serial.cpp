@@ -23,8 +23,6 @@
 #include "alarm_api.h"
 #include "GPAD_HAL.h"
 #include "debug_macros.h"
-
-extern void applyInterpretedCommand(const InterpretedCommand &result, Stream *serialport);
 // #include <Arduino.h>
 
 extern bool currentlyMuted;
@@ -44,7 +42,7 @@ where C is an character, and D is a single digit.
 
 // Note: The buffer "buf" used here might be more safely made
 // a parameter passed in from the caller.
-void processSerial(Stream *debugPort, Stream *inputPort)
+void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
 {
   if (debugPort == nullptr || inputPort == nullptr)
   {
@@ -85,8 +83,8 @@ void processSerial(Stream *debugPort, Stream *inputPort)
 
       if (rlen > 0)
       {
-        const InterpretedCommand result = interpretBuffer(buf, rlen, debugPort);
-        applyInterpretedCommand(result, debugPort);
+        interpretBuffer(buf, rlen, debugPort, client);
+        requestAlarmRefresh(debugPort);
         printAlarmState(debugPort);
         processedCommand = true;
       }
@@ -102,7 +100,6 @@ void processSerial(Stream *debugPort, Stream *inputPort)
     {
       // Overflow guard: reset buffer if a line grows too long.
       writeIndex = 0;
-      cancelPendingAlarmAudio();
       printError(debugPort);
       processedCommand = true;
     }

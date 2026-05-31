@@ -5,22 +5,6 @@ const DEVICE_STORAGE_KEY = 'krakeDeviceMonitor.registry.v2';
 let client = null;
 let messageCount = 0;
 
-function applyBrokerProfile() {
-  const profile = $('brokerProfile').value;
-  if (profile === 'krake') {
-    $('brokerUrl').value = KrakeUI.mqttBroker.wssUrl;
-    $('username').value = KrakeUI.mqttBroker.username;
-  } else {
-    $('brokerUrl').value = '';
-    $('username').value = '';
-  }
-  $('password').value = '';
-}
-function loadBrokerDefaults() {
-  $('brokerEmbed').src = KrakeUI.mqttBroker.embedUrl;
-  applyBrokerProfile();
-}
-
 const defaultDevices = [
   ['3C61053EE100', 'PPG_Lee / MinKrakeLeeE100'], ['F024F9F1B874', 'KRAKE_LB0001'],
   ['142B2FEB1F00', 'KRAKE_LB0002'], ['142B2FEB1C64', 'KRAKE_LB0003'], ['142B2FEB1E24', 'KRAKE_LB0004'],
@@ -80,12 +64,12 @@ function log(line) {
   $('log').textContent = `[${stamp}] ${line}\n` + $('log').textContent;
 }
 
-function setBrokerStatus(online, statusText = online ? 'Broker online' : 'Broker offline', connecting = false) {
+function setBrokerStatus(online) {
   const el = $('brokerStatus');
-  el.textContent = statusText;
+  el.textContent = online ? 'Broker online' : 'Broker offline';
   el.className = `broker ${online ? 'online' : 'offline'}`;
-  $('connectBtn').disabled = online || connecting;
-  $('disconnectBtn').disabled = !online && !connecting;
+  $('connectBtn').disabled = online;
+  $('disconnectBtn').disabled = !online;
   $('publishBtn').disabled = !online;
 }
 
@@ -126,35 +110,17 @@ function render() {
 function escapeHtml(v) { return String(v).replace(/[&<>'"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch])); }
 
 function connect() {
-  const brokerUrl = $('brokerUrl').value.trim();
-  const password = $('password').value;
-  if (!brokerUrl) {
-    log('Broker WSS URL is required before connecting.');
-    $('brokerUrl').focus();
-    return;
-  }
-  if (!password && $('brokerProfile').value === 'krake') {
-    log('Krake PubInv broker password is required before connecting.');
-    $('password').focus();
-    return;
-  }
-  if (client) client.end(true);
-
-  const nextClient = mqtt.connect(brokerUrl, {
+  client = mqtt.connect($('brokerUrl').value.trim(), {
     clientId: `WebMonitor_${Math.random().toString(16).slice(2)}_${Date.now()}`,
-    username: $('username').value.trim(), password,
+    username: $('username').value.trim(), password: $('password').value,
     clean: true, reconnectPeriod: 2000, connectTimeout: 8000, keepalive: 15
   });
-  let authorizationRejected = false;
-  client = nextClient;
-  setBrokerStatus(false, 'Broker connecting', true);
-  nextClient.on('connect', () => {
-    if (client !== nextClient) return;
+  client.on('connect', () => {
     setBrokerStatus(true);
     subscribedMacs.clear();
     Object.keys(devices).forEach(subscribeForMac);
   });
-  nextClient.on('message', (topic, payloadBuffer) => {
+  client.on('message', (topic, payloadBuffer) => {
     const mac = macFromTopic(topic);
     if (!mac) return;
     const d = devices[mac];
@@ -170,24 +136,9 @@ function connect() {
     messageCount++;
     render();
   });
-  nextClient.on('close', () => {
-    if (client === nextClient && !authorizationRejected) setBrokerStatus(false);
-  });
-  nextClient.on('offline', () => {
-    if (client === nextClient && !authorizationRejected) setBrokerStatus(false);
-  });
-  nextClient.on('error', (err) => {
-    const message = err?.message || String(err);
-    log(`MQTT error: ${message}`);
-    if (/not authorized|bad user name|authorization/i.test(message)) {
-      authorizationRejected = true;
-      nextClient.end(true);
-      if (client === nextClient) client = null;
-      subscribedMacs.clear();
-      setBrokerStatus(false, 'Broker authorization failed');
-      log('Connection stopped. Check the selected broker credentials, then press Connect to retry.');
-    }
-  });
+  client.on('close', () => setBrokerStatus(false));
+  client.on('offline', () => setBrokerStatus(false));
+  client.on('error', (err) => log(`MQTT error: ${err.message}`));
 }
 
 function disconnect() { if (client) client.end(true); client = null; subscribedMacs.clear(); setBrokerStatus(false); }
@@ -217,14 +168,11 @@ function removeDevice(mac) {
 
 function publishToAll() {
   if (!client || !client.connected) return;
-  const clearRetained = $('clearRetained').checked;
-  const message = clearRetained ? '' : ($('customCommand').value.trim() || $('commandPreset').value);
-  const retain = clearRetained || $('retain').checked;
+  const message = $('customCommand').value.trim() || $('commandPreset').value;
+  const retain = $('retain').checked;
   Object.keys(devices).forEach((mac) => client.publish(`${mac}_ALM`, message, { qos: 0, retain }));
-  log(clearRetained ? 'Queued retained-message clear for all tracked alarm topics.' : `Published command to all tracked alarm topics${retain ? ' with retain enabled' : ''}.`);
 }
 
-$('brokerProfile').addEventListener('change', applyBrokerProfile);
 $('connectBtn').addEventListener('click', connect);
 $('disconnectBtn').addEventListener('click', disconnect);
 $('publishBtn').addEventListener('click', publishToAll);
@@ -234,7 +182,5 @@ $('deviceTable').addEventListener('click', (event) => {
   if (button) removeDevice(button.dataset.mac);
 });
 
-loadBrokerDefaults();
-setBrokerStatus(false);
 setInterval(render, 1000);
 render();

@@ -53,7 +53,9 @@ void connect() {
 
   Serial.print("\nconnecting...");
 #define ClientName "mqtt_timing"
-  while (!client.connect(ClientName, "krakepubinv", "DlDmkWjp4I4kgDcA")) {
+//  while (!client.connect("arduino", "public", "public")) {
+//  while (!client.connect("mqtt_timing", "public", "public")) {
+  while (!client.connect(ClientName, "public", "public")) {
     Serial.print(".");
     delay(1000);
   }
@@ -109,7 +111,7 @@ void setup() {
   WiFi.begin(ssid, password);
   // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
   // by Arduino. You need to set the IP address directly.
-  client.begin("krakepubinv.cloud.shiftr.io", net);
+  client.begin("public.cloud.shiftr.io", net);
   client.onMessage(messageReceived);
 
   connect();

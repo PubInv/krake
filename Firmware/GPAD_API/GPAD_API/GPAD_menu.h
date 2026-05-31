@@ -3,8 +3,6 @@
 
 void setup_GPAD_menu();
 
-extern int muteTimeoutMinutes;
-
 void poll_GPAD_menu();
 
 void navigate_to_n_and_execute(int n);
@@ -12,8 +10,6 @@ void open_settings_menu_at(int n);
 
 void registerRotationEvent(bool CW);
 void registerRotaryEncoderPress();
-void noteMenuInteraction();
-bool menuInactivityTimedOut();
 
 void reset_menu_navigation();
 void returnToMainPage();
