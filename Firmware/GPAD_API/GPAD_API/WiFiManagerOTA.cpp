@@ -135,11 +135,8 @@ int WiFiLed = 2; // Modify based on actual LED pin
 using namespace WifiOTA;
 
 Manager::Manager(WiFiClass &wifi, Print &print)
-    : wifi(wifi), print(print), connectedCallback(nullptr), apStartedCallback(nullptr),
-      nextStoredCredentialIndex(0), storedCredentialsStartedMs(0), storedCredentialAttemptStartedMs(0),
-      storedCredentialAttemptActive(false), recoveryPortalStarted(false), connectionNotified(false)
+    : wifi(wifi), print(print), connectedCallback(nullptr), apStartedCallback(nullptr)
 {
-  this->storedCredentials.count = 0;
 }
 
 void Manager::initialize()
@@ -147,127 +144,94 @@ void Manager::initialize()
   // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
   // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
   this->wifi.mode(WIFI_STA);
-  // WiFi recovery must never stop the alarm/UI loop while a network is unavailable.
+  // Never leave setup blocked forever if credentials were erased or invalid.
   this->wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_SECONDS);
-  this->wifiManager.setConfigPortalBlocking(false);
-
-  auto staGotIpCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
-  {
-    (void)event;
-    (void)info;
-    this->ipSet();
-  };
-  this->wifi.onEvent(staGotIpCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 }
 
 Manager::~Manager() {}
 
 void Manager::connect(const char *const accessPointSsid)
 {
-  this->recoveryPortalSsid = (accessPointSsid == nullptr || accessPointSsid[0] == '\0')
-                                 ? DEFAULT_SSID
-                                 : accessPointSsid;
-  this->storedCredentials.count = 0;
-  this->nextStoredCredentialIndex = 0;
-  this->storedCredentialsStartedMs = millis();
-  this->storedCredentialAttemptStartedMs = 0;
-  this->storedCredentialAttemptActive = false;
-  this->recoveryPortalStarted = false;
-  this->connectionNotified = false;
-
-  if (this->loadCredentialsList(this->storedCredentials) && this->storedCredentials.count > 0)
+  CredentialList credentials;
+  if (this->loadCredentialsList(credentials))
   {
-    this->beginNextStoredCredential();
-    return;
-  }
-
-  this->print.println(F("Starting non-blocking WiFi recovery portal."));
-  this->startPortal(this->recoveryPortalSsid.c_str());
-}
-
-void Manager::process()
-{
-  const wl_status_t status = this->wifi.status();
-  if (status == WL_CONNECTED)
-  {
-    this->storedCredentialAttemptActive = false;
-    this->ipSet();
-  }
-  else
-  {
-    this->connectionNotified = false;
-  }
-
-  if (this->recoveryPortalStarted)
-  {
-    this->wifiManager.process();
-    return;
-  }
-
-  if (!this->storedCredentialAttemptActive || status == WL_CONNECTED)
-  {
-    return;
-  }
-
-  const unsigned long now = millis();
-  if (!millisIntervalElapsed(now, this->storedCredentialAttemptStartedMs, WIFI_STORED_CREDENTIAL_ATTEMPT_MS) &&
-      elapsedMillis(now, this->storedCredentialsStartedMs) < WIFI_STORED_CREDENTIALS_BUDGET_MS)
-  {
-    return;
-  }
-
-  this->print.println(F("Stored WiFi credentials failed to connect."));
-  this->wifi.disconnect(true, false);
-  this->storedCredentialAttemptActive = false;
-  this->beginNextStoredCredential();
-}
-
-void Manager::beginNextStoredCredential()
-{
-  if (this->nextStoredCredentialIndex >= this->storedCredentials.count ||
-      elapsedMillis(millis(), this->storedCredentialsStartedMs) >= WIFI_STORED_CREDENTIALS_BUDGET_MS)
-  {
-    this->print.println(F("Stored WiFi retry budget exhausted; starting recovery portal."));
-    this->startPortal(this->recoveryPortalSsid.c_str());
-    return;
-  }
-
-  const Credential &credential = this->storedCredentials.items[this->nextStoredCredentialIndex++];
+    const unsigned long credentialsStartMs = millis();
+    for (size_t index = 0; index < credentials.count; ++index)
+    {
+      const uint32_t elapsedMs = elapsedMillis(millis(), credentialsStartMs);
+      if (elapsedMs >= WIFI_STORED_CREDENTIALS_BUDGET_MS)
+      {
+        this->print.println(F("Stored WiFi retry budget exhausted; starting recovery portal."));
+        break;
+      }
+      const unsigned long remainingMs = WIFI_STORED_CREDENTIALS_BUDGET_MS - elapsedMs;
+      const unsigned long attemptMs = (remainingMs < WIFI_STORED_CREDENTIAL_ATTEMPT_MS)
+                                          ? remainingMs
+                                          : WIFI_STORED_CREDENTIAL_ATTEMPT_MS;
 #if (DEBUG_LEVEL > 0)
-  this->print.print(F("Trying saved WiFi "));
-  this->print.print(this->nextStoredCredentialIndex);
-  this->print.print(F("/"));
-  this->print.print(this->storedCredentials.count);
-  this->print.print(F(": "));
-  this->print.println(credential.ssid);
+      this->print.print(F("Trying saved WiFi "));
+      this->print.print(index + 1);
+      this->print.print(F("/"));
+      this->print.print(credentials.count);
+      this->print.print(F(": "));
+      this->print.println(credentials.items[index].ssid);
 #endif
-  this->wifi.begin(credential.ssid.c_str(), credential.password.c_str());
-  this->storedCredentialAttemptStartedMs = millis();
-  this->storedCredentialAttemptActive = true;
+
+      if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password, attemptMs))
+      {
+        this->print.println(F("Connected using stored WiFi credentials."));
+        this->ipSet();
+        return;
+      }
+    }
+  }
+
+  this->print.println(F("Starting bounded WiFi recovery portal."));
+  this->startPortal(accessPointSsid);
 }
 
 void Manager::startPortal(const char *const accessPointSsid)
 {
-  if (this->recoveryPortalStarted)
-  {
-    return;
-  }
 
   auto saveConfigCallback = [this]()
   {
     this->ssidSaved();
   };
+
   this->wifiManager.setSaveConfigCallback(saveConfigCallback);
 
-  auto apCallback = [this](WiFiManager *wifiManager)
+  auto apStartedCallback = [this](WiFiManager *wifiManager)
   {
-    (void)wifiManager;
     this->apStarted();
   };
-  this->wifiManager.setAPCallback(apCallback);
 
-  this->recoveryPortalStarted = true;
-  this->wifiManager.startConfigPortal((accessPointSsid == nullptr || accessPointSsid[0] == '\0') ? DEFAULT_SSID : accessPointSsid);
+  this->wifiManager.setAPCallback(apStartedCallback);
+
+  auto staGotIpCallback = [this](arduino_event_id_t event, arduino_event_info_t info)
+  {
+    if ((this->wifi.localIP() == INADDR_NONE) && (this->getMode() == wifi_mode_t::WIFI_MODE_STA))
+    {
+      return;
+    }
+
+    this->ipSet();
+  };
+  this->wifi.onEvent(staGotIpCallback, arduino_event_id_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+
+  bool connectSuccess = false;
+  if (accessPointSsid == nullptr || accessPointSsid[0] == '\0')
+  {
+    connectSuccess = this->wifiManager.autoConnect(DEFAULT_SSID);
+  }
+  else
+  {
+    connectSuccess = this->wifiManager.autoConnect(accessPointSsid);
+  }
+
+  if (!connectSuccess)
+  {
+    this->print.println(F("WiFiManager recovery portal timed out; continuing device startup."));
+  }
 }
 
 void Manager::setConnectedCallback(Callback callback)
@@ -503,6 +467,29 @@ bool Manager::loadCredentialsList(CredentialList &credentials)
   return true;
 }
 
+bool Manager::connectStoredCredentials(const String &ssid, const String &password, unsigned long timeoutMs)
+{
+#if (DEBUG_LEVEL > 0)
+  this->print.print(F("Attempting connection using saved WiFi SSID: "));
+  this->print.println(ssid);
+#endif
+
+  this->wifi.begin(ssid.c_str(), password.c_str());
+  const unsigned long startMs = millis();
+  while (!millisIntervalElapsed(millis(), startMs, timeoutMs))
+  {
+    if (this->wifi.status() == WL_CONNECTED)
+    {
+      return true;
+    }
+    delay(250);
+  }
+
+  this->print.println(F("Stored WiFi credentials failed to connect."));
+  this->wifi.disconnect(true, false);
+  return false;
+}
+
 void Manager::ssidSaved()
 {
 #if (DEBUG_LEVEL > 0)
@@ -514,12 +501,6 @@ void Manager::ssidSaved()
 
 void Manager::ipSet()
 {
-  if (this->connectionNotified || this->wifi.status() != WL_CONNECTED)
-  {
-    return;
-  }
-  this->connectionNotified = true;
-
 #if (DEBUG_LEVEL > 0)
   this->print.print(F("Connected to Network: "));
   this->print.print(this->wifi.SSID());

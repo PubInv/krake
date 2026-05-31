@@ -32,7 +32,6 @@ namespace WifiOTA
 
         void initialize();
         void connect(const char *const accessPointSsid);
-        void process();
         void setConnectedCallback(Callback callBack);
         void setApStartedCallback(Callback callback);
         wifi_mode_t getMode();
@@ -50,19 +49,11 @@ namespace WifiOTA
         WiFiManager wifiManager;
         Callback connectedCallback;
         Callback apStartedCallback;
-        CredentialList storedCredentials;
-        String recoveryPortalSsid;
-        size_t nextStoredCredentialIndex;
-        unsigned long storedCredentialsStartedMs;
-        unsigned long storedCredentialAttemptStartedMs;
-        bool storedCredentialAttemptActive;
-        bool recoveryPortalStarted;
-        bool connectionNotified;
 
         void ssidSaved();
         void ipSet();
         void apStarted();
-        void beginNextStoredCredential();
+        bool connectStoredCredentials(const String &ssid, const String &password, unsigned long timeoutMs = 15000);
         void startPortal(const char *const accessPointSsid);
     };
 

@@ -2254,7 +2254,10 @@ void handleWifiConnected()
     queueWinkPattern(2); // Double wink: WiFi connected.
     wifiConnectWinkIssued = true;
   }
-  requestMqttReconnect();
+  if (!client.connected())
+  {
+    reconnect(true);
+  }
 #endif
 
   clearLCD();
@@ -2571,7 +2574,6 @@ void loop()
   // MQTT gets the first and most frequent slices so inbound bursts are drained
   // before comparatively slow LCD/menu/audio work is serviced.
 #if defined(KRAKE)
-  wifiManager.process();
   serviceSpiBrokerMirror();
 #endif
   serviceWiFiReconnect();

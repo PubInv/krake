@@ -65,7 +65,7 @@ Installing/flashing a new firmware image requires the device, Krake, to be set i
 5. The chip is now in boot mode. You can run your flasher and the port should respond.
 
 # Runtime Connectivity and SPI Broker Mirror
-WiFi recovery is serviced incrementally by the main loop. If saved networks are unavailable, the alarm device continues running while it exposes its bounded recovery portal; startup no longer waits for a WiFi connection.
+WiFi credentials remain stored until explicitly cleared. Developers can clear saved WiFi credentials from the LCD `Developer Mode` menu or from the served settings page; the device then restarts into its normal WiFi setup flow.
 
 Every topic/payload pair queued for MQTT publication is also queued independently for transmission from the Krake ESP32 VSPI controller. This keeps the local SPI output available even when WiFi or MQTT is offline. The controller uses a 1 MHz, MSB-first, SPI mode 0 link with `SCLK=18`, `MISO=19`, `MOSI=23`, and chip-select `SS=15`. Each transfer is one frame:
 
