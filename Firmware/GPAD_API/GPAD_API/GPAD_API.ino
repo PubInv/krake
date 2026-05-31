@@ -2294,9 +2294,6 @@ void setup()
   volumeDFPlayer = loadVolumeSetting(volumeDFPlayer);
   muteTimeoutMinutes = loadMuteTimeoutMinutesSetting(muteTimeoutMinutes);
 
-  volumeDFPlayer = loadVolumeSetting(volumeDFPlayer);
-  muteTimeoutMinutes = loadMuteTimeoutMinutesSetting(muteTimeoutMinutes);
-
   WiFi.onEvent(onWiFiDisconnect, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   wifiManager.initialize();
 
