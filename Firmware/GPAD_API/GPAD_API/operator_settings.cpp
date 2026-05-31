@@ -7,6 +7,7 @@ namespace
   const char *OPERATOR_PREF_NS = "operator";
   const char *OPERATOR_PREF_VOLUME = "volume";
   const char *OPERATOR_PREF_MUTE_MIN = "muteMinutes";
+  const char *OPERATOR_PREF_REPEAT_SEC = "repeatSec";
 
   int clampSetting(int value, int minimum, int maximum)
   {
@@ -22,6 +23,15 @@ namespace
     const size_t written = prefs.putUChar(key, static_cast<uint8_t>(value));
     prefs.end();
     return written == sizeof(uint8_t);
+  }
+
+  bool saveUShort(const char *key, int value)
+  {
+    Preferences prefs;
+    if (!prefs.begin(OPERATOR_PREF_NS, false)) { setSetupError(SETUP_ERROR_OPERATOR_PREFERENCES); return false; }
+    const size_t written = prefs.putUShort(key, static_cast<uint16_t>(value));
+    prefs.end();
+    return written == sizeof(uint16_t);
   }
 }
 
@@ -45,6 +55,16 @@ int loadMuteTimeoutMinutesSetting(int fallbackMinutes)
   return clampSetting(minutes, OPERATOR_MUTE_TIMEOUT_MIN_MINUTES, OPERATOR_MUTE_TIMEOUT_MAX_MINUTES);
 }
 
+int loadAlarmRepeatSecondsSetting(int fallbackSeconds)
+{
+  Preferences prefs;
+  if (!prefs.begin(OPERATOR_PREF_NS, true)) { setSetupError(SETUP_ERROR_OPERATOR_PREFERENCES); return clampSetting(fallbackSeconds, OPERATOR_ALARM_REPEAT_MIN_SECONDS, OPERATOR_ALARM_REPEAT_MAX_SECONDS); }
+  const int safeFallback = clampSetting(fallbackSeconds, OPERATOR_ALARM_REPEAT_MIN_SECONDS, OPERATOR_ALARM_REPEAT_MAX_SECONDS);
+  const int seconds = prefs.getUShort(OPERATOR_PREF_REPEAT_SEC, static_cast<uint16_t>(safeFallback));
+  prefs.end();
+  return clampSetting(seconds, OPERATOR_ALARM_REPEAT_MIN_SECONDS, OPERATOR_ALARM_REPEAT_MAX_SECONDS);
+}
+
 bool saveVolumeSetting(int volumePercent)
 {
   return saveUChar(OPERATOR_PREF_VOLUME, clampSetting(volumePercent, OPERATOR_VOLUME_MIN_PERCENT, OPERATOR_VOLUME_MAX_PERCENT));
@@ -53,4 +73,9 @@ bool saveVolumeSetting(int volumePercent)
 bool saveMuteTimeoutMinutesSetting(int minutes)
 {
   return saveUChar(OPERATOR_PREF_MUTE_MIN, clampSetting(minutes, OPERATOR_MUTE_TIMEOUT_MIN_MINUTES, OPERATOR_MUTE_TIMEOUT_MAX_MINUTES));
+}
+
+bool saveAlarmRepeatSecondsSetting(int seconds)
+{
+  return saveUShort(OPERATOR_PREF_REPEAT_SEC, clampSetting(seconds, OPERATOR_ALARM_REPEAT_MIN_SECONDS, OPERATOR_ALARM_REPEAT_MAX_SECONDS));
 }

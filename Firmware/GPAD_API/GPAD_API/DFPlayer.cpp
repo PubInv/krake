@@ -328,20 +328,20 @@ void playNotBusy()
   }
 }
 
-void playNotBusyLevel(int level)
+bool playNotBusyLevel(int level)
 {
-  if (!isDFPlayerDetected) return;
+  if (!isDFPlayerDetected) return false;
 
   if (currentlyMuted)
   {
     DBG_PRINTLN(F("Muted: skipping DFPlayer playback."));
-    return;
+    return false;
   }
 
-     if (level <= 0)
+  if (level <= 0)
   {
     DBG_PRINTLN(F("Silent level: skipping DFPlayer playback."));
-    return;
+    return false;
   }
 
   DBG_PRINTLN(F("playNotBusyLevel"));
@@ -353,6 +353,7 @@ void playNotBusyLevel(int level)
   else
   {
     DBG_PRINTLN(F("DFPlayer is still busy/playing."));
+    return false;
   }
 
   if (dfPlayer.available())
@@ -360,8 +361,9 @@ void playNotBusyLevel(int level)
     printDetail(dfPlayer.readType(), dfPlayer.read());
   }
 
-  if (!isDFPlayerDetected) return;
+  if (!isDFPlayerDetected) return false;
 
+  return true;
 }
 
 bool playAlarmLevel(int alarmNumberToPlay)

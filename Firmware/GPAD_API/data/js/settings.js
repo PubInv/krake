@@ -44,6 +44,7 @@
     setInputValue('publishTopic', data.subscribeTopic || '');
     setInputValue('volume', String(data.volume || 20));
     setInputValue('muteTimeoutMinutes', String(data.muteTimeoutMinutes || 5));
+    setInputValue('alarmRepeatSeconds', String(data.alarmRepeatSeconds || 10));
     KrakeUI.setText('muteStatus', data.muted ? 'Muted' : 'Unmuted');
     KrakeUI.setText('alarmTopic', data.publishTopic || '-');
     KrakeUI.setText('ackTopic', data.subscribeTopic || '-');
@@ -56,9 +57,11 @@
   async function saveSoundSettings() {
     const volume = Number(getInputValue('volume'));
     const muteTimeoutMinutes = Number(getInputValue('muteTimeoutMinutes'));
+    const alarmRepeatSeconds = Number(getInputValue('alarmRepeatSeconds'));
     if (!Number.isInteger(volume) || volume < 1 || volume > 100) return KrakeUI.showMessage('Volume must be between 1 and 100%.', true);
     if (!Number.isInteger(muteTimeoutMinutes) || muteTimeoutMinutes < 1 || muteTimeoutMinutes > 60) return KrakeUI.showMessage('Mute duration must be between 1 and 60 minutes.', true);
-    try { await KrakeUI.postForm('/settings/sound', { volume, muteTimeoutMinutes }); KrakeUI.showMessage('Sound defaults saved for future restarts.'); await refreshSettings(); }
+    if (!Number.isInteger(alarmRepeatSeconds) || alarmRepeatSeconds < 1 || alarmRepeatSeconds > 300) return KrakeUI.showMessage('Alarm repeat delay must be between 1 and 300 seconds.', true);
+    try { await KrakeUI.postForm('/settings/sound', { volume, muteTimeoutMinutes, alarmRepeatSeconds }); KrakeUI.showMessage('Sound defaults saved for future restarts.'); await refreshSettings(); }
     catch (e) { KrakeUI.showMessage('Failed to save sound defaults: ' + e.message, true); }
   }
   async function setMuted(muted) {

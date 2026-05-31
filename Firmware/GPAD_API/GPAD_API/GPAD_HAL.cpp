@@ -209,6 +209,7 @@ extern bool running_menu;
 
 extern char macAddressString[13];
 extern int muteTimeoutMinutes;
+extern int alarmRepeatSeconds;
 extern char currentAlarmId[11];
 extern char currentAlarmType[4];
 extern bool mqttClientConnected();
@@ -291,6 +292,10 @@ namespace
   unsigned long lastAlarmUiRequestMs = 0;
   unsigned long lastAlarmUiUpdateMs = 0;
   unsigned long lastAlarmAudioUpdateMs = 0;
+  unsigned long lastAlarmAudioAttemptMs = 0;
+  unsigned long lastAlarmAudioPlaybackMs = 0;
+  bool alarmAudioPlaybackStarted = false;
+  const unsigned long ALARM_AUDIO_RETRY_INTERVAL_MS = 1000;
   uint8_t alarmUiPendingRequestCount = 0;
   bool lcdDirty = true;
   bool alarmActionSelectorActive = false;
@@ -301,7 +306,7 @@ namespace
   char wrappedLines[MAX_WRAPPED_LINES][LCD_COLS + 1];
   uint8_t wrappedLineCount = 0;
   uint8_t alarmPage = 0;
-  bool iconFocusActive = false;
+  bool iconFocusActive = true;
   enum LcdFocus : uint8_t
   {
     FOCUS_ALARM_ACTIONS = 0,
@@ -328,7 +333,7 @@ namespace
     ACTION_FEEDBACK = 4,
     INFO_PAGE = 5,
   };
-  LcdFocus lcdFocus = FOCUS_SETTINGS;
+  LcdFocus lcdFocus = FOCUS_WIFI;
   LcdPage lcdPage = PAGE_MAIN;
   LcdUiState lcdUiState = MAIN_PAGE;
   uint8_t lcdPageOption = 0;
@@ -828,19 +833,10 @@ namespace
     dest[out] = '\0';
   }
 
-  void setLcdCursorMode(bool enabled, uint8_t col = 19, uint8_t row = 0)
+  void disableLcdHardwareCursor()
   {
-    if (enabled)
-    {
-      lcd.setCursor(col, row);
-      lcd.cursor();
-      lcd.blink();
-    }
-    else
-    {
-      lcd.noBlink();
-      lcd.noCursor();
-    }
+    lcd.noBlink();
+    lcd.noCursor();
   }
 
   uint8_t wifiStatusIcon()
@@ -978,44 +974,10 @@ namespace
       lastLcdRenderMs = now;
     }
 
-    setLcdCursorMode(false);
-    if (!running_menu)
-    {
-      if (lcdUiState == ALARM_ACTION_SELECT)
-      {
-        const uint8_t actionCols[ALARM_ACTION_COUNT] = {0, 5, 9, 13};
-        setLcdCursorMode(true, actionCols[alarmActionSelection], 3);
-      }
-      else if (lcdUiState == MAIN_PAGE)
-      {
-        if (iconFocusActive && lcdFocus >= FOCUS_WIFI && lcdFocus <= FOCUS_SETTINGS)
-        {
-          setLcdCursorMode(true, LCD_STATUS_COL + static_cast<uint8_t>(lcdFocus) - FOCUS_WIFI, 0);
-        }
-      }
-      else if (lcdUiState == ICON_MENU)
-      {
-        uint8_t optionCol = 0;
-        uint8_t optionRow = 2;
-        if (lcdPage == PAGE_WIFI)
-        {
-          optionRow = 3;
-        }
-        else if (lcdPage == PAGE_BROKER)
-        {
-          optionRow = (lcdPageOption == 0) ? 1 : 3;
-        }
-        else if (lcdPage == PAGE_MUTE)
-        {
-          optionRow = (lcdPageOption == 0) ? 2 : 3;
-          if (lcdPageOption == 2)
-          {
-            optionCol = currentlyMuted ? 9 : 11;
-          }
-        }
-        setLcdCursorMode(true, optionCol, optionRow);
-      }
-    }
+    // Keep the LCD hardware cursor disabled. Every interactive screen renders
+    // a stable text marker instead, so the current rotary selection never
+    // disappears during the controller's blink cycle.
+    disableLcdHardwareCursor();
     lcdDirty = false;
   }
 
@@ -1045,6 +1007,27 @@ void cancelPendingAlarmAudio()
 {
   alarmAudioUpdatePending = false;
   pendingAlarmAudioLevel = silent;
+  lastAlarmAudioAttemptMs = 0;
+  lastAlarmAudioPlaybackMs = 0;
+  alarmAudioPlaybackStarted = false;
+}
+
+void serviceAlarmAudioRepeat()
+{
+  if (currentLevel <= silent || currentlyMuted)
+  {
+    return;
+  }
+
+  const unsigned long now = millis();
+  const unsigned long repeatIntervalMs = static_cast<unsigned long>(alarmRepeatSeconds) * 1000UL;
+  const bool repeatDue = alarmAudioPlaybackStarted && millisIntervalElapsed(now, lastAlarmAudioPlaybackMs, repeatIntervalMs);
+  const bool retryDue = !alarmAudioPlaybackStarted && isDue(now, lastAlarmAudioAttemptMs, ALARM_AUDIO_RETRY_INTERVAL_MS);
+  if (!alarmAudioUpdatePending && (repeatDue || retryDue))
+  {
+    alarmAudioUpdatePending = true;
+    pendingAlarmAudioLevel = currentLevel;
+  }
 }
 
 // in general, we want tones to last forever, although
@@ -1328,41 +1311,164 @@ void formatUptime(char *dest, size_t destLen)
   snprintf(dest, destLen, "%02lu:%02lu:%02lu", hours, minutes, seconds);
 }
 
+struct SystemInfoSnapshot
+{
+  char serialNumber[16];
+  char firmwareVersion[32];
+  char ipAddress[24];
+  char macAddress[20];
+  char ssid[80];
+  char brokerProfile[32];
+  char mqtt[128];
+  char connectedBroker[80];
+  unsigned long heapBytes;
+  char uptime[24];
+  char resetReason[48];
+  char setupErrors[128];
+};
+
+void copySystemInfoValue(char *dest, size_t destLen, const char *src)
+{
+  if (destLen == 0)
+  {
+    return;
+  }
+  snprintf(dest, destLen, "%s", src != nullptr ? src : "");
+}
+
+SystemInfoSnapshot captureSystemInfo()
+{
+  SystemInfoSnapshot info;
+  snprintf(info.serialNumber, sizeof(info.serialNumber), "KRAKE-%.6s", macAddressString + 6);
+  copySystemInfoValue(info.firmwareVersion, sizeof(info.firmwareVersion), FIRMWARE_VERSION);
+  ipAddressText(info.ipAddress, sizeof(info.ipAddress));
+  copySystemInfoValue(info.macAddress, sizeof(info.macAddress), macAddressString);
+  currentSsid(info.ssid, sizeof(info.ssid));
+  copySystemInfoValue(info.brokerProfile, sizeof(info.brokerProfile), activeMqttBrokerLabel());
+  snprintf(info.mqtt, sizeof(info.mqtt), "%s (%s)", brokerConnectionStateText(), connectedMqttBroker());
+  copySystemInfoValue(info.connectedBroker, sizeof(info.connectedBroker), connectedMqttBroker());
+  info.heapBytes = static_cast<unsigned long>(ESP.getFreeHeap());
+  formatUptime(info.uptime, sizeof(info.uptime));
+  copySystemInfoValue(info.resetReason, sizeof(info.resetReason), resetReasonToString(esp_reset_reason()));
+  formatSetupErrors(info.setupErrors, sizeof(info.setupErrors));
+  return info;
+}
+
+void printJsonString(Print *output, const char *value)
+{
+  output->print('"');
+  const char *safeValue = value != nullptr ? value : "";
+  for (size_t i = 0; safeValue[i] != '\0'; i++)
+  {
+    const uint8_t ch = static_cast<uint8_t>(safeValue[i]);
+    switch (ch)
+    {
+    case '"':
+      output->print(F("\\\""));
+      break;
+    case '\\':
+      output->print(F("\\\\"));
+      break;
+    case '\b':
+      output->print(F("\\b"));
+      break;
+    case '\f':
+      output->print(F("\\f"));
+      break;
+    case '\n':
+      output->print(F("\\n"));
+      break;
+    case '\r':
+      output->print(F("\\r"));
+      break;
+    case '\t':
+      output->print(F("\\t"));
+      break;
+    default:
+      if (ch < 0x20)
+      {
+        char escaped[7];
+        snprintf(escaped, sizeof(escaped), "\\u%04x", ch);
+        output->print(escaped);
+      }
+      else
+      {
+        output->write(ch);
+      }
+      break;
+    }
+  }
+  output->print('"');
+}
+
+void printJsonField(Stream *serialport, const __FlashStringHelper *key, const char *value, bool trailingComma = true)
+{
+  serialport->print('"');
+  serialport->print(key);
+  serialport->print(F("\":"));
+  printJsonString(serialport, value);
+  if (trailingComma)
+  {
+    serialport->print(',');
+  }
+}
+
 void printSystemInfo(Stream *serialport, SystemInfoLineHandler lineHandler)
 {
-  char value[80];
+  const SystemInfoSnapshot info = captureSystemInfo();
+  char line[160];
   reportStatusLine(serialport, lineHandler, "=== KRAKE SYSTEM INFO ===");
-  snprintf(value, sizeof(value), "KRAKE-%.6s", macAddressString + 6);
-  char line[128];
-  snprintf(line, sizeof(line), "SN: %s", value);
+  snprintf(line, sizeof(line), "SN: %s", info.serialNumber);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "FW: %s", FIRMWARE_VERSION);
+  snprintf(line, sizeof(line), "FW: %s", info.firmwareVersion);
   reportStatusLine(serialport, lineHandler, line);
-  ipAddressText(value, sizeof(value));
-  snprintf(line, sizeof(line), "IP: %s", value);
+  snprintf(line, sizeof(line), "IP: %s", info.ipAddress);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "MAC: %s", macAddressString);
+  snprintf(line, sizeof(line), "MAC: %s", info.macAddress);
   reportStatusLine(serialport, lineHandler, line);
-  currentSsid(value, sizeof(value));
-  snprintf(line, sizeof(line), "SSID: %s", value);
+  snprintf(line, sizeof(line), "SSID: %s", info.ssid);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Broker profile: %s", activeMqttBrokerLabel());
+  snprintf(line, sizeof(line), "Broker profile: %s", info.brokerProfile);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "MQTT: %s (%s)", brokerConnectionStateText(), connectedMqttBroker());
+  snprintf(line, sizeof(line), "MQTT: %s", info.mqtt);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Connected broker: %s", connectedMqttBroker());
+  snprintf(line, sizeof(line), "Connected broker: %s", info.connectedBroker);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Heap: %lu", static_cast<unsigned long>(ESP.getFreeHeap()));
+  snprintf(line, sizeof(line), "Heap: %lu", info.heapBytes);
   reportStatusLine(serialport, lineHandler, line);
-  formatUptime(value, sizeof(value));
-  snprintf(line, sizeof(line), "Uptime: %s", value);
+  snprintf(line, sizeof(line), "Uptime: %s", info.uptime);
   reportStatusLine(serialport, lineHandler, line);
-  snprintf(line, sizeof(line), "Reset reason: %s", resetReasonToString(esp_reset_reason()));
+  snprintf(line, sizeof(line), "Reset reason: %s", info.resetReason);
   reportStatusLine(serialport, lineHandler, line);
-  formatSetupErrors(value, sizeof(value));
-  snprintf(line, sizeof(line), "Setup errors: %s", value);
+  snprintf(line, sizeof(line), "Setup errors: %s", info.setupErrors);
   reportStatusLine(serialport, lineHandler, line);
   reportStatusLine(serialport, lineHandler, "=========================");
+}
+
+void printSystemInfoJson(Stream *serialport)
+{
+  if (serialport == nullptr)
+  {
+    return;
+  }
+
+  const SystemInfoSnapshot info = captureSystemInfo();
+  serialport->print('{');
+  printJsonField(serialport, F("sn"), info.serialNumber);
+  printJsonField(serialport, F("fw"), info.firmwareVersion);
+  printJsonField(serialport, F("ip"), info.ipAddress);
+  printJsonField(serialport, F("mac"), info.macAddress);
+  printJsonField(serialport, F("ssid"), info.ssid);
+  printJsonField(serialport, F("brokerProfile"), info.brokerProfile);
+  printJsonField(serialport, F("mqtt"), info.mqtt);
+  printJsonField(serialport, F("connectedBroker"), info.connectedBroker);
+  serialport->print(F("\"heap\":"));
+  serialport->print(info.heapBytes);
+  serialport->print(',');
+  printJsonField(serialport, F("uptime"), info.uptime);
+  printJsonField(serialport, F("resetReason"), info.resetReason);
+  printJsonField(serialport, F("setupErrors"), info.setupErrors, false);
+  serialport->println('}');
 }
 
 void showStatusLCD(AlarmLevel level, bool muted, char *msg);
@@ -1387,8 +1493,12 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
     return {};
   }
   InterpretedCommand result;
-  serialport->print(F("Command: "));
-  serialport->printf("%c\n", command);
+  result.responseIsJson = (command == 'j');
+  if (!result.responseIsJson)
+  {
+    serialport->print(F("Command: "));
+    serialport->printf("%c\n", command);
+  }
 
   switch (command)
   {
@@ -1483,6 +1593,11 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
     result.publishSystemInfo = true;
     break;
   }
+  case 'j':
+  {
+    printSystemInfoJson(serialport);
+    break;
+  }
   case 'R':
   case 'r':
   {
@@ -1500,9 +1615,12 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
     break;
   }
   }
-  serialport->print(F("currentlyMuted : "));
-  serialport->println(currentlyMuted);
-  serialport->println(F("interpret Done"));
+  if (!result.responseIsJson)
+  {
+    serialport->print(F("currentlyMuted : "));
+    serialport->println(currentlyMuted);
+    serialport->println(F("interpret Done"));
+  }
   return result;
 } // end interpretBuffer()
 
@@ -1568,10 +1686,12 @@ void serviceAlarmUiAudio(Stream *serialport)
     lastAlarmAudioUpdateMs = now;
 
     const AlarmLevel audioLevel = pendingAlarmAudioLevel;
+    lastAlarmAudioAttemptMs = now;
 
     if (audioLevel <= 0)
     {
       serialport->println(F("Silent level: skipping DFPlayer playback."));
+      cancelPendingAlarmAudio();
     }
     else if (currentlyMuted)
     {
@@ -1581,6 +1701,11 @@ void serviceAlarmUiAudio(Stream *serialport)
     {
       serialport->println(F("dfPlayer.play"));
       serialport->println(audioLevel);
+      // Advance the repeat window for every playback attempt. If the DFPlayer
+      // is still busy, this prevents rapid retries and preserves a quiet delay
+      // before the scheduler checks again.
+      lastAlarmAudioPlaybackMs = now;
+      alarmAudioPlaybackStarted = true;
       playNotBusyLevel(audioLevel);
     }
   }
@@ -1610,6 +1735,7 @@ void GPAD_HAL_loop()
     alarmUiUpdatePending = true;
     lastAlarmUiRequestMs = now;
   }
+  serviceAlarmAudioRepeat();
   serviceAlarmUiAudio(local_ptr_to_serial);
 }
 
@@ -1667,15 +1793,16 @@ void resetLcdUiToMainPage()
   lcdPage = PAGE_MAIN;
   lcdPageOption = 0;
   alarmActionSelectorActive = false;
-  iconFocusActive = false;
   actionFeedbackText[0] = '\0';
   if (alarmIsActive())
   {
+    iconFocusActive = false;
     lcdFocus = FOCUS_ALARM_ACTIONS;
     alarmActionSelection = 0;
   }
   else
   {
+    iconFocusActive = true;
     lcdFocus = FOCUS_WIFI;
   }
   setLcdUiState(MAIN_PAGE);
@@ -1919,7 +2046,7 @@ bool alarmActionSelectorHandlePress()
       {
         resetLcdUiToMainPage();
         setLcdUiState(SETTINGS_MENU);
-        open_settings_menu_at(3);
+        open_settings_menu_at(4); // Main menu index for the mute-duration submenu.
       }
       else if (lcdPageOption == 1)
       {
@@ -2093,6 +2220,35 @@ void filter_control_chars(char *msg)
   msg[k] = '\0';
 }
 
+const char *lcdFocusLabel()
+{
+  switch (lcdFocus)
+  {
+  case FOCUS_WIFI:
+    return "WiFi";
+  case FOCUS_BROKER:
+    return "Broker";
+  case FOCUS_MUTE:
+    return "Mute";
+  case FOCUS_SETTINGS:
+    return "Settings";
+  case FOCUS_ALARM_ACTIONS:
+  default:
+    return "Alarm actions";
+  }
+}
+
+void renderAlarmActionChoices(char *row)
+{
+  static const char *choices[ALARM_ACTION_COUNT] = {
+      ">SHLV ACK DIS CMP",
+      " SHLV>ACK DIS CMP",
+      " SHLV ACK>DIS CMP",
+      " SHLV ACK DIS>CMP",
+  };
+  formatFullRow(row, "%s", choices[alarmActionSelection]);
+}
+
 void renderWifiPage(char rows[LCD_ROWS][LCD_COLS + 1])
 {
   char ssid[21];
@@ -2161,7 +2317,7 @@ void renderInfoPage(char rows[LCD_ROWS][LCD_COLS + 1])
     formatFullRow(rows[1], "SSID:%.15s", ssid);
     formatFullRow(rows[2], "MQTT:%.15s", brokerConnectionStateText());
   }
-  formatFullRow(rows[3], "Back");
+  formatFullRow(rows[3], ">Back");
 }
 
 void renderWifiStatusPage(char rows[LCD_ROWS][LCD_COLS + 1])
@@ -2176,14 +2332,14 @@ void renderWifiStatusPage(char rows[LCD_ROWS][LCD_COLS + 1])
     formatFullRow(rows[0], "WiFi:%.15s", ssid);
     formatFullRow(rows[1], "IP:%s", ip);
     formatFullRow(rows[2], "Open Web UI");
-    formatFullRow(rows[3], "Press: Back");
+    formatFullRow(rows[3], ">Back (press)");
   }
   else
   {
     formatFullRow(rows[0], "WiFi Setup");
     formatFullRow(rows[1], "AP:Krake-Setup");
     formatFullRow(rows[2], "Go:%s", ip);
-    formatFullRow(rows[3], "Press: Back");
+    formatFullRow(rows[3], ">Back (press)");
   }
 }
 
@@ -2249,9 +2405,13 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
       formatFullRow(rows[2], "Vol:%02d Mute:Off", volumeDFPlayer);
     }
     alarmActionSelectorActive = false;
-    if (lcdFocus == FOCUS_ALARM_ACTIONS)
+    if (lcdUiState == MAIN_PAGE)
     {
-      lcdFocus = FOCUS_SETTINGS;
+      if (lcdFocus == FOCUS_ALARM_ACTIONS)
+      {
+        lcdFocus = FOCUS_WIFI;
+      }
+      iconFocusActive = true;
     }
   }
   else
@@ -2308,7 +2468,11 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
 
     if (lcdUiState == ALARM_ACTION_SELECT)
     {
-      formatFullRow(rows[3], "SHLV ACK DIS CMP");
+      renderAlarmActionChoices(rows[3]);
+    }
+    else if (lcdUiState == MAIN_PAGE && !iconFocusActive)
+    {
+      formatFullRow(rows[3], "Select: Alarm menu");
     }
 
     if (lcdUiState == ACTION_FEEDBACK)
@@ -2320,6 +2484,10 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
   if (level == silent && lcdUiState == ACTION_FEEDBACK)
   {
     formatFullRow(rows[3], "%s", actionFeedbackText);
+  }
+  else if (lcdUiState == MAIN_PAGE && iconFocusActive)
+  {
+    formatFullRow(rows[3], "Select: %s", lcdFocusLabel());
   }
 
   (void)muted;

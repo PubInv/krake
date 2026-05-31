@@ -74,20 +74,26 @@ void processSerial(Stream *debugPort, Stream *inputPort)
       buf[rlen] = '\0';
 
 #if (GPAD_DEBUG > 0)
-      debugPort->print(F("I received: "));
-      debugPort->print(rlen);
-      for (int i = 0; i < rlen; i++)
+      if (rlen == 0 || buf[0] != 'j')
       {
-        debugPort->print(buf[i]);
+        debugPort->print(F("I received: "));
+        debugPort->print(rlen);
+        for (int i = 0; i < rlen; i++)
+        {
+          debugPort->print(buf[i]);
+        }
+        debugPort->println();
       }
-      debugPort->println();
 #endif
 
       if (rlen > 0)
       {
         const InterpretedCommand result = interpretBuffer(buf, rlen, debugPort);
         applyInterpretedCommand(result, debugPort);
-        printAlarmState(debugPort);
+        if (!result.responseIsJson)
+        {
+          printAlarmState(debugPort);
+        }
         processedCommand = true;
       }
       writeIndex = 0;
