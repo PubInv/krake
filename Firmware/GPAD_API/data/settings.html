@@ -45,8 +45,9 @@
       <label for="volume" style="margin-top:12px; display:block;">Volume (%)</label>
       <input id="volume" type="number" class="text-input" min="1" max="100" step="1" />
       <label for="muteTimeoutMinutes" style="margin-top:12px; display:block;">Default mute duration</label>
+      <p class="subtitle">Infinite stays muted until a manual unmute or a received <code>u</code> command.</p>
       <select id="muteTimeoutMinutes" class="text-input">
-        <option value="0">Infinite</option>
+        <option value="0">Infinite — until unmuted</option>
       </select>
       <label for="alarmRepeatSeconds" style="margin-top:12px; display:block;">Alarm repeat delay (seconds)</label>
       <input id="alarmRepeatSeconds" type="number" class="text-input" min="1" max="300" step="1" />

@@ -83,11 +83,18 @@ void toggleMuted()
   currentlyMuted = !currentlyMuted;
 }
 
+void unmute()
+{
+  clearMuteTimeout();
+  setMuted(false);
+}
+
 void setMuteTimeoutMinutes(unsigned long minutes)
 {
   setMuted(true);
   if (minutes == 0)
   {
+    // No deadline: remain muted until a manual unmute or a received `u` command.
     clearMuteTimeout();
     return;
   }
@@ -115,8 +122,7 @@ bool serviceMuteTimeout()
 
   if (millisIntervalElapsed(millis(), muteTimeoutStartMillis, muteTimeoutDurationMillis))
   {
-    clearMuteTimeout();
-    setMuted(false);
+    unmute();
     return true;
   }
 

@@ -1169,8 +1169,7 @@ void muteButtonPressed()
 {
   if (isMuted())
   {
-    setMuted(false);
-    clearMuteTimeout();
+    unmute();
   }
   else
   {
@@ -1511,14 +1510,14 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
   case 's':
   {
     serialport->println(F("Muting Case!"));
-    setMuted(true);
+    setMuteTimeoutMinutes(0);
     result.includeAudioRefresh = true;
     break;
   }
   case 'u':
   {
     serialport->println(F("UnMuting Case!"));
-    setMuted(false);
+    unmute();
     result.includeAudioRefresh = true;
     break;
   }
@@ -2058,8 +2057,7 @@ bool alarmActionSelectorHandlePress()
       {
         if (currentlyMuted)
         {
-          clearMuteTimeout();
-          setMuted(false);
+          unmute();
         }
         else
         {

@@ -279,8 +279,7 @@ result actionUnmuteNow(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
-    clearMuteTimeout();
-    setMuted(false);
+    unmute();
     requestAlarmRefresh(&Serial);
   }
   return proceed;

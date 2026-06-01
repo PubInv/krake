@@ -49,6 +49,7 @@ int alarm(AlarmLevel level, char *str, Stream *serialport);
 void setMuted(bool muted);
 bool isMuted();
 void toggleMuted();
+void unmute();
 void setMuteTimeoutMinutes(unsigned long minutes);
 void clearMuteTimeout();
 bool serviceMuteTimeout();
