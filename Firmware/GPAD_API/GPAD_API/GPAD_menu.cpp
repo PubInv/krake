@@ -275,6 +275,18 @@ result actionMuteNow(eventMask e)
   return proceed;
 }
 
+result actionMuteInfinite(eventMask e)
+{
+  if (e == eventMask::enterEvent)
+  {
+    muteTimeoutMinutes = OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES;
+    saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
+    setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+    requestAlarmRefresh(&Serial);
+  }
+  return proceed;
+}
+
 result actionUnmuteNow(eventMask e)
 {
   if (e == eventMask::enterEvent)
@@ -381,6 +393,7 @@ MENU(brokerMenu, "Broker", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
 MENU(muteMenu, "Mute Duration", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
   FIELD(muteTimeoutMinutes, "Set Duration", "min", 0, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
   OP("Mute Now", actionMuteNow, enterEvent),
+  OP("Mute Infinite", actionMuteInfinite, enterEvent),
   OP("Unmute", actionUnmuteNow, enterEvent),
   OP("Back", actionBack, enterEvent)
 );

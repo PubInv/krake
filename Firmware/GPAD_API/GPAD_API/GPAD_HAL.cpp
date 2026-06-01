@@ -27,6 +27,7 @@
 #include "GPAD_menu.h"
 #include "debug_macros.h"
 #include "setup_status.h"
+#include "operator_settings.h"
 #include <esp_system.h>
 #include <esp_wifi.h>
 #include <Preferences.h>
@@ -1510,7 +1511,7 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
   case 's':
   {
     serialport->println(F("Muting Case!"));
-    setMuteTimeoutMinutes(0);
+    setMuteTimeoutMinutes(OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES);
     result.includeAudioRefresh = true;
     break;
   }
@@ -2270,7 +2271,7 @@ void renderMutePage(char rows[LCD_ROWS][LCD_COLS + 1])
 {
   const unsigned long muteMinutes = remainingMuteMinutes();
   formatFullRow(rows[0], "Mute");
-  if ((currentlyMuted && muteTimeoutEndMillis == 0) || (!currentlyMuted && muteTimeoutMinutes == 0))
+  if ((currentlyMuted && muteTimeoutEndMillis == 0) || (!currentlyMuted && muteTimeoutMinutes == OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES))
   {
     formatFullRow(rows[1], "Mute set:Infinite");
   }
