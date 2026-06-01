@@ -1316,8 +1316,7 @@ bool applyMuteSetting(const String &rawValue)
   }
   else
   {
-    clearMuteTimeout();
-    setMuted(false);
+    unmute();
   }
   return true;
 }

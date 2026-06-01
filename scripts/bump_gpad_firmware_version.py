@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Increment the GPAD firmware patch version after a merged pull request."""
+"""Increment the GPAD firmware patch version when a pull request is raised."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ SEMVER_RE = re.compile(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pr-number", type=int, required=True, help="Merged GitHub pull request number")
+    parser.add_argument("--pr-number", type=int, required=True, help="GitHub pull request number")
     parser.add_argument("--version-file", type=Path, default=VERSION_PATH)
     return parser.parse_args()
 

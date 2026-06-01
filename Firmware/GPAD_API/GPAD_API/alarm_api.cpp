@@ -19,6 +19,7 @@
 */
 #include "alarm_api.h"
 #include "gpad_utility.h"
+#include "operator_settings.h"
 #include <Arduino.h>
 
 // here is the abstract "state" of the machine,
@@ -83,9 +84,22 @@ void toggleMuted()
   currentlyMuted = !currentlyMuted;
 }
 
+void unmute()
+{
+  clearMuteTimeout();
+  setMuted(false);
+}
+
 void setMuteTimeoutMinutes(unsigned long minutes)
 {
   setMuted(true);
+  if (minutes == OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES)
+  {
+    // No deadline: remain muted until a manual unmute or a received `u` command.
+    clearMuteTimeout();
+    return;
+  }
+
   muteTimeoutStartMillis = millis();
   const unsigned long maxSafeMinutes = MILLIS_MAX_SAFE_INTERVAL_MS / 60000UL;
   const unsigned long safeMinutes = minutes > maxSafeMinutes ? maxSafeMinutes : minutes;
@@ -109,8 +123,7 @@ bool serviceMuteTimeout()
 
   if (millisIntervalElapsed(millis(), muteTimeoutStartMillis, muteTimeoutDurationMillis))
   {
-    clearMuteTimeout();
-    setMuted(false);
+    unmute();
     return true;
   }
 

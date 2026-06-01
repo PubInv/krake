@@ -9,6 +9,17 @@
     const node = KrakeUI.byId(id);
     return node ? node.value : '';
   }
+  function populateMuteDurations() {
+    const select = KrakeUI.byId('muteTimeoutMinutes');
+    if (!select) return;
+    for (let minutes = 1; minutes <= 60; minutes += 1) {
+      const option = document.createElement('option');
+      option.value = String(minutes);
+      option.textContent = minutes + (minutes === 1 ? ' minute' : ' minutes');
+      select.appendChild(option);
+    }
+  }
+  populateMuteDurations();
   async function loadWifi() {
     const data = await KrakeUI.getJson('/wifi');
     setInputValue('ssid', data.ssid || '');
@@ -43,7 +54,7 @@
     setInputValue('subscribeTopic', data.publishTopic || '');
     setInputValue('publishTopic', data.subscribeTopic || '');
     setInputValue('volume', String(data.volume || 20));
-    setInputValue('muteTimeoutMinutes', String(data.muteTimeoutMinutes || 5));
+    setInputValue('muteTimeoutMinutes', String(typeof data.muteTimeoutMinutes === 'number' ? data.muteTimeoutMinutes : 5));
     setInputValue('alarmRepeatSeconds', String(data.alarmRepeatSeconds || 10));
     KrakeUI.setText('muteStatus', data.muted ? 'Muted' : 'Unmuted');
     KrakeUI.setText('alarmTopic', data.publishTopic || '-');
@@ -59,7 +70,7 @@
     const muteTimeoutMinutes = Number(getInputValue('muteTimeoutMinutes'));
     const alarmRepeatSeconds = Number(getInputValue('alarmRepeatSeconds'));
     if (!Number.isInteger(volume) || volume < 1 || volume > 100) return KrakeUI.showMessage('Volume must be between 1 and 100%.', true);
-    if (!Number.isInteger(muteTimeoutMinutes) || muteTimeoutMinutes < 1 || muteTimeoutMinutes > 60) return KrakeUI.showMessage('Mute duration must be between 1 and 60 minutes.', true);
+    if (!Number.isInteger(muteTimeoutMinutes) || muteTimeoutMinutes < 0 || muteTimeoutMinutes > 60) return KrakeUI.showMessage('Mute duration must be Infinite or between 1 and 60 minutes.', true);
     if (!Number.isInteger(alarmRepeatSeconds) || alarmRepeatSeconds < 1 || alarmRepeatSeconds > 300) return KrakeUI.showMessage('Alarm repeat delay must be between 1 and 300 seconds.', true);
     try { await KrakeUI.postForm('/settings/sound', { volume, muteTimeoutMinutes, alarmRepeatSeconds }); KrakeUI.showMessage('Sound defaults saved for future restarts.'); await refreshSettings(); }
     catch (e) { KrakeUI.showMessage('Failed to save sound defaults: ' + e.message, true); }
