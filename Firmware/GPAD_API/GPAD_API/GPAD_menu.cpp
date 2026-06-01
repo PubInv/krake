@@ -264,13 +264,26 @@ result actionAlarmRepeatSeconds(eventMask e)
   return proceed;
 }
 
+void finishMuteMenuAction(const char *feedback)
+{
+  running_menu = false;
+  menu_just_exited = false;
+  Menu::doExit();
+  resetLcdUiToMainPage();
+  showActionFeedback(feedback);
+  requestAlarmRefresh(&Serial);
+}
+
 result actionMuteNow(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
     saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
-    requestAlarmRefresh(&Serial);
+    DBG_PRINT(F("Muted for "));
+    DBG_PRINT(muteTimeoutMinutes);
+    DBG_PRINTLN(F(" minutes."));
+    finishMuteMenuAction("Muted: timed");
   }
   return proceed;
 }
@@ -279,10 +292,9 @@ result actionMuteInfinite(eventMask e)
 {
   if (e == eventMask::enterEvent)
   {
-    muteTimeoutMinutes = OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES;
-    saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
-    setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
-    requestAlarmRefresh(&Serial);
+    setMuteTimeoutMinutes(OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES);
+    DBG_PRINTLN(F("Muted indefinitely until manual unmute or received u command."));
+    finishMuteMenuAction("Muted: Infinite");
   }
   return proceed;
 }
@@ -292,7 +304,8 @@ result actionUnmuteNow(eventMask e)
   if (e == eventMask::enterEvent)
   {
     unmute();
-    requestAlarmRefresh(&Serial);
+    DBG_PRINTLN(F("Unmuted."));
+    finishMuteMenuAction("Unmuted");
   }
   return proceed;
 }
@@ -391,7 +404,7 @@ MENU(brokerMenu, "Broker", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
 );
 
 MENU(muteMenu, "Mute Duration", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  FIELD(muteTimeoutMinutes, "Set Duration", "min", 0, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
+  FIELD(muteTimeoutMinutes, "Set Duration", "min", 1, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
   OP("Mute Now", actionMuteNow, enterEvent),
   OP("Mute Infinite", actionMuteInfinite, enterEvent),
   OP("Unmute", actionUnmuteNow, enterEvent),
