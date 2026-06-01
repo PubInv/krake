@@ -380,7 +380,7 @@ MENU(brokerMenu, "Broker", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
 );
 
 MENU(muteMenu, "Mute Duration", Menu::doNothing, Menu::noEvent, Menu::wrapStyle,
-  FIELD(muteTimeoutMinutes, "Set Duration", "min", 1, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
+  FIELD(muteTimeoutMinutes, "Set Duration", "min", 0, 60, 5, 1, actionMuteTimeout, enterEvent, wrapStyle),
   OP("Mute Now", actionMuteNow, enterEvent),
   OP("Unmute", actionUnmuteNow, enterEvent),
   OP("Back", actionBack, enterEvent)

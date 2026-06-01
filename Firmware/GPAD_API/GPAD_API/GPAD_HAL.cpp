@@ -2272,7 +2272,14 @@ void renderMutePage(char rows[LCD_ROWS][LCD_COLS + 1])
 {
   const unsigned long muteMinutes = remainingMuteMinutes();
   formatFullRow(rows[0], "Mute");
-  formatFullRow(rows[1], "Mute set:%lu min", currentlyMuted ? muteMinutes : (unsigned long)muteTimeoutMinutes);
+  if ((currentlyMuted && muteTimeoutEndMillis == 0) || (!currentlyMuted && muteTimeoutMinutes == 0))
+  {
+    formatFullRow(rows[1], "Mute set:Infinite");
+  }
+  else
+  {
+    formatFullRow(rows[1], "Mute set:%lu min", currentlyMuted ? muteMinutes : (unsigned long)muteTimeoutMinutes);
+  }
   formatFullRow(rows[2], "%cMute settings", lcdPageOption == 0 ? '>' : ' ');
   formatFullRow(rows[3], "%c%s  %cBack",
                 lcdPageOption == 1 ? '>' : ' ',
@@ -2384,7 +2391,11 @@ void showStatusLCD(AlarmLevel level, bool muted, char *msg)
     }
     formatMain(rows[0], "PAQ:0");
     formatMain(rows[1], "System OK");
-    if (currentlyMuted)
+    if (currentlyMuted && muteTimeoutEndMillis == 0)
+    {
+      formatFullRow(rows[2], "Vol:%02d Mute:Inf", volumeDFPlayer);
+    }
+    else if (currentlyMuted)
     {
       formatFullRow(rows[2], "Vol:%02d Mute:%lum", volumeDFPlayer, remainingMuteMinutes());
     }

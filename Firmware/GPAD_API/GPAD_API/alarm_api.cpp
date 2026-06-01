@@ -86,6 +86,12 @@ void toggleMuted()
 void setMuteTimeoutMinutes(unsigned long minutes)
 {
   setMuted(true);
+  if (minutes == 0)
+  {
+    clearMuteTimeout();
+    return;
+  }
+
   muteTimeoutStartMillis = millis();
   const unsigned long maxSafeMinutes = MILLIS_MAX_SAFE_INTERVAL_MS / 60000UL;
   const unsigned long safeMinutes = minutes > maxSafeMinutes ? maxSafeMinutes : minutes;
