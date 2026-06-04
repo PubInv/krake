@@ -31,7 +31,7 @@ US002818
 OSHWA certification listing:
 [OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
 
- <img width="549" height="442" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" /> 
+ <img width="100" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" /> 
  
 ---
 
