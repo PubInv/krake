@@ -18,6 +18,11 @@ The Krake extends the original GPAD architecture with:
 
 ---
 
+# User and Developer Manuals
+
+We have a [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing) and
+a [draft developers manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?usp=sharing).
+
 # Open Source Hardware Certification
 
 Krake hardware has been certified by the Open Source Hardware Association (OSHWA).
