@@ -36,9 +36,9 @@ const char* password = "textinsert";
 
 
 // MQTT Broker
-const char* mqtt_broker_name = "public.cloud.shiftr.io";
-const char* mqtt_user = "public";
-const char* mqtt_password = "public";
+const char* mqtt_broker_name = "krakepubinv.cloud.shiftr.io";
+const char* mqtt_user = "krakepubinv";
+const char* mqtt_password = "DlDmkWjp4I4kgDcA";
 
 // MQTT Topics
 // User must modify the device serial number. In this case change the part "USA4" as approprate.

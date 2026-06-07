@@ -41,6 +41,7 @@ namespace WifiOTA
         bool saveCredentials(const String &ssid, const String &password);
         bool loadCredentials(String &ssid, String &password);
         bool loadCredentialsList(CredentialList &credentials);
+        bool hasSavedCredentials();
 
     private:
         WiFiClass &wifi;
@@ -56,7 +57,9 @@ namespace WifiOTA
         void startPortal(const char *const accessPointSsid);
     };
 
-    void initLittleFS();
+    bool initLittleFS();
+    bool isLittleFSMounted();
+    void printLittleFSDiagnostics(Print &print);
     String processor(const String &var);
 };
 
