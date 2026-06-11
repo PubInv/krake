@@ -1,22 +1,46 @@
 # GPAD firmware versioning
 
-The GPAD firmware version is stored in `FIRMWARE_VERSION` as a Semantic Versioning
-2.0.0 value. PlatformIO reads that file from `pre_extra_script.py` and exposes it
-to the firmware as the `FIRMWARE_VERSION` macro.
+The GPAD firmware version is stored in `FIRMWARE_VERSION` as a plain Semantic
+Versioning 2.0.0 value: `MAJOR.MINOR.PATCH`. PlatformIO reads that file from
+`pre_extra_script.py` and exposes it to the firmware as the `FIRMWARE_VERSION`
+macro.
 
-When a pull request is raised against `main`, the `Assign GPAD firmware PR version`
-workflow increments the patch component on that pull request branch and records the pull
-request number as SemVer build metadata. For example, raising PR `#123` after `0.58.0`
-produces `0.58.1+pr.123` in the PR itself, before it is merged.
+Firmware versions do not include pull request numbers or build metadata. A
+version like `0.58.5` is valid; a PR-derived version like `0.58.5+pr.123` should
+not be used.
 
-Reopening the same pull request is idempotent: if its branch already records that PR
-number, the workflow leaves the version unchanged. Version assignment is limited to
-branches in this repository because GitHub does not grant the workflow permission to
-push version commits to contributors' forks.
+The version bump logic lives in the repository root at
+`scripts/bump_gpad_firmware_version.py`. It can be run directly:
 
-For an intentional release, update `FIRMWARE_VERSION` in a pull request to the
-desired `MAJOR.MINOR.PATCH` baseline. The next raised pull request resumes patch
-increments from that baseline.
+```sh
+python3 scripts/bump_gpad_firmware_version.py
+```
 
-The workflow pushes its isolated version commit to the open pull request branch, so it
-does not require a direct push to `main`.
+By default, the script chooses the SemVer component from commit messages since
+the previous `FIRMWARE_VERSION` change:
+
+- `BREAKING CHANGE:` or a Conventional Commit with `!` bumps `MAJOR`.
+- `feat:` or `feature:` bumps `MINOR`.
+- Any other change bumps `PATCH`.
+
+You can override the automatic choice when preparing an intentional release:
+
+```sh
+python3 scripts/bump_gpad_firmware_version.py --bump minor
+```
+
+To enable automatic local bumping before pushes, install the repository hook
+path once from the repository root:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The pre-push hook creates a separate `Bump GPAD firmware version` commit and
+stops that first push. Re-run `git push` to send both your code and the version
+commit. If `FIRMWARE_VERSION` is already part of the commits being pushed, the
+hook lets the push continue without bumping again.
+
+The GitHub workflow uses the same script for pull requests from branches in this
+repository, so automated version commits also stay plain SemVer without PR
+numbers.

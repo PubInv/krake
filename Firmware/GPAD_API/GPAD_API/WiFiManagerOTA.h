@@ -41,6 +41,7 @@ namespace WifiOTA
         bool saveCredentials(const String &ssid, const String &password);
         bool loadCredentials(String &ssid, String &password);
         bool loadCredentialsList(CredentialList &credentials);
+        bool connectSavedCredentials(unsigned long budgetMs = 15000);
         bool hasSavedCredentials();
 
     private:

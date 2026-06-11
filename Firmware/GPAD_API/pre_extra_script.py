@@ -5,8 +5,8 @@ import re
 
 version_path = Path(env["PROJECT_DIR"]) / "FIRMWARE_VERSION"
 firmware_version = version_path.read_text(encoding="utf-8").strip()
-if not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?", firmware_version):
-    raise ValueError(f"Invalid semantic version in {version_path}: {firmware_version!r}")
+if not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", firmware_version):
+    raise ValueError(f"Invalid plain semantic version in {version_path}: {firmware_version!r}")
 
 cpp_defines = [
     ("COMPANY_NAME", "PubInv "),   # For the Broker ID for MQTT 

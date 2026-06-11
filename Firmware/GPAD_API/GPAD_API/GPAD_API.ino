@@ -1848,20 +1848,20 @@ void setupOTA()
               }
               const String password = request->getParam("password", true)->value();
               String trimmedSsid = ssid;
-              String trimmedPassword = password;
+              String checkedPassword = password;
               trimmedSsid.trim();
-              trimmedPassword.trim();
+              checkedPassword.trim();
               if (trimmedSsid.length() == 0)
               {
                 request->send(400, "text/plain", "ssid cannot be empty");
                 return;
               }
-              if (trimmedPassword.length() == 0)
+              if (checkedPassword.length() == 0)
               {
                 request->send(400, "text/plain", "password cannot be empty");
                 return;
               }
-              if (!wifiManager.saveCredentials(trimmedSsid, trimmedPassword))
+              if (!wifiManager.saveCredentials(trimmedSsid, password))
               {
                 request->send(500, "text/plain", "failed to save WiFi credentials");
                 return;
@@ -2468,7 +2468,10 @@ void serviceWiFiReconnect()
   }
 
   lastWiFiReconnectAttemptMs = now;
-  WiFi.reconnect();
+  if (!wifiManager.connectSavedCredentials(WIFI_RECONNECT_INTERVAL_MS))
+  {
+    WiFi.reconnect();
+  }
 #endif
 }
 

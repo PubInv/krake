@@ -152,42 +152,54 @@ Manager::~Manager() {}
 
 void Manager::connect(const char *const accessPointSsid)
 {
-  CredentialList credentials;
-  if (this->loadCredentialsList(credentials))
+  if (this->connectSavedCredentials(WIFI_STORED_CREDENTIALS_BUDGET_MS))
   {
-    const unsigned long credentialsStartMs = millis();
-    for (size_t index = 0; index < credentials.count; ++index)
-    {
-      const uint32_t elapsedMs = elapsedMillis(millis(), credentialsStartMs);
-      if (elapsedMs >= WIFI_STORED_CREDENTIALS_BUDGET_MS)
-      {
-        this->print.println(F("Stored WiFi retry budget exhausted; starting recovery portal."));
-        break;
-      }
-      const unsigned long remainingMs = WIFI_STORED_CREDENTIALS_BUDGET_MS - elapsedMs;
-      const unsigned long attemptMs = (remainingMs < WIFI_STORED_CREDENTIAL_ATTEMPT_MS)
-                                          ? remainingMs
-                                          : WIFI_STORED_CREDENTIAL_ATTEMPT_MS;
-#if (DEBUG_LEVEL > 0)
-      this->print.print(F("Trying saved WiFi "));
-      this->print.print(index + 1);
-      this->print.print(F("/"));
-      this->print.print(credentials.count);
-      this->print.print(F(": "));
-      this->print.println(credentials.items[index].ssid);
-#endif
-
-      if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password, attemptMs))
-      {
-        this->print.println(F("Connected using stored WiFi credentials."));
-        this->ipSet();
-        return;
-      }
-    }
+    return;
   }
 
   this->print.println(F("Starting bounded WiFi recovery portal."));
   this->startPortal(accessPointSsid);
+}
+
+bool Manager::connectSavedCredentials(unsigned long budgetMs)
+{
+  CredentialList credentials;
+  if (!this->loadCredentialsList(credentials) || credentials.count == 0)
+  {
+    return false;
+  }
+
+  const unsigned long credentialsStartMs = millis();
+  for (size_t index = 0; index < credentials.count; ++index)
+  {
+    const uint32_t elapsedMs = elapsedMillis(millis(), credentialsStartMs);
+    if (elapsedMs >= budgetMs)
+    {
+      this->print.println(F("Stored WiFi retry budget exhausted."));
+      return false;
+    }
+    const unsigned long remainingMs = budgetMs - elapsedMs;
+    const unsigned long attemptMs = (remainingMs < WIFI_STORED_CREDENTIAL_ATTEMPT_MS)
+                                        ? remainingMs
+                                        : WIFI_STORED_CREDENTIAL_ATTEMPT_MS;
+#if (DEBUG_LEVEL > 0)
+    this->print.print(F("Trying saved WiFi "));
+    this->print.print(index + 1);
+    this->print.print(F("/"));
+    this->print.print(credentials.count);
+    this->print.print(F(": "));
+    this->print.println(credentials.items[index].ssid);
+#endif
+
+    if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password, attemptMs))
+    {
+      this->print.println(F("Connected using stored WiFi credentials."));
+      this->ipSet();
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void Manager::startPortal(const char *const accessPointSsid)
@@ -275,6 +287,8 @@ IPAddress Manager::getAddress()
     return this->wifi.softAPIP();
   case wifi_mode_t::WIFI_MODE_STA:
     return this->wifi.localIP();
+  case wifi_mode_t::WIFI_MODE_APSTA:
+    return (this->wifi.status() == WL_CONNECTED) ? this->wifi.localIP() : this->wifi.softAPIP();
   default:
     return INADDR_NONE;
   }
@@ -283,10 +297,10 @@ IPAddress Manager::getAddress()
 bool Manager::saveCredentials(const String &ssid, const String &password)
 {
   String trimmedSsid = ssid;
-  String trimmedPassword = password;
+  String checkedPassword = password;
   trimmedSsid.trim();
-  trimmedPassword.trim();
-  if (trimmedSsid.length() == 0 || trimmedPassword.length() == 0)
+  checkedPassword.trim();
+  if (trimmedSsid.length() == 0 || checkedPassword.length() == 0)
   {
     this->print.println(F("SSID and password are required."));
     return false;
@@ -298,7 +312,7 @@ bool Manager::saveCredentials(const String &ssid, const String &password)
   CredentialList updated;
   updated.count = 0;
 
-  updated.items[updated.count++] = {trimmedSsid, trimmedPassword};
+  updated.items[updated.count++] = {trimmedSsid, password};
   for (size_t i = 0; i < credentials.count; ++i)
   {
     if (credentials.items[i].ssid != trimmedSsid && updated.count < MAX_SAVED_WIFI_NETWORKS)
@@ -419,8 +433,9 @@ bool Manager::loadCredentialsList(CredentialList &credentials)
     }
 
     loadedSsid.trim();
-    loadedPassword.trim();
-    if (loadedSsid.length() > 0 && loadedPassword.length() > 0)
+    String checkedPassword = loadedPassword;
+    checkedPassword.trim();
+    if (loadedSsid.length() > 0 && checkedPassword.length() > 0)
     {
       bool alreadyExists = false;
       for (size_t i = 0; i < credentials.count; ++i)
@@ -456,8 +471,9 @@ bool Manager::loadCredentialsList(CredentialList &credentials)
   }
 
   legacySsid.trim();
-  legacyPassword.trim();
-  if (legacySsid.length() == 0 || legacyPassword.length() == 0)
+  String checkedLegacyPassword = legacyPassword;
+  checkedLegacyPassword.trim();
+  if (legacySsid.length() == 0 || checkedLegacyPassword.length() == 0)
   {
     this->print.println(F("Stored WiFi credentials have an invalid SSID/password."));
     return false;
@@ -486,17 +502,28 @@ bool Manager::connectStoredCredentials(const String &ssid, const String &passwor
   }
 
   this->print.println(F("Stored WiFi credentials failed to connect."));
-  this->wifi.disconnect(true, false);
+  this->wifi.disconnect(false, false);
   return false;
 }
 
 void Manager::ssidSaved()
 {
+  const String savedSsid = this->wifi.SSID();
+  const String savedPassword = this->wifi.psk();
 #if (DEBUG_LEVEL > 0)
   this->print.print(F("Network Saved with SSID: "));
-  this->print.print(this->wifi.SSID());
+  this->print.print(savedSsid);
   this->print.print(F("\n"));
 #endif
+
+  if (savedSsid.length() > 0 && savedPassword.length() > 0)
+  {
+    this->saveCredentials(savedSsid, savedPassword);
+  }
+  else
+  {
+    this->print.println(F("WiFi portal saved credentials, but SSID/password were not available for multi-network storage."));
+  }
 }
 
 void Manager::ipSet()

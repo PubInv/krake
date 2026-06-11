@@ -1,4 +1,4 @@
-name: Assign GPAD firmware PR version
+name: Assign GPAD firmware version
 
 on:
   pull_request_target:
@@ -25,19 +25,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Increment patch version and record pull request
+      - name: Increment firmware version
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
           git show "$BASE_SHA:scripts/bump_gpad_firmware_version.py" > /tmp/bump_gpad_firmware_version.py
-          python3 /tmp/bump_gpad_firmware_version.py --pr-number "$PR_NUMBER"
+          python3 /tmp/bump_gpad_firmware_version.py --from-ref "$BASE_SHA"
           if git diff --quiet -- Firmware/GPAD_API/FIRMWARE_VERSION; then
-            echo "Version already includes PR #$PR_NUMBER; nothing to commit."
+            echo "Firmware version is already current; nothing to commit."
             exit 0
           fi
           git add Firmware/GPAD_API/FIRMWARE_VERSION
-          git commit -m "Assign GPAD firmware version for PR #$PR_NUMBER"
+          git commit -m "Bump GPAD firmware version"
           git push origin HEAD:"$HEAD_REF"
