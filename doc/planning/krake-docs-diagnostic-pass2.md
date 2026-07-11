@@ -39,6 +39,12 @@ which is correct.
 
 ## 2. Structural / completion gaps
 
+**New finding (missing content, not a conflict): VESA mount and mounting orientation are undocumented.**
+The enclosure has a **75×75mm VESA MIS-D mount** feature on the back (referenced only implicitly, as "VESA and Speaker Mount" threaded inserts, in the Assembly doc's Enclosure Assembly Procedure — never explained as a user-facing feature anywhere). None of the User Manual, Developer Manual, README, or HardwareX draft mention it. This is a real gap, not a drafting error, and it has a usability/safety dimension:
+- The existing "Enclosure / Device Mounting" sections (User Manual, Developer Manual) describe a central mounting hole, side picture-hanging holes, and zip-tie flanges — but never the VESA pattern, and never state that the Krake is designed for **vertical surface mounting only**.
+- Cables exit from the panel a user would likely perceive as the "bottom" (the side perpendicular to the LCD/front face) — which is not an obvious consequence of the design and isn't called out anywhere.
+- **Action:** add a mounting-orientation **safety/best-practice note** — not just a spec line — to the User Manual and Developer Manual mounting sections: name the **75×75mm VESA MIS-D** pattern explicitly, state that the Krake is designed for vertical surface mounting only, and warn against setting the unit flat on a horizontal surface, since cables exit from that face and the enclosure isn't designed to bear load or rest stably on it.
+
 **HardwareX article** — this is the least finished document and has the most template debris:
 - The Abstract section still contains **unresolved editor/reviewer comment text** bleeding into the visible body (e.g., stray fragments like "not in template," "graphical abstract," mid-sentence interruptions). This reads as corrupted or improperly-resolved tracked changes/comments from Overleaf/Word round-tripping, and needs a clean rewrite pass before anything else in that document is touched.
 - Several section headers still contain the **unmodified HardwareX instructional text** ("Write a short description...", "Add 3–5 bullet points...") mixed in with actual content — a sign these sections were drafted directly into the template without deleting the prompts.
