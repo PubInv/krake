@@ -32,7 +32,7 @@ void printError(Stream *serialport)
 }
 void printInstructions(Stream *serialport)
 {
-  serialport->println(F("PubInv GPAD: enter command in form CDa (C is a char, D is a digit)"));
+  serialport->println(F("PubInv GPAD commands: I = system info, j = system info JSON, h = help, aN... = alarm"));
 }
 void printAlarmState(Stream *serialport)
 {

@@ -41,14 +41,15 @@ namespace Menu
       // text editor cursor
       device->noBlink();
       device->noCursor();
-      if (editing)
-      {
-        device->setCursor(x, y);
-        if (charEdit)
-          device->cursor();
-        else
-          device->blink();
-      }
+      // Selection is rendered by ArduinoMenu's stable leading marker. Avoid
+      // the hardware blink cycle so the active choice remains continuously
+      // visible while values are edited.
+      (void)root;
+      (void)x;
+      (void)y;
+      (void)editing;
+      (void)charEdit;
+      (void)panelNr;
       return 0;
     }
   };

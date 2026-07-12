@@ -14,7 +14,7 @@
   <main class="container">
     <section class="card">
       <h1>WiFi Setup</h1>
-      <p class="subtitle">Save SSID/password to <code>/wifi.json</code> for reconnection on boot. Device will try all saved networks.</p>
+      <p class="subtitle">Save SSID/password for reconnection on boot. Credentials survive LittleFS UI uploads, and the device will try all saved networks.</p>
 
       <label for="ssid">SSID</label>
       <input id="ssid" class="text-input" placeholder="Your network name" />
@@ -42,6 +42,16 @@
         <button id="btnMute" class="action-btn" onclick="setMuted(true)">Mute</button>
         <button id="btnUnmute" class="action-btn secondary" onclick="setMuted(false)">Unmute</button>
       </div>
+      <label for="volume" style="margin-top:12px; display:block;">Volume (%)</label>
+      <input id="volume" type="number" class="text-input" min="1" max="100" step="1" />
+      <label for="muteTimeoutMinutes" style="margin-top:12px; display:block;">Default mute duration</label>
+      <p class="subtitle">Infinite stays muted until a manual unmute or a received <code>u</code> command.</p>
+      <select id="muteTimeoutMinutes" class="text-input">
+        <option value="0">Infinite — until unmuted</option>
+      </select>
+      <label for="alarmRepeatSeconds" style="margin-top:12px; display:block;">Alarm repeat delay (seconds)</label>
+      <input id="alarmRepeatSeconds" type="number" class="text-input" min="1" max="300" step="1" />
+      <button class="action-btn" onclick="saveSoundSettings()" style="margin-top:12px;">Save Sound Defaults</button>
       <div class="status-row">Current status: <strong id="muteStatus">-</strong></div>
       <div class="status-row">Mute command topics: <code id="muteCommandTopics">-</code></div>
       <div class="status-row">Last command: <strong id="muteCommandResult">-</strong></div>
@@ -55,8 +65,20 @@
       <select id="role" class="text-input">
         <option value="Krake">Krake</option>
       </select>
-      <label for="broker">Broker</label>
-      <input id="broker" class="text-input" placeholder="broker.hivemq.com" />
+      <label for="brokerProfile">Broker Profile</label>
+      <select id="brokerProfile" class="text-input" onchange="syncBrokerProfileFields()">
+        <option value="krake">Krake PubInv</option>
+        <option value="custom">Saved Custom</option>
+      </select>
+      <div class="status-row">Active broker: <code id="activeBroker">-</code></div>
+      <div class="status-row">Connected broker: <code id="connectedBroker">-</code></div>
+      <label for="customBroker" style="margin-top:12px; display:block;">Custom Broker Host</label>
+      <input id="customBroker" class="text-input" placeholder="mqtt.example.org" />
+      <label for="customUser">Custom Broker Username</label>
+      <input id="customUser" class="text-input" autocomplete="username" />
+      <label for="customPassword">Custom Broker Password</label>
+      <input id="customPassword" type="password" class="text-input" autocomplete="new-password" placeholder="Leave blank to keep saved password" />
+      <div class="status-row">Saved custom password: <strong id="customPasswordStatus">None</strong></div>
       <label for="subscribeTopic" style="margin-top:12px; display:block;">Primary Subscribe Topic</label>
       <input id="subscribeTopic" class="text-input" placeholder="AABBCCDDEEFF_ACK" />
       <label for="publishTopic" style="margin-top:12px; display:block;">Primary Publish Topic</label>

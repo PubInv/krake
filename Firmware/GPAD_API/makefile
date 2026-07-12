@@ -14,16 +14,24 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 
+PIO ?= pio
 
-run:
-	pio run -t upload \
-	&& pio device monitor -b 115200
+.PHONY: build run upload monitor build-fs uploadfs
+
+build:
+	$(PIO) run
+
+run: upload
+	$(PIO) device monitor -b 115200
+
+upload:
+	$(PIO) run -t upload
 
 monitor:
-	pio device monitor -b 115200
+	$(PIO) device monitor -b 115200
 
 build-fs:
-	pio run --target buildfs
+	$(PIO) run --target buildfs
 
 uploadfs:
-	pio run --target uploadfs
+	$(PIO) run --target uploadfs

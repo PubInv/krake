@@ -1,9 +1,53 @@
 #include "WiFiManagerOTA.h"
 #include <LittleFS.h>
+#include <Preferences.h>
+#include "gpad_utility.h"
 
 namespace
 {
   const char *WIFI_CREDENTIALS_PATH = "/wifi.json";
+  const char *WIFI_PREFERENCES_NAMESPACE = "krake-wifi";
+  const char *WIFI_PREFERENCES_KEY = "networks";
+  const unsigned long WIFI_PORTAL_TIMEOUT_SECONDS = 60;
+  const unsigned long WIFI_STORED_CREDENTIALS_BUDGET_MS = 15000;
+  const unsigned long WIFI_STORED_CREDENTIAL_ATTEMPT_MS = 5000;
+  bool littleFsMounted = false;
+
+  bool saveCredentialsToPreferences(const String &payload)
+  {
+    Preferences preferences;
+    if (!preferences.begin(WIFI_PREFERENCES_NAMESPACE, false))
+    {
+      return false;
+    }
+    const size_t written = preferences.putString(WIFI_PREFERENCES_KEY, payload);
+    preferences.end();
+    return written > 0;
+  }
+
+  String loadCredentialsFromPreferences()
+  {
+    Preferences preferences;
+    if (!preferences.begin(WIFI_PREFERENCES_NAMESPACE, true))
+    {
+      return String();
+    }
+    const String payload = preferences.getString(WIFI_PREFERENCES_KEY, "");
+    preferences.end();
+    return payload;
+  }
+
+  bool clearCredentialsFromPreferences()
+  {
+    Preferences preferences;
+    if (!preferences.begin(WIFI_PREFERENCES_NAMESPACE, false))
+    {
+      return false;
+    }
+    const bool cleared = !preferences.isKey(WIFI_PREFERENCES_KEY) || preferences.remove(WIFI_PREFERENCES_KEY);
+    preferences.end();
+    return cleared;
+  }
 
   String jsonEscape(const String &value)
   {
@@ -100,36 +144,62 @@ void Manager::initialize()
   // According to WifiManager's documentation, best practice is still to set the WiFi mode manually
   // https://github.com/tzapu/WiFiManager/blob/master/examples/Basic/Basic.ino#L5
   this->wifi.mode(WIFI_STA);
+  // Never leave setup blocked forever if credentials were erased or invalid.
+  this->wifiManager.setConfigPortalTimeout(WIFI_PORTAL_TIMEOUT_SECONDS);
 }
 
 Manager::~Manager() {}
 
 void Manager::connect(const char *const accessPointSsid)
 {
-  CredentialList credentials;
-  if (this->loadCredentialsList(credentials))
+  if (this->connectSavedCredentials(WIFI_STORED_CREDENTIALS_BUDGET_MS))
   {
-    for (size_t index = 0; index < credentials.count; ++index)
+    return;
+  }
+
+  this->print.println(F("Starting bounded WiFi recovery portal."));
+  this->startPortal(accessPointSsid);
+}
+
+bool Manager::connectSavedCredentials(unsigned long budgetMs)
+{
+  CredentialList credentials;
+  if (!this->loadCredentialsList(credentials) || credentials.count == 0)
+  {
+    return false;
+  }
+
+  const unsigned long credentialsStartMs = millis();
+  for (size_t index = 0; index < credentials.count; ++index)
+  {
+    const uint32_t elapsedMs = elapsedMillis(millis(), credentialsStartMs);
+    if (elapsedMs >= budgetMs)
     {
+      this->print.println(F("Stored WiFi retry budget exhausted."));
+      return false;
+    }
+    const unsigned long remainingMs = budgetMs - elapsedMs;
+    const unsigned long attemptMs = (remainingMs < WIFI_STORED_CREDENTIAL_ATTEMPT_MS)
+                                        ? remainingMs
+                                        : WIFI_STORED_CREDENTIAL_ATTEMPT_MS;
 #if (DEBUG_LEVEL > 0)
-      this->print.print(F("Trying saved WiFi "));
-      this->print.print(index + 1);
-      this->print.print(F("/"));
-      this->print.print(credentials.count);
-      this->print.print(F(": "));
-      this->print.println(credentials.items[index].ssid);
+    this->print.print(F("Trying saved WiFi "));
+    this->print.print(index + 1);
+    this->print.print(F("/"));
+    this->print.print(credentials.count);
+    this->print.print(F(": "));
+    this->print.println(credentials.items[index].ssid);
 #endif
 
-      if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password))
-      {
-        this->print.println(F("Connected using stored wifi.json credentials."));
-        this->ipSet();
-        return;
-      }
+    if (this->connectStoredCredentials(credentials.items[index].ssid, credentials.items[index].password, attemptMs))
+    {
+      this->print.println(F("Connected using stored WiFi credentials."));
+      this->ipSet();
+      return true;
     }
   }
 
-  this->startPortal(accessPointSsid);
+  return false;
 }
 
 void Manager::startPortal(const char *const accessPointSsid)
@@ -172,7 +242,7 @@ void Manager::startPortal(const char *const accessPointSsid)
 
   if (!connectSuccess)
   {
-    this->print.println(F("WiFiManager portal completed without connection."));
+    this->print.println(F("WiFiManager recovery portal timed out; continuing device startup."));
   }
 }
 
@@ -200,11 +270,13 @@ void Manager::startConfigPortal(const char *const accessPointSsid, unsigned long
 bool Manager::forgetSavedCredentials()
 {
   this->wifiManager.resetSettings();
-  if (LittleFS.exists(WIFI_CREDENTIALS_PATH))
+  const bool preferencesCleared = clearCredentialsFromPreferences();
+  bool mirrorCleared = true;
+  if (littleFsMounted && LittleFS.exists(WIFI_CREDENTIALS_PATH))
   {
-    return LittleFS.remove(WIFI_CREDENTIALS_PATH);
+    mirrorCleared = LittleFS.remove(WIFI_CREDENTIALS_PATH);
   }
-  return true;
+  return preferencesCleared && mirrorCleared;
 }
 
 IPAddress Manager::getAddress()
@@ -215,6 +287,8 @@ IPAddress Manager::getAddress()
     return this->wifi.softAPIP();
   case wifi_mode_t::WIFI_MODE_STA:
     return this->wifi.localIP();
+  case wifi_mode_t::WIFI_MODE_APSTA:
+    return (this->wifi.status() == WL_CONNECTED) ? this->wifi.localIP() : this->wifi.softAPIP();
   default:
     return INADDR_NONE;
   }
@@ -223,10 +297,10 @@ IPAddress Manager::getAddress()
 bool Manager::saveCredentials(const String &ssid, const String &password)
 {
   String trimmedSsid = ssid;
-  String trimmedPassword = password;
+  String checkedPassword = password;
   trimmedSsid.trim();
-  trimmedPassword.trim();
-  if (trimmedSsid.length() == 0 || trimmedPassword.length() == 0)
+  checkedPassword.trim();
+  if (trimmedSsid.length() == 0 || checkedPassword.length() == 0)
   {
     this->print.println(F("SSID and password are required."));
     return false;
@@ -238,20 +312,13 @@ bool Manager::saveCredentials(const String &ssid, const String &password)
   CredentialList updated;
   updated.count = 0;
 
-  updated.items[updated.count++] = {trimmedSsid, trimmedPassword};
+  updated.items[updated.count++] = {trimmedSsid, password};
   for (size_t i = 0; i < credentials.count; ++i)
   {
     if (credentials.items[i].ssid != trimmedSsid && updated.count < MAX_SAVED_WIFI_NETWORKS)
     {
       updated.items[updated.count++] = credentials.items[i];
     }
-  }
-
-  File file = LittleFS.open(WIFI_CREDENTIALS_PATH, "w");
-  if (!file)
-  {
-    this->print.println(F("Failed to open wifi.json for writing."));
-    return false;
   }
 
   String payload = "{\"networks\":[";
@@ -269,9 +336,34 @@ bool Manager::saveCredentials(const String &ssid, const String &password)
   }
   payload += "]}";
 
-  const size_t written = file.print(payload);
-  file.close();
-  return written == payload.length();
+  if (!saveCredentialsToPreferences(payload))
+  {
+    this->print.println(F("Failed to save WiFi credentials to NVS."));
+    return false;
+  }
+
+  // Keep a LittleFS mirror for backward compatibility and diagnostics. The NVS
+  // copy remains authoritative because uploading a filesystem image erases this file.
+  if (littleFsMounted)
+  {
+    File file = LittleFS.open(WIFI_CREDENTIALS_PATH, "w");
+    if (!file)
+    {
+      this->print.println(F("Warning: failed to mirror WiFi credentials to wifi.json."));
+    }
+    else
+    {
+      file.print(payload);
+      file.close();
+    }
+  }
+  return true;
+}
+
+bool Manager::hasSavedCredentials()
+{
+  return loadCredentialsFromPreferences().length() > 0 ||
+         (littleFsMounted && LittleFS.exists(WIFI_CREDENTIALS_PATH));
 }
 
 bool Manager::loadCredentials(String &ssid, String &password)
@@ -290,20 +382,26 @@ bool Manager::loadCredentials(String &ssid, String &password)
 bool Manager::loadCredentialsList(CredentialList &credentials)
 {
   credentials.count = 0;
-  if (!LittleFS.exists(WIFI_CREDENTIALS_PATH))
+  String content = loadCredentialsFromPreferences();
+  if (content.length() == 0 && littleFsMounted && LittleFS.exists(WIFI_CREDENTIALS_PATH))
+  {
+    File file = LittleFS.open(WIFI_CREDENTIALS_PATH, "r");
+    if (!file)
+    {
+      this->print.println(F("Failed to open wifi.json for reading."));
+      return false;
+    }
+    content = file.readString();
+    file.close();
+    if (content.length() > 0)
+    {
+      saveCredentialsToPreferences(content);
+    }
+  }
+  if (content.length() == 0)
   {
     return false;
   }
-
-  File file = LittleFS.open(WIFI_CREDENTIALS_PATH, "r");
-  if (!file)
-  {
-    this->print.println(F("Failed to open wifi.json for reading."));
-    return false;
-  }
-
-  const String content = file.readString();
-  file.close();
 
   int searchPos = 0;
   while (credentials.count < MAX_SAVED_WIFI_NETWORKS)
@@ -335,8 +433,9 @@ bool Manager::loadCredentialsList(CredentialList &credentials)
     }
 
     loadedSsid.trim();
-    loadedPassword.trim();
-    if (loadedSsid.length() > 0 && loadedPassword.length() > 0)
+    String checkedPassword = loadedPassword;
+    checkedPassword.trim();
+    if (loadedSsid.length() > 0 && checkedPassword.length() > 0)
     {
       bool alreadyExists = false;
       for (size_t i = 0; i < credentials.count; ++i)
@@ -367,15 +466,16 @@ bool Manager::loadCredentialsList(CredentialList &credentials)
   String legacyPassword;
   if (!extractJsonString(content, "ssid", legacySsid) || !extractJsonString(content, "password", legacyPassword))
   {
-    this->print.println(F("wifi.json missing required keys."));
+    this->print.println(F("Stored WiFi credentials are missing required keys."));
     return false;
   }
 
   legacySsid.trim();
-  legacyPassword.trim();
-  if (legacySsid.length() == 0 || legacyPassword.length() == 0)
+  String checkedLegacyPassword = legacyPassword;
+  checkedLegacyPassword.trim();
+  if (legacySsid.length() == 0 || checkedLegacyPassword.length() == 0)
   {
-    this->print.println(F("wifi.json has invalid SSID/password."));
+    this->print.println(F("Stored WiFi credentials have an invalid SSID/password."));
     return false;
   }
 
@@ -386,13 +486,13 @@ bool Manager::loadCredentialsList(CredentialList &credentials)
 bool Manager::connectStoredCredentials(const String &ssid, const String &password, unsigned long timeoutMs)
 {
 #if (DEBUG_LEVEL > 0)
-  this->print.print(F("Attempting connection from wifi.json SSID: "));
+  this->print.print(F("Attempting connection using saved WiFi SSID: "));
   this->print.println(ssid);
 #endif
 
   this->wifi.begin(ssid.c_str(), password.c_str());
   const unsigned long startMs = millis();
-  while ((millis() - startMs) < timeoutMs)
+  while (!millisIntervalElapsed(millis(), startMs, timeoutMs))
   {
     if (this->wifi.status() == WL_CONNECTED)
     {
@@ -401,18 +501,29 @@ bool Manager::connectStoredCredentials(const String &ssid, const String &passwor
     delay(250);
   }
 
-  this->print.println(F("Stored wifi.json credentials failed to connect."));
-  this->wifi.disconnect(true, false);
+  this->print.println(F("Stored WiFi credentials failed to connect."));
+  this->wifi.disconnect(false, false);
   return false;
 }
 
 void Manager::ssidSaved()
 {
+  const String savedSsid = this->wifi.SSID();
+  const String savedPassword = this->wifi.psk();
 #if (DEBUG_LEVEL > 0)
   this->print.print(F("Network Saved with SSID: "));
-  this->print.print(this->wifi.SSID());
+  this->print.print(savedSsid);
   this->print.print(F("\n"));
 #endif
+
+  if (savedSsid.length() > 0 && savedPassword.length() > 0)
+  {
+    this->saveCredentials(savedSsid, savedPassword);
+  }
+  else
+  {
+    this->print.println(F("WiFi portal saved credentials, but SSID/password were not available for multi-network storage."));
+  }
 }
 
 void Manager::ipSet()
@@ -447,18 +558,64 @@ void Manager::apStarted()
   }
 }
 
-void WifiOTA::initLittleFS()
+bool WifiOTA::initLittleFS()
 {
-  if (!LittleFS.begin(true))
+  littleFsMounted = LittleFS.begin(false);
+  if (!littleFsMounted)
   {
-    Serial.println(F("An error occurred while mounting LittleFS."));
+    Serial.println(F("LittleFS mount failed. Filesystem unavailable; refusing to auto-format."));
+    Serial.println(F("Upload the LittleFS image or format explicitly during service."));
+    return false;
   }
-  else
+
+  printLittleFSDiagnostics(Serial);
+  return true;
+}
+
+bool WifiOTA::isLittleFSMounted()
+{
+  return littleFsMounted;
+}
+
+void WifiOTA::printLittleFSDiagnostics(Print &print)
+{
+  print.println(F("=== LittleFS diagnostics ==="));
+  print.print(F("Mounted: "));
+  print.println(littleFsMounted ? F("yes") : F("no"));
+  if (!littleFsMounted)
   {
-#if (DEBUG > 1)
-    Serial.println("LittleFS mounted successfully.");
-#endif
+    print.println(F("============================"));
+    return;
   }
+
+  print.print(F("Total bytes: "));
+  print.println(LittleFS.totalBytes());
+  print.print(F("Used bytes: "));
+  print.println(LittleFS.usedBytes());
+
+  File root = LittleFS.open("/");
+  if (!root || !root.isDirectory())
+  {
+    print.println(F("Unable to list filesystem root."));
+    print.println(F("============================"));
+    return;
+  }
+
+  File file = root.openNextFile();
+  if (!file)
+  {
+    print.println(F("Filesystem root is empty. Upload the LittleFS image."));
+  }
+  while (file)
+  {
+    print.print(F("  "));
+    print.print(file.name());
+    print.print(F(" ("));
+    print.print(file.size());
+    print.println(F(" bytes)"));
+    file = root.openNextFile();
+  }
+  print.println(F("============================"));
 }
 
 String WifiOTA::processor(const String &var)

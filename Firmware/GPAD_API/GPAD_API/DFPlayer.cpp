@@ -1,6 +1,8 @@
 #include "DFPlayer.h"
 #include "gpad_utility.h"
 #include "debug_macros.h"
+#include "operator_settings.h"
+#include "setup_status.h"
 #include <DFRobotDFPlayerMini.h>
 
 DFRobotDFPlayerMini dfPlayer;
@@ -8,9 +10,13 @@ extern HardwareSerial uartSerial2;
 
 const int LED_PIN = 13; // Krake
 const int nDFPlayer_BUSY = 4; // active LOW BUSY pin from DFPlayer
+const int MIN_VOLUME_PERCENT = 1;
+const int MAX_VOLUME_PERCENT = 100;
+const int MIN_DFPLAYER_VOLUME = 1;
+const int MAX_DFPLAYER_VOLUME = 30;
 
 bool isDFPlayerDetected = false;
-int volumeDFPlayer = 20; // Range: 1 to 30
+int volumeDFPlayer = 20; // Range: 1 to 100 (%)
 int numberFilesDF = 0;   // Number of audio files found on SD card
 extern bool currentlyMuted;
 char command;
@@ -80,17 +86,21 @@ void checkSerial(void)
 
     if (command == '+')
     {
-      dfPlayer.volumeUp();
+      setVolume(volumeDFPlayer + 1);
+      saveVolumeSetting(volumeDFPlayer);
       DBG_PRINT(F("Current volume: "));
-      DBG_PRINTLN(dfPlayer.readVolume());
+      DBG_PRINT(volumeDFPlayer);
+      DBG_PRINTLN(F("%"));
       menu_opcoes();
     }
 
     if (command == '-')
     {
-      dfPlayer.volumeDown();
+      setVolume(volumeDFPlayer - 1);
+      saveVolumeSetting(volumeDFPlayer);
       DBG_PRINT(F("Current volume: "));
-      DBG_PRINTLN(dfPlayer.readVolume());
+      DBG_PRINT(volumeDFPlayer);
+      DBG_PRINTLN(F("%"));
       menu_opcoes();
     }
 
@@ -115,7 +125,7 @@ namespace
 void delayWithYield(const unsigned long durationMs)
 {
   const unsigned long startMs = millis();
-  while ((millis() - startMs) < durationMs)
+  while (!millisIntervalElapsed(millis(), startMs, durationMs))
   {
     delay(10);
     yield();
@@ -138,6 +148,7 @@ void setupDFPlayer()
     DBG_PRINTLN(F("DFPlayer Mini not detected or not responding."));
     DBG_PRINTLN(F("Check wiring, power, SD card, and file names."));
     isDFPlayerDetected = false;
+    setSetupError(SETUP_ERROR_DFPLAYER);
     return;
   }
 
@@ -156,7 +167,7 @@ void setupDFPlayer()
     DBG_PRINTLN(F("Warning: unusual DFPlayer state. Possible clone/module variant, continuing test."));
   }
 
-  dfPlayer.volume(volumeDFPlayer);
+  setVolume(volumeDFPlayer);
   delayWithYield(300);
 
   numberFilesDF = dfPlayer.readFileCounts();
@@ -166,25 +177,24 @@ void setupDFPlayer()
   if (numberFilesDF <= 0)
   {
     DBG_PRINTLN(F("Warning: no audio files detected. Use FAT32 SD card and files like 0001.mp3, 0002.mp3."));
+    setSetupError(SETUP_ERROR_DFPLAYER_FILES);
   }
 
-  DBG_PRINTLN(F("DFPlayer startup test: playing track 1."));
-  dfPlayer.play(1);
-  delayWithYield(3000); // Give enough time to hear output without starving the scheduler/WDT.
-
-  displayDFPlayerStats();
-  menu_opcoes();
+  // Do not play a startup track or run slow diagnostic queries during setup.
+  // The device remains available even if optional audio hardware is missing.
+  DBG_PRINTLN(F("DFPlayer initialized without blocking startup playback."));
 }
 
-void setVolume(int oneToThirty)
+void setVolume(int oneToHundred)
 {
-  if (oneToThirty < 1) oneToThirty = 1;
-  if (oneToThirty > 30) oneToThirty = 30;
+  if (oneToHundred < MIN_VOLUME_PERCENT) oneToHundred = MIN_VOLUME_PERCENT;
+  if (oneToHundred > MAX_VOLUME_PERCENT) oneToHundred = MAX_VOLUME_PERCENT;
 
-  volumeDFPlayer = oneToThirty;  
+  volumeDFPlayer = oneToHundred;
+  const int dfpVolume = map(volumeDFPlayer, MIN_VOLUME_PERCENT, MAX_VOLUME_PERCENT, MIN_DFPLAYER_VOLUME, MAX_DFPLAYER_VOLUME);
   if (isDFPlayerDetected)
   {
-    dfPlayer.volume(volumeDFPlayer);
+    dfPlayer.volume(dfpVolume);
   }
 }
 
@@ -318,20 +328,20 @@ void playNotBusy()
   }
 }
 
-void playNotBusyLevel(int level)
+bool playNotBusyLevel(int level)
 {
-  if (!isDFPlayerDetected) return;
+  if (!isDFPlayerDetected) return false;
 
   if (currentlyMuted)
   {
     DBG_PRINTLN(F("Muted: skipping DFPlayer playback."));
-    return;
+    return false;
   }
 
-     if (level <= 0)
+  if (level <= 0)
   {
     DBG_PRINTLN(F("Silent level: skipping DFPlayer playback."));
-    return;
+    return false;
   }
 
   DBG_PRINTLN(F("playNotBusyLevel"));
@@ -343,6 +353,7 @@ void playNotBusyLevel(int level)
   else
   {
     DBG_PRINTLN(F("DFPlayer is still busy/playing."));
+    return false;
   }
 
   if (dfPlayer.available())
@@ -350,8 +361,9 @@ void playNotBusyLevel(int level)
     printDetail(dfPlayer.readType(), dfPlayer.read());
   }
 
-  if (!isDFPlayerDetected) return;
+  if (!isDFPlayerDetected) return false;
 
+  return true;
 }
 
 bool playAlarmLevel(int alarmNumberToPlay)
@@ -367,7 +379,7 @@ bool playAlarmLevel(int alarmNumberToPlay)
   static unsigned long timer = 0;
   const unsigned long delayPlayLevel = 100;
 
-  if (millis() - timer <= delayPlayLevel)
+  if (!millisIntervalElapsed(millis(), timer, delayPlayLevel + 1))
   {
     return false;
   }

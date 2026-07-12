@@ -1,5 +1,6 @@
 #include "mqtt_handler.h"
 #include "debug_macros.h"
+#include "spi_broker_mirror.h"
 #include <Arduino.h>
 #include <string.h>
 
@@ -32,6 +33,10 @@ bool queueMqtt(const char *topic, const char *payload, bool retain)
   {
     return false;
   }
+
+  // SPI is an independent local transport: mirror every broker-bound message
+  // even while WiFi/MQTT are offline or the MQTT queue is full.
+  queueSpiBrokerMirror(topic, payload, retain);
 
   for (uint8_t i = 0; i < MQTT_QUEUE_SIZE; i++)
   {

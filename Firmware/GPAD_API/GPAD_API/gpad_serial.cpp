@@ -23,6 +23,8 @@
 #include "alarm_api.h"
 #include "GPAD_HAL.h"
 #include "debug_macros.h"
+
+extern void applyInterpretedCommand(const InterpretedCommand &result, Stream *serialport);
 // #include <Arduino.h>
 
 extern bool currentlyMuted;
@@ -42,7 +44,7 @@ where C is an character, and D is a single digit.
 
 // Note: The buffer "buf" used here might be more safely made
 // a parameter passed in from the caller.
-void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
+void processSerial(Stream *debugPort, Stream *inputPort)
 {
   if (debugPort == nullptr || inputPort == nullptr)
   {
@@ -72,20 +74,26 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
       buf[rlen] = '\0';
 
 #if (GPAD_DEBUG > 0)
-      debugPort->print(F("I received: "));
-      debugPort->print(rlen);
-      for (int i = 0; i < rlen; i++)
+      if (rlen == 0 || buf[0] != 'j')
       {
-        debugPort->print(buf[i]);
+        debugPort->print(F("I received: "));
+        debugPort->print(rlen);
+        for (int i = 0; i < rlen; i++)
+        {
+          debugPort->print(buf[i]);
+        }
+        debugPort->println();
       }
-      debugPort->println();
 #endif
 
       if (rlen > 0)
       {
-        interpretBuffer(buf, rlen, debugPort, client);
-        requestAlarmRefresh(debugPort);
-        printAlarmState(debugPort);
+        const InterpretedCommand result = interpretBuffer(buf, rlen, debugPort);
+        applyInterpretedCommand(result, debugPort);
+        if (!result.responseIsJson)
+        {
+          printAlarmState(debugPort);
+        }
         processedCommand = true;
       }
       writeIndex = 0;
@@ -100,6 +108,7 @@ void processSerial(Stream *debugPort, Stream *inputPort, PubSubClient *client)
     {
       // Overflow guard: reset buffer if a line grows too long.
       writeIndex = 0;
+      cancelPendingAlarmAudio();
       printError(debugPort);
       processedCommand = true;
     }
