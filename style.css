@@ -1,0 +1,177 @@
+:root {
+  --green: #2e6842;
+  --cream: #fffdf7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--green);
+}
+
+body {
+  margin: 0;
+  background: var(--green);
+  color: var(--cream);
+  font-family: Inter, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px clamp(14px, 4vw, 64px);
+  background: rgba(46, 104, 66, 0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.22);
+}
+
+.site-title {
+  color: var(--cream);
+  text-decoration: none;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  line-height: 1;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 22px);
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--cream);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.github-link {
+  background: var(--cream);
+  color: var(--green);
+  padding: 7px 13px;
+  border-radius: 999px;
+  text-decoration: none !important;
+}
+
+.visual-section {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  background: var(--green);
+  line-height: 0;
+  scroll-margin-top: 72px;
+}
+
+.visual-section img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 0;
+}
+
+.hotspot {
+  position: absolute;
+  z-index: 10;
+  display: block;
+  border-radius: 8px;
+}
+
+.hotspot:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  background: rgba(255,255,255,0.16);
+}
+
+/* Hero GitHub button area in section 1 */
+.hero-github {
+  left: 5.1%;
+  top: 64.5%;
+  width: 14.6%;
+  height: 5.2%;
+}
+
+/* PubInv/krake button area in open-source section */
+.open-github {
+  left: 16.1%;
+  top: 68.2%;
+  width: 29.2%;
+  height: 7.5%;
+}
+
+/* Real selectable content for accessibility and SEO */
+.section-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  nav a {
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .visual-section {
+    scroll-margin-top: 106px;
+  }
+}
+
+
+/* Deploy fix: reserve image height and avoid blank-looking anchor jumps */
+.visual-section img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #2e6842;
+}
+
+.visual-section {
+  min-height: auto;
+  background: #2e6842;
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 560px;
+}
+
+/* For hash links like /#team */
+#team {
+  scroll-margin-top: 72px;
+}
+
+@media (max-width: 720px) {
+  #team {
+    scroll-margin-top: 110px;
+  }
+}

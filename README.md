@@ -1,19 +1,8 @@
-# Krake™
+# Krake 
 
-Based upon the Public Invention General Purpose Alarm Device (GPAD), the Krake is a wireless annunciator and alarm device designed to alert humans to conditions requiring attention. The Krake combines visual, audible, serial, and network alarm communication into an open-source hardware and firmware platform.
+Website https://pubinv.github.io/krake/
 
-The Krake extends the original GPAD architecture with:
-
-* ESP32-based networking
-* MQTT communication
-* Rotary encoder navigation
-* 20x4 LCD interface
-* DFPlayer audio playback
-* OTA firmware updates
-* Configurable COM port
-* Alarm queue handling
-* GPAP alarm messaging
-
+ 
 [HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
 
 ---
