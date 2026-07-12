@@ -1,15 +1,8 @@
-# Krake website
+# Krake 
 
-This is a static GitHub Pages-ready website.
+Website https://pubinv.github.io/krake/
 
-Upload these files to the repository root:
-
-- `index.html`
-- `style.css`
-- `favicon.ico`
-- `assets/`
-
-The design is split into real website sections using the Canva/PDF exported visuals, with working navigation and GitHub links.
+ 
 [HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
 
 ---
