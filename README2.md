@@ -17,6 +17,40 @@ Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake i
 ## Quick Start
 How to get one running — buy/build/flash — in as few steps as possible?
 
+#### LCD UI + navigation
+ 
+Planned LCD Layout:
+
+```text
+Q:+ NEXT        W B M ⚙
+CRIT Pump Failure
+ID:123 Temp High
+Ack  Dismiss  Shelve
+```
+
+Rotary Encoder: 
+```text
+Rotate: Navigate alarms or menu entries
+Short Press: Select item
+Long Press: Open Settings Menu
+ ```
+
+Alarm Actions:
+```text
+Rotatary encoder to enter action selection
+Acknowledge, Dismiss or Shelve
+ ```
+
+Settings Menu: 
+```text
+The local settings menu includes:
+* Volume Level
+* Mute Duration
+* COM Setup
+* Device Reset
+* Exit Menu
+ ```
+
 ## Table of Contents
 - About Krake & Example Use Cases
 - Features
@@ -55,12 +89,11 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 | Persistent COM configuration    | Interfaces to external controllers through a DB9 Female RS-232 DCE connection. Configurable baud rate (1200,2400,4800, 9600, 19200, 38400, 57600, 115200), RTS/CTS hardware flow control and LCD-based configuration menu    |
 | Speaker   |   ?  |
 | GPAP message parsing   |   ?  |
-| Alarm Acknowledgement workflow, queue handlings and state persistence    |    ? |
 | LittleFS Configuration storage    | ?    |
 | SPI alarm input support    | ? |  
 
 ## Hardware
-Enlarged enclosure to accomodate larger speaker ? whats changed
+comparison?
 
 | Krake™ rev2 | Krake™ rev1|
 | -------- | ------- |
@@ -86,40 +119,6 @@ oa{1234}   -> Acknowledge
 od{1234}   -> Dismiss
 os{1234}   -> Shelve
 ```
-- LCD UI + navigation
-  
-Planned LCD Layout:
-
-```text
-Q:+ NEXT        W B M ⚙
-CRIT Pump Failure
-ID:123 Temp High
-Ack  Dismiss  Shelve
-```
-
-Rotary Encoder: 
-```text
-Rotate: Navigate alarms or menu entries
-Short Press: Select item
-Long Press: Open Settings Menu
- ```
-
-Alarm Actions:
-```text
-Rotatary encoder to enter action selection
-Acknowledge, Dismiss or Shelve
- ```
-
-Settings Menu: 
-```text
-The local settings menu includes:
-* Volume Level
-* Mute Duration
-* COM Setup
-* Device Reset
-* Exit Menu
- ```
-
 
 ## Building Your Own
 - Instructions for testing and assembly of Krake hardware:
@@ -141,27 +140,34 @@ The local settings menu includes:
 [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
 ## Credits & Mentorship
-The Krake has been developed primarily by volunteer engineer Nagham Kheir, with mentorship and oversight from volunteer Inventional Coach Lee Erickson.
+The Krake has been developed primarily by volunteer engineer Nagham Kheir, with mentorship and oversight from volunteer Inventional Coach Lee Erickson and a group of volunteers from around the globe. 
 
 [Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
 
 Nagham Kheir: Invention Coach
+
 Forrest Lee Erickson: Invention Coach
+
 Robert L. Read: Invention Coach
+
 Yehia Shalaby: Public Inventor
+
 Courtney Ludick: Public Inventor
+
 Yukti: Public Inventor
+
 Juhandre Knoetze: Public Inventor
 
 
-## Trust & Credentials
+## Certifications
 
 <img width="100" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" />
 
 Krake hardware has been certified by the Open Source Hardware Association (OSHWA):
-- OSHWA certification listing:
+ OSHWA certification listing:
 [OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
-- Certification UID: ``` US002818 ```
+
+Certification UID: ``` US002818 ```
  
 ## References & Further Reading
 Website: https://pubinv.github.io/krake/
@@ -172,5 +178,12 @@ User Manual: [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFm
 
 Developers Manual: [draft developers manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?usp=sharing).
 
-Hollifield, Bill R., and Eddie Habibi. *Alarm Management: A Comprehensive Guide.* ISA, 2010.
+OSHWA certification listing:
+[OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
+
+[Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
+
+[Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
+
+[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
 
