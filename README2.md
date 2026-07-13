@@ -41,13 +41,14 @@ Krake hardware has been certified by the Open Source Hardware Association (OSHWA
 - OSHWA certification listing:
 [OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
 - Certification UID: ``` US002818 ```
-
+ 
+## References & Further Reading
 Website: https://pubinv.github.io/krake/
  
 HardwareX Article: [HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
- 
 
-  
-## References & Further Reading
+User Manual: [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing) 
+
+Developers Manual: [draft developers manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?usp=sharing).
 
 ## License
