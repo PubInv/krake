@@ -1,6 +1,7 @@
 # Krake™
-[main photo]
-One-paragraph pitch: what it is, who it's for, why it exists
+ <img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" />
+
+ One-paragraph pitch: what it is, who it's for, why it exists
 
 ## Quick Start
 How to get one running — buy/build/flash — in as few steps as possible
