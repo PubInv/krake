@@ -32,6 +32,17 @@ How to get one running — buy/build/flash — in as few steps as possible
 (link to WorkflowProcedure.md)
 
 ## Credits & Mentorship
+The Krake has been developed primarily by volunteer engineer Nagham Kheir, with mentorship and oversight from volunteer Inventional Coach Lee Erickson.
+
+[Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
+
+Nagham Kheir: Invention Coach
+Forrest Lee Erickson: Invention Coach
+Robert L. Read: Invention Coach
+Yehia Shalaby: Public Inventor
+Courtney Ludick: Public Inventor
+Yukti: Public Inventor
+Juhandre Knoetze: Public Inventor
 
 
 ## Trust & Credentials
