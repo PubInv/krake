@@ -90,17 +90,16 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 | Fully Open Source    | AGPL firmware, CERN OHL Hardware    |
 | Persistent COM configuration    | Interfaces to external controllers through a DB9 Female RS-232 DCE connection. Configurable baud rate (1200,2400,4800, 9600, 19200, 38400, 57600, 115200), RTS/CTS hardware flow control and LCD-based configuration menu    |
 | Speaker   |    3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz  |
-| GPAP message parsing   |   ?  |
-| LittleFS Configuration storage    | ?    |
-| SPI alarm input support    | ? |  
+| GPAP message parsing   |  Alarm message are structured, message type, severity digit (0-5), optional message id, optional alarm type deisgnator and optional content up to 80 characters  |
+| SPI alarm input support    | ALlows processing of alert signals communicated or wired through SPI data lines to recognise fault or warning flags in connected sensors |  
 
 ## Hardware
-comparison?
-
 | Krake™ rev2 | Krake™ rev1|
 | -------- | ------- |
 |<img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" /> | <img   height="242" alt="image" src="https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07" /> |
 | 3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz.| 28mm Speaker|
+|dimensions|dimensions|
+|functionality?|functionality|
 
 
 ## Firmware
@@ -192,6 +191,8 @@ The team behind Krake: [Mentorship and Teamwork: The Story of the Krake](https:/
 Krake workflow: [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
 Build your own: [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+
+GPAP:  https://github.com/PubInv/gpap
 
 #### Public Invention
 
