@@ -211,5 +211,7 @@ GPAP:  https://github.com/PubInv/gpap
 
 ## License
 Firmware: GNU Affero GPL 3.0
+
 Hardware: CERN Open Hardware Licence Version 2 - Strongly Reciprocal
+
 Krake™ is a trademark of Public Invention.
