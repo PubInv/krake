@@ -15,7 +15,7 @@ Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake i
 
 
 ## Quick Start
-How to get one running — buy/build/flash — in as few steps as possible?
+Purchasable from https://www.pubinv.org/shop/ - user and devlopers manuals can be found in the references and further reading section 
 
 #### LCD UI + navigation
  
@@ -50,13 +50,15 @@ The local settings menu includes:
 * Device Reset
 * Exit Menu
  ```
+#### Build your own
+To build your own please see instructions for testing and assembly of Krake hardware:
+[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
 
 ## Table of Contents
 - About Krake & Example Use Cases
 - Features
 - Hardware
 - Firmware
-- Building Your Own
 - Roadmap
 - Contributing
 - Credits & Mentorship
@@ -87,7 +89,7 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 | HL7 Compatible    | Designed to work with medical data standards    |
 | Fully Open Source    | AGPL firmware, CERN OHL Hardware    |
 | Persistent COM configuration    | Interfaces to external controllers through a DB9 Female RS-232 DCE connection. Configurable baud rate (1200,2400,4800, 9600, 19200, 38400, 57600, 115200), RTS/CTS hardware flow control and LCD-based configuration menu    |
-| Speaker   |   ?  |
+| Speaker   |    3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz  |
 | GPAP message parsing   |   ?  |
 | LittleFS Configuration storage    | ?    |
 | SPI alarm input support    | ? |  
@@ -98,6 +100,7 @@ comparison?
 | Krake™ rev2 | Krake™ rev1|
 | -------- | ------- |
 |<img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" /> | <img   height="242" alt="image" src="https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07" /> |
+| 3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz.| 28mm Speaker|
 
 
 ## Firmware
@@ -119,11 +122,6 @@ oa{1234}   -> Acknowledge
 od{1234}   -> Dismiss
 os{1234}   -> Shelve
 ```
-
-## Building Your Own
-- Instructions for testing and assembly of Krake hardware:
-[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
-
 
 ## Roadmap (Future Features)
 * Advanced alarm queue management
@@ -171,7 +169,15 @@ Certification UID: ``` US002818 ```
  
 ## References & Further Reading
 Website: https://pubinv.github.io/krake/
- 
+
+Brochure: [Copy of Krake Brochure.pdf](https://github.com/user-attachments/files/29981489/Copy.of.Krake.Brochure.pdf)
+
+Logo: <img width="100" height="100" alt="KRAKE 2" src="https://github.com/user-attachments/assets/cd340751-52a8-465b-9b9a-d9dfb97265fd" />
+
+Krake Repo: https://github.com/PubInv/krake
+
+Wiki: https://github.com/PubInv/krake/wiki
+
 HardwareX Article: [HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
 
 User Manual: [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing) 
@@ -181,9 +187,16 @@ Developers Manual: [draft developers manual](https://docs.google.com/document/d/
 OSHWA certification listing:
 [OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
 
-[Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
+The team behind Krake: [Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
 
-[Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
+Krake workflow: [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
-[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+Build your own: [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+
+#### Public Invention
+
+
+- Github repo: https://github.com/PubInv
+- Website: https://www.pubinv.org/
+- Products page: https://www.pubinv.org/shop/
 
