@@ -1,16 +1,39 @@
+<img width="2000" height="2000" alt="KRAKE 2" src="https://github.com/user-attachments/assets/0f4e3910-4cee-44f4-986c-50cb737b0a3f" />
+
+
 # Krake™
+
 ## A wireless alarm device purpose-built for life's critical moments
  <img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" />
+ 
 Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake is a wireless alarm device with audio visual capabilitites deisgned to alert a human to something needing attention.
 
 ## Quick Start
-How to get one running — buy/build/flash — in as few steps as possible
+How to get one running — buy/build/flash — in as few steps as possible?
 
 ## Table of Contents
+- About Krake & Example Use Cases
+- Features
+- Hardware
+- Firmware
+- Building Your Own
+- Roadmap
+- Contributing
+- Credits & Mentorship
+- Trust & Credentials
+- References & Further Reading
 
-## Why Krake (merged: origin story + use cases, trimmed)
+## About Krake & Example Use Cases
+The hope was to develop the initial design for a wireless alarm device to alert nearby parties of a particular state. 
+We developed the name of this invention team based on a Crake: a bird with a distinctive, slightly alarming cry. We changed the spelling as a joke. “Flaycrake” is an old term for a scarecrow, which also aligned with our mission.
 
-## Features (single consolidated list)
+Care at home: Alert an elderly person living alone to a fall or blood pressure drop — giving family peace of mind from anywhere.
+
+Medical Equipment: For ventilators and critical devices, Krake provides a dedicated alarm channel for life-threatening mechanical failures.
+
+IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS fails, or network connectivity drops — a physical alarm that doesn't rely on the very infrastructure it's monitoring.
+
+## Features
 
 | Feature    | Details |
 | -------- | ------- |
@@ -24,30 +47,92 @@ How to get one running — buy/build/flash — in as few steps as possible
 | HL7 Compatible    | Designed to work with medical data standards    |
 | Fully Open Source    | AGPL firmware, CERN OHL Hardware    |
 | Persistent COM configuration    | Interfaces to external controllers through a DB9 Female RS-232 DCE connection. Configurable baud rate (1200,2400,4800, 9600, 19200, 38400, 57600, 115200), RTS/CTS hardware flow control and LCD-based configuration menu    |
-
+| Speaker   |   ?  |
 | GPAP message parsing   |   ?  |
 | Alarm Acknowledgement workflow, queue handlings and state persistence    |    ? |
 | LittleFS Configuration storage    | ?    |
 | SPI alarm input support    | ? |  
 
 ## Hardware
-- Photos (rev1, rev2, captions explaining what changed)
-- Power options
-- COM port specs
+Enlarged enclosure to accomodate larger speaker ? whats changed
+
+| Krake™ rev2 | Krake™ rev1|
+| -------- | ------- |
+|<img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" /> | <img   height="242" alt="image" src="https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07" /> |
+
 
 ## Firmware
-- Architecture table
-- MQTT / GPAP protocol reference
+| Module               | Purpose                            |
+| -------------------- | ---------------------------------- |
+| `alarm_api.*`        | Abstract alarm state machine       |
+| `GPAD_HAL.*`         | Hardware abstraction layer         |
+| `GPAD_menu.*`        | Rotary encoder and LCD menu system |
+| `mqtt_handler.*`     | MQTT publishing and GPAP responses |
+| `gpad_serial.*`      | Serial protocol parser             |
+| `DFPlayer.*`         | Audio playback subsystem           |
+| `WiFiManagerOTA.*`   | Wi-Fi management and OTA           |
+| `InterruptRotator.*` | Rotary encoder interrupt handling  |
+
+- Example GPAP Responses
+
+```text
+oa{1234}   -> Acknowledge
+od{1234}   -> Dismiss
+os{1234}   -> Shelve
+```
 - LCD UI + navigation
+  
+Planned LCD Layout:
+
+```text
+Q:+ NEXT        W B M ⚙
+CRIT Pump Failure
+ID:123 Temp High
+Ack  Dismiss  Shelve
+```
+
+Rotary Encoder: 
+```text
+Rotate: Navigate alarms or menu entries
+Short Press: Select item
+Long Press: Open Settings Menu
+ ```
+
+Alarm Actions:
+```text
+Rotatary encoder to enter action selection
+Acknowledge, Dismiss or Shelve
+ ```
+
+Settings Menu: 
+```text
+The local settings menu includes:
+* Volume Level
+* Mute Duration
+* COM Setup
+* Device Reset
+* Exit Menu
+ ```
+
 
 ## Building Your Own
-- BOM / test & assembly procedure (as a public link)
-- MockingKrake prototype notes
+- Instructions for testing and assembly of Krake hardware:
+[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+
 
 ## Roadmap (Future Features)
+* Advanced alarm queue management
+* Enhanced LCD UI animations and icons
+* Bluetooth and BLE alarm forwarding
+* Mesh networking support
+* Remote firmware fleet management
+* Local event history logging
+* Expanded GPAP/HL7 interoperability
+* Power optimization modes
+* Alarm escalation workflows
 
 ## Contributing
-(link to WorkflowProcedure.md)
+[Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
 ## Credits & Mentorship
 The Krake has been developed primarily by volunteer engineer Nagham Kheir, with mentorship and oversight from volunteer Inventional Coach Lee Erickson.
@@ -81,4 +166,5 @@ User Manual: [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFm
 
 Developers Manual: [draft developers manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?usp=sharing).
 
-## License
+Hollifield, Bill R., and Eddie Habibi. *Alarm Management: A Comprehensive Guide.* ISA, 2010.
+
