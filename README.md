@@ -1,135 +1,27 @@
-# Krake 
+<img width="2000" height="2000" alt="KRAKE 2" src="https://github.com/user-attachments/assets/0f4e3910-4cee-44f4-986c-50cb737b0a3f" />
 
-Website https://pubinv.github.io/krake/
 
+# Krake™
+
+## A wireless alarm device purpose-built for life's critical moments
+ <img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" />
  
-[HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
+Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake is a wireless alarm device with fully customiseable audio visual capabilitites designed to alert a human to something needing attention.
 
----
+#### How it works?
+1. Condition detected- A sensor triggers an alarm event
+2. Krake Receives it- Alert arrives wirelessly via MQTT over local network or internet
+3. You're alerted- Lights flash, audio plays and acknowledgement is sent back
 
-# User and Developer Manuals
 
-We have a [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing) and
-a [draft developers manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?usp=sharing).
+## Quick Start
+Purchasable from https://www.pubinv.org/shop/ 
 
-# Open Source Hardware Certification
+User manuals can be found in the references and further reading section 
 
-Krake hardware has been certified by the Open Source Hardware Association (OSHWA).
-
-Certification UID:
-
-```text
-US002818
-```
-
-OSHWA certification listing:
-[OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
-
- <img width="100" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" /> 
+#### LCD UI + navigation
  
----
-
-# Krake™ rev2
-
- <img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" /> 
-
----
-
-# Krake™ rev1
-
-<img   height="242" alt="image" src="https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07" /> 
- 
----
-
-# Mentorship and Development
-
-The Krake has been developed primarily by volunteer engineer Nagham Kheir, with mentorship and oversight from volunteer Inventional Coach Lee Erickson.
-
-[Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
-
----
-
-# Use Cases
-
-The Krake is intended to inform human operators of alarm conditions requiring attention.
-
-## Healthcare and Assisted Living
-
-One intended use case is monitoring elderly individuals or patients living independently. A Krake device mounted within a residence may announce:
-
-* Falls
-* Blood pressure abnormalities
-* Sensor-triggered emergencies
-* Medical equipment alarms
-
-The Krake is intended to support interoperability with the HL7 medical standard and the open-source ADaM (Alarm Dialog Management) project.
-
-## Medical Devices
-
-The Krake may function as a dedicated annunciator for sophisticated medical equipment such as ventilators or patient monitoring systems.
-
-Examples include:
-
-* Ventilator hose disconnects
-* Power failures
-* Pressure abnormalities
-* Mechanical faults
-
-The Krake focuses on annunciation and communication, while upstream systems determine alarm conditions.
-
-## Industrial and General Annunciation
-
-Potential applications include:
-
-* Schools
-* Factories
-* Industrial process monitoring
-* Smart buildings
-* Emergency notification systems
-* Accessibility alerting systems
-
----
-
-# Current Firmware Features
-
-The current Krake firmware includes:
-
-* Wi-Fi station + captive portal support
-* MQTT alarm communication
-* GPAP message parsing
-* Rotary encoder navigation
-* LCD menu system
-* Alarm acknowledgement workflow
-* Alarm queue handling
-* DFPlayer audio annunciation
-* Persistent COM configuration
-* Mute timeout handling
-* OTA firmware updates
-* LittleFS configuration storage
-* Alarm state persistence
-* RS-232 controller interface
-* Hardware flow control support
-* LED annunciation patterns
-* SPI alarm input support
-
----
-
-# Smart LCD User Interface
-
-The Krake includes a 20x4 I²C LCD interface integrated with a rotary encoder and custom menu system.
-
-## LCD Features
-
-* Real-time alarm display
-* Alarm queue indication
-* Wi-Fi status indication
-* MQTT broker status indication
-* Volume and mute display
-* Alarm acknowledgement actions
-* Rotary encoder navigation
-* Settings configuration menu
-
-## Planned LCD Layout
+Planned LCD Layout:
 
 ```text
 Q:+ NEXT        W B M ⚙
@@ -138,197 +30,81 @@ ID:123 Temp High
 Ack  Dismiss  Shelve
 ```
 
-## LCD Navigation
+Rotary Encoder: 
+```text
+Rotate: Navigate alarms or menu entries
+Short Press: Select item
+Long Press: Open Settings Menu
+ ```
 
-### Rotary Encoder
+Alarm Actions:
+```text
+Rotatary encoder to enter action selection
+Acknowledge, Dismiss or Shelve
+ ```
 
-* Rotate:
-
-  * Navigate alarms or menu entries
-* Short Press:
-
-  * Select item
-* Long Press:
-
-  * Open Settings Menu
-
-### Alarm Actions
-
-When an alarm is active:
-
-* Rotate encoder to enter action selection
-* Available actions:
-
-  * Acknowledge
-  * Dismiss
-  * Shelve
-
-### Settings Menu
-
+Settings Menu: 
+```text
 The local settings menu includes:
-
 * Volume Level
 * Mute Duration
 * COM Setup
 * Device Reset
 * Exit Menu
+ ```
+#### Build your own
+To build your own please see instructions for testing and assembly of Krake hardware:
+[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
 
----
+## Table of Contents
+- About Krake & Example Use Cases
+- Features
+- Hardware
+- Firmware
+- Roadmap
+- Contributing
+- Credits & Mentorship
+- Trust & Credentials
+- References & Further Reading
 
-# Wi-Fi Connectivity
+## About Krake & Example Use Cases
+The hope was to develop the initial design for a wireless alarm device to alert nearby parties of a particular state. 
+We developed the name of this invention team based on a Crake: a bird with a distinctive, slightly alarming cry. We changed the spelling as a joke. “Flaycrake” is an old term for a scarecrow, which also aligned with our mission.
 
-The Krake normally operates as a Wi-Fi station connected to a local network.
+Care at home: Alert an elderly person living alone to a fall or blood pressure drop — giving family peace of mind from anywhere.
 
-For setup and provisioning, the Krake can create a temporary Wi-Fi access point using WiFiManager. Wi-Fi credentials are stored in ESP32 NVS so they survive LittleFS UI uploads.
+Medical Equipment: For ventilators and critical devices, Krake provides a dedicated alarm channel for life-threatening mechanical failures.
+
+IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS fails, or network connectivity drops — a physical alarm that doesn't rely on the very infrastructure it's monitoring.
 
 ## Features
 
-* Captive portal setup
-* Multiple stored Wi-Fi credentials
-* Automatic reconnection
-* OTA firmware updates
-* MQTT connectivity monitoring
-* LCD network status display
+| Feature    | Details |
+| -------- | ------- |
+| Customiseable audio  |WAV and MP3 playback, Alarm-level-specific audio, Adjustable volume,SD-card-based audio storage, Busy-line monitoring and Runtime diagnostics   |
+| LCD User Interface & Rotary Knob    | 20 x 4 I²C LCD interface integrated with a rotary encoder and custom menu system to navigate settings without the need for an external device.  Real-time alarm display, Alarm queue indication, Wi-Fi status indication, MQTT broker status indication, Volume and mute display and Alarm acknowledgement actions |
+| LED Annunciation  | Variety of LED levels  including steady or blinking deisgned to be visible across a room    |
+| Flexible Power    | USB-C, 2.1mm center-positive barrel connector or RJ12 SPI interface power jumpers    |
+| Wi-Fi Connectivity    | Acts as a Wi-Fi station connected to a local network enabling alerts locally or via internet, captive portal set up, storage of multiple Wi-Fi credentials, automatic reconnection, OTA firmware updates and Network status display   |
+| MQTT Protocol    | MQTT alarm subscriptions, GPAP response publishing, Alarm acknowledgements, Alarm dismissal and shelving, Device monitoring, Configurable topic subscriptions and MQTT status display on LCD    |
+| Mute Button & time out handling   | Configurable mute timeout, Automatic unmute, Manual mute override and LCD mute indication    |
+| HL7 Compatible    | Designed to work with medical data standards    |
+| Fully Open Source    | AGPL firmware, CERN OHL Hardware    |
+| Persistent COM configuration    | Interfaces to external controllers through a DB9 Female RS-232 DCE connection. Configurable baud rate (1200,2400,4800, 9600, 19200, 38400, 57600, 115200), RTS/CTS hardware flow control and LCD-based configuration menu    |
+| Speaker   |    3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz  |
+| GPAP message parsing   |  Alarm message are structured, message type, severity digit (0-5), optional message id, optional alarm type deisgnator and optional content up to 80 characters  |
+| SPI alarm input support    | ALlows processing of alert signals communicated or wired through SPI data lines to recognise fault or warning flags in connected sensors |  
 
-Wi-Fi credentials are stored locally in ESP32 NVS. A `/wifi.json` LittleFS mirror is maintained for backward compatibility and diagnostics, but NVS is authoritative so uploading a new LittleFS image does not erase the reconnect list.
-At startup, saved-network retries and the fallback WiFiManager recovery portal are time-bounded so a missing or invalid configuration cannot indefinitely block the Krake hardware loop.
+## Hardware
+| Krake™ rev2 | Krake™ rev1|
+| -------- | ------- |
+|<img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" /> | <img   height="242" alt="image" src="https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07" /> |
+| 3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz.| 28mm Speaker|
+|dimensions|dimensions|
+|functionality?|functionality|
 
----
 
-# MQTT Protocol
-
-The Krake communicates using MQTT for alarm distribution and acknowledgement.
-
-## Features
-
-* MQTT alarm subscriptions
-* GPAP response publishing
-* Alarm acknowledgements
-* Alarm dismissal and shelving
-* Device monitoring
-* Configurable topic subscriptions
-* MQTT status display on LCD
-
-Each Krake subscribes to alarm topics and publishes alarm responses on dedicated ACK topics.
-
-## Example GPAP Responses
-
-```text
-oa{1234}   -> Acknowledge
-od{1234}   -> Dismiss
-os{1234}   -> Shelve
-```
-
-## MQTT Testing Page
-
-[MQTT Publishing Test Page](https://pubinv.github.io/krake/PMD_GPAD_API.html)
-
----
-
-# GPAP Alarm Message Support
-
-The Krake firmware supports GPAP alarm messaging and response handling.
-
-Incoming alarm messages may contain:
-
-* Alarm level
-* Alarm ID
-* Alarm type
-* Alarm message text
-
-Supported alarm actions:
-
-| Action      | MQTT Response |
-| ----------- | ------------- |
-| Acknowledge | `oa{alarmId}` |
-| Dismiss     | `od{alarmId}` |
-| Shelve      | `os{alarmId}` |
-
----
-
-# COM Port
-
-The Krake interfaces to external controllers through a DB9 Female RS-232 DCE connection.
-
-## COM Features
-
-* Configurable baud rate
-* RTS/CTS hardware flow control
-* Persistent configuration storage
-* LCD-based configuration menu
-
-## Supported Baud Rates
-
-* 1200
-* 2400
-* 4800
-* 9600
-* 19200
-* 38400
-* 57600
-* 115200
-
-## Current Serial Configuration
-
-* 8-N-1
-* Optional RTS/CTS flow control
-
----
-
-# Arbitrary Sonic Alarms
-
-The Krake uses a DFPlayer Mini MP3 module connected through UART2 on the ESP32.
-
-## Audio Features
-
-* WAV and MP3 playback
-* Alarm-level-specific audio
-* Adjustable volume
-* SD-card-based multilingual audio
-* Busy-line monitoring
-* Runtime diagnostics
-
-The SD card is removable so that alarm audio may be customized or localized for language and application.
-
----
-
-# Mute Button
-
-Pressing the local mute button toggles silencing of audio alarms.
-
-The firmware supports:
-
-* Configurable mute timeout
-* Automatic unmute
-* Manual mute override
-* LCD mute indication
-
----
-
-# Rotary Encoder Knob
-
-The rotary encoder allows users to:
-
-* Navigate menus
-* Configure settings
-* Control volume
-* Respond to alarms
-* Navigate queued alarms
-
----
-
-# Configurable Power Options
-
-The Krake may be powered using:
-
-* 2.1 mm center-positive barrel connector
-* USB-C
-* RJ12 SPI interface power jumpers
-
----
-
-# Firmware Architecture
-
+## Firmware
 | Module               | Purpose                            |
 | -------------------- | ---------------------------------- |
 | `alarm_api.*`        | Abstract alarm state machine       |
@@ -340,34 +116,16 @@ The Krake may be powered using:
 | `WiFiManagerOTA.*`   | Wi-Fi management and OTA           |
 | `InterruptRotator.*` | Rotary encoder interrupt handling  |
 
----
+- Example GPAP Responses
 
-# Krake Test and Assembly Procedure
+```text
+oa{1234}   -> Acknowledge
+od{1234}   -> Dismiss
+os{1234}   -> Shelve
+??{1234}   -> Complete     
+```
 
-Instructions for testing and assembly of Krake hardware:
-
-[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
-
----
-
-# Inventory
-
-[Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
-
-Database for Krake units and test registries.
-
----
-
-# GDT Records
-
-[Asset History Records Public Invention Krake Rev. 2](https://gosqas.org/record/8CMgkfrS4ufevweKy1QowF)
-
-Global Open Source Quality Assuring System.
-
----
-
-# Future Features
-
+## Roadmap (Future Features)
 * Advanced alarm queue management
 * Enhanced LCD UI animations and icons
 * Bluetooth and BLE alarm forwarding
@@ -378,98 +136,82 @@ Global Open Source Quality Assuring System.
 * Power optimization modes
 * Alarm escalation workflows
 
----
-
-# MockingKrake (Prototype Platform)
-
-During development, a breadboard prototype called the MockingKrake was used to validate:
-
-* Alarm functionality
-* DFPlayer interoperability
-* Wi-Fi communication
-* LCD functionality
-* Rotary encoder navigation
-* MQTT messaging
-
-## Components
-
-* ESP32 DevKit V1
-* DFPlayer Mini
-* SD card
-* Speaker
-* Alarm LEDs
-* Rotary encoder
-* LCD display
-* Breadboard prototype system
-
----
-
-# Typical Current Consumption
-
-| TEST NUMBER | Current     | LCD Condition | DFPlayer Condition |
-| ----------- | ----------- | ------------- | ------------------ |
-| 1           | 0.12–0.16 A | LCD ON        | DFPlayer OFF       |
-| 2           | 0.08–0.11 A | LCD OFF       | DFPlayer OFF       |
-| 3           | 0.23 A max  | LCD OFF       | DFPlayer ON        |
-| 4           | 0.24 A max  | LCD ON        | DFPlayer ON        |
-
----
-
-# ESP32-WROOM-32D
-
-[ESP32-WROOM-32D Datasheet](https://www.lcsc.com/datasheet/lcsc_datasheet_2304140030_Espressif-Systems-ESP32-WROOM-32D-N4_C473012.pdf)
-
-![esp32-pinout-chip-ESP-WROOM-32](https://github.com/user-attachments/assets/c536d734-6dd7-4b16-834e-3e3d778a77b9)
-
----
-
-# Enhancements
-
-1. HTTP server support
-2. Web monitoring interface
-3. Five-level LED annunciation
-4. WAV/MP3 alarm playback
-5. 20x4 LCD alarm display
-6. Configurable mute handling
-7. Wi-Fi captive portal setup
-8. MQTT alarm workflow support
-9. Rotary encoder menu navigation
-
----
-
-# Workflow Contribution Procedure
-
+## Contributing
 [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
----
+## Credits & Mentorship
+The Krake has been developed primarily by volunteer engineer Nagham Kheir, with mentorship and oversight from volunteer Inventional Coach Lee Erickson and a group of volunteers from around the globe. 
 
-# References
+[Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
 
-Hollifield, Bill R., and Eddie Habibi. *Alarm Management: A Comprehensive Guide.* ISA, 2010.
+Nagham Kheir: Invention Coach
 
----
+Forrest Lee Erickson: Invention Coach
 
-# Firmware Development Resources
+Robert L. Read: Invention Coach
 
-## Multi-tasking the Arduino
+Yehia Shalaby: Public Inventor
 
-[https://learn.adafruit.com/multi-tasking-the-arduino-part-1](https://learn.adafruit.com/multi-tasking-the-arduino-part-1)
+Courtney Ludick: Public Inventor
 
-## Random Nerd Tutorials
+Yukti: Public Inventor
 
-1. ESP32 Wi-Fi Manager
-   [https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/](https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/)
+Juhandre Knoetze: Public Inventor
 
-2. ESP32 OTA Updates
-   [https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/](https://randomnerdtutorials.com/esp32-ota-elegantota-arduino/)
 
-3. ESP32 LittleFS Uploader
-   [https://randomnerdtutorials.com/esp32-littlefs-arduino-ide/](https://randomnerdtutorials.com/esp32-littlefs-arduino-ide/)
+## Certifications
 
----
+<img width="100" alt="image" src="https://github.com/user-attachments/assets/b05176e9-930e-41b1-b16d-353f690c531b" />
 
-# License
+Krake hardware has been certified by the Open Source Hardware Association (OSHWA):
+ OSHWA certification listing:
+[OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
 
-* Firmware: GNU Affero GPL 3.0
-* Hardware: CERN Open Hardware Licence Version 2 - Strongly Reciprocal
-* Krake™ is a trademark of Public Invention.
+Certification UID: ``` US002818 ```
+ 
+## References & Further Reading
+Website: https://pubinv.github.io/krake/
+
+Brochure: [Copy of Krake Brochure.pdf](https://github.com/user-attachments/files/29981489/Copy.of.Krake.Brochure.pdf)
+
+Logo: <img width="100" height="100" alt="KRAKE 2" src="https://github.com/user-attachments/assets/cd340751-52a8-465b-9b9a-d9dfb97265fd" />
+
+Krake Repo: https://github.com/PubInv/krake
+
+Wiki: https://github.com/PubInv/krake/wiki
+
+HardwareX Article: [HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
+
+User Manual: [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing) 
+
+Developers Manual: [draft developers manual](https://docs.google.com/document/d/150WA6Mb1_SFOBmFc9qBpT5b-MqXb7ejaZbKIxUqaDBY/edit?usp=sharing).
+
+OSHWA certification listing:
+[OSHWA Certification Directory](https://certification.oshwa.org/list.html?utm_source=chatgpt.com)
+
+The team behind Krake: [Mentorship and Teamwork: The Story of the Krake](https://www.pubinv.org/2025/03/17/mentorship-and-teamwork-the-story-of-the-krake/)
+
+Krake workflow: [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
+
+Build your own: [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+
+Database for Krake units and test registries: [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
+
+Global Open Source Quality Assuring System:[Asset History Records Public Invention Krake Rev. 2](https://gosqas.org/record/8CMgkfrS4ufevweKy1QowF)
+
+GPAP:  https://github.com/PubInv/gpap
+
+#### Public Invention
+
+
+- Github repo: https://github.com/PubInv
+- Website: https://www.pubinv.org/
+- Products page: https://www.pubinv.org/shop/
+
+
+## License
+Firmware: GNU Affero GPL 3.0
+
+Hardware: CERN Open Hardware Licence Version 2 - Strongly Reciprocal
+
+Krake™ is a trademark of Public Invention.
