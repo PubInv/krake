@@ -195,6 +195,10 @@ Krake workflow: [Krake Workflow Contribution Procedure](https://github.com/PubIn
 
 Build your own: [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
 
+Database for Krake units and test registries: [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
+
+Global Open Source Quality Assuring System:[Asset History Records Public Invention Krake Rev. 2](https://gosqas.org/record/8CMgkfrS4ufevweKy1QowF)
+
 GPAP:  https://github.com/PubInv/gpap
 
 #### Public Invention
