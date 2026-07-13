@@ -122,6 +122,7 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 oa{1234}   -> Acknowledge
 od{1234}   -> Dismiss
 os{1234}   -> Shelve
+??{1234}   -> Complete     
 ```
 
 ## Roadmap (Future Features)
