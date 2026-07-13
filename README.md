@@ -101,7 +101,7 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 |<img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" /> | <img   height="242" alt="image" src="https://github.com/user-attachments/assets/3399ab9b-fd3b-418d-bdb9-2b72e172fa07" /> |
 | 3 inch 10W Full Range Round 8 ohm Speaker with FR:12-16KHz.| 28mm Speaker|
 |dimensions|dimensions|
-|functionality?|functionality|
+|functionality?|functionality?|
 
 
 ## Firmware
