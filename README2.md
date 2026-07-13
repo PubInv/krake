@@ -15,7 +15,9 @@ Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake i
 
 
 ## Quick Start
-Purchasable from https://www.pubinv.org/shop/ - user and devlopers manuals can be found in the references and further reading section 
+Purchasable from https://www.pubinv.org/shop/ 
+
+User manuals can be found in the references and further reading section 
 
 #### LCD UI + navigation
  
