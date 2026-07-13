@@ -1,7 +1,7 @@
 # Krake™
+## A wireless alarm device purpose-built for life's critical moments
  <img  height="442" alt="image" src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" />
-
- One-paragraph pitch: what it is, who it's for, why it exists
+Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake is a wireless alarm device with audio visual capabilitites deisgned to alert a human to something needing attention.
 
 ## Quick Start
 How to get one running — buy/build/flash — in as few steps as possible
@@ -11,6 +11,24 @@ How to get one running — buy/build/flash — in as few steps as possible
 ## Why Krake (merged: origin story + use cases, trimmed)
 
 ## Features (single consolidated list)
+
+| Feature    | Details |
+| -------- | ------- |
+| Customiseable audio  |WAV and MP3 playback, Alarm-level-specific audio, Adjustable volume,SD-card-based audio storage, Busy-line monitoring and Runtime diagnostics   |
+| LCD User Interface & Rotary Knob    | 20 x 4 I²C LCD interface integrated with a rotary encoder and custom menu system to navigate settings without the need for an external device.  Real-time alarm display, Alarm queue indication, Wi-Fi status indication, MQTT broker status indication, Volume and mute display and Alarm acknowledgement actions |
+| LED Annunciation  | Variety of LED levels  including steady or blinking deisgned to be visible across a room    |
+| Flexible Power    | USB-C, 2.1mm center-positive barrel connector or RJ12 SPI interface power jumpers    |
+| Wi-Fi Connectivity    | Acts as a Wi-Fi station connected to a local network enabling alerts locally or via internet, captive portal set up, storage of multiple Wi-Fi credentials, automatic reconnection, OTA firmware updates and Network status display   |
+| MQTT Protocol    | MQTT alarm subscriptions, GPAP response publishing, Alarm acknowledgements, Alarm dismissal and shelving, Device monitoring, Configurable topic subscriptions and MQTT status display on LCD    |
+| Mute Button & time out handling   | Configurable mute timeout, Automatic unmute, Manual mute override and LCD mute indication    |
+| HL7 Compatible    | Designed to work with medical data standards    |
+| Fully Open Source    | AGPL firmware, CERN OHL Hardware    |
+| Persistent COM configuration    | Interfaces to external controllers through a DB9 Female RS-232 DCE connection. Configurable baud rate (1200,2400,4800, 9600, 19200, 38400, 57600, 115200), RTS/CTS hardware flow control and LCD-based configuration menu    |
+
+| GPAP message parsing   |   ?  |
+| Alarm Acknowledgement workflow, queue handlings and state persistence    |    ? |
+| LittleFS Configuration storage    | ?    |
+| SPI alarm input support    | ? |  
 
 ## Hardware
 - Photos (rev1, rev2, captions explaining what changed)
