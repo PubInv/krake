@@ -208,3 +208,8 @@ GPAP:  https://github.com/PubInv/gpap
 - Website: https://www.pubinv.org/
 - Products page: https://www.pubinv.org/shop/
 
+
+## License
+Firmware: GNU Affero GPL 3.0
+Hardware: CERN Open Hardware Licence Version 2 - Strongly Reciprocal
+Krake™ is a trademark of Public Invention.
