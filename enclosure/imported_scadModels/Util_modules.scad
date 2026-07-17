@@ -167,3 +167,81 @@ rotate([0,90,0])
 cylinder(r=Filet,h=Thick, $fn=100);
 }
 }
+
+
+module beam2d(p1, p2, w) {
+    hull() {
+        translate(p1) circle(d = w, $fn = 20);
+        translate(p2) circle(d = w, $fn = 20);
+    }
+}
+
+function arch_y(x, width, arch_height) =
+    arch_height == 0 ? 0 :
+    let (r  = (pow(width/2, 2) + pow(arch_height, 2)) / (2*arch_height))
+    let (cx = width/2)
+    (arch_height + (r - arch_height)) - sqrt(max(r*r - pow(x - cx, 2), 0));
+
+
+module xlattice_2d(width, height, cols, arch_height, bar_w, node_d) {
+    col_w = width / cols;
+    bpts = [ for (i = [0:cols]) [i*col_w, 0] ];
+    tpts = [ for (i = [0:cols]) [i*col_w, height + arch_y(i*col_w, width, arch_height)] ];
+    mpts = [ for (i = [0:cols]) [i*col_w, (bpts[i].y + tpts[i].y)/2] ];
+
+    union() {
+        for (i = [0:cols-1]) beam2d(bpts[i], bpts[i+1], bar_w);   // bottom rail
+        for (i = [0:cols-1]) beam2d(tpts[i], tpts[i+1], bar_w);   // top rail
+        for (i = [0:cols]) {                                      // posts
+            beam2d(bpts[i], mpts[i], bar_w);
+            beam2d(mpts[i], tpts[i], bar_w);
+        }
+        for (i = [0:cols-1]) {                                    // X bracing
+            beam2d(bpts[i],   tpts[i+1], bar_w);
+            beam2d(bpts[i+1], tpts[i],   bar_w);
+        }
+        for (i = [0:cols]) {                                      // joint nodes
+            translate(bpts[i]) circle(d = node_d, $fn = 28);
+            translate(mpts[i]) circle(d = node_d, $fn = 28);
+            translate(tpts[i]) circle(d = node_d, $fn = 28);
+        }
+    }
+}
+
+module rib_slab(panel_w, panel_h, cols, arch_height, bar_w, node_d, rib_depth) {
+    linear_extrude(height = rib_depth)
+        xlattice_2d(panel_w, panel_h, cols, arch_height, bar_w, node_d);
+}
+
+
+module gusset(h = 15, run = 10, t = 1.5, fillet_r = 0.6) {
+    // right angle sits at the wall/floor corner (origin);
+    // profile drawn in the X (floor) - Z (wall) plane, then
+    // extruded sideways along Y by thickness t.
+    rotate([90, 0, 90])
+        linear_extrude(height = t)
+            hull() {
+                translate([0, 0])      circle(r = fillet_r, $fn = 16); // root corner
+                translate([run, 0])    circle(r = fillet_r, $fn = 16); // floor tip
+                translate([0, h])      circle(r = fillet_r, $fn = 16); // wall tip
+            }
+}
+
+module gusset_row(wall_len   = 100,
+                   height     = 15,
+                   run        = 10,
+                   thick      = 1.5,
+                   fillet_r   = 0.6,
+                   spacing    = 25,     // used only if positions not given
+                   margin     = 8,
+                   positions  = undef) {
+
+    xs = (positions != undef) ? positions :
+         let(usable = wall_len - 2*margin,
+             n      = max(floor(usable / spacing), 1))
+         [ for (i = [0:n]) margin + i * (usable / n) ];
+
+    for (x = xs)
+        translate([x - thick/2, 0, 0])
+            gusset(h = height, run = run, t = thick, fillet_r = fillet_r);
+}
