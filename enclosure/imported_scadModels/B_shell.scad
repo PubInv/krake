@@ -8,8 +8,8 @@ use <PartNumbering.scad>
 
 
 PartName = "BShell";
-PartVersion = "V4.1";
-Date = "26141";
+PartVersion = "V4.2";
+Date = "26295";
 
 speaker_ring = 1;
 

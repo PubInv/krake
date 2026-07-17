@@ -11,17 +11,17 @@ use <PartNumbering.scad>
 
 
 PartName = "TShell";
-PartVersion = "V4.0";
-Date = "26141";
+PartVersion = "V4.2";
+Date = "26295";
 
 GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
 
 recessed_module_on_off =1;
 //// recess sub modules when recess module is on///
 
-sd_door_on_off       = 1;
+sd_door_on_off       = 0;
 recessed_wall_on_off = 1;
-recessed_bottom_on_off = 1;// turn on/off the recess moduel only
+recessed_bottom_on_off = 0;// turn on/off the recess moduel only
 
 GPAD_TShellWithVESA  = 0; // Krake TShell 
 
