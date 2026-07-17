@@ -68,7 +68,7 @@ SpeakerFlushRing(3.5,7.8-1.75,35, posx = SpeakerPositionX+2.5,posy =SpeakerPosit
 
 
 if(NumberingSystem == 1){
-    translate([60,15,2.8])mirror([0,1,0])rotate([0,180,0])
+    translate([170,122,2.8])mirror([0,1,0])rotate([0,180,0])
         numbering(0.9,4,PartName,PartVersion,Date);
     }
 

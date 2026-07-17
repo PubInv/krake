@@ -96,7 +96,7 @@ translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.
 }
 
 if(NumberingSystem == 1){
-    translate([10,15,Height-2.7])mirror([0,1,0])rotate([0,0,0])
+    translate([120,120,Height-2.7])mirror([0,1,0])rotate([0,0,0])
         numbering(0.9,4,PartName,PartVersion,Date);
     }
 
