@@ -11,17 +11,17 @@ use <PartNumbering.scad>
 
 
 PartName = "TShell";
-PartVersion = "V4.0";
-Date = "26141";
+PartVersion = "V4.2";
+Date = "26295";
 
 GPAD_TshellDoorRecess = 1; // turn on/off door when krake Tshell is on 
 
 recessed_module_on_off =1;
 //// recess sub modules when recess module is on///
 
-sd_door_on_off       = 1;
+sd_door_on_off       = 0;
 recessed_wall_on_off = 1;
-recessed_bottom_on_off = 1;// turn on/off the recess moduel only
+recessed_bottom_on_off = 0;// turn on/off the recess moduel only
 
 GPAD_TShellWithVESA  = 0; // Krake TShell 
 
@@ -50,7 +50,15 @@ else
     translate([0,Width,Height+0.2]){
         color( Couleur1,1){
             rotate([0,180,180]){
-                Coque();
+                union() {
+Coque();
+       mirror([0,1,0])for ( i = [Length/8:Length/8:Length-(Length/8)] ){
+        translate([i,-Width+0.7,0.7])gusset(h = 30, run = 20, t = 1.5, fillet_r = 0.6);}
+        for ( i = [Length/8:Length/8:Length-(Length/8)] ){
+        translate([i,0.7,0.7])gusset(h = 30, run = 20, t = 1.5, fillet_r = 0.6);}
+translate([6.5,2,0])rib_slab(Length-80,Width/2-2,5,0,2,1,8);
+        translate([0,Width+0.7,0.7])mirror([0,1,0])translate([6.5,2,0])rib_slab(Length-80,Width/2,5,0,2,1,8);
+       }
             }
         }
     }
@@ -88,7 +96,7 @@ translate([Length/2 +Door_recess_x_offset,Width/2-Door_recess_y_offset,Height+0.
 }
 
 if(NumberingSystem == 1){
-    translate([10,15,Height-2.7])mirror([0,1,0])rotate([0,0,0])
+    translate([120,120,Height-2.7])mirror([0,1,0])rotate([0,0,0])
         numbering(0.9,4,PartName,PartVersion,Date);
     }
 

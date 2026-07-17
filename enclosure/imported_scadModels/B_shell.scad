@@ -8,8 +8,8 @@ use <PartNumbering.scad>
 
 
 PartName = "BShell";
-PartVersion = "V4.0";
-Date = "26141";
+PartVersion = "V4.2";
+Date = "26295";
 
 speaker_ring = 1;
 
@@ -19,6 +19,7 @@ speaker_ring = 1;
 LEDspacing = 12.7 ;
 LEDYposOffset = 15.24  ; // offset from the Encoder edge of PCB
 LEDXposOffset = 27.94  ; // offset from the connector edge of PCB
+LEDdiameter= 5.1;
 ////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////
@@ -67,7 +68,7 @@ SpeakerFlushRing(3.5,7.8-1.75,35, posx = SpeakerPositionX+2.5,posy =SpeakerPosit
 
 
 if(NumberingSystem == 1){
-    translate([60,15,2.8])mirror([0,1,0])rotate([0,180,0])
+    translate([170,122,2.8])mirror([0,1,0])rotate([0,180,0])
         numbering(0.9,4,PartName,PartVersion,Date);
     }
 
@@ -84,8 +85,16 @@ union(){
 // speaker_clamp(); 
 difference(){
 color(Couleur1,1){
-union(){ 
+union(){
+   union() {
 Coque();
+       mirror([0,1,0])for ( i = [Length/8:Length/8:Length-(Length/8)] ){
+        translate([i,-Width+0.7,0.7])gusset(h = 30, run = 20, t = 1.5, fillet_r = 0.6);}
+        for ( i = [Length/8:Length/8:Length-(Length/8)] ){
+        translate([i,0.7,0.7])gusset(h = 30, run = 20, t = 1.5, fillet_r = 0.6);}
+translate([6.5,2,0])rib_slab(Length-100,Width/4,5,0,2,1,8);
+        translate([0,Width+0.7,0.7])mirror([0,1,0])translate([6.5,2,0])rib_slab(Length-100,Width/4-8,5,0,2,1,8);
+       }
 translate( [3*Thick+2,Thick+5,5])SpeakerHolder(0,SpeakerHoleX,PCBWidth-FootPosX,11,Ccenter=true); //Speaker holder
 // Pied support PCB - PCB feet
 
@@ -101,7 +110,7 @@ color( Couleur1,1){
 translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //(On/Off, Xpos, Ypos, Diameter)
 for ( i = [-6.5:-2.5] ){
-    CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,5); //LED1 , switch signs to move downwards ??Question
+    CylinderHole(1,PCBLength-(LEDXposOffset+LEDspacing*i),LEDYposOffset,LEDdiameter); //LED1 , switch signs to move downwards ??Question
 }
 //CylinderHole(1,PCBLength-46.99,PCBWidth-FootPosX,5); //LED6 power //??Question extra?
 //(On/Off, Xpos,Ypos,Length,Width,Filet)
@@ -118,7 +127,7 @@ translate( [3*Thick+2,Thick+5,0]){         //([-.5,0,0]){
 //  (On/Off, Xpos, Ypos, Diameter)
 SpeakerHole(1, Krake_rev2_76mmSPK ? SpeakerPositionX+2.5-(3*Thick+2) : SpeakerHoleX, Krake_rev2_76mmSPK ?SpeakerPositionY+9-(Thick+5):SpeakerHoleY ,SpeakerDiameter_mm/2.5-1.5,Ccenter=true); //Buzzer // Speaker 
 //LED hole generator  unsure why this works   ??Question repeated commented to avoid confusion    
-CylinderHole(1,PCBLength-46.99+translationVariable,PCBWidth-FootPosX,5); //LED6 power light ??Question delete extra
+CylinderHole(1,PCBLength-46.99+translationVariable,PCBWidth-FootPosX,LEDdiameter); //LED6 power light ??Question delete extra
 //(On/Off, Xpos,Ypos,Length,Width,Filet)
 SquareHole(1,DisplayXpos,DisplayYpos,DisplayLenght,DisplayWidth,DisplayFilet,Ccenter=true);   //Display
 CylinderHole(1,SpeakerHoleX,68.58,2); //reset hole
