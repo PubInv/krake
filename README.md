@@ -6,8 +6,9 @@
 # Krake™
 
 ## A wireless alarm device purpose-built for life's critical moments
- 
-Based on the Public Invention, General Purpose Alarm Device (GPAD) , the Krake is a wireless alarm device with fully customiseable audio visual capabilitites designed to alert a human to something needing attention.
+The Krake, An Alarm Annunciator designed for easy integration into systems needing to bring to the attention of humans some condition. Can be used by professional system integrators and hobbyists.
+
+This ?150? x ?180? x ?67? mm device has a speaker, a 20x4 character display, five white LEDs. It is a peripheral which can be controlled over a WiFi network using MQTT interface, a wired RS232 interface or a wired SPI interface with fully customiseable audio visual capabilitites. 
 
 #### How it works?
 1. Condition detected- A sensor triggers an alarm event
