@@ -12,9 +12,10 @@ The Krake, An Alarm Annunciator designed for easy integration into systems needi
 This ?150? x ?180? x ?67? mm device has a speaker, a 20x4 character display, five white LEDs. It is a peripheral which can be controlled over a WiFi network using MQTT interface, a wired RS232 interface or a wired SPI interface with fully customiseable audio visual capabilitites. 
 
 #### How it works?
-1. Condition detected- A sensor triggers an alarm event
-2. Krake Receives it- Alert arrives wirelessly via MQTT over local network or internet
-3. You're alerted- Lights flash, audio plays and acknowledgement is sent back
+1. A condition is detected by an external sensor that relays this information to Krake to trigger and alarm event. Such as a pressure sensor detecting the opening of a gate.
+2. The Krake receives the information about the event wirelessly via MQTT over local network or internet. A gate open sensor on a security system would publish a message to the Krake via MQTT or direct RS232 connection
+3. The Krake alerts you of this event-  Lights flash, audio plays and the message is displayed on an LCD for the user
+4. The user is able to react to the alarm with {acknowledgement, dismissal, shelving or completion}, A mute button allows the user to temporarily mute the audio to prevent alarm fatigue.
 
 
 ## Quick Start
