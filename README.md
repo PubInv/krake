@@ -60,7 +60,8 @@ To build your own please see instructions for testing and assembly of Krake hard
 [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
 
 ## Table of Contents
-- About Krake & Example Use Cases
+- About Krake
+- Example Use Cases
 - Features
 - Hardware
 - Firmware
@@ -70,10 +71,11 @@ To build your own please see instructions for testing and assembly of Krake hard
 - Trust & Credentials
 - References & Further Reading
 
-## About Krake & Example Use Cases
+## About Krake
 The hope was to develop the initial design for a wireless alarm device to alert nearby parties of a particular state. 
 About the name, Krake, the inspiration for the invention name is based on a Crake: a bird with a distinctive, slightly alarming cry. We changed the spelling so as to have a unique name and still preserve the humor. 
 
+## Example Use Cases
 Care at home: Alert an elderly person living alone to a fall or blood pressure drop — giving family peace of mind from anywhere.
 
 Medical Equipment: For ventilators and critical devices, Krake provides a dedicated alarm channel for life-threatening mechanical failures.
