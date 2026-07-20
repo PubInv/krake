@@ -72,7 +72,7 @@ To build your own please see instructions for testing and assembly of Krake hard
 
 ## About Krake & Example Use Cases
 The hope was to develop the initial design for a wireless alarm device to alert nearby parties of a particular state. 
-We developed the name of this invention team based on a Crake: a bird with a distinctive, slightly alarming cry. We changed the spelling as a joke. “Flaycrake” is an old term for a scarecrow, which also aligned with our mission.
+About the name, Krake, the inspiration for the invention name is based on a Crake: a bird with a distinctive, slightly alarming cry. We changed the spelling so as to have a unique name and still preserve the humor. 
 
 Care at home: Alert an elderly person living alone to a fall or blood pressure drop — giving family peace of mind from anywhere.
 
