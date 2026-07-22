@@ -113,27 +113,6 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 |functionality?|functionality?|
 
 
-## Firmware
-| Module               | Purpose                            |
-| -------------------- | ---------------------------------- |
-| `alarm_api.*`        | Abstract alarm state machine       |
-| `GPAD_HAL.*`         | Hardware abstraction layer         |
-| `GPAD_menu.*`        | Rotary encoder and LCD menu system |
-| `mqtt_handler.*`     | MQTT publishing and GPAP responses |
-| `gpad_serial.*`      | Serial protocol parser             |
-| `DFPlayer.*`         | Audio playback subsystem           |
-| `WiFiManagerOTA.*`   | Wi-Fi management and OTA           |
-| `InterruptRotator.*` | Rotary encoder interrupt handling  |
-
-- Example GPAP Responses
-
-```text
-oa{1234}   -> Acknowledge
-od{1234}   -> Dismiss
-os{1234}   -> Shelve
-??{1234}   -> Complete     
-```
-
 ## Roadmap (Future Features)
 * Advanced alarm queue management
 * Enhanced LCD UI animations and icons
