@@ -17,11 +17,25 @@ This ?150? x ?180? x ?67? mm device has a speaker, a 20x4 character display, fiv
 3. The Krake alerts you of this event-  Lights flash, audio plays and the message is displayed on an LCD for the user
 4. The user is able to react to the alarm with {acknowledgement, dismissal, shelving or completion}, A mute button allows the user to temporarily mute the audio to prevent alarm fatigue.
 
+## Table of Contents
+- Quick Start
+- About Krake
+- Example Use Cases
+- Features
+- Hardware
+- Firmware
+- Roadmap
+- Contributing
+- Credits & Mentorship
+- Trust & Credentials
+- References & Further Reading
 
 ## Quick Start
+Once upon a time, we (Robert, Nagham and Lee) had envisioned that upon receiving a Krake the user would practice working with it by using the MQTT web page to publish messages to their device.
+
 Purchasable from https://www.pubinv.org/shop/ 
 
-User manuals can be found in the references and further reading section 
+User manuals & test and assembly procedure can be found in the references and further reading section 
 
 #### LCD UI + navigation
  
@@ -60,17 +74,6 @@ The local settings menu includes:
 To build your own please see instructions for testing and assembly of Krake hardware:
 [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
 
-## Table of Contents
-- About Krake
-- Example Use Cases
-- Features
-- Hardware
-- Firmware
-- Roadmap
-- Contributing
-- Credits & Mentorship
-- Trust & Credentials
-- References & Further Reading
 
 ## About Krake
 The hope was to develop the initial design for a wireless alarm device to alert nearby parties of a particular state. 
