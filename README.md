@@ -91,7 +91,7 @@ IT Infrastructure: Alert on-site staff instantly when a server overheats, a UPS 
 | Feature    | Details |
 | -------- | ------- |
 | Customiseable audio  |WAV and MP3 playback, Alarm-level-specific audio, Adjustable volume,SD-card-based audio storage, Busy-line monitoring and Runtime diagnostics   |
-| LCD User Interface & Rotary Knob    | 20 x 4 I²C LCD interface integrated with a rotary encoder and custom menu system to navigate settings without the need for an external device.  Real-time alarm display, Alarm queue indication, Wi-Fi status indication, MQTT broker status indication, Volume and mute display and Alarm acknowledgement actions |
+| LCD User Interface & Rotary Knob    | 20 x 4 I²C LCD interface integrated with a rotary encoder and custom menu system to navigate settings without the need for an external device.  Real-time alarm display, Wi-Fi status indication, MQTT broker status indication, Volume and mute display and Alarm acknowledgement actions |
 | LED Annunciation  | Variety of LED levels  including steady or blinking deisgned to be visible across a room    |
 | Flexible Power    | USB-C, 2.1mm center-positive barrel connector or RJ12 SPI interface power jumpers    |
 | Wi-Fi Connectivity    | Acts as a Wi-Fi station connected to a local network enabling alerts locally or via internet, captive portal set up, storage of multiple Wi-Fi credentials, automatic reconnection, OTA firmware updates and Network status display   |
