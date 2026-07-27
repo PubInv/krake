@@ -6,7 +6,7 @@ File:            FactoryTest_wMenu.ino
 Project:         Krake / GPAD v2 – Factory Test Firmware
 Document Type:   Source Code (Factory Test)
 Document ID:     KRAKE-FT-ESP32-FT01
-Version:         v0.4.6.5
+Version:         v0.4.6.6
 Date:            2026-04-08
 Author(s):       Nagham Kheir, Public Invention
 Status:          Draft
@@ -92,11 +92,8 @@ Build notes:
 ------------------------------------------------------------------------------
 */
 // Customized this by changing these defines
-#define VERSION " V0.0.1 "
 #define MODEL_NAME "Krake"
 #define LICENSE "GNU Affero General Public License, version 3 "
-#define ORIGIN "LB"
-#define BAUDRATE 115200  //Serial port
 
 
 #include <Arduino.h>
@@ -117,8 +114,8 @@ Build notes:
 // ============================================================================
 
 static const uint32_t SERIAL_BAUD = 115200;
-static const uint32_t PROMPT_TIMEOUT_MS = 65000;
-static const uint32_t WIFI_CONNECT_MS = 20000;
+static const uint32_t PROMPT_TIMEOUT_MS = 65000;  // generous window for the operator to look up from the board
+static const uint32_t WIFI_CONNECT_MS = 20000;    // 20 s covers slow DHCP on bench APs
 
 static const bool SKIP_DRIVING_LAMP2 = true;  // shared with DF BUSY on some builds
 static const uint8_t LCD_ALLOWED_ADDRS[] = { 0x27, 0x3F, 0x38 };
@@ -162,7 +159,7 @@ const int UART1_RXD1 = 15;  // placeholder safe GPIO
 const int UART1_RTS1 = 32;   // placeholder safe GPIO, set as output
 const int UART1_CTS1 = 33;  // placeholder safe GPIO, set as input
 const long UART1_BAUD = 115200;
-static const uint32_t TIMEOUT_MS = 600;
+static const uint32_t RS232_RECV_TIMEOUT_MS = 600;  // 600 ms: MAX3232 round-trip latency at 115200 baud
 
 // ----------------------------------------------------------------------------
 // Mute button (S601) — hardware notes from schematic:
@@ -173,9 +170,9 @@ static const uint32_t TIMEOUT_MS = 600;
 // ----------------------------------------------------------------------------
 const int MUTE_BTN_PIN = 35;
 
-static const uint32_t MUTE_DEBOUNCE_MS  =  20;   // low because C602 handles HW debounce
-static const uint32_t MUTE_LONGPRESS_MS = 800;   // above this = held too long
-static const uint32_t MUTE_WAIT_MS      = 15000; // operator press window per phase
+static const uint32_t MUTE_DEBOUNCE_MS  =   20;  // low because C602 (100 nF) handles HW debounce
+static const uint32_t MUTE_LONGPRESS_MS =  800;  // > 800 ms considered an unintentional long hold
+static const uint32_t MUTE_WAIT_MS      = 15000; // 15 s: enough time to locate and press the button
 
 // activeLow=true, internalPullup=false (R603 is the external pull-up on PCB)
 static OneButton muteBtn(MUTE_BTN_PIN, true, false);
@@ -214,7 +211,7 @@ enum TestIndex {
   T_LEDS,
   T_DFPLAYER,
   T_SD,
-  T_Speaker,
+  T_SPEAKER,
   T_WIFI_AP,
   T_WIFI_STA,
   T_LITTLEFS,
@@ -231,7 +228,7 @@ const char* TEST_NAMES[T_COUNT] = {
     "1 Inputs (Encoder / Button)",
     "2 LCD (I2C)",
     "3 LEDs / Lamps",
-    "4 DFPlayer ",
+    "4 DFPlayer",
     "5 SD (DFPlayer card)",
     "6 Speaker",
     "7 Wi-Fi AP",
@@ -267,6 +264,14 @@ static void flushSerialRx() {
 }
 
 
+// Read a full line of operator input into |out|.
+// Returns true  – line completed normally (|out| is trimmed text).
+// Returns false – operator typed a single menu key before Enter; the key is
+//                 saved in g_pendingCmd and |out| is cleared.
+// On timeout the function returns true with whatever was buffered (may be empty).
+// Note: |out| is an Arduino String; acceptable here because SSID/password input
+// is at most ~64 bytes, happens at most once per test run, and on a heap-
+// abundant ESP32 in a factory context (no long-uptime fragmentation concern).
 static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
   out = "";
   uint32_t start = millis();
@@ -297,6 +302,13 @@ static bool readLineOrMenuAbort(String& out, uint32_t timeoutMs = 15000) {
 }
 
 
+// Ask the operator a yes/no question and wait for a response.
+// Accepts: Y or N typed immediately (no Enter required), or a full line
+//          ending with Enter where the first char is Y, N, or a menu key.
+// A single-character menu key aborts the prompt, stores it in g_pendingCmd,
+// and returns false.
+// On timeout returns !defaultNo (defaultNo=true → timeout = FAIL).
+// Hardware side effect: writes to Serial.
 static bool promptYesNo(const __FlashStringHelper* question,
                         uint32_t timeoutMs = PROMPT_TIMEOUT_MS,
                         bool defaultNo = true)
@@ -378,7 +390,12 @@ static bool promptYesNo(const __FlashStringHelper* question,
 // UI
 // ============================================================================
 
-static void printBanner() {
+// Print a one-time startup header: firmware version, compile timestamp,
+// ESP32 chip info, and MAC address (without colons, used for AP SSID and
+// device identification in logs).
+// Note: WiFi.macAddress() requires that WiFi.mode() has been called at least
+// once (done in setup() before this function runs).
+static void printBanner(void) {
   Serial.println();
   Serial.println(F("======================================="));
   Serial.println(F("   KRAKE FACTORY TEST - ESP32-WROOM   "));
@@ -398,10 +415,11 @@ static void printBanner() {
   Serial.println();
 }
 
-void splashserial(void) {
+static void splashserial(void) {
   Serial.println(F("===================== Serial Splash ===================="));
   Serial.println(PROG_NAME);
-  Serial.print(VERSION);
+  Serial.print(FIRMWARE_VERSION);
+  Serial.print(F(" "));
   Serial.println(MODEL_NAME);
   Serial.println(g_deviceSerialNumber);
   Serial.print(F("Compiled at: "));
@@ -440,6 +458,12 @@ static void printSummary() {
   }
 
   Serial.println(F("=========================================="));
+
+  bool allPass = true;
+  for (int i = 0; i < T_COUNT; ++i) {
+    if (!testResults[i]) { allPass = false; break; }
+  }
+  Serial.printf("BOARD RESULT: %s\n", allPass ? "PASS" : "FAIL");
   Serial.println();
 }
 
@@ -514,96 +538,59 @@ static bool runTest_Inputs() {
   return pass;
 }
 
-static bool addrInAllowList(uint8_t addr) {
-  const size_t n = sizeof(LCD_ALLOWED_ADDRS) / sizeof(LCD_ALLOWED_ADDRS[0]);
-  for (size_t i = 0; i < n; ++i) {
-    if (LCD_ALLOWED_ADDRS[i] == addr) return true;
-  }
-  return false;
-}
-
-// ----------------------------------------------------------------------------
-// LCD Connection Check (Busy Flag Read)
-// ----------------------------------------------------------------------------
-// This function manually talks to the PCF8574 to read back from the LCD.
-// It verifies that an LCD is physically connected by checking the "Busy Flag".
-// Wiring Requirement: PCF8574 P1 must be connected to LCD R/W pin.
-// ----------------------------------------------------------------------------
+// Confirm the LCD panel is physically connected by pulsing EN and reading
+// back the PCF8574 data pins.
+//
+// PCF8574 pinout assumed: P0=RS, P1=RW, P2=EN, P3=Backlight, P4-P7=D4-D7.
+// When the LCD is absent, the PCF8574's internal weak pull-ups hold P4-P7 HIGH,
+// returning 0xF0 on the upper nibble. A physically present LCD pulls at least
+// one data line low during a valid read cycle (busy flag D7 = 0 when not busy).
+//
+// The second EN pulse completes the 4-bit read cycle to keep the LCD's nibble
+// counter aligned for the subsequent lcd.init() call.
+//
+// Call after the I2C scan succeeds and before lcd.init().
+// Returns true if the LCD is physically present, false if open-circuit.
 static bool verifyLCDConnection(uint8_t i2c_addr) {
-  // We assume the PCF8574 pinout is:
-  // P0=RS, P1=RW, P2=EN, P3=Backlight, P4..P7 = D4..D7
-  const uint8_t RS = 0x01;
-  const uint8_t RW = 0x02;
-  const uint8_t EN = 0x04;
-  const uint8_t BL = 0x08; // Check if your backlight is P3 (Value 0x08)
+  const uint8_t RW       = 0x02;
+  const uint8_t EN       = 0x04;
+  const uint8_t BL       = 0x08;
+  const uint8_t DATA_HIGH = 0xF0;  // float data pins so PCF8574 can read them
 
-  // To read from the LCD, we need to set RW=1, RS=0 (Instruction Register).
-  // ALSO, the data pins (P4-P7) on the PCF8574 are quasi-bidirectional.
-  // To read, we must write "1" to them so they act as inputs (weak pull-ups).
-  // So we write: BL | Data=High(0xF0) | EN=0 | RW=1 | RS=0
-  uint8_t dataMask = 0xF0;
-  uint8_t ctrlSet = BL | RW; // Keep Backlight ON, set Read mode
+  uint8_t ctrl = BL | RW;  // backlight on, read mode
 
+  // High nibble: pulse EN, read data pins
   Wire.beginTransmission(i2c_addr);
-  Wire.write(dataMask | ctrlSet | EN); // Pulse EN High
+  Wire.write(DATA_HIGH | ctrl | EN);
   Wire.endTransmission();
 
-  // Now we read the PCF8574 port state while EN is High
   Wire.requestFrom((int)i2c_addr, 1);
-  if (!Wire.available())
-    return false;
+  if (!Wire.available()) return false;
   uint8_t readVal = Wire.read();
 
-  // Finish the pulse (EN Low)
   Wire.beginTransmission(i2c_addr);
-  Wire.write(dataMask | ctrlSet); // EN Low
+  Wire.write(DATA_HIGH | ctrl);  // EN low
   Wire.endTransmission();
 
-  // We are in 4-bit mode, so we must perform a SECOND "dummy" cycle
-  // to read the lower nibble, even if we don't use it, to keep
-  // nibble-alignment.
-
-  // Pulse EN High for low nibble
+  // Low nibble: second EN pulse to maintain 4-bit nibble alignment
   Wire.beginTransmission(i2c_addr);
-  Wire.write(dataMask | ctrlSet | EN);
+  Wire.write(DATA_HIGH | ctrl | EN);
+  Wire.endTransmission();
+  Wire.beginTransmission(i2c_addr);
+  Wire.write(DATA_HIGH | ctrl);  // EN low
   Wire.endTransmission();
 
-  // (Optional: we could read again here, but we don't strictly need to)
-
-  // Finish the pulse (EN Low)
-  Wire.beginTransmission(i2c_addr);
-  Wire.write(dataMask | ctrlSet);
-  Wire.endTransmission();
-
-  // Restore to Write mode (RW=0) so normal library calls work later
-  // We'll leave it with Backlight ON and no control signals.
+  // Restore to write mode so lcd.init() takes over cleanly
   Wire.beginTransmission(i2c_addr);
   Wire.write(BL);
   Wire.endTransmission();
 
-  // Analysis:
-  // If the LCD is missing (open circuit), the weak pull-ups on PCF8574 P4-P7
-  // will cause us to read 0xF0 (all highs) for the upper nibble.
-  // The Busy Flag is D7 (bit 7 of the byte, or P7 on the expander).
-  // If we read 0xFF (or typically 0xF?), it acts like "BUSY" forever.
-  // A real LCD is usually NOT busy immediately after init, so D7 should be 0.
-  // However, there's a chance it IS busy. But reading 0xF (all nibble bits
-  // high) is the signature of "nothing connected".
-
-  // Let's check the upper nibble (P4-P7).
   uint8_t upperNibble = readVal & 0xF0;
+  Serial.printf("  [LCD] Busy-flag read: 0x%02X (upper nibble: 0x%02X)\n",
+                readVal, upperNibble);
 
-  Serial.printf("  [LCD Diagnostic] Read: 0x%02X (Upper: 0x%02X)\n", readVal,
-                upperNibble);
-
-  if (upperNibble == 0xF0) {
-    // All high -> likely nothing driving the bus low -> Missing LCD.
-    return false;
-  }
-
-  // If we got here, something pulled at least one data line low.
-  // Valid LCD.
-  return true;
+  // 0xF0 = all pull-ups high = nothing driving the bus = LCD absent
+  return (upperNibble != 0xF0);
 }
 
 static bool runTest_LCD() {
@@ -625,6 +612,15 @@ static bool runTest_LCD() {
 
   if (!lcdAddr) {
     Serial.println(F("FAIL: No LCD backpack detected."));
+    return false;
+  }
+
+  // STEP 1b: Confirm physical panel connection via PCF8574 busy-flag read.
+  // An I2C scan succeeds even when only the backpack (PCF8574) is present
+  // without a panel attached.  This step catches that case.
+  if (!verifyLCDConnection(lcdAddr)) {
+    Serial.println(F("FAIL: LCD backpack found but panel not responding (open circuit)."));
+    Serial.println(F("  Check: is the flat-cable connector fully seated on both sides?"));
     return false;
   }
 
@@ -675,11 +671,11 @@ static bool runTest_LEDs() {
   const int pins[] = { LAMP1, LAMP2, LAMP3, LAMP4, LAMP5, LED_Status };
   const char* names[] = {
       "LAMP1",
-      "LAMP2 (LAMP2)",
-      "LAMP3 (LAMP3)",
-      "LAMP4 (LAMP4)",
-      "LAMP5 (LAMP5)",
-    "LED_Status (LED_Status)"
+      "LAMP2",
+      "LAMP3",
+      "LAMP4",
+      "LAMP5",
+      "LED_Status"
   };
 
   for (int i = 0; i < 6; ++i) {
@@ -708,12 +704,12 @@ static bool runTest_LEDs() {
 }
 
 
-// Detect which DFPlayer-class module is installed by reading BUSY pin and
-// querying readState() (command 0x42).
-//   Genuine DFRobot DFPlayerMini : readState() == 0 when idle
-//   TD5580 clone                 : readState() >  0 when idle (non-zero play status)
-//   MP3-TF-16P / unknown         : readState() == -1 (no response / timeout)
-// Call only after dfPlayer.begin() has succeeded and the module is responding.
+// Identify the installed DFPlayer-class module via readState() (cmd 0x42).
+//   DF_MODULE_GENUINE   – readState() == 0  (genuine DFRobot module; idle state = 0)
+//   DF_MODULE_TD5580    – readState() >  0  (TD5580 clone; non-zero idle state)
+//   DF_MODULE_MP3TF16P  – readState() == -1 (no response; MP3-TF-16P compatible)
+// Precondition: dfPlayer.begin() has succeeded.
+// Hardware side effect: reads DF_BUSY_IN and sends readState() over UART2.
 static dfModuleType_t detectModuleType() {
   delay(100);  // allow BUSY pin to settle after init
 
@@ -739,10 +735,11 @@ static dfModuleType_t detectModuleType() {
   }
 }
 
+// Reset all DFPlayer state so the next initDFPlayer() call starts fresh.
+// Use when the operator has swapped or re-seated the module mid-test.
 static void clearDFPlayerCache() {
   dfState = DF_UNKNOWN;
   g_dfModuleType = DF_MODULE_UNKNOWN;
-  // optional: hard reset the UART session as well
   dfSerial.end();
   delay(50);
 }
@@ -759,12 +756,14 @@ static bool dfPlayerResponding() {
   return (c >= 0);
 }
 
-/* Function Description
-Initialized the UART to the Mini MP3 player (DF Player)
-Initilize the DF player
-Set for file output from SD card.
-On subsiquent calls, will report of Mini MP3 player BECOMES unresponsive.
-*/
+// Initialize UART2 and the DFPlayer Mini module.
+// Idempotent: if dfState == DF_OK and the module is still responding, returns
+// true immediately.  If the module has gone away, clears state and retries.
+// On success sets dfState = DF_OK and g_dfModuleType.
+// On TD5580 detection sets dfState = DF_FAIL and returns false; the test
+// infrastructure must replace the module before re-running.
+// Hardware side effect: opens dfSerial (UART2) at 9600 baud; drives DF_BUSY_IN
+// as INPUT_PULLUP.
 static bool initDFPlayer() {
   Serial.print("initDFPlayer() called at: ");
   Serial.println(millis());
@@ -806,7 +805,6 @@ static bool initDFPlayer() {
   }
 
   dfPlayer.setTimeOut(1000);
-  //dfPlayer.enableACK();          // ← restore ACK for the rest of the session
   dfPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   delay(1200);
 
@@ -827,76 +825,8 @@ static bool initDFPlayer() {
 }
 
 
-// Put this OUTSIDE of runTest_DFPlayer() (global scope).
-// Call it when dfPlayer.available() is true.
-void printDetail(uint8_t type, int value) {
-  switch (type) {
-  case TimeOut:
-    Serial.println(F("Time Out!"));
-    break;
-  case WrongStack:
-    Serial.println(F("Stack Wrong!"));
-    break;
-  case DFPlayerCardInserted:
-    Serial.println(F("Card Inserted!"));
-    break;
-  case DFPlayerCardRemoved:
-    Serial.println(F("Card Removed!"));
-    break;
-  case DFPlayerCardOnline:
-    Serial.println(F("Card Online!"));
-    break;
-  case DFPlayerUSBInserted:
-    Serial.println("USB Inserted!");
-    break;
-  case DFPlayerUSBRemoved:
-    Serial.println("USB Removed!");
-    break;
-    case DFPlayerPlayFinished:
-    Serial.print(F("Number:"));
-    Serial.print(value);
-    Serial.println(F(" Play Finished!"));
-    break;
-    case DFPlayerError:
-      Serial.print(F("DFPlayerError:"));
-      switch (value) {
-    case Busy:
-      Serial.println(F("Card not found"));
-      break;
-    case Sleeping:
-      Serial.println(F("Sleeping"));
-      break;
-    case SerialWrongStack:
-      Serial.println(F("Get Wrong Stack"));
-      break;
-    case CheckSumNotMatch:
-      Serial.println(F("Check Sum Not Match"));
-      break;
-    case FileIndexOut:
-      Serial.println(F("File Index Out of Bound"));
-      break;
-    case FileMismatch:
-      Serial.println(F("Cannot Find File"));
-      break;
-    case Advertise:
-      Serial.println(F("In Advertise"));
-      break;
-    default:
-      break;
-      }
-      break;
-  default:
-    break;
-  }
-}
-
-
-static bool runTest_DFPlayer(bool forceReinit = false) {
+static bool runTest_DFPlayer() {
   Serial.println(F("\n[4] DF Player"));
-
-  if (forceReinit) {
-    clearDFPlayerCache();
-  }
 
   if (!initDFPlayer()) {
     Serial.println(F("DFPlayer test FAIL: module not detected or not responding."));
@@ -929,7 +859,6 @@ static bool runTest_SD() {
     g_sdFileCount = dfPlayer.readFileCounts();
   }
 
-  g_sdChecked = true;
   Serial.printf("  DFPlayer reports %d files.\n", g_sdFileCount);
 
   if (g_sdFileCount <= 0) {
@@ -1011,10 +940,15 @@ static bool runTest_WifiAP() {
   Serial.println(ssid);
   Serial.print(F("AP IP:   "));
   Serial.println(ip);
-  Serial.println(F("Operator: verify AP is visible from phone/PC."));
 
-  startOTAServerIfNeeded();  //start OTA now that AP is up
-  return true;
+  startOTAServerIfNeeded();  // start OTA while AP is active so /update is reachable
+
+  bool ok = promptYesNo(
+      F("Can you see this SSID on a nearby phone or PC Wi-Fi scan?"),
+      PROMPT_TIMEOUT_MS,
+      true);
+  Serial.printf("Wi-Fi AP test: %s\n", ok ? "PASS" : "FAIL");
+  return ok;
 }
 
 static bool runTest_WifiSTA() {
@@ -1176,15 +1110,17 @@ static bool runTest_RS232() {
   }
 
   Serial.println(F("\n[D] RS-232 loopback (UART1)"));
-  Serial.println(F("Connected RS-232 TX <-> RX at DB9 (pins 2 and 3) via MAX3232."));
+  Serial.println(F("Required: DB9 loopback plug with TWO shorts:"));
+  Serial.println(F("  pin 2 <-> pin 3  (TX <-> RX, data loopback)"));
+  Serial.println(F("  pin 7 <-> pin 8  (RTS <-> CTS, flow-control loopback)"));
   Serial.printf("Using UART1 TXD=%d, RXD=%d, BAUD=%ld\n", UART1_TXD1, UART1_RXD1, UART1_BAUD);
 
   //Set up UART1
 
   pinMode(UART1_RTS1, OUTPUT);
   pinMode(UART1_CTS1, INPUT);  // NO pull up required because MAX3232 drives.
-  //digitalWrite(UART1_RTS1, HIGH); // will make CTS at DB9 negative voltage through loop back
-  digitalWrite(UART1_RTS1, LOW); // will make CTS at DB9 positive voltage through loop back
+  // RTS LOW → MAX3232 → DB9 pin 7 = positive RS-232 voltage; loopback drives CTS LOW (pass)
+  digitalWrite(UART1_RTS1, LOW);
 
   HardwareSerial rs232(1);
   rs232.begin(UART1_BAUD, SERIAL_8N1, UART1_RXD1, UART1_TXD1);
@@ -1207,7 +1143,7 @@ static bool runTest_RS232() {
   // Receive
   String rx;
   uint32_t t0 = millis();
-  while (millis() - t0 < TIMEOUT_MS && rx.length() < n) {
+  while (millis() - t0 < RS232_RECV_TIMEOUT_MS && rx.length() < n) {
     while (rs232.available()) {
       char c = (char)rs232.read();
       rx += c;
@@ -1216,10 +1152,12 @@ static bool runTest_RS232() {
   }
   rs232.end();
 
-  // Validate
-  if (HIGH == digitalRead(UART1_CTS1)){
+  // Validate flow control: RTS was driven LOW, so via MAX3232 and the DB9
+  // loopback plug, CTS should also be LOW (positive RS-232 voltage on both
+  // ends).  HIGH means the loopback plug is missing or wired wrong.
+  if (HIGH == digitalRead(UART1_CTS1)) {
     Serial.print("[rs232] FAIL: FLOW CONTROL. Expected DB9 pin 7 between 3-18V. ");
-    Serial.println("Tip: ensure rs232 RTS<->CTS loopback plug is installed.");
+    Serial.println("Tip: ensure RS-232 RTS<->CTS loopback plug is installed.");
     return false;
   }
 
@@ -1246,24 +1184,21 @@ static bool runTest_RS232() {
   Serial.print(rx);
   Serial.println("[rs232] PASS: UART1 loopback OK");
   return true;
-//removed dead code  
-}//end runTest_RS232()
+}
 
 //ElegantOTA test: verify OTA server is reachable in a browser.
 static bool runTest_OTA() {
   Serial.println(F("\n[E] ElegantOTA"));
 
-  // Auto-run Wi-Fi STA first, fall back to AP if STA fails
+  // Auto-run Wi-Fi STA first; if it fails, abort (AP mode does not provide a routable IP).
   if (!g_otaServerStarted) {
     Serial.println(F("  Wi-Fi not up. Trying Wi-Fi STA first..."));
-    testResults[T_WIFI_STA] = runTest_WifiSTA();
-
-      if (!testResults[T_WIFI_STA]) {
-        Serial.println(F(" STA  failed. ElegantOTA test FAIL."));
-        return false;
-      }
+    testResults[T_WIFI_STA] = runTest_WifiSTA();  // side-effect: updates T_WIFI_STA result
+    if (!testResults[T_WIFI_STA]) {
+      Serial.println(F("  STA failed. ElegantOTA test FAIL."));
+      return false;
     }
-  
+  }
 
   if (!g_littleFsMounted) {
     Serial.println(F("  WARNING: LittleFS not mounted. ElegantOTA may not serve files."));
@@ -1283,19 +1218,15 @@ static bool runTest_OTA() {
   return ok;
 }
 
-// ============================================================================
-// [F] Mute Button + LED Test
-// ============================================================================
-// Tests S601 mute push button (MUTE_BTN_PIN) and LED_Status toggle.
-//
+// Test S601 mute push button (GPIO MUTE_BTN_PIN) and LED_Status toggle.
 // Hardware: active LOW, external pull-up R603, RC debounce C602 (100 nF).
-// OneButton handles press duration:
-//   - Too short (< MUTE_DEBOUNCE_MS) : silently ignored, operator retries
-//   - Valid click                     : toggles mute state + LED
-//   - Too long  (> MUTE_LONGPRESS_MS): prints warning, operator retries
-//
-// PASS: two valid presses detected, LED ON after first, LED OFF after second.
-// ============================================================================
+//   OneButton press classification:
+//     < MUTE_DEBOUNCE_MS   – silently ignored (below debounce threshold)
+//     valid click           – counted; LED toggled after each press
+//     > MUTE_LONGPRESS_MS  – warning printed; operator retries
+// PASS: two valid presses within MUTE_WAIT_MS each; LED ON after press 1,
+//       LED OFF after press 2.
+// Hardware side effect: drives LED_Status OUTPUT; advances muteBtn state machine.
 static bool runTest_MuteButton() {
   Serial.println(F("\n[F] Mute Button + LED"));
   Serial.printf("  Button: GPIO %d  |  LED: GPIO %d (LED_Status)\n",
@@ -1374,7 +1305,7 @@ static bool runSingleTestFromIndex(TestIndex idx) {
     case T_LEDS: return runTest_LEDs();
     case T_DFPLAYER: return runTest_DFPlayer();
     case T_SD: return runTest_SD();
-    case T_Speaker: return runTest_Speaker();
+    case T_SPEAKER: return runTest_Speaker();
     case T_WIFI_AP: return runTest_WifiAP();
     case T_WIFI_STA: return runTest_WifiSTA();
     case T_LITTLEFS: return runTest_LittleFS();
@@ -1415,7 +1346,7 @@ static void handleCommand(char c) {
     case '3': testResults[T_LEDS]       = runTest_LEDs();       break;
     case '4': testResults[T_DFPLAYER]   = runTest_DFPlayer();   break;
     case '5': testResults[T_SD]         = runTest_SD();         break;
-    case '6': testResults[T_Speaker]    = runTest_Speaker();    break;
+    case '6': testResults[T_SPEAKER]    = runTest_Speaker();    break;
     case '7': testResults[T_WIFI_AP]    = runTest_WifiAP();     break;
     case '8': testResults[T_WIFI_STA]   = runTest_WifiSTA();    break;
     case 'A': testResults[T_LITTLEFS]   = runTest_LittleFS();   break;
@@ -1461,6 +1392,9 @@ void setup() {
   g_littleFsMounted = LittleFS.begin(true);
   Serial.println(g_littleFsMounted ? F("[boot] LittleFS... OK") : F("[boot] WARNING: LittleFS mount failed."));
 
+  // Momentarily bring up STA mode so the driver populates the MAC address
+  // registers; then turn radio off so we don't hold the Wi-Fi hardware open
+  // before any Wi-Fi test is explicitly selected.
   WiFi.mode(WIFI_STA);
   delay(100);
   Serial.println(F("[boot] WiFi init... OK"));
