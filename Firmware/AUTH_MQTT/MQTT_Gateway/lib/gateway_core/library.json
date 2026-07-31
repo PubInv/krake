@@ -1,0 +1,7 @@
+// {
+//   "name": "gateway_core",
+//   "version": "1.0.0",
+//   "build": {
+//     "extraScript": "build_filter.py"
+//   }
+// }
