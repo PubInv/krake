@@ -72,7 +72,7 @@ The local settings menu includes:
  ```
 #### Build your own
 To build your own please see instructions for testing and assembly of Krake hardware:
-[Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+[Krake Test and Assembly Procedure Document]([https://www.overleaf.com/project/691ca3def1fcd4e384b10919](https://github.com/PubInv/krake/wiki/Krake-Test-and-Assembly-Procedure-Document)
 
 
 ## About Krake
@@ -181,7 +181,7 @@ The team behind Krake: [Mentorship and Teamwork: The Story of the Krake](https:/
 
 Krake workflow: [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
-Build your own: [Krake Test and Assembly Procedure Document](https://www.overleaf.com/project/691ca3def1fcd4e384b10919)
+Build your own: [Krake Test and Assembly Procedure Document]([https://www.overleaf.com/project/691ca3def1fcd4e384b10919](https://github.com/PubInv/krake/wiki/Krake-Test-and-Assembly-Procedure-Document)
 
 Database for Krake units and test registries: [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
 
