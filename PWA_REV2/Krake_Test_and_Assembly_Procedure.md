@@ -1,17 +1,4 @@
----
-title: "Krake Test and Assembly Procedure Document"
-project: "Krake Project"
-document_type: "Test and Assembly procedure"
-document_id: "KRK-DOC-001"
-version: "v0.2.0"
-date: "2025-11-30"
-status: "Draft"
-authors:
-  - "Forrest Lee Erickson (BS of Science, Physics)"
-  - "Nagham Kheir (BE in Electric and Electronics, emphasis on Biomedical)"
-  - "Courtney Ludick (MEng Biomedical Engineering)"
----
-
+ 
 # ISO Title Page
 
 ```
@@ -23,7 +10,7 @@ Project:              Krake Project
 Document Type:        Test and Assembly procedure
 Document ID:          KRK-DOC-001
 Version:              v0.2.0
-Date:                 2027 - 02 - 08
+Date:                 2026 - 02 - 08
 Author(s):            Forrest Lee Erickson BS of Science, Physics.
                       Nagham Kheir BE in Electric and Electronics emphasis on Biomedical
                       Courtney Ludick MEng Biomedical Engineering
