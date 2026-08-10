@@ -1,0 +1,10 @@
+{
+  "name": "Mongoose",
+  "version": "7.15.0",
+  "build": {
+    "flags": [
+      "-I .",
+      "-D MG_ENABLE_IPV6=0"
+    ]
+  }
+}
