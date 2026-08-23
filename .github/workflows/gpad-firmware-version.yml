@@ -3,21 +3,21 @@ name: Assign GPAD firmware version
 on:
   pull_request_target:
     branches: ["main"]
-    types: [opened, reopened]
+    types: [closed]
 
 permissions:
   contents: write
 
 jobs:
   assign-version:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout pull request branch
+      - name: Checkout main after merge
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: main
           fetch-depth: 0
 
       - name: Configure version commit identity
@@ -26,17 +26,16 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Increment firmware version
-        env:
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          git show "$BASE_SHA:scripts/bump_gpad_firmware_version.py" > /tmp/bump_gpad_firmware_version.py
-          python3 /tmp/bump_gpad_firmware_version.py --from-ref "$BASE_SHA"
+
+          python3 scripts/bump_gpad_firmware_version.py --from-ref HEAD
+
           if git diff --quiet -- Firmware/GPAD_API/FIRMWARE_VERSION; then
             echo "Firmware version is already current; nothing to commit."
             exit 0
           fi
+
           git add Firmware/GPAD_API/FIRMWARE_VERSION
           git commit -m "Bump GPAD firmware version"
-          git push origin HEAD:"$HEAD_REF"
+          git push origin main
