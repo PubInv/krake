@@ -72,7 +72,7 @@ The local settings menu includes:
  ```
 #### Build your own
 To build your own please see instructions for testing and assembly of Krake hardware:
-[Krake Test and Assembly Procedure Document]([https://www.overleaf.com/project/691ca3def1fcd4e384b10919](https://github.com/PubInv/krake/wiki/Krake-Test-and-Assembly-Procedure-Document)
+[Krake Test and Assembly Procedure Document](https://github.com/PubInv/krake/wiki/Krake-Test-and-Assembly-Procedure-Document)
 
 
 ## About Krake
