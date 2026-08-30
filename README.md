@@ -160,7 +160,7 @@ Krake hardware has been certified by the Open Source Hardware Association (OSHWA
 Certification UID: ``` US002818 ```
  
 ## References & Further Reading
-Website: https://pubinv.github.io/krake/
+ 
 
 Brochure: [Copy of Krake Brochure.pdf](https://github.com/user-attachments/files/29981489/Copy.of.Krake.Brochure.pdf)
 
@@ -170,7 +170,7 @@ Krake Repo: https://github.com/PubInv/krake
 
 Wiki: https://github.com/PubInv/krake/wiki
 
-HardwareX Article: [HardwareX Article](https://www.overleaf.com/project/6696aaaaa7299f34f83a5575)
+HardwareX Article: [ TBD]
 
 User Manual: [draft user manual](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing) 
 
@@ -183,9 +183,8 @@ The team behind Krake: [Mentorship and Teamwork: The Story of the Krake](https:/
 
 Krake workflow: [Krake Workflow Contribution Procedure](https://github.com/PubInv/krake/blob/main/WorkflowProcedure.md)
 
-Build your own: [Krake Test and Assembly Procedure Document]([https://www.overleaf.com/project/691ca3def1fcd4e384b10919](https://github.com/PubInv/krake/wiki/Krake-Test-and-Assembly-Procedure-Document)
+Build your own: [Krake Test and Assembly Procedure Document](https://github.com/PubInv/krake/wiki/Krake-Test-and-Assembly-Procedure-Document)
 
-Database for Krake units and test registries: [Krake Factory Inventory](http://ec2-13-51-158-67.eu-north-1.compute.amazonaws.com/factory-form.html)
 
 Global Open Source Quality Assuring System:[Asset History Records Public Invention Krake Rev. 2](https://gosqas.org/record/8CMgkfrS4ufevweKy1QowF)
 
