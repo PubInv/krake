@@ -18,18 +18,20 @@ This ?150? x ?180? x ?67? mm device has a speaker, a 20x4 character display, fiv
 4. The user is able to react to the alarm with {acknowledgement, dismissal, shelving or completion}, A mute button allows the user to temporarily mute the audio to prevent alarm fatigue.
 
 ## Table of Contents
-- Quick Start
-- About Krake
-- Example Use Cases
-- Features
-- Hardware
-- Firmware
-- Roadmap
-- Contributing
-- Credits & Mentorship
-- Trust & Credentials
-- References & Further Reading
 
+- [Quick Start](#quick-start)
+- [About Krake](#about-krake)
+- [Example Use Cases](#example-use-cases)
+- [Features](#features)
+- [Hardware](#hardware)
+- [Roadmap (Future Features)](#roadmap-future-features)
+- [Contributing](#contributing)
+- [Credits & Mentorship](#credits--mentorship)
+- [Certifications](#certifications)
+- [References & Further Reading](#references--further-reading)
+- [License](#license)
+
+  
 ## Quick Start
 Once upon a time, we (Robert, Nagham and Lee) had envisioned that upon receiving a Krake the user would practice working with it by using the MQTT web page to publish messages to their device.
 
