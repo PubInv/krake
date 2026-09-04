@@ -17,6 +17,11 @@ This ?150? x ?180? x ?67? mm device has a speaker, a 20x4 character display, fiv
 3. The Krake alerts you of this event-  Lights flash, audio plays and the message is displayed on an LCD for the user
 4. The user is able to react to the alarm with {acknowledgement, dismissal, shelving or completion}, A mute button allows the user to temporarily mute the audio to prevent alarm fatigue.
 
+## User Manual
+
+A User Manual can be found [here](https://docs.google.com/document/d/1qrhc7Yi6PFmagl4gnvSoc0T4vC_uqu-NLrmWMKFnwA0/edit?usp=sharing).
+
+
 ## Table of Contents
 
 - [Quick Start](#quick-start)
