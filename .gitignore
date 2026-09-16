@@ -154,3 +154,4 @@ platformio_override.ini
 # *.ps
 # *.svg
 _notes/
+.aider*

@@ -490,6 +490,7 @@ bool Manager::connectStoredCredentials(const String &ssid, const String &passwor
   this->print.println(ssid);
 #endif
 
+  this->wifi.mode(WIFI_AP_STA);
   this->wifi.begin(ssid.c_str(), password.c_str());
   const unsigned long startMs = millis();
   while (!millisIntervalElapsed(millis(), startMs, timeoutMs))

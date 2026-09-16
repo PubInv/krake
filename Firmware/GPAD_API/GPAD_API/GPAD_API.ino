@@ -2468,10 +2468,7 @@ void serviceWiFiReconnect()
   }
 
   lastWiFiReconnectAttemptMs = now;
-  if (!wifiManager.connectSavedCredentials(WIFI_RECONNECT_INTERVAL_MS))
-  {
-    WiFi.reconnect();
-  }
+  wifiManager.connectSavedCredentials(WIFI_RECONNECT_INTERVAL_MS);
 #endif
 }
 

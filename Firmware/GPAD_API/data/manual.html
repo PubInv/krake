@@ -10,7 +10,197 @@
 <body>
   <header id="appHeader"></header>
   <nav id="sideMenu"></nav>
-  <main class="container"><section class="card"><h1>KRAKE Quick Start</h1><p class="subtitle">Basic usage and where to find key diagnostics.</p><ul><li><strong>Home</strong>: serial, MAC, IP, firmware, MQTT status, and live LCD output.</li><li><strong>Settings</strong>: broker/topic settings, mute control, and WiFi reset.</li><li><strong>Broker Console</strong>: publish test alarms and monitor ACK topics.</li><li><strong>Factory Test / Developer Monitor</strong>: live UART monitor output.</li><li><strong>PMD Web UI</strong>: select saved target topics from Settings and send PMD alarm messages.</li><li><strong>MQTT Device Monitor</strong>: track online/offline devices by MAC-based MQTT topics.</li></ul><p class="subtitle">Tip: The serial number shown on these pages is the MAC-based device identifier used in topics.</p></section></main>
+  <main class="container">
+    <section class="card">
+      <h1>KRAKE User Manual</h1>
+      <p class="subtitle">Use this guide to navigate the KRAKE web pages and the physical LCD menu.</p>
+
+      <h2>Getting Started</h2>
+      <ol>
+        <li>Power on the KRAKE device and wait for the LCD home screen to appear.</li>
+        <li>Connect your phone or computer to the same network as the device.</li>
+        <li>Open the device URL or IP address shown on the LCD or on the Home page.</li>
+        <li>Use the menu button in the top-right corner of the web page to open the side menu.</li>
+      </ol>
+
+      <p><strong>Tip:</strong> The serial number shown in the web UI is the device identifier used in MQTT topics. It is usually based on the device MAC address.</p>
+    </section>
+
+    <section class="card">
+      <h1>Web Menu Navigation</h1>
+      <p class="subtitle">The browser menu is opened from the button in the top-right corner.</p>
+
+      <h2>Basic User Pages</h2>
+      <ul>
+        <li><strong>Home:</strong> Shows serial number, URL, IP address, MAC address, WiFi signal, uptime, MQTT connection status, firmware version, build time, and live LCD output.</li>
+        <li><strong>GDT Track Record:</strong> Shows device reporting history and lets you filter between all devices, reporting devices, and non-reporting devices.</li>
+        <li><strong>User Manual:</strong> Opens this guide.</li>
+      </ul>
+
+      <h2>Admin Pages</h2>
+      <ul>
+        <li><strong>Settings:</strong> Configure WiFi, mute/unmute the device, save sound defaults, and manage MQTT broker/topic settings.</li>
+        <li><strong>Firmware Update:</strong> Opens the firmware update page for loading new device firmware.</li>
+      </ul>
+
+      <h2>Developer Pages</h2>
+      <ul>
+        <li><strong>PMD Web UI:</strong> Sends PMD alarm messages to selected saved MQTT topics.</li>
+        <li><strong>Factory Test / Developer Monitor:</strong> Shows live monitor output for testing and diagnostics.</li>
+        <li><strong>MQTT Device Monitor:</strong> Tracks devices by MAC-based MQTT topics and connection activity.</li>
+        <li><strong>Electrical Test History:</strong> Records and reviews powered and unpowered electrical test results.</li>
+      </ul>
+
+      <h2>Developer Mode Unlock</h2>
+      <ol>
+        <li>Open the side menu.</li>
+        <li>Select <strong>Unlock Developer Mode</strong>.</li>
+        <li>Enter the developer password.</li>
+        <li>Select <strong>Unlock</strong>.</li>
+      </ol>
+      <p>When developer mode is unlocked, the developer pages appear in the side menu. Use <strong>Lock Developer Tools</strong> to hide them again.</p>
+    </section>
+
+    <section class="card">
+      <h1>Physical LCD Controls</h1>
+      <p class="subtitle">Use the rotary encoder and the mute button to control the device without a browser.</p>
+
+      <h2>Rotary Encoder</h2>
+      <ul>
+        <li><strong>Rotate clockwise:</strong> Move down or to the next option.</li>
+        <li><strong>Rotate counter-clockwise:</strong> Move up or to the previous option.</li>
+        <li><strong>Press:</strong> Select the highlighted item.</li>
+        <li><strong>Double press or long press:</strong> Go back when supported by the current menu.</li>
+      </ul>
+
+      <h2>Mute Button</h2>
+      <ul>
+        <li>Press the mute button once to mute the alarm audio using the configured mute timeout.</li>
+        <li>Press it again while muted to unmute the device.</li>
+      </ul>
+
+      <p>The settings menu returns to the main LCD page automatically after about two minutes without interaction.</p>
+    </section>
+
+    <section class="card">
+      <h1>LCD Home Screen</h1>
+      <p class="subtitle">The home screen is the normal operating screen.</p>
+      <ul>
+        <li>Rotate the encoder to move focus between available home-screen icons and alarm pages.</li>
+        <li>Press the encoder to open the focused item.</li>
+        <li>If an alarm is active, rotating or pressing the encoder can open the alarm action selector.</li>
+      </ul>
+
+      <h2>Home-Screen Icons</h2>
+      <ul>
+        <li><strong>WiFi:</strong> Opens WiFi status and web UI information.</li>
+        <li><strong>Broker:</strong> Lets you choose the MQTT broker profile.</li>
+        <li><strong>Mute:</strong> Opens quick mute controls.</li>
+        <li><strong>Settings:</strong> Opens the full settings menu.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h1>Alarm Actions</h1>
+      <p class="subtitle">When an alarm is active, use the encoder to choose the response.</p>
+      <ol>
+        <li>Rotate or press the encoder until the alarm action selector appears.</li>
+        <li>Rotate to highlight the desired action.</li>
+        <li>Press the encoder to send the selected action.</li>
+      </ol>
+
+      <ul>
+        <li><strong>Shelve:</strong> Temporarily shelves the alarm.</li>
+        <li><strong>Acknowledge:</strong> Confirms that the alarm has been seen.</li>
+        <li><strong>Dismiss:</strong> Clears the current alarm from the device display.</li>
+        <li><strong>Complete:</strong> Marks the alarm as completed.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h1>Settings Menu</h1>
+      <p class="subtitle">Open Settings from the LCD home screen or by pressing the encoder when no other action is selected.</p>
+
+      <h2>Main Settings Items</h2>
+      <ul>
+        <li><strong>Info:</strong> Shows device information.</li>
+        <li><strong>WiFi:</strong> Opens WiFi status and the web UI address.</li>
+        <li><strong>Volume:</strong> Sets the audio volume from 1% to 100%.</li>
+        <li><strong>Alarm Repeat:</strong> Sets the repeat interval from 1 to 300 seconds.</li>
+        <li><strong>Mute Duration:</strong> Sets or applies mute behavior.</li>
+        <li><strong>Developer Mode:</strong> Opens advanced broker, COM, diagnostics, and WiFi credential options.</li>
+        <li><strong>Reset Device:</strong> Restarts the device after confirmation.</li>
+        <li><strong>Back:</strong> Returns to the main LCD page.</li>
+      </ul>
+
+      <h2>Changing a Setting</h2>
+      <ol>
+        <li>Rotate to highlight the setting.</li>
+        <li>Press the encoder to enter or edit it.</li>
+        <li>Rotate to change the value or option.</li>
+        <li>Press the encoder to save or run the selected action.</li>
+        <li>Select <strong>Back</strong> to return to the previous screen.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h1>Mute Duration Menu</h1>
+      <ul>
+        <li><strong>Set Duration:</strong> Choose a timed mute duration from 1 to 60 minutes.</li>
+        <li><strong>Mute Now:</strong> Mutes immediately using the selected duration.</li>
+        <li><strong>Mute Infinite:</strong> Mutes until the device is manually unmuted or receives an unmute command.</li>
+        <li><strong>Unmute:</strong> Turns alarm audio back on.</li>
+        <li><strong>Back:</strong> Returns to Settings.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h1>Developer Mode Menu</h1>
+      <p class="subtitle">Use these options only when configuring, testing, or servicing the device.</p>
+      <ul>
+        <li><strong>Broker:</strong> Select <strong>Krake PubInv</strong> or <strong>Saved Custom</strong>. Custom broker details are configured from the web Settings page.</li>
+        <li><strong>COM Setup:</strong> Configure baud rate, serial format, and flow control, then select <strong>Save</strong>. Select <strong>Back</strong> to exit without saving changes.</li>
+        <li><strong>Diagnostics:</strong> Shows device information useful for troubleshooting.</li>
+        <li><strong>Clear WiFi Creds:</strong> Clears saved WiFi credentials after confirmation and restarts the WiFi setup flow.</li>
+        <li><strong>Back:</strong> Returns to Settings.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h1>Common Tasks</h1>
+
+      <h2>Check Device Status</h2>
+      <ol>
+        <li>Open the device web page.</li>
+        <li>Go to <strong>Home</strong>.</li>
+        <li>Review IP, WiFi RSSI, MQTT status, firmware version, uptime, and live LCD output.</li>
+      </ol>
+
+      <h2>Change MQTT Broker</h2>
+      <ol>
+        <li>Open the LCD <strong>Settings</strong> menu.</li>
+        <li>Go to <strong>Developer Mode</strong>, then <strong>Broker</strong>.</li>
+        <li>Select <strong>Krake PubInv</strong> or <strong>Saved Custom</strong>.</li>
+      </ol>
+
+      <h2>Configure a Custom Broker</h2>
+      <ol>
+        <li>Open the web side menu.</li>
+        <li>Go to <strong>Settings</strong>.</li>
+        <li>Enter the custom broker host, username, password, and topics.</li>
+        <li>Select <strong>Save MQTT Config</strong>.</li>
+        <li>Use the LCD Broker menu to select <strong>Saved Custom</strong>.</li>
+      </ol>
+
+      <h2>Reset WiFi Credentials</h2>
+      <ol>
+        <li>Open <strong>Settings</strong>, then <strong>Developer Mode</strong>.</li>
+        <li>Select <strong>Clear WiFi Creds</strong>.</li>
+        <li>Select <strong>Confirm Clear</strong>.</li>
+        <li>Wait for the device to restart and follow the WiFi setup flow.</li>
+      </ol>
+    </section>
+  </main>
 
   <footer class="footer"><a href="https://pubinv.org" target="_blank" rel="noopener noreferrer">pubinv.org</a><div id="message" class="note"></div></footer>
   <script src="/js/common.js"></script>
