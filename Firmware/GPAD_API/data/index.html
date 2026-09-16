@@ -26,6 +26,7 @@
       <div class="info-row"><span class="label">Uptime:</span><span id="uptime" class="value">%UPTIME%</span></div>
       <div class="info-row"><span class="label">MQTT:</span><span id="mqtt" class="value">%MQTT%</span></div>
       <div class="info-row"><span class="label">Firmware:</span><span id="firmware" class="value">%FIRMWARE_VERSION%</span></div>
+      <div class="info-row"><span class="label">Web pages:</span><span id="webPages" class="value">%LITTLEFS_VERSION%</span></div>
       <div class="info-row"><span class="label">Compiled:</span><span id="compiled" class="value">%COMPILED_AT%</span></div>
         <!-- <div class="qr-box">
         <img src="%QR%" alt="QR Code">
@@ -93,6 +94,7 @@
         setText("uptime", data.uptime);
         setText("mqtt", data.mqtt);
         setText("firmware", data.firmware);
+        setText("webPages", data.webPages);
         setText("compiled", data.compiled);
         setText("deviceUrl", data.url);
       } catch (e) {

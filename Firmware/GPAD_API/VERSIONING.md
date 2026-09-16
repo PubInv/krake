@@ -16,6 +16,16 @@ The version bump logic lives in the repository root at
 python3 scripts/bump_gpad_firmware_version.py
 ```
 
+The LittleFS web-page version is stored separately in `LITTLEFS_VERSION` and is
+exposed on the Home page and `/status` as `webPages`. Changes under `data/`
+must increment that version, for example:
+
+```sh
+python3 scripts/bump_gpad_firmware_version.py \\
+	--version-file Firmware/GPAD_API/LITTLEFS_VERSION \\
+	--label "LittleFS web-page"
+```
+
 By default, the script chooses the SemVer component from commit messages since
 the previous `FIRMWARE_VERSION` change:
 

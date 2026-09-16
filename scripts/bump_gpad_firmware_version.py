@@ -27,6 +27,7 @@ def parse_args() -> argparse.Namespace:
         help="Version component to increment. auto uses commit messages.",
     )
     parser.add_argument("--version-file", type=Path, default=VERSION_PATH)
+    parser.add_argument("--label", default="GPAD firmware")
     parser.add_argument(
         "--from-ref",
         help="Git ref to compare against when --bump=auto. Defaults to the last version-file commit.",
@@ -85,7 +86,7 @@ def main() -> None:
 
     updated = bump_version(current, bump_type)
     args.version_file.write_text(updated + "\n", encoding="utf-8")
-    print(f"Bumped GPAD firmware version ({bump_type}): {current} -> {updated}")
+    print(f"Bumped {args.label} version ({bump_type}): {current} -> {updated}")
 
 
 if __name__ == "__main__":

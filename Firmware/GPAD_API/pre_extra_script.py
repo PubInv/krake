@@ -8,11 +8,16 @@ firmware_version = version_path.read_text(encoding="utf-8").strip()
 if not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", firmware_version):
     raise ValueError(f"Invalid plain semantic version in {version_path}: {firmware_version!r}")
 
+littlefs_version_path = Path(env["PROJECT_DIR"]) / "LITTLEFS_VERSION"
+littlefs_version = littlefs_version_path.read_text(encoding="utf-8").strip()
+if not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", littlefs_version):
+    raise ValueError(f"Invalid plain semantic version in {littlefs_version_path}: {littlefs_version!r}")
+
 cpp_defines = [
     ("COMPANY_NAME", "PubInv "),   # For the Broker ID for MQTT 
     ("PROG_NAME", "GPAD_API "),    # This program
     ("FIRMWARE_VERSION", firmware_version),
-    ("LittleFS_VERSION", "0.1.8 "), # pr 569
+    ("LittleFS_VERSION", littlefs_version),
     ("MODEL_NAME", "KRAKE_"), 
     ("LICENSE", "GNU Affero General Public License, version 3 "),
     ("ORIGIN", "US"),

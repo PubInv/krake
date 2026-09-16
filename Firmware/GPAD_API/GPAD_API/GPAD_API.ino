@@ -1557,6 +1557,10 @@ String templateProcessor(const String &var)
   {
     return String(FIRMWARE_VERSION);
   }
+  if (var == "LITTLEFS_VERSION")
+  {
+    return String(LittleFS_VERSION);
+  }
   if (var == "COMPILED_AT")
   {
     return String(__DATE__ " " __TIME__);
@@ -1805,6 +1809,7 @@ void setupOTA()
               payload += "\"uptime\":\"" + jsonEscape(uptimeString()) + "\",";
               payload += "\"mqtt\":\"" + String(client.connected() ? "connected" : "disconnected") + "\",";
               payload += "\"firmware\":\"" + jsonEscape(String(FIRMWARE_VERSION)) + "\",";
+              payload += "\"webPages\":\"" + jsonEscape(String(LittleFS_VERSION)) + "\",";
               payload += "\"compiled\":\"" + jsonEscape(String(__DATE__ " " __TIME__)) + "\",";
               payload += "\"serialPort\":\"" + jsonEscape(String("UART0 (USB Serial/JTAG)")) + "\",";
               payload += "\"serialBaud\":\"" + String(BAUDRATE) + "\",";
