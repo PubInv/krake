@@ -280,6 +280,7 @@ result actionMuteNow(eventMask e)
   {
     saveMuteTimeoutMinutesSetting(muteTimeoutMinutes);
     setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+    stopAlarmPlayback();
     DBG_PRINT(F("Muted for "));
     DBG_PRINT(muteTimeoutMinutes);
     DBG_PRINTLN(F(" minutes."));
@@ -293,6 +294,7 @@ result actionMuteInfinite(eventMask e)
   if (e == eventMask::enterEvent)
   {
     setMuteTimeoutMinutes(OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES);
+    stopAlarmPlayback();
     DBG_PRINTLN(F("Muted indefinitely until manual unmute or received u command."));
     finishMuteMenuAction("Muted: Infinite");
   }

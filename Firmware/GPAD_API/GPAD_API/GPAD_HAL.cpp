@@ -1175,6 +1175,7 @@ void muteButtonPressed()
   else
   {
     setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+    stopAlarmPlayback();
   }
   start_of_song = millis();
   requestAlarmRefresh(local_ptr_to_serial);
@@ -1512,6 +1513,7 @@ InterpretedCommand interpretBuffer(char *buf, int rlen, Stream *serialport)
   {
     serialport->println(F("Muting Case!"));
     setMuteTimeoutMinutes(OPERATOR_MUTE_TIMEOUT_INFINITE_MINUTES);
+    stopAlarmPlayback();
     result.includeAudioRefresh = true;
     break;
   }
@@ -2063,6 +2065,7 @@ bool alarmActionSelectorHandlePress()
         else
         {
           setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+          stopAlarmPlayback();
         }
       }
       else

@@ -198,6 +198,14 @@ void setVolume(int oneToHundred)
   }
 }
 
+void stopAlarmPlayback()
+{
+  if (isDFPlayerDetected)
+  {
+    dfPlayer.stop();
+  }
+}
+
 void displayDFPlayerStats()
 {
   if (!isDFPlayerDetected)

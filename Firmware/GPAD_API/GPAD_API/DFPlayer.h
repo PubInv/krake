@@ -11,6 +11,7 @@ void setupDFPlayer();
 void displayDFPlayerStats();
 
 bool playAlarmLevel(int alarmNumberToPlay);
+void stopAlarmPlayback();
 void playNotBusy();
 bool playNotBusyLevel(int level);
 void dfPlayerUpdate(void);

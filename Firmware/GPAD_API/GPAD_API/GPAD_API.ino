@@ -1313,6 +1313,7 @@ bool applyMuteSetting(const String &rawValue)
   if (requestedMutedState)
   {
     setMuteTimeoutMinutes((unsigned long)muteTimeoutMinutes);
+    stopAlarmPlayback();
   }
   else
   {
