@@ -6619,7 +6619,7 @@
     (property "Footprint" "GeneralPurposeAlarmDevicePCB:RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm_MP1_MP2" (at 59.69 133.096 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "~" (at 63.5 130.556 0)
+    (property "Datasheet" "krake/PWA_REV2/Parts/C202365_Encoder_W_Switch.pdf" (at 63.5 130.556 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Distributor 1" "JLCPCB" (at 63.5 137.16 0)
