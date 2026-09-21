@@ -3,6 +3,9 @@ These files are for firmware (for the most part into ESP32).
 The GPAD_API is the firmware which will ship in the Krake.
 Other files are for factory test / troubele shooting or were developed during to evaluate and understand hardware.
 
+## Regression Testing
+Regression testing docs (in progress) live in [RegressionTesting/Firmware](../RegressionTesting/Firmware/README.md).
+
 ## Userfull link for compairing firmware branches
 Jump to compareing on Github various commits.
 https://github.com/PubInv/krake/compare
