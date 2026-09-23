@@ -1,0 +1,6 @@
+[submodule "Firmware/AUTH_MQTT/MQTT_Gateway/externals/mongoose"]
+	path = Firmware/AUTH_MQTT/MQTT_Gateway/externals/mongoose
+	url = https://github.com/cesanta/mongoose.git
+[submodule "Firmware/AUTH_MQTT/MQTT_Gateway/externals/littlefs"]
+	path = Firmware/AUTH_MQTT/MQTT_Gateway/externals/littlefs
+	url = https://github.com/littlefs-project/littlefs.git
