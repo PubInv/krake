@@ -82,6 +82,6 @@ Code-answerable questions are resolved above (§2 category split, §3 factory-te
 
 ## 7. Process notes
 
-- Agile, small team.
-- Docs-first: scope → (next) test plan / backlog → test cases. No test-writing until scope is agreed.
+- Small team, no formal process overhead — plain docs, decided and executed directly.
+- Docs-first: scope → task list → test cases. No test-writing until scope is agreed.
 - This doc changes as decisions get made — keep it current rather than starting a new one each time.

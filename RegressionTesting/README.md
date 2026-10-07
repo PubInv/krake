@@ -2,7 +2,7 @@
 
 Master reference hub for Krake regression testing documentation. Start here, then click through to the subsystem you need.
 
-This is a living set of docs, built incrementally following an agile approach (small iterations, reviewed and adjusted sprint by sprint, backlog/scope decisions made before any test itself is written).
+This is a living set of docs, built incrementally, small pieces at a time — scope decided before any test itself is written, updated as decisions get made rather than left to go stale.
 
 ## Sections
 
