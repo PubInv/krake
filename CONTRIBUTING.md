@@ -1,4 +1,8 @@
 # Krake 
+
+Version: 0.0.1  
+Last edited 20260729
+
 ## Workflow
 
 ## Goals
@@ -176,7 +180,7 @@ Use **Draft PR** if not ready.
 ## 6) Merge (mentor-only)
 
 * Only a **mentor** merges.
-* **Strategy:** **Squash & merge** to keep history clean/complete.
+* **Strategy:** **Rebase  & merge** to keep history most linear clean/complete.
 * After merge: branch deleted, issue auto-closes via `Closes #<n>` (close manually if needed).
 
  
