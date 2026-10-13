@@ -34,7 +34,6 @@ A User Manual can be found [here](https://docs.google.com/document/d/1qrhc7Yi6PF
 - [Credits & Mentorship](#credits--mentorship)
 - [Certifications](#certifications)
 - [References & Further Reading](#references--further-reading)
-- [License](#license)
 
   
 ## Quick Start
@@ -203,9 +202,3 @@ GPAP:  https://github.com/PubInv/gpap
 - Products page: https://www.pubinv.org/shop/
 
 
-## License
-Firmware: GNU Affero GPL 3.0
-
-Hardware: CERN Open Hardware Licence Version 2 - Strongly Reciprocal
-
-Krake™ is a trademark of Public Invention.
