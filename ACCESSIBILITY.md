@@ -45,9 +45,6 @@ This section concerns using a computer's web browser and keyboard to access Krak
 
 Network names, addresses, and configuration availability should be checked against the instructions for the installed firmware version.
 
-### Test keyboard and assistive-technology access
-
-Once the page opens, test whether it can be operated without a mouse. Keyboard and screen-reader support require verification against the interface provided by the relevant firmware version.
 
 Recommended checks include:
 
@@ -93,7 +90,3 @@ Useful details include:
 - A suggested improvement, if you have one.
 
 You do not need to disclose a diagnosis or personal medical information. Public issues are visible to everyone; describe the barrier without including sensitive personal information.
-
-## Contributing
-
-Accessibility improvements and user feedback are welcome. Include the tested hardware or firmware version and explain how the change improves access. Where possible, include results from testing with relevant assistive technologies or users with disabilities.
