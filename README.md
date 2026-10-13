@@ -1,15 +1,18 @@
 
-<p align="middle">
-  <img src="https://github.com/user-attachments/assets/0f4e3910-4cee-44f4-986c-50cb737b0a3f" width="500" />
-  <img src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" width="500" /> 
-</p>
-
-# Krake™
-
-## A wireless alarm device purpose-built for life's critical moments
+ <img src="https://github.com/user-attachments/assets/0f4e3910-4cee-44f4-986c-50cb737b0a3f" width="70" alt="Krake logo" />
+<h1 align="middle">
+  Krake™
+   </h1>
+<h2 align="middle">
+ A wireless alarm device purpose-built for life's critical moments
+ </h2>
+<h1 align="middle">
+  <img src="https://github.com/user-attachments/assets/bddd7e47-1920-4bdd-b98a-c8f1bfb84fcb" width="290" /> 
+ </h1>
+ 
 The Krake, An Alarm Annunciator designed for easy integration into systems needing to bring to the attention of humans some condition. Can be used by professional system integrators and hobbyists.
 
-This ?150? x ?180? x ?67? mm device has a speaker, a 20x4 character display, five white LEDs. It is a peripheral which can be controlled over a WiFi network using MQTT interface, a wired RS232 interface or a wired SPI interface with fully customiseable audio visual capabilitites. 
+This 150 x 180 x 67 mm device has a speaker, a 20x4 character display, five white LEDs. It is a peripheral which can be controlled over a WiFi network using MQTT interface, a wired RS232 interface or a wired SPI interface with fully customiseable audio visual capabilitites. 
 
 #### How it works?
 1. A condition is detected by an external sensor that relays this information to Krake to trigger and alarm event. Such as a pressure sensor detecting the opening of a gate.
