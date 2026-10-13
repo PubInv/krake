@@ -4,10 +4,7 @@
 
 This document describes accessibility considerations for Krake's physical alarm device, configuration interface, and documentation.
 
-Krake's README describes a speaker, a 20 × 4 character LCD, LED indicators, a mute button, and rotary-encoder controls. Available behavior may vary by hardware revision and firmware version. Some interface behavior in the README is marked as planned.
-
-This statement is an initial draft. It does not establish accessibility compliance or confirm that accessibility testing has been completed. The considerations and proposed checks below should be validated against a specific hardware revision and firmware release.
-
+ 
 ## Visual and audible alarms
 
 Krake uses sound, lights, and displayed messages to communicate alarm events. Providing several forms of indication can support users with different sensory needs, but their effectiveness requires testing.
